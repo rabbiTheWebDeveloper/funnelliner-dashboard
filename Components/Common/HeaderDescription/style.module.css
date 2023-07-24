@@ -1,0 +1,119 @@
+.HeaderDescription {
+    margin-bottom: 30px;
+}
+
+.HeaderDescriptionContent {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.HeaderDescriptionContent .Left {
+    display: flex;
+    align-items: center;
+}
+
+.HeaderDescriptionContent .Left .icon {
+    margin-right: 10px;
+}
+
+.HeaderDescriptionContent .Left i {
+    font-size: 40px;
+    line-height: 40px;
+    color: var(--main-color);
+}
+
+.HeaderDescriptionContent .Left p {
+    margin-top: 0;
+}
+
+.customInput {
+    position: relative;
+    width: 300px;
+}
+
+.SearchFilter button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 1px;
+    background: #f3f1f5;
+    padding: 10px;
+    border-radius: 0 10px 10px 0;
+    margin-right: 0;
+}
+
+.SearchFilter input {
+    padding: 10px 20px;
+}
+
+.SearchFilter button i {
+    font-size: 16px;
+    line-height: 16px;
+}
+
+.SearchFilter button:hover {
+    background: #f3eef8;
+}
+
+
+
+
+/* ---------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------
+Midia
+------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------
+*/
+
+
+/* ---------------------------------------------------------------------------------------
+1024
+------------------------------------------------------------------------------------------
+*/
+@media (max-width: 1399px) {
+
+    .MuiContainer-root {
+        max-width: calc(100% - 240px) !important;
+    }
+
+    .SearchFilter button{
+        padding: 9px 10px;
+    }
+
+
+}
+
+
+/* ---------------------------------------------------------------------------------------
+1023
+------------------------------------------------------------------------------------------
+*/
+
+@media (max-width: 1023px) {}
+
+
+
+@media (max-width: 580px) {
+
+    .HeaderDescriptionContent {
+        display: block;
+    }
+
+    .customInput {
+        margin-top: 20px;
+        width: auto;
+    }
+
+    .customInput {
+        width: 100%;
+    }
+
+    .HeaderDescriptionContent .Left {
+        justify-content: center;
+    }
+
+
+
+
+}

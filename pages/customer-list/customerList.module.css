@@ -1,0 +1,17 @@
+.CustomerListContent{
+    display: flex;
+    align-items: self-start;
+    justify-content: space-between;
+}
+
+@media (max-width: 550px) {
+
+    .CustomerListContent{
+        display: block;
+    }
+
+    .CustomerListContent .select{
+        margin-top: 20px;
+    }
+
+}

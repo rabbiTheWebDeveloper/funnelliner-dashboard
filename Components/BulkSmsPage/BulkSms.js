@@ -1,0 +1,507 @@
+import {
+    Box,
+    Button,
+    Checkbox,
+    Container,
+    Grid,
+    ListItemText,
+    MenuItem,
+    Modal,
+    OutlinedInput,
+    Select
+} from "@mui/material";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import SuperFetch from "../../hook/Axios";
+import { useToast } from "../../hook/useToast";
+import { headers } from "../../pages/api";
+import HeaderDescription from "../Common/HeaderDescription/HeaderDescription";
+import useLoading from './../../hook/useLoading';
+import Spinner from './../commonSection/Spinner/Spinner';
+import BulkSmsStatus from "./BulkSmsStatus";
+
+
+
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
+    },
+};
+// const names = [
+//     "delivered",
+//     "cancelled",
+//     "follow_up",
+//     "returned",
+// ];
+
+const names = [{ value: 'delivered', name: 'Delivered Order' }, { value: 'cancelled', name: 'Cancelled Order' }, { value: 'follow_up', name: 'Follow Up Order' }, { value: 'returned', name: 'Returned Order' }]
+
+const label = { inputProps: { "aria-label": "Switch demo" } };
+const BulkSms = () => {
+    const showToast = useToast()
+    const [isLoading, startLoading, stopLoading] = useLoading();
+    const router = useRouter()
+    const { register, handleSubmit, reset } = useForm();
+    const [websiteSettingsData, setWebsiteSettingData] = useState()
+    const [AllNumber, setAllNumber] = useState([]);
+    const [pending, setPending] = useState([])
+    const [personName, setPersonName] = useState([]);
+    const [text, setText] = useState('')
+
+    const [paymentValue, setPaymentValue] = useState(0)
+    const [openModal, setModalOpen] = useState(false)
+    const handleCloseNote = () => setModalOpen(false);
+    const [selectedPayment, setSelectedPayment] = useState("");
+
+    const bdNumbers = AllNumber
+        ?.filter(item => personName.includes(item?.order_status))
+        ?.reduce((acc, current) => {
+            const existingContact = acc.find(contact => contact?.phone === current?.phone);
+            return existingContact ? acc : [...acc, current];
+        }, [])
+        ?.map(num => num?.phone)
+        ?.map(number => number?.match(/^(\+?0{0,2}88)?(01\d{9})$/)?.[2])
+        ?.filter(Boolean);
+
+    const smsCountCheck = (num) => {
+        return Math.ceil(num / 160)
+    }
+
+    const handlePaymentMethodSelect = (event) => {
+        setSelectedPayment(event.target.value);
+    };
+
+    const handleFetchSmsUser = async () => {
+        try {
+            const response = await SuperFetch.get('/client/smsuser', {
+                headers: headers,
+            });
+
+            const data = response?.data?.data || [];
+            const userProduct = data.filter((word) => word?.order_status === "pending");
+
+            setAllNumber(data);
+            setPending(userProduct);
+        } catch (err) {
+            // Handle error
+        }
+    }
+
+    const onSubmit = async (data) => {
+
+        const newddata = {
+            phone: data.phone,
+            msg: data.msg
+        }
+        startLoading()
+        if (data.phone.length < 15) {
+            SuperFetch.post("/client/single-sms-send", newddata, {
+                headers: headers,
+            })
+                .then(function (response) {
+                    stopLoading()
+                    showToast(response.data.message)
+                })
+                .catch(function (error) {
+                    stopLoading()
+                    showToast(error?.msg, "error")
+                });
+        } else {
+            SuperFetch.post("/client/multiple-sms-send", newddata, {
+                headers: headers,
+            })
+                .then(function (response) {
+                    stopLoading()
+                    showToast(response.data.message)
+                })
+                .catch(function (error) {
+                    stopLoading()
+                    showToast(error?.msg, "error")
+                });
+        }
+        reset();
+    }
+
+    const handleChangeBulkSMS = async (event) => {
+        const { target: { value } } = event;
+        setPersonName(
+            typeof value === "string" ? value.split(",") : value
+        );
+    }
+
+    const params = {
+        amount: paymentValue,
+        order_type: 'sms'
+    }
+    const makePaymentSsl = async () => {
+
+        await SuperFetch.get('/client/sslcommerze/pay', { params: params, headers: headers }).then((res) => {
+            if (res.data?.success === false) {
+                showToast(res.data.message, "error")
+            }
+            router.push(res.data).then(r => r)
+        })
+    }
+
+    const makePaymentBkash = async () => {
+
+
+        await SuperFetch.get('/client/bkash/pay', { params: params, headers: headers }).then((res) => {
+            if (res.status === 200) {
+                router.push(res.data).then(r => r)
+            }
+        })
+    }
+
+    const makePaymentNagad = async () => {
+
+
+        await SuperFetch.get('/client/nagad/pay', { params: params, headers: headers }).then((res) => {
+            if (res.status === 200) {
+                router.push(res.data).then(r => r)
+            }
+        })
+    }
+
+    const handlePaymentMethod = async (e) => {
+        setSelectedPayment(e)
+        setModalOpen(false)
+        switch (e) {
+            case 'ssl':
+                await makePaymentSsl();
+                break;
+            case 'bkash':
+                await makePaymentBkash();
+                break;
+            case 'nagad':
+                await makePaymentNagad()
+                break;
+            default:
+                setModalOpen(false)
+                await makePaymentSsl();
+        }
+    }
+
+
+    useEffect(() => {
+        SuperFetch.get('/client/settings/business-info', {
+            headers: headers,
+        })
+            .then(function (response) {
+                // handle success
+                setWebsiteSettingData(response?.data?.data);
+            })
+            .catch(function (error) {
+
+            });
+
+        handleFetchSmsUser().then(r => r)
+    }, [])
+    return (
+        <>
+            <section className="DashboardSetting BulkSms">
+                {/* header */}
+                <HeaderDescription headerIcon={'flaticon-sms'} title={'Bulk SMS'} subTitle={'Get SMS report, send messages in large range to your clients'} search={false}></HeaderDescription>
+
+                <Container maxWidth="sm">
+
+                    <Grid container spacing={3}>
+
+                        <Grid item xs={12} sm={6} md={3}>
+
+                            <div className="commonCart boxShadow cart-1">
+
+                                <div className="BulkSmsItem">
+
+                                    <div className="header">
+                                        <h4><i className="flaticon-stock-market-1"></i> Total SMS Sent</h4>
+                                    </div>
+
+                                    <div className="middle">
+                                        <h3>
+                                            <i className="flaticon-mail"></i>
+                                            {websiteSettingsData?.sms_sent >= 0
+                                                ? websiteSettingsData?.sms_sent
+                                                : 0}
+                                        </h3>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </Grid>
+
+                        <Grid item xs={12} sm={6} md={3}>
+
+                            <div className="commonCart boxShadow cart-2">
+
+                                <div className="BulkSmsItem">
+
+                                    <div className="header">
+                                        <h4><i className="flaticon-stock-market-1"></i> Total SMS Cost (BDT)</h4>
+                                    </div>
+
+                                    <div className="middle">
+                                        <h3>
+                                            <i className="flaticon-mail"></i>
+                                            {websiteSettingsData?.sms_sent >= 0
+                                                ? websiteSettingsData?.sms_sent * 0.25
+                                                : 0}
+                                        </h3>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </Grid>
+
+                        <Grid item xs={12} sm={6} md={3}>
+
+                            <div className="commonCart boxShadow cart-3">
+
+                                <div className="BulkSmsItem">
+
+                                    <div className="header">
+                                        <h4><i className="flaticon-stock-market-1"></i> SMS Balance</h4>
+                                    </div>
+
+                                    <div className="middle">
+                                        <h3>
+                                            <i className="flaticon-mail"></i>
+                                            {websiteSettingsData?.sms_balance}
+                                        </h3>
+                                    </div>
+
+                                    <div className="list">
+                                        <ul>
+                                            <li>Non Masking SMS: <span>{websiteSettingsData?.sms_balance /0.25}</span> </li>
+                                            <li>
+                                                Enter Your Amount
+                                                <div className="customInput">
+                                                    <input step="100"  {...register("tk")} defaultValue='0' type="number" placeholder="Enter Your Amount"
+                                                        onChange={e => setPaymentValue(e?.target?.value)} />
+                                                    {paymentValue < 500 && <span className="error">Minimum Amount 500 Taka</span>}
+                                                </div>
+                                            </li>
+
+                                        </ul>
+                                    </div>
+
+                                    <div className="duelButton">
+
+                                        <Button onClick={e => setModalOpen(paymentValue >= 500 && true)}>Top Up SMS</Button>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </Grid>
+
+                        <Grid item xs={12} sm={6} md={3}>
+
+                            <div className="commonCart boxShadow cart-4">
+
+                                <div className="BulkSmsItem">
+
+                                    <div className="header">
+                                        <h4><i className="flaticon-notice-1"></i> Bulk SMS Notice (Non-Masking)</h4>
+                                    </div>
+
+                                    <div className="middle">
+                                        <h4> Regular SMS : <span>0.25 /sms </span></h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6}>
+                            <BulkSmsStatus />
+                        </Grid>
+                    </Grid>
+                </Container>
+            </section>
+            {/* TotalSMSSent */}
+            <section className="TotalOrder TotalSMSSent">
+                <Container maxWidth="sm">
+                    <Grid container spacing={3}>
+                    </Grid>
+                </Container>
+            </section>
+            <section className="BulkSMSSection BulkSmsSend">
+                {/* Header  */}
+                <HeaderDescription headerIcon={'flaticon-sms'} title={'Send SMS'} subTitle={'Send SMS to the clients in large scale'} search={false}></HeaderDescription>
+                <Container maxWidth="sm">
+
+                    <Grid Container spacing={3}>
+
+                        <Grid item xs={12}>
+
+
+                            <div className="BulkSmsSendItem boxShadow">
+
+                                <form onSubmit={handleSubmit(onSubmit)}>
+
+                                    <div className="BulkSmsItem">
+
+                                        <div className="customInput">
+
+                                            <label>Customers Phone Number</label>
+
+                                            <Select
+                                                {...register("select data ")}
+                                                labelId="demo-multiple-checkbox-label"
+                                                id="demo-multiple-checkbox"
+                                                multiple
+                                                value={personName}
+                                                onChange={handleChangeBulkSMS}
+                                                input={<OutlinedInput label="Tag" />}
+                                                renderValue={(selected) => selected.join(", ")}
+                                                MenuProps={MenuProps}
+                                            >
+                                                {names.map((name) => (
+                                                    <MenuItem key={name.value} value={name.value}>
+                                                        <Checkbox
+                                                            checked={personName.indexOf(name.value) > -1}
+                                                        />
+                                                        <ListItemText primary={name.name} />
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+
+                                        </div>
+
+                                        <div className="customInput">
+                                            <label>Enter Mobile Numbers</label>
+                                            <input type="text" {...register("phone")} defaultValue={bdNumbers?.toString()} placeholder="( example: 01700000000, 01700000000, 01700000000, 01700000000 )" />
+
+                                            <h5>Total Number - {bdNumbers.length}</h5>
+
+                                        </div>
+
+                                        <div className="customInput">
+                                            <label>Enter SMS Content</label>
+                                            <textarea name="" rows="4" {...register("msg", { required: true })} onChange={e => setText(e.target.value)}></textarea>
+                                            <h5>{text.length} -characters ,{smsCountCheck(text.length)} SMS message(s)</h5>
+                                        </div>
+
+                                    </div>
+
+                                    <div className="duelButton">
+
+                                        <Button disabled={isLoading} type="submit">{isLoading && <i><Spinner /> </i>}Send Now</Button>
+                                        <Button type="reset" className="red">Reset</Button>
+
+                                    </div>
+
+                                </form>
+                            </div>
+
+                        </Grid>
+                    </Grid>
+                </Container>
+
+
+            </section>
+
+
+            <Modal
+                open={openModal}
+                onClose={handleCloseNote}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+                className='updateModal'
+            >
+                <Box className='modalBox'>
+                    <div className='modalContent'>
+
+                        <div className='header'>
+                            <div className='left'>
+                                <i className="flaticon-wallet" />
+                                <h4>Select Payment Method</h4>
+                            </div>
+
+                            <div className='right' onClick={handleCloseNote}>
+                                <i className="flaticon-cancel" />
+                            </div>
+
+                        </div>
+
+                        <form action="">
+
+                            <div className='updateModalForm'>
+
+                                <div className="SubscriptionModal">
+
+                                    <div className="PaymentType">
+
+                                        <label className="card">
+                                            <input name="plan" className="radio" type="radio"
+                                                checked={selectedPayment === "bkash"} value="bkash"
+                                                onChange={handlePaymentMethodSelect} />
+                                            <img src="/images/payment-img/bkash.png" alt="" />
+                                        </label>
+
+                                        <label className="card">
+                                            <input name="plan" className="radio" type="radio"
+                                                checked={selectedPayment === "nagad"} value="nagad"
+                                                onChange={handlePaymentMethodSelect} />
+                                            <img src="/images/payment-img/nagod.png" alt="" />
+                                        </label>
+
+                                        <label className="card">
+                                            <input name="plan" className="radio" type="radio"
+                                                checked={selectedPayment === "ssl"} value="ssl"
+                                                onChange={handlePaymentMethodSelect} />
+                                            <img src={"/images/payment-img/visa.png"} alt="" />
+                                        </label>
+
+                                    </div>
+
+                                    <div className="Review">
+
+                                        <h6>Review</h6>
+                                        <div className="SubscribeAmount">
+                                            <h4>Subscribe Amount</h4>
+                                            <h3><i className="flaticon-taka" />{paymentValue}.00 </h3>
+                                        </div>
+
+                                    </div>
+
+                                    <div className="terms-condition">
+                                        <input type="checkbox" id="checkbox" checked />
+                                        <label for="checkbox">By pressing “Continue” you agree to the <Link
+                                            href="https://funnelliner.com/terms" target="/blank">Terms and
+                                            Conditions</Link> </label>
+                                    </div>
+
+                                    <div className="duelButton">
+                                        <Button onClick={() => handlePaymentMethod(selectedPayment)}>Pay Now</Button>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </Box>
+
+            </Modal>
+        </>
+    );
+};
+
+export default BulkSms;
