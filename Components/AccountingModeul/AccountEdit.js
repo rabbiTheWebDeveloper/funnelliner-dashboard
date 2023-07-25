@@ -91,7 +91,7 @@ const AccountEdit = ({ id, payment, handleFetch, balanceFetch, paymentList, cate
                 });
             });
         reset()
-        handleClose(true)
+        handleClose()
         handleFetch()
         balanceFetch()
 

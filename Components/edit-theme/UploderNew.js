@@ -149,9 +149,9 @@ const UploderNew = ({ imageData, setImageData, setLinks, links , bannerList }) =
                         defaultValue="#"
                         placeholder='Photo Link'
                     />
-                    <div className={style.close}>
+                    {/* <div className={style.close}>
                         <i className="flaticon-close-1"></i>
-                    </div>
+                    </div> */}
                 </div>
             ))}
         </>

@@ -1432,6 +1432,7 @@ dataTable
 .DataTable .Price {
   background: var(--main-bg-color-2);
   padding: 5px 15px;
+  padding-left: 1px;
   border-radius: 30px;
   color: var(--main-color);
   font-weight: 600;
@@ -1478,6 +1479,7 @@ dataTable
   align-items: center;
   color: var(--text-color);
   font-weight: 600;
+  word-break: break-word;
 }
 
 .DataTable .TotalPrice .invoice {
@@ -1661,6 +1663,59 @@ commonCart
 
 /* ---------------------------------------------------  --------------------------------------------------- --------------------------------------------------- 
 --------------------------------------------------- --------------------------------------------------- --------------------------------------------------- 
+AllDelete 
+---------------------------------------------------  --------------------------------------------------- --------------------------------------------------- 
+--------------------------------------------------- --------------------------------------------------- --------------------------------------------------- 
+*/
+
+.AllDelete{
+  margin-top: 15px;
+}
+
+.AllDelete button.bg {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  padding: 7px 20px;
+  border-radius: 30px;
+  margin-right: 10px;
+  background: var(--white-color);
+  border: 1px solid var(--main-color);
+  color: var(--main-color);
+}
+
+.AllDelete button.bg i {
+  font-size: 20px;
+  margin-left: 10px;
+}
+
+.AllDelete button.bg:hover{
+  background: var(--main-hover-color);
+  color: var(--white-color);
+}
+
+.AllDelete .Status {
+  width: 180px;
+}
+
+.AllDelete .Status .commonDropdown button {
+  background: var(--white-color);
+  color: var(--main-color);
+  border: 1px solid var(--main-color);
+  padding: 7px 20px;
+}
+
+.AllDelete .Status .commonDropdown button:hover{
+  background: var(--main-color);
+  color: var(--white-color);
+}
+
+.commonDropdown button i {
+  line-height: 0;
+}
+
+/* ---------------------------------------------------  --------------------------------------------------- --------------------------------------------------- 
+--------------------------------------------------- --------------------------------------------------- --------------------------------------------------- 
 Media 
 ---------------------------------------------------  --------------------------------------------------- --------------------------------------------------- 
 --------------------------------------------------- --------------------------------------------------- ---------------------------------------------------  */
@@ -1785,7 +1840,6 @@ Media
   .LongSidebar {
     width: 200px;
   }
-
 }
 
 /* ---------------------------------------------------  --------------------------------------------------- 

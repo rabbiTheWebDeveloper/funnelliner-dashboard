@@ -22,24 +22,21 @@ import style from './customerList.module.css';
 const index = () => {
 
     const [active, setDefault] = useState('pending')
-    const [products, setProducts] = useState([])
-    const [startDate, setStartDate] = useState()
-    const [endDate, setEndDate] = useState()
+
     const [orders, setOrders] = useState([])
-    const [modalOpen, setModalOpen] = useState(false)
+
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPage, setTotalPage] = useState(1)
     const [callCount, setCount] = useState(0)
     const [openDialog, setOpenDialog] = useState(false)
     const [selectedValue, setSelectedValue] = useState(null)
     const [selectCourier, setSelectCourier] = useState(null)
-    const [selectCourierStatus, setSelectCourierStatus] = useState(null)
-    const [advancedPaymentConfig, setAdvancedPaymentConfig] = useState(false)
-    const [showPicker, setShowPicker] = useState(false);
+
+
     const [fetchApi, setFetch] = useState(false)
     const [order, setOrder] = useState({})
     const [search, setSearch] = useState(null)
-    const [viewOrderModal, setViewOrderModalOpen] = useState(false)
+
 
     const BootstrapButton = styled(Button)({
         backgroundColor: '#fff',
@@ -124,53 +121,25 @@ const index = () => {
     const handleCloseViewModal = () => {
         setViewOrderModalOpen(false)
     }
-
-
-
-
-    const params = {
-        type: active,
-        page: currentPage,
-        date: selectedValue,
-        search: search,
-        provider: selectCourier,
-        courier_status: selectCourierStatus,
-    }
-
     const handleFetch = () => {
         setFetch(true);
     }
 
 
     useEffect(() => {
-        SuperFetch.get('/client/orders', { params: params, headers: headers },)
+        SuperFetch.get(`/customer/${active}/order/list`, { headers: headers },)
             .then(res => {
                 if (res.data.success === true) {
                     setOrders(res.data?.data)
-                    setTotalPage(res.data?.last_page)
+                    // setTotalPage(res.data?.last_page)
                 }
             }).catch((e) => {
 
             })
 
-        if (callCount === 0) {
-            SuperFetch.get('/client/products', { headers: headers }).then(res => {
-                if (res.data.success === true) {
-                    setProducts(res.data?.data)
-                }
-            })
-            SuperFetch.get('/client/settings/advance-payment/status', { headers: headers })
-                .then(res => {
-                    if (res.data.success === true) {
-                        setAdvancedPaymentConfig(res.data?.data?.advanced_payment)
-                    }
-                })
-        }
-
         setFetch(false)
 
-    }, [active, currentPage, fetchApi, selectCourier, selectCourierStatus, search])
-
+    }, [active])
 
 
     const uniqueCustomer = orders.reduce((acc, current) => {
@@ -182,7 +151,6 @@ const index = () => {
         }
     }, []);
 
-
     const orderCheck = (number) => {
 
         return orders.filter(product => product.phone === number).length
@@ -192,33 +160,8 @@ const index = () => {
     }
 
 
-
-
     const selectedData = uniqueCustomer?.map(obj => _.pick(obj, ['customer_name', 'phone', 'address', 'created_at']))
 
-    // excel file genaretor 
-    // const generateExcelFile = (data) => {
-    //     const worksheet = XLSX.utils.json_to_sheet(data);
-
-    //     // Example: Applying bold font to the header row
-    //     const headerCellStyle = { font: { bold: true } };
-    //     const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
-    //     for (let col = headerRange.s.c; col <= headerRange.e.c; col++) {
-    //         const headerCell = XLSX.utils.encode_cell({ r: headerRange.s.r, c: col });
-    //         worksheet[headerCell].s = headerCellStyle;
-    //     }
-
-    //     const workbook = XLSX.utils.book_new();
-    //     XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
-    //     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    //     const file = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    //     return file;
-    // };
-
-    // const downloadExcelFile = async () => {
-    //     const file = generateExcelFile(selectedData);
-    //     saveAs(file, 'data.xlsx');
-    // };
 
     const generateExcelFile = (data) => {
         const workbook = XLSX.utils.book_new();
@@ -254,30 +197,6 @@ const index = () => {
         const file = generateExcelFile(selectedData);
         saveAs(file, 'data.xlsx');
     };
-
-
-
-
-
-
-
-
-
-
-    // const generateExcelFile = (data) => {
-    //     const worksheet = XLSX.utils.json_to_sheet(data);
-    //     const workbook = XLSX.utils.book_new();
-    //     XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
-    //     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    //     const file = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    //     return file;
-    // };
-
-    // const downloadExcelFile = async () => {
-    //     const file = generateExcelFile(selectedData);
-    //     saveAs(file, 'data.xlsx');
-    // };
-
 
 
     const downlodeImage = () => {
@@ -333,6 +252,8 @@ const index = () => {
         }
     };
 
+
+    console.log("orders", orders)
     return (
         <div>
             <section className={style.CustomerList}>
@@ -350,15 +271,15 @@ const index = () => {
                                 <Box sx={{ width: "100%", typography: "body1" }}>
                                     <BootstrapButton className={active === 'pending' ? 'filterActive' : ''}
                                         onClick={e => setDefault('pending')}>Pending Order Customers</BootstrapButton>
-                                    <BootstrapButton className={active === 'follow_up' ? 'filterActive' : ''}
-                                        onClick={e => setDefault('follow_up')}>Follow Up Order Customers</BootstrapButton>
-                                    <BootstrapButton className={active === 'confirmed' ? 'filterActive' : ''}
-                                        onClick={e => setDefault('confirmed')}>Confirm Order Customers</BootstrapButton>
-                                    <BootstrapButton className={active === 'cancelled' ? 'filterActive' : ''}
-                                        onClick={e => setDefault('cancelled')}>Cancel Order Customers</BootstrapButton>
+                                    <BootstrapButton className={active === 'followup' ? 'filterActive' : ''}
+                                        onClick={e => setDefault('followup')}>Follow Up Order Customers</BootstrapButton>
+                                    <BootstrapButton className={active === 'confirm' ? 'filterActive' : ''}
+                                        onClick={e => setDefault('confirm')}>Confirm Order Customers</BootstrapButton>
+                                    <BootstrapButton className={active === 'cancel' ? 'filterActive' : ''}
+                                        onClick={e => setDefault('cancel')}>Cancel Order Customers</BootstrapButton>
 
-                                    <BootstrapButton className={active === 'returned' ? 'filterActive' : ''}
-                                        onClick={e => setDefault('returned')}>Order Return Customers</BootstrapButton>
+                                    <BootstrapButton className={active === 'return' ? 'filterActive' : ''}
+                                        onClick={e => setDefault('return')}>Order Return Customers</BootstrapButton>
                                 </Box>
                             </div>
 
@@ -372,43 +293,6 @@ const index = () => {
                                     <option value="image">As Image</option>
                                     <option value="excel">As Excel</option>
                                 </select>
-
-                                {/* <Button
-                                id='basic-button'
-                                aria-controls={open ? "basic-menu" : undefined}
-                                aria-haspopup='true'
-                                aria-expanded={open ? "true" : undefined}
-                                onClick={handleClick}
-                            >
-                                <h6 className='d_flex'>
-                                    Download Report
-                                    <div className='svg'>
-                                        <AiFillCaretDown />
-                                    </div>
-                                </h6>
-                            </Button>
-                            <Menu
-                                id='basic-menu'
-                                anchorEl={anchorEl}
-                                open={open}
-                                onClose={handleClose}
-                                MenuListProps={{
-                                    "aria-labelledby": "basic-button",
-                                }}
-                            >
-                                <MenuItem onClick={() => {
-                                    handelPdf();
-                                    handleClose()
-                                }}>As Pdf</MenuItem>
-                                <MenuItem onClick={() => {
-                                    downlodeImage();
-                                    handleClose()
-                                }}>As Image</MenuItem>
-                                <MenuItem onClick={() => {
-                                    downloadExcelFile();
-                                    handleClose()
-                                }}>As Excel</MenuItem>
-                            </Menu> */}
                             </div>
 
                         </div>
@@ -416,97 +300,119 @@ const index = () => {
                     </div>
 
                     <div className="Table" id="downlode_customer_list">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>SL</th>
-                                    <th>Customer Name</th>
-                                    <th>Contact No.</th>
-                                    <th>Address.</th>
-                                    <th>Total Order </th>
-                                    <th>Last Purchase Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {uniqueCustomer.length > 0 ? uniqueCustomer.map((order, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            <td>{index + 1}</td>
-                                            <td>
+                        <div className="DataTable">
 
+                            {/* DataTableRow */}
+                            <div className="DataTableRow">
+
+                                <div className="DataTableColum">
+                                    <h3>SL</h3>
+                                </div>
+
+                                <div className="DataTableColum">
+                                    <h3>Customer Name</h3>
+                                </div>
+
+                                <div className="DataTableColum Address">
+                                    <h3>Contact No.</h3>
+                                </div>
+
+                                <div className="DataTableColum">
+                                    <h3>Address</h3>
+                                </div>
+
+                                <div className="DataTableColum">
+                                    <h3>Total Order</h3>
+                                </div>
+
+
+                            </div>
+
+                            {/* DataTableRow */}
+                            {/* item */}
+
+                            {orders.length > 0 ? orders.map((order, index) => {
+                                return (
+                                    <div className="DataTableRow" key={index}>
+                                        <div className="DataTableColum">
+                                            <div className="number">{index + 1}</div>
+                                        </div>
+
+                                        <div className="DataTableColum">
+
+                                            <div className="Name">
                                                 <Tooltip
-                                                    title={order?.customer_name}
+                                                    title={order?.name}
                                                     placement="top-start"
                                                 >
                                                     <span>
-                                                        {order?.customer_name?.length <
-                                                            12 ? (
-                                                            <span>
-                                                                {order?.customer_name}
-                                                            </span>
+                                                        {order?.name.length < 15 ? (
+                                                            <span>{order?.name}</span>
                                                         ) : (
                                                             <span>
-                                                                {order?.customer_name?.slice(
-                                                                    0,
-                                                                    12
-                                                                )}
+                                                                {order?.name.slice(0, 13)}
                                                                 ...
                                                             </span>
                                                         )}
                                                     </span>
                                                 </Tooltip>
-                                            </td>
-                                            <td>{order?.phone}</td>
-                                            <td>
+                                            </div>
+                                        </div>
 
-                                                <Tooltip
-                                                    title={order.address}
-                                                    placement="top-start"
-                                                >
-                                                    <span>
-                                                        {order.address?.length <
-                                                            20 ? (
-                                                            <span>
-                                                                {order.address}
-                                                            </span>
-                                                        ) : (
-                                                            <span>
-                                                                {order.address?.slice(
-                                                                    0,
-                                                                    20
-                                                                )}
-                                                                ...
-                                                            </span>
-                                                        )}
-                                                    </span>
-                                                </Tooltip>
-                                            </td>
-                                            <td>{orderCheck(order?.phone)}</td>
-                                            <td>
+                                   
 
-                                                {moment(
-                                                    order?.created_at
-                                                ).format("DD-MM-YYYY")}</td>
 
-                                        </tr>
-                                    )
-                                })
-                                    : (<tr>
-                                        <td colSpan={advancedPaymentConfig ? 15 : 13}>
-                                            <sction className="MiddleSection" style={{ padding: '20px' }}>
-                                                <div className="MiddleSectionContent">
-                                                    <div className="img">
-                                                        <img src="/images/empty.png" alt="error" />
+
+
+                                        <div className="DataTableColum">
+                                            <div className="TotalPrice">
+                                                {order?.address}
+                                            </div>
+
+                                        </div>
+                                        <div className="DataTableColum">
+                                            <div className="TotalPrice">
+
+                                                {order?.phone}
+                                            </div>
+
+                                        </div>
+
+
+                                        <div className="DataTableColum">
+                                            <div className="TotalPrice">
+                                                <i className='flaticon-taka'></i>
+                                                {order?.order}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+
+                            }) :
+                                (
+                                    <table>
+                                        <tr>
+                                            <td colSpan={14}>
+                                                <section className="MiddleSection">
+                                                    <div className="MiddleSectionContent">
+                                                        <div className="img">
+                                                            <img src="/images/empty.png" alt="" />
+                                                        </div>
+
+                                                        <div className="text">
+                                                            <p>Not Found</p>
+                                                        </div>
                                                     </div>
-                                                    <div className="text"><p>No Data Available</p></div>
-                                                </div>
-                                            </sction>
-                                        </td>
-                                    </tr>)
-                                }
 
-                            </tbody>
-                        </table>
+
+                                                </section>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                )}
+
+
+                        </div>
 
                     </div>
                     <Paginator count={totalPage} page={currentPage} onChange={handleChange} showFirstButton

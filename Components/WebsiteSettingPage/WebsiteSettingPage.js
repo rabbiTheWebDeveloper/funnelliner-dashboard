@@ -122,12 +122,9 @@ const WebsiteSettingPage = ({ response }) => {
         });
     };
 
-    const handleChangeFavIcon = (e) => {
 
-    }
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const onSubmit = (data) => {
-
         const formData = new FormData();
         formData.append("shop_name", data.shopName);
         formData.append("shop_address", data.shopAddress);
@@ -268,7 +265,7 @@ const WebsiteSettingPage = ({ response }) => {
                                         >
                                             <Tab label="Payment Method" value="1" />
                                             <Tab label="Invoice Format" value="2" />
-                                            <Tab label="Custom Domain" value="3" />                                          
+                                            <Tab label="Custom Domain" value="3" />
                                             <Tab label="Business Info" value="4" />
                                             <Tab label="Slider and Banner" value="7" />
                                             <Tab label="Domain Verification" value="6" />
@@ -544,6 +541,19 @@ const WebsiteSettingPage = ({ response }) => {
                                                                             />
                                                                         </Box>
                                                                     )}
+
+                                                                    {/* {faviconPreview && favIcon ? "":(
+
+                                                                        <Box mt={2} textAlign="center">
+
+                                                                            <h6>Image Preview:</h6>
+                                                                            <img
+                                                                                src={faviconPreview}
+                                                                                alt={favIcon.name}
+                                                                                Height="100px"
+                                                                            />
+                                                                        </Box>
+                                                                    )} */}
                                                                 </div>
 
                                                             </div>
@@ -623,7 +633,7 @@ const WebsiteSettingPage = ({ response }) => {
 
                                 </TabPanel>
                                 <TabPanel value='7'>
-                                    <HomeSlider  IsHeaderDescription={false}/>
+                                    <HomeSlider IsHeaderDescription={false} />
                                 </TabPanel>
 
 

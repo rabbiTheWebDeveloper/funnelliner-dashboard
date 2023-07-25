@@ -122,7 +122,7 @@ const BulkSmsStatus = () => {
                         <FormControlLabel
                             control={
                                 <Switch
-                                    checked={state.return === '1'}
+                                    checked={state.returned === '1'}
                                     onChange={handleChangeToggle}
                                     name="returned"
                                 />

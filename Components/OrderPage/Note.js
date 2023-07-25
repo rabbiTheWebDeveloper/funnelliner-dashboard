@@ -1,14 +1,24 @@
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Box, Button, Modal, Tab } from '@mui/material';
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useToast } from '../../hook/useToast';
 import { headers } from '../../pages/api';
 
 const Note = ({ isOpenOrderNoteModal, handleCloseOrderNoteModal, handleFetch, id, status, orderIdOfModal, orderNo, orderNote, startLoading, stopLoading }) => {
-  const [noteData, setNoteData] = useState(orderNote?.order_note);
-  const [invoiceNote, setInvoiceNote] = useState(orderNote?.invoice_note);
-  const [courierNote, setCourierNote] = useState(orderNote?.courier_note);
+  const [noteData, setNoteData] = useState('');
+  const [invoiceNote, setInvoiceNote] = useState('');
+  const [courierNote, setCourierNote] = useState('');
+
+
+
+  console.log("orderNote", orderNote)
+
+  useEffect(() => {
+    setNoteData(orderNote?.order_note || '');
+    setInvoiceNote(orderNote?.invoice_note || '');
+    setCourierNote(orderNote?.courier_note || '');
+  }, [orderNote]);
   const showToast = useToast();
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
@@ -54,10 +64,10 @@ const Note = ({ isOpenOrderNoteModal, handleCloseOrderNoteModal, handleFetch, id
   const handleSubmitNote = () => {
     startLoading()
     let data = {
-      note: noteData,
+      note: noteData.length > 0 ? noteData : '',
       type: status,
-      courier_note: courierNote,
-      invoice_note: invoiceNote,
+      courier_note: courierNote.length > 0 ? courierNote : '',
+      invoice_note: invoiceNote.length > 0 ? invoiceNote : '',
 
     }
     axios.post(process.env.API_URL + `/client/order/note/${orderNo}/update`, data, {
@@ -126,7 +136,7 @@ const Note = ({ isOpenOrderNoteModal, handleCloseOrderNoteModal, handleFetch, id
 
                           <label>Note</label>
                           <textarea
-                            defaultValue={noteData}
+                            value={noteData}
                             onChange={(e) => setNoteData(e.target.value)}
                             rows="3"
                           >
@@ -144,7 +154,7 @@ const Note = ({ isOpenOrderNoteModal, handleCloseOrderNoteModal, handleFetch, id
 
                           <label>Note</label>
                           <textarea
-                            defaultValue={invoiceNote}
+                            value={invoiceNote}
                             onChange={(e) => setInvoiceNote(e.target.value)}
                             rows="3"
                           >
@@ -165,7 +175,7 @@ const Note = ({ isOpenOrderNoteModal, handleCloseOrderNoteModal, handleFetch, id
 
                           <label>Note</label>
                           <textarea
-                            defaultValue={courierNote}
+                            value={courierNote}
                             onChange={(e) => setCourierNote(e.target.value)}
                             rows="3"
                           >

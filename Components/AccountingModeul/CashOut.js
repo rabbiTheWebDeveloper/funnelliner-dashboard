@@ -78,7 +78,7 @@ const CashOut = ({ handleFetch, balanceFetch, payment, categoryList, paymentList
                 balanceFetch()
                 Swal.fire("Cash Out Successfully!", response.data.msg, "success");
 
-                handleClose(true)
+                handleClose()
             })
             .catch(function (error) {
 

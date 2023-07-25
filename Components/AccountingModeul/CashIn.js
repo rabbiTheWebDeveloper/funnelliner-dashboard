@@ -149,7 +149,7 @@ const CashIn = ({ handleFetch, balanceFetch, payment, data, categoryList, paymen
         reset();
         setInputValue1("");
         setInputValue("");
-        handleClose(true);
+        handleClose();
         handleFetch();
         balanceFetch();
     };

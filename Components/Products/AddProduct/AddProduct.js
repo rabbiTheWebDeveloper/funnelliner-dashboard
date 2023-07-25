@@ -57,6 +57,9 @@ const AddProduct = () => {
   }
   //  add product form 
   const onSubmit = (data) => {
+    if(openSuggestNote){
+      return 
+    }
     if (selectedImage?.size > 5 * 1024 * 1024) {
       showToast("Product image is too big !", 'error')
       return;
@@ -347,7 +350,7 @@ const AddProduct = () => {
                           isLoading ? <><Button disabled type="submit">
                             <i><Spinner /></i>
                             Add Product
-                          </Button></> : <Button type="submit">
+                          </Button></> : <Button disabled={openSuggestNote} type="submit">
                             <i className="flaticon-install"> </i>
                             Add Product
                           </Button>

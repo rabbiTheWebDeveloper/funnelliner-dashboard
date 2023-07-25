@@ -78,18 +78,15 @@ const ChartJs = () => {
 
    
 
-    const newCannelList = Array.isArray(cannelList) ? cannelList?.filter(obj => obj.name !== "")
-        : [];
+    const newCannelList = Array.isArray(cannelList) ? cannelList?.filter(obj => obj.name !== ""  && obj.name !== "Select Order Type" ) : [];
+    
     const website = Array.isArray(cannelList) ? cannelList?.filter(obj => obj.name === 'Website') : [];
     const landing = Array.isArray(cannelList) ? cannelList?.filter(obj => obj.name === 'Landing') : [];
     const socal = Array.isArray(cannelList) ? cannelList?.filter(obj => obj.name === 'Social') : [];
     const phone = Array.isArray(cannelList) ? cannelList?.filter(obj => obj.name === 'Phone') : [];
 
-
     return (
-
         <>
-
             <div className="ChartJs Channels boxShadow">
 
                 {/* header */}

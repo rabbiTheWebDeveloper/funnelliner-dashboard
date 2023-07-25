@@ -20,34 +20,34 @@ const BkashDashboard = ({ bkashBalance }) => {
     const handleFetchMerchentTransaction = (nextToken) => {
         setIsLoading(true)
         axios.post(process.env.Bkash_URL, {
-                number: number,
-                password: pass,
-                access_token: '6db5fa4d34aee26b39b473cdf0a8dcfa0308779102f6e509',
-                next_token: nextToken
-            }, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                }
+            number: number,
+            password: pass,
+            access_token: '6db5fa4d34aee26b39b473cdf0a8dcfa0308779102f6e509',
+            next_token: nextToken
+        }, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
             }
-            )
+        }
+        )
             .then(res => {
                 setIsLoading(false)
                 if (res.data.status === "success") {
-                   
+
                     setTrxList(res?.data?.trx_list)
                     setNextToken(res?.data?.next_token)
                 }
             })
             .catch(error => {
-             
+
             })
     }
     useEffect(() => {
         handleFetchMerchentTransaction()
     }, [])
 
-    var totalTransaction = trxList.reduce(function (acc, item) {
-        var value = parseInt(item?.amount);
+    let totalTransaction = trxList.reduce(function (acc, item) {
+        let value = parseInt(item?.amount);
         if (value < 0) {
             value = -value;
         }
@@ -64,33 +64,31 @@ const BkashDashboard = ({ bkashBalance }) => {
         }
     }, [TrxsSearchString])
 
-   
 
 
-    const handleFilterTransaction = (e) => {
-        
-        if (e.target.value === "This Month") {
-            axios
-                .post(`https://bkash.dev.funnelliner.com/api/trx_amr`, { number: number, password: pass, access_token: '6db5fa4d34aee26b39b473cdf0a8dcfa0308779102f6e509' }, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    }
-                }
-                )
-                .then(res => {
-                    if (res.data.status === "success") {
-                      
-                    }
-                })
-                .catch(error => {
-                  
-                })
-        }
-    }
+
+    // const handleFilterTransaction = (e) => {
+    //     if (e.target.value === "This Month") {
+    //         axios.post(`https://bkash.dev.funnelliner.com/api/trx_amr`, { number: number, password: pass, access_token: '6db5fa4d34aee26b39b473cdf0a8dcfa0308779102f6e509' }, {
+    //                 headers: {
+    //                     'Content-Type': 'multipart/form-data',
+    //                 }
+    //             }
+    //             )
+    //             .then(res => {
+    //                 if (res.data.status === "success") {
+
+    //                 }
+    //             })
+    //             .catch(error => {
+
+    //             })
+    //     }
+    // }
 
     if (isLoading) {
         return (
-            <div style={{marginTop:'50px'}}>
+            <div style={{ marginTop: '50px' }}>
                 <Stack spacing={1} >
                     <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
                     <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
@@ -111,9 +109,9 @@ const BkashDashboard = ({ bkashBalance }) => {
     }
 
 
-const handleRefresh=()=>{
-    window.location.reload()
-}
+    const handleRefresh = () => {
+        window.location.reload()
+    }
 
     return (
 

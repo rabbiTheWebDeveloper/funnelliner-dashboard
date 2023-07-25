@@ -22,6 +22,7 @@ import cartImg9 from '../../public/images/homepage-icon/9.png';
 import { filterOrder } from "./HomeUtlis";
 import RecentOrder from './RecentOrder';
 import TopSellingProducts from './TopSellingProducts';
+import SalesTarget from "./SalesTarget";
 
 
 
@@ -156,39 +157,39 @@ const Dashboard = ({ busInfo }) => {
                         <WebsiteLink busInfo={busInfo} />
                     </Grid>
 
-                    <Grid item xs={6}>
+                    <Grid item xs={12} sm={6}>
                         <ChartJs />
                     </Grid>
 
-                    <Grid item xs={6}>
+                    <Grid item xs={12} sm={6}>
                         <Channel />
                     </Grid>
 
                     {/* Total Visitor */}
-                    <Grid item xs={6} xl={4}>
+                    <Grid item xs={12} sm={6} md={4}>
                         <HomePageCart title="Total Visitor" increase="increase" filter={true} number="00" cartIcon="flaticon-trend" increaseTitle="+65% (30 days)" cartImg={cartImg1} />
                     </Grid>
 
                     {/* Total Order */}
-                    <Grid item xs={6} xl={4}>
+                    <Grid item xs={12} sm={6} md={4}>
                         <HomePageCart setEndDate={setEndDate} endDate={endDate} setStartDate={setStartDate} startDate={startDate} data={date} setFetchData={setTotalOrderDate} title="Total Order" increase={ratioData?.total_order_ratio?.startsWith("-") === false ? "increase" : "decrease"} number={reportData?.total} cartIcon={ratioData?.total_order_ratio?.startsWith("-") === false ? "flaticon-trend" : "flaticon-down-arrow-2"} increaseTitle={`${ratioData?.total_order_ratio?.startsWith("-") === false ? "+" + ratioData?.total_order_ratio : ratioData?.total_order_ratio}  (${filterOrder(date)})`} cartImg={cartImg2} />
                     </Grid>
 
                     {/* Confirmed Order */}
-                    <Grid item xs={6} xl={4}>
+                    <Grid item xs={12} sm={6} md={4}>
                         <HomePageCart setEndDate={setEndDate} endDate={endDate} setStartDate={setStartDate} startDate={startDate} data={confirmed_date} setFetchData={setTotalConfirmedDate} title="Confirmed Order" number={reportData?.confirmed?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} cartImg={cartImg3} increase={ratioData?.confirmed_order_ratio
                             ?.startsWith("-") === false ? "increase" : "decrease"} cartIcon={ratioData?.confirmed_order_ratio
                                 ?.startsWith("-") === false ? "flaticon-trend" : "flaticon-down-arrow-2"} increaseTitle={`${ratioData?.confirmed_order_ratio?.startsWith("-") === false ? "+" + ratioData?.confirmed_order_ratio : ratioData?.confirmed_order_ratio}  (${filterOrder(confirmed_date)})`} />
                     </Grid>
 
                     {/* Order Pending */}
-                    <Grid item xs={6} xl={4}>
+                    <Grid item xs={12} sm={6} md={4}>
                         <HomePageCart data={pending_date} setFetchData={setPending_date} filter={true} title="Order Pending" number={reportData?.pending} cartImg={cartImg4}
                         />
                     </Grid>
 
                     {/* Cancel Order */}
-                    <Grid item xs={6} xl={4}>
+                    <Grid item xs={12} sm={6} md={4}>
                         <HomePageCart setEndDate={setEndDate} endDate={endDate} setStartDate={setStartDate} startDate={startDate} data={cancel_date} setFetchData={setCancel_date} title="Cancel Order" number={reportData?.cancel} cartImg={cartImg5}
                             increase={ratioData?.cancel_order_ratio
                                 ?.startsWith("-") === false ? "increase" : "decrease"} cartIcon={ratioData?.cancel_order_ratio
@@ -196,7 +197,7 @@ const Dashboard = ({ busInfo }) => {
                     </Grid>
 
                     {/* Sales Amount */}
-                    <Grid item xs={6} xl={4}>
+                    <Grid item xs={12} sm={6} md={4}>
                         <HomePageCart setEndDate={setEndDate} endDate={endDate} setStartDate={setStartDate} startDate={startDate} data={sales_date} setFetchData={setTotalSalesDate} title="Sales Amount" number={reportData?.sales?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} cartImg={cartImg6}
                             increase={ratioData?.sales_amount_ratio
                                 ?.startsWith("-") === false ? "increase" : "decrease"} cartIcon={ratioData?.sales_amount_ratio
@@ -217,18 +218,22 @@ const Dashboard = ({ busInfo }) => {
                     </Grid>
 
                     {/* Available Courier Balance */}
-                    <Grid item xs={6} xl={4}>
+                    <Grid item xs={12} sm={6} md={4}>
                         <HomePageCart title="Available Courier Balance" filter={true} increase="increase" number={busInfo?.courier_balance} cartIcon="" increaseTitle="" cartImg={cartImg8} />
                     </Grid>
 
                     {/* Delivery Report */}
-                    <Grid item xs={6} xl={4}>
+                    <Grid item xs={12} sm={6} md={4}>
                         <HomePageCart setEndDate={setEndDate} endDate={endDate} setStartDate={setStartDate} startDate={startDate} data={dateReport} setFetchData={setDateReport} title="Delivery Report" listItem={true} deliveryCount={report.delivered} deliveryReturnCount={report.returned_ratio} returnRatioCount={report.returned} cartImg={cartImg9} />
                     </Grid>
 
                     {/* Sales Target */}
-                    <Grid item xs={6} xl={4}>
-                        <HomePageCart salesTargetRfatch={salesTargetRfatch} filter={true} salesTarget={salesTarget} title="Sales Target" openSale={true} listItem={false} listItem2={true} deliveryCount="0" deliveryReturnCount="0" returnRatioCount="0.0" cartImg={cartImg10} />
+                    <Grid item sm={12}>
+
+                        {/* <HomePageCart salesTargetRfatch={salesTargetRfatch} filter={true} salesTarget={salesTarget} title="Sales Target" openSale={true} listItem={false} listItem2={true} deliveryCount="0" deliveryReturnCount="0" returnRatioCount="0.0" cartImg={cartImg10} /> */}
+
+                        <SalesTarget salesTargetRfatch={salesTargetRfatch} salesTarget={salesTarget}></SalesTarget>
+
                     </Grid>
 
                     {/* Advance Collection */}
@@ -251,12 +256,12 @@ const Dashboard = ({ busInfo }) => {
                 </Grid>
                 <Grid container spacing={3} style={{ marginTop: '20px' }} >
                     {/* recentOrder */}
-                    <Grid item xs={6}>
+                    <Grid item xs={12} sm={6}>
                         <RecentOrder />
                     </Grid>
 
                     {/* TopSellingProduct */}
-                    <Grid item xs={6}>
+                    <Grid item xs={12} sm={6}>
                         <TopSellingProducts />
                     </Grid>
                     {/* <Grid item xs={12}>

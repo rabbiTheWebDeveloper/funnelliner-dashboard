@@ -71,8 +71,9 @@ const BussnessInfo = ({ redirectFrom, response }) => {
                 }
             })
             .catch(function (error) {
+                console.log("error", error.response.data.msg                )
                 stopLoading()
-                showToast("Valid phone number and Email address must be required", "error")
+                showToast(error?.response?.data?.msg, "error")
             });
         reset();
     };
@@ -277,7 +278,7 @@ const BussnessInfo = ({ redirectFrom, response }) => {
                                 </div>
 
                                 <div className="duelButton">
-                                    <Button type="submit">
+                                    <Button disabled={isLoading} type="submit">
                                         Update
                                     </Button>
                                     {/* {

@@ -7,7 +7,8 @@ const index = () => {
 
     return (
         <>
-            <SupportTicket></SupportTicket>
+            {/* <SupportTicket></SupportTicket> */}
+            <SupportTicket />
         </>
 
     )

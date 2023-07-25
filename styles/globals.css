@@ -112,7 +112,8 @@ p {
   text-transform: inherit !important;
 }
 
-.bg, button.bg {
+.bg,
+button.bg {
   font-size: 16px;
   line-height: 30px;
   background: var(--main-color);
@@ -122,7 +123,8 @@ p {
   padding: 7px 30px;
 }
 
-.bg:hover {
+.bg:hover,
+button.bg:hover {
   background: var(--main-hover-color);
 }
 
@@ -271,7 +273,6 @@ Media
 ---------------------------------------------------  --------------------------------------------------- --------------------------------------------------- 
 --------------------------------------------------- --------------------------------------------------- ---------------------------------------------------  */
 @media (max-width: 1399px) {
-
   :where(input, select, textarea) {
     font-size: 12px;
     line-height: 16px;
@@ -290,16 +291,12 @@ Media
     padding: 0 20px !important;
     padding-left: 137px !important;
   }
-
-
-
 }
 
 /* ---------------------------------------------------  --------------------------------------------------- 
 Media 
 ---------------------------------------------------  ---------------------------------------------------  */
 @media (max-width: 1023px) {
-
   .boxShadow {
     padding: 20px;
   }
@@ -309,7 +306,6 @@ Media
     line-height: 26px;
   }
 }
-
 
 .orderSection_preloader {
   width: 100%;
@@ -484,3 +480,171 @@ Media
 .SupportTicketItem h3 {
   font-size: 22px;
 }
+
+/* SupportTicket New ============================================================== */
+
+/* .SupportTicketHeader1, .SupportTicketHeader2{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.SupportTicket_Header_open{
+  display: flex;
+  align-items: center;
+}
+
+.SupportTicketHeader2 {
+  margin-top: 16px;
+}
+.SupportTicketHeader2 p{
+  margin-top: 0px;
+}
+
+
+.SupportTicketHeader2 .SupportTicketBotton1{
+  background: #6B2CD1;
+  color: #fff;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-size: 12px;
+  margin-right: 10px;
+}
+
+.SupportTicketHeader2 .SupportTicketBotton2{
+  width: 12px;
+  height: 12px;
+  background: #F6E75D;
+  margin-right: 10px;
+  border-radius: 2px;
+}
+
+.SupportTicketHeader3Bg{
+  display: flex;
+  align-items: center;
+  background: #F0F0F0;
+  padding: 4px 10px;
+  border-radius: 5px;
+}
+
+.SupportTicketHr{
+  border-bottom: 1px solid #ECE9F1;
+  margin-top: 24px;
+  margin-bottom: 17px;
+}
+
+.SupportTicketHr2{
+  border-bottom: 1px solid #ECE9F1;
+}
+
+.ST_coustomer_Header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 30px;
+}
+
+.ST_coustomer_HeaderDiv{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.SupportTicket_customerImg img{
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+
+.SupportTicket_customerName {
+  margin-left:15px ;
+}
+
+.SupportTicket_customerName h4{
+  color: #101840;
+}
+
+.SupportTicket_customerName p{
+  margin-top: 0px;
+}
+
+.ST_Time_main{
+  display: flex;
+  align-items: center;
+}
+
+.ST_Time_main p{
+  margin-top: 0px;
+  margin-left: 10px;
+}
+
+.Coustomer_Shop_MessageMain{
+  background-color: #F9F9F9;
+  border-radius: 10px;
+  margin-bottom: 36px;
+  box-shadow: 0px 2px 4px #ECE9F1;
+}
+
+
+.Coustomer_Shop_MessageMainText{
+  padding: 11px 30px 23px 30px;
+}
+
+
+
+
+.Our_Support_MessageMain{
+  background:#F7F2FF ;
+  border-radius: 10px;
+  margin-bottom: 36px;
+  box-shadow: 0px 2px 4px rgba(107, 44, 209, .3);
+}
+
+
+.St_OurSupport_main h4{
+  color: #6B2CD1;
+}
+
+.St_OurSupport_main p{
+  color: #6B2CD1;
+}
+
+.St_Our_Support_Header{
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.ST_OurSupport_Text P{
+  color: #6B2CD1;
+  text-align: right;
+}
+
+@media (max-width: 767.98px) { 
+
+  .SupportTicketHeader1 {
+    display: block;
+}
+  .SupportTicketHeader2 {
+    display: block;
+}
+
+.SupportTicketHeader3Bg {
+  display: flex;
+  width: 90px;
+  margin-top: 15px;
+}
+
+.SupportTicket_Header_open {
+  display: block;
+}
+
+.ST_coustomer_Header {
+  display: block;
+}
+
+.ST_Time_main p {
+  margin-top: 10px;
+}
+
+
+} */

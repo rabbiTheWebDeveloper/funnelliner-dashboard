@@ -116,10 +116,6 @@ Login
   position: relative;
 }
 
-.SalesTargetModal .CustomeInput img {
-  height: 200px;
-  width: auto;
-}
 
 .CustomeInput .eye {
   position: absolute;
@@ -661,119 +657,6 @@ HomePage
   font-size: 20px;
 }
 
-.SalesTarget {
-  background: var(--white);
-  box-shadow: 0px 4.69076px 6.56707px rgba(0, 0, 0, 0.056545);
-  border-radius: 15px;
-  align-items: self-start;
-}
-
-.SalesTarget .TotalOrderItem {
-  background: none;
-  width: 48%;
-  box-shadow: none;
-  margin-bottom: 0;
-}
-
-.SalesTarget .salseChart img {
-  width: 100%;
-}
-
-.SalesTarget .TotalOrderItem h5 {
-  font-size: 16px;
-  line-height: 26px;
-  color: var(--main-color);
-  font-weight: 700;
-}
-
-.SalesTarget .TotalOrderItem h6 {
-  font-size: 16px;
-  line-height: 26px;
-  color: var(--bg_color);
-  font-weight: 400;
-  text-transform: capitalize;
-}
-
-.SalesTarget .TotalOrderItem .Main {
-  margin-bottom: 0;
-}
-
-.SalesTarget .TotalOrderItem .Main h3 {
-  font-size: 40px;
-  line-height: 50px;
-  color: #5dca08;
-}
-
-.SalesTarget .TotalOrderItem .Main ul li {
-  color: var(--text_color);
-  display: block;
-}
-
-.SalesTarget .TotalOrderItem .Main ul li span {
-  color: #5dca08;
-  margin: 0;
-}
-
-.SalesTarget.TotalOrderItem button.ModalBtn {
-  background: var(--bg_color);
-  padding: 5px 30px;
-  border-radius: 5px;
-  margin-top: 0px;
-  color: var(--white);
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 24px;
-  text-transform: capitalize;
-}
-
-.SalesTargetModal {
-  width: 700px;
-  max-height: 750px;
-  background: var(--white);
-  padding: 50px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 20px;
-  overflow-y: auto;
-}
-
-.SalesTargetModal .Item button {
-  background: var(--bg_color);
-  color: var(--white);
-  padding: 5px 20px;
-}
-
-.SalesTargetModal .Item button:last-child {
-  margin-left: 10px;
-  background: #f01b1b;
-}
-
-.SalesTargetModal .svg {
-  margin-right: 15px;
-}
-
-.SalesTargetModal svg {
-  font-size: 22px;
-  color: var(--main-color);
-  margin-bottom: -5px;
-  margin-left: 5px;
-}
-
-.SalesTargetModal h5 {
-  font-weight: 600;
-  font-size: 20px;
-  line-height: 30px;
-  color: var(--bg_color);
-}
-
-.SalesTargetModal p {
-  margin-top: 0px;
-  font-size: 14px;
-  line-height: 20px;
-  padding: 5px 0;
-}
 
 .DuelButton .MuiButtonBase-root {
   background: var(--bg_color);
@@ -802,75 +685,6 @@ HomePage
   color: var(--white);
 }
 
-.SalesTarget.TotalOrderItem h5,
-.SalesTarget.TotalOrderItem h6 {
-  color: var(--main-color);
-}
-
-.SalesTargetDailyTarget {
-  z-index: 9;
-  position: relative;
-  margin-top: 20px;
-}
-
-.SalesTargetDailyTarget li {
-  margin-top: 10px;
-  font-size: 14px;
-  line-height: 20px;
-  color: var(--main-color);
-  font-weight: 400;
-}
-
-.SalesTargetDailyTarget li span {
-  color: var(--main-color);
-  font-weight: 700;
-}
-
-.SalesTargetDailyTarget li strong {
-  font-size: 14px;
-}
-
-.SalesTargetDailyTarget li span:last-child {
-  padding: 3px 10px;
-  background: var(--bg_color);
-  margin-left: 10px;
-  border-radius: 5px;
-  color: var(--white-color);
-  font-weight: 500;
-}
-
-.SalesTargetDailyTarget.CancleOrder li:first-child span {
-  color: #09d309;
-  font-size: 20px;
-  font-weight: 500;
-  background: none;
-  padding: 0;
-  margin-left: 0;
-}
-
-.SalesTargetDailyTarget.CancleOrder li:nth-child(2) span {
-  color: #f55050;
-  font-size: 20px;
-  font-weight: 500;
-  background: none;
-  padding: 0;
-  margin-left: 0;
-}
-
-.SalesTargetDailyTarget.CancleOrder li:last-child {
-  font-size: 23px;
-  font-weight: 500;
-  color: #f55050;
-}
-
-.SalesTargetDailyTarget.CancleOrder li:last-child span {
-  font-size: 20px;
-  font-weight: 500;
-  color: #f55050;
-  background: none;
-  padding: 0;
-  margin-left: 0;
-}
 
 /* OrderModal */
 .Form.OrderModal {
@@ -880,12 +694,6 @@ HomePage
 
 .Form.OrderModal .CustomeInput {
   width: 48%;
-}
-
-.SalesTargetModal.OrderModalPopup {
-  width: 65%;
-  min-height: 50%;
-  max-height: 70%;
 }
 
 .Form.OrderModal .CustomeInput.TextArea {

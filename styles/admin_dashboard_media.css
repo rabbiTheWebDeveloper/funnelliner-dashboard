@@ -72,14 +72,6 @@
     margin-bottom: 0;
   }
 
-  .SalesTarget .TotalOrderItem {
-    padding: 20px;
-  }
-
-  .SalesTarget .TotalOrderItem .Main ul li {
-    display: inline-block;
-  }
-
   .MoveToComplete h6 {
     padding: 4px 14px;
     font-size: 11px;
@@ -116,23 +108,7 @@
   .ChooseDomainSidebarLeft {
     padding: 25px;
   }
-
-  .SalesTargetDailyTarget li {
-    margin-top: 12px;
-  }
-
-  .SalesTargetDailyTarget li span:last-child {
-    padding: 2px 10px;
-  }
-
-  .SalesTarget.TotalOrderItem button.ModalBtn {
-    font-size: 14px;
-  }
-
-  .SalesTargetDailyTarget.CancleOrder li:last-child {
-    font-size: 20px;
-  }
-
+  
   .TotalOrderItem {
     height: 200px;
     padding: 15px;
@@ -225,25 +201,6 @@
     margin-right: 0;
   }
 
-  .SalesTargetDailyTarget li {
-    margin-top: 8px;
-    font-size: 13px;
-    line-height: 20px;
-  }
-
-  .SalesTargetDailyTarget li span {
-    font-size: 12px;
-    display: inline-block;
-  }
-
-  .SalesTarget.TotalOrderItem button.ModalBtn {
-    padding: 3px 30px;
-  }
-
-  .SalesTargetDailyTarget {
-    margin-top: 15px;
-  }
-
   .TopSellingItem .Product {
     display: block;
   }
@@ -277,14 +234,6 @@
     line-height: 24px;
   }
 
-  .SalesTargetModal {
-    padding: 30px;
-  }
-
-  .SalesTargetModal .CustomeInput img {
-    height: 150px;
-  }
-
   .TotalSMSSent .TotalOrderItem {
     padding: 20px;
     height: 170px;
@@ -296,56 +245,17 @@
   }
 
 
-  .SalesTargetModal.OrderModalPopup {
-    min-height: 63%;
-  }
-
   .Form.OrderModal ul li .CustomeInput {
     width: 95%;
   }
 }
 
 @media (max-width: 1399px) {
-  .SalesTarget {
-    height: 200px;
-  }
+
 
   .InvoiceModal {
     width: auto;
     height: 80%;
-  }
-
-  .SalesTargetDailyTarget.CancleOrder li:last-child {
-    font-size: 20px;
-    line-height: 30px;
-  }
-
-  .SalesTargetDailyTarget li {
-    font-size: 11px;
-    line-height: 20px;
-  }
-
-  .SalesTargetDailyTarget li span {
-    font-size: 11px;
-  }
-
-  .SalesTargetDailyTarget li span:last-child {
-    padding: 2px 6px;
-    font-size: 11px;
-  }
-
-  .SalesTargetDailyTarget li strong {
-    font-size: 13px;
-  }
-
-  .SalesTarget.TotalOrderItem button.ModalBtn {
-    font-size: 13px;
-  }
-
-  .SalesTargetModal {
-    width: 60%;
-    max-height: 80%;
-    padding: 30px;
   }
 
   .WebsiteLinkItem ul li .Btn {
@@ -760,50 +670,6 @@
   .TotalOrderItem {
     padding: 15px;
     height: 200px;
-  }
-
-  .SalesTargetDailyTarget li {
-    font-size: 13px;
-    line-height: 14px;
-    margin-top: 6px;
-  }
-
-  .SalesTargetDailyTarget {
-    margin-top: 10px;
-  }
-
-  .SalesTargetDailyTarget.CancleOrder li:last-child {
-    font-size: 18px;
-    line-height: 26px;
-    margin-top: 20px;
-  }
-
-  .SalesTargetDailyTarget li span:last-child {
-    padding: 2px 10px;
-    display: inline-block;
-    margin-top: 5px;
-    margin-left: 0;
-  }
-
-  .SalesTarget.TotalOrderItem button.ModalBtn {
-    font-size: 12px;
-    padding: 5px 20px;
-    line-height: 16px;
-  }
-
-  .SalesTargetModal h5 {
-    font-size: 16px;
-    line-height: 24px;
-  }
-
-  .SalesTargetModal {
-    width: 500px;
-    max-height: 80%;
-    padding: 30px;
-  }
-
-  .SalesTargetModal svg {
-    font-size: 30px;
   }
 
   .CustomeInput input {
@@ -1302,10 +1168,6 @@
     margin-left: 20px;
   }
 
-  .SalesTargetModal .CustomeInput img {
-    margin: 15px 0;
-  }
-
   .UpdateStockModal {
     width: 80%;
     height: 50%;
@@ -1437,12 +1299,6 @@
   .MuiTabs-flexContainer {
     overflow-x: auto;
     padding-bottom: 10px;
-  }
-
-  .SalesTargetModal {
-    width: 80%;
-    max-height: 450px;
-    padding: 20px;
   }
 
   .CustomeInput select {

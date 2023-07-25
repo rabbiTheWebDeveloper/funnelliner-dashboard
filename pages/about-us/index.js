@@ -12,7 +12,7 @@ const index = () => {
             .then((result) => {
                 setWebsiteSettingData(result?.data?.data);
             })
-            .catch(function (error) {
+            .catch(function () {
                 return;
             });
     }, []);

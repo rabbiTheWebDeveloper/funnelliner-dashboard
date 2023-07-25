@@ -148,7 +148,7 @@ const OrderModal = ({ modalOpen, handleCloseModal, products, handleFetch, orderU
                                         setCharge(e?.target?.selectedOptions[0]?.attributes?.delivery_charge?.value)
                                     }}>
 
-                                    <option>
+                                    <option disabled>
                                         {products.length === 0 ? "Please Add Product" : "Select Product"}
                                     </option>
                                     {Array.isArray(products) ? products?.map((data) => {
@@ -180,7 +180,7 @@ const OrderModal = ({ modalOpen, handleCloseModal, products, handleFetch, orderU
                                 <label>Order Source<span>*</span></label>
 
                                 <select name="" {...register("order_type", { required: true })} native={true}>
-                                    <option>
+                                    <option disabled>
                                         Select Order Type
                                     </option>
 

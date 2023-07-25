@@ -35,7 +35,6 @@ import MenuItem from '@mui/material/MenuItem';
 import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 import { BsThreeDotsVertical } from "react-icons/bs";
 
-
 const index = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     const showToast = useToast();
     const [isLoading, startLoading, stopLoading] = useLoading()
@@ -229,6 +228,12 @@ const index = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
         setSelectCourierStatus(null)
         setDefault(value)
     }
+    const [courierStatus , setCourierStatus] = useState('')
+    const handleFilterStatusCOurier = (value) => {
+        // setSelectCourier(null)
+        // setSelectCourierStatus(null)
+        setCourierStatus(value)
+    }
 
     const handleCourierModalOpen = () => {
         setCourierModal(true)
@@ -304,7 +309,7 @@ const index = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
 
     const handleDiscount = (event, id, type) => {
 
- 
+
         if (event.key === "Enter" && event.target.value > 0) {
             SuperFetch.post(`/client/order/discount/${id}/update`, {
                 discount: event.target.value,
@@ -563,6 +568,29 @@ const index = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
         setAnchorEl(null);
     }
 
+
+    const [anchorEls, setAnchorEls] = useState(Array(3).fill(null));
+
+    const handleClick1 = (event, index) => {
+        const newAnchorEls = [...anchorEls];
+        newAnchorEls[index] = event.currentTarget;
+        setAnchorEls(newAnchorEls);
+    };
+
+    const handleClose1 = (index) => {
+        const newAnchorEls = [...anchorEls];
+        newAnchorEls[index] = null;
+        setAnchorEls(newAnchorEls);
+    };
+
+
+
+
+
+
+
+
+
     const [selectedOrders, setSelectedOrders] = useState([]);
     const [selectAll, setSelectAll] = useState(false)
 
@@ -791,8 +819,14 @@ const index = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     }
     useEffect(() => {
         setSelectedOrders([]);
+        setSelectAll(false)
 
     }, [active])
+
+    const courierReDriect = () => {
+        router.push('/courier')
+    }
+
 
     return (
 
@@ -956,8 +990,48 @@ const index = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                                 } */}
                                 {
                                     active === 'confirmed' && selectedOrders.length > 0 &&
-                                    <div className="AllDelete">
-                                        <Button onClick={multiSelectOrdersCouriers} className="bg">{selectedOrders.length} Courier</Button>
+                                    <div className="AllDelete d_flex ">
+                                        <Button onClick={multiSelectOrdersCouriers} className="bg">{selectedOrders.length} Selected Item </Button>
+                                        <div className="Status">
+                                            <div className="commonDropdown">
+                                                <Button
+                                                    id="fade-button-0"
+                                                    aria-controls={anchorEls[0] ? 'fade-menu-0' : undefined}
+                                                    aria-haspopup="true"
+                                                    aria-expanded={anchorEls[0] ? 'true' : undefined}
+                                                    onClick={(event) => handleClick1(event, 0)}
+                                                >
+                                                    Select Courier <i className="flaticon-down-arrow"></i>
+                                                </Button>
+                                                <Menu
+                                                    id="fade-menu-0"
+                                                    className='commonDropdownUl'
+                                                    MenuListProps={{
+                                                        'aria-labelledby': 'fade-button-0',
+                                                    }}
+                                                    anchorEl={anchorEls[0]}
+                                                    open={Boolean(anchorEls[0])}
+                                                    onClose={() => handleClose1(0)}
+                                                >
+                                                    {
+                                                        courierList.length > 0 ?
+                                                            <MenuItem onClick={(e) => { multiSelectOrdersCouriers(); handleClose() }}>
+                                                                <img src="https://funnelliner.s3.ap-southeast-1.amazonaws.com/media/steadfast.svg" alt="" style={{
+                                                                    width: '20px',
+                                                                    height: 'auto',
+                                                                    margin: '5px'
+                                                                }} /> SteadFast
+                                                            </MenuItem> :
+                                                            <MenuItem onClick={(e) => { courierReDriect(); handleClose() }}>Add Courier</MenuItem>
+
+                                                    }
+
+                                                </Menu>
+                                            </div>
+                                        </div>
+                                        {/* <Button  onClick={multiSelectOrdersInvoice} className="bg">Invoice Print <i class="flaticon-printer-1"></i></Button> */}
+
+
                                     </div>
                                 }
 
@@ -1012,7 +1086,9 @@ const index = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                                         createUniqueCityArray(orders)?.map((item, index) => {
                                             return (
 
-                                                <BootstrapButton key={index} onClick={() => setSelectCourierStatus(courierText(item.item))} className={'filterActive'}>
+                                                <BootstrapButton key={index} onClick={() => { setSelectCourierStatus(courierText(item.item)); handleFilterStatusCOurier(item.item) }}
+                                                    className={courierStatus === item.item ? 'filterActive' : ''}
+                                                >
                                                     {item.value}
                                                     <h6>{courierStatusOrderCount(item.item) > 0 ? courierStatusOrderCount(item.item) : '0'}</h6>
                                                 </BootstrapButton>
@@ -1027,7 +1103,7 @@ const index = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                                         selectCourier === 'pathao' &&
                                         createUniqueCityArray(orders).map((item, index) => {
                                             return (
-                                                <BootstrapButton key={index} onClick={() => setSelectCourierStatus(item.item)} className={'filterActive'}>
+                                                <BootstrapButton key={index} onClick={() => {setSelectCourierStatus(item.item); handleFilterStatusCOurier(item.item)}}  className={courierStatus === item.item ? 'filterActive' : ''}>
                                                     {item.value}
                                                     <h6>{courierStatusOrderCount(item.item) > 0 ? courierStatusOrderCount(item.item) : '0'}</h6>
 
@@ -1052,9 +1128,11 @@ const index = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                                         checked={selectAll}
                                         onChange={toggleSelectAll}
                                     /> */}
+                                    {
+                                        active === 'confirmed' && <Checkbox {...label} checked={selectAll}
+                                            onChange={toggleSelectAll} />
+                                    }
 
-                                    <Checkbox {...label} checked={selectAll}
-                                        onChange={toggleSelectAll} />
 
                                 </div>
 
@@ -1158,8 +1236,11 @@ const index = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                                                 checked={selectedOrders.includes(order.id)}
                                                 onChange={() => handleOrderSelection(order.id)}
                                             /> */}
-                                            <Checkbox {...label} checked={selectedOrders.includes(order.id)}
-                                                onChange={() => handleOrderSelection(order.id)} />
+                                            {
+                                                active === 'confirmed' && <Checkbox {...label} checked={selectedOrders.includes(order.id)}
+                                                    onChange={() => handleOrderSelection(order.id)} />
+                                            }
+
                                         </div>
 
                                         <div className="DataTableColum">
@@ -1484,7 +1565,7 @@ const index = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
 
                                                     <div className="TotalPrice">
                                                         {/* <i className='flaticon-taka'></i> */}
-                                                        {order?.courier_status}
+                                                        {order?.courier_status?.replace(/[_\s]/g, '')}
                                                     </div>
 
                                                 </div>

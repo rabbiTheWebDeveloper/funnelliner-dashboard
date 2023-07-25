@@ -386,7 +386,7 @@ Product End
   width: 48%;
 }
 
-.LandingWebsiteItem .DuelButton .left a{
+.LandingWebsiteItem .DuelButton .left a {
   width: 100%;
 }
 
@@ -400,7 +400,7 @@ Product End
 
 /* CustomDomain */
 
-.ChooseDomainSidebar .DomainRequest .duelButton{
+.ChooseDomainSidebar .DomainRequest .duelButton {
   margin-top: 0;
 }
 
@@ -409,7 +409,7 @@ Product End
   color: var(--white-color);
 }
 
-.LandingWebsiteItem .DuelButton button:hover{
+.LandingWebsiteItem .DuelButton button:hover {
   color: var(--white-color);
 }
 
@@ -418,12 +418,19 @@ Product End
   padding-right: 0 !important;
 }
 
-.DashboardSetting.WebsiteSetting .style_HomeSlider__hmi81 .MuiContainer-root .boxShadow{
+.DashboardSetting.WebsiteSetting
+  .style_HomeSlider__hmi81
+  .MuiContainer-root
+  .boxShadow {
   padding: 0;
   box-shadow: none;
 }
 
-.DashboardSetting.WebsiteSetting .style_HomeSlider__hmi81 .MuiContainer-root .boxShadow .MuiTabPanel-root{
+.DashboardSetting.WebsiteSetting
+  .style_HomeSlider__hmi81
+  .MuiContainer-root
+  .boxShadow
+  .MuiTabPanel-root {
   margin-top: 20px;
   border-top: 1px solid var(--border-color);
 }
@@ -629,7 +636,7 @@ button[disabled] {
   height: 50px;
 }
 
-.nice-dates-grid{
+.nice-dates-grid {
   height: 250px !important;
 }
 
@@ -871,6 +878,7 @@ button[disabled] {
 .AccountDashboard .FilterItem.CustomDate.dateRangePicker {
   padding-right: 70px !important;
 }
+
 .AccountingFirstOpen .text .DuelButton {
   display: inline-flex;
   margin-top: 20px;
@@ -880,9 +888,11 @@ button[disabled] {
 .accounting_modules_custom_date_range {
   position: relative;
 }
+
 .nice-dates-popover {
   width: 140% !important;
 }
+
 .AccountDashboard .HeaderItemContent {
   margin-top: 30px;
   width: 18.5%;
@@ -2257,6 +2267,113 @@ Home Page Design
   border-radius: 8px;
 }
 
+.HomePage .SalesTargetContent .Header button {
+  color: var(--white-color);
+  font-weight: 400;
+  border-radius: 30px;
+  font-size: 14px;
+}
+
+.SalesTargetBox {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  width: 100%;
+}
+
+.HomePage .SalesTargetContent .SalesTargetItem {
+  border: 1px solid var(--border-color);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0px 22px 113.46px rgba(0, 0, 0, 0.03);
+  width: 30%;
+  margin: 15px 0;
+  margin-top: 20px;
+}
+
+.HomePage .SalesTargetContent .SalesTargetItem h5 {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.HomePage .SalesTargetItemBox .item {
+  padding-left: 20px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.HomePage .SalesTargetItemBox .item h3 {
+  font-size: 22px;
+}
+
+.HomePage .SalesTargetItemBox .item::after {
+  position: absolute;
+  content: "";
+  top: 15px;
+  left: 0;
+  height: 30px;
+  width: 5px;
+  border-radius: 5px;
+  background: var(--main-color);
+}
+
+.HomePage .SalesTargetItemBox .item:last-child::after {
+  background: var(--main-bg-color);
+}
+
+.HomePage .SalesTargetItemBox .item:last-child {
+  margin-bottom: 0;
+}
+
+.HomePage .SalesTargetItemBox .item h6 {
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--text-color);
+}
+
+.HomePage .SalesTargetItemBox .right {
+  position: relative;
+}
+
+.HomePage .SalesTargetItemBox .right .overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.HomePage .SalesTargetItemBox .right .overlay span{
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--main-color);
+}
+
+.HomePage .SalesTargetItemBox .right .overlay p{
+  font-size: 12px;
+  margin-top: 1px;
+  font-weight: 500;
+}
+
+/* circle */
+
+.progressCircle {
+  display: block;
+}
+
+.circle {
+  fill: transparent;
+  stroke: #0070f3;
+  /* Replace with your desired color */
+  stroke-width: 10;
+  transform: rotate(-90deg);
+  transform-origin: center;
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+/* circle */
+
 .HomePage .Header button i {
   font-size: 13px;
   margin-left: 10px;
@@ -2488,6 +2605,10 @@ Home Page Design
 /* -----------------------------
  Start RecentOrder
 ------------------------------- */
+
+.RecentOrder, .TopSelling{
+  height: 500px;
+}
 
 .RecentOrder .Header {
   margin-bottom: 0;
@@ -2873,15 +2994,14 @@ Home Page Design
  Start NullPage
 -------------------------------------------------------------------------- */
 
-.NullPage{
+.NullPage {
   text-align: center;
   margin: 20px 0;
 }
 
-.NullPage .bg{
+.NullPage .bg {
   margin-top: 20px;
 }
-
 
 /* --------------------------------------------------------------------------
  End NullPage
