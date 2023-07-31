@@ -14,7 +14,7 @@ import HeaderDescription from "../../Components/Common/HeaderDescription/HeaderD
 import SuperFetch from "../../hook/Axios";
 
 
-const index = ({ orderUpdate }) => {
+const BillingPage = ({ orderUpdate }) => {
     const [billingList, setBillingList] = useState([]);
     const handleFetchBillingList = async () => {
         try {
@@ -165,6 +165,6 @@ const index = ({ orderUpdate }) => {
 
 }
 // export default index;
-export default withAuth(index, {
+export default withAuth(BillingPage, {
     isProtectedRoute: true
 });

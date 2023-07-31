@@ -10,7 +10,7 @@ const FilterCategoryItem = ({ selectCatgory ,setPayment  ,handleFetch , setBalan
     const handleItemSelected = (event, value) => {
         const selectedIds = value.map((option) => option.id);
         setSelectedItem(selectedIds);
-        // setSelectedItem(selectedItem);
+
     };
   
     const searchCategoryWise = () => {

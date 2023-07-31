@@ -89,11 +89,9 @@
 
 .TabsItemContent {
   /* background: #f8f2ff !important; */
-  background: linear-gradient(
-    180deg,
-    #f8f2ff 32.17%,
-    rgba(248, 242, 255, 0) 68.03%
-  ) !important;
+  background: linear-gradient(180deg,
+      #f8f2ff 32.17%,
+      rgba(248, 242, 255, 0) 68.03%) !important;
   margin: 0 !important;
   padding: 0 !important;
   margin-top: 20px !important;
@@ -183,11 +181,10 @@
   margin-right: 20px;
   margin-bottom: -5px;
   height: 50px;
-  height: 50px;
+
 }
 
 .TabsItemContent .headerH2 .img img {
-  height: 100%;
   height: 100%;
   object-fit: cover;
 }
@@ -255,4 +252,132 @@
   border: 1px solid var(--red-color);
   padding: 8px 30px;
   margin: 0 auto;
+}
+
+
+@media (max-width: 1399px) {
+
+  .FirstSetupContent {
+    padding: 30px;
+  }
+
+  .FirstSetupContent h3 {
+    font-size: 20px;
+    line-height: 30px;
+  }
+
+  .FirstSetupContent .Header h5 {
+    font-size: 14px;
+    color: #2a3547;
+    line-height: 16px;
+  }
+
+  .FirstSetupContent .Header a {
+    font-size: 14px;
+    line-height: 20px;
+    padding: 6px 24px;
+  }
+
+  .TabsItemContent .headerH2 .img {
+    height: 35px;
+  }
+
+  .TabsItemContent .headerH2 h4 {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .FirstSetupContent h3 {
+    font-size: 17px;
+    line-height: 25px;
+  }
+
+  .TabsItemDescription p {
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  .TabsItemDescription a {
+    font-size: 14px;
+    line-height: 20px;
+    padding: 5px 30px;
+  }
+
+  .TabsItemDescription {
+    padding: 10px;
+  }
+
+  .SkipAll button {
+    font-size: 14px;
+    line-height: 18px;
+  }
+
+
+
+}
+
+
+
+
+
+
+
+
+@media (max-width: 767px) {
+
+
+  .FirstSetup {
+    margin-top: 30px;
+  }
+
+  .Header {
+    display: block;
+    text-align: center;
+  }
+
+  .FirstSetupContent .Header .left {
+    width: 100%;
+  }
+
+  .FirstSetupContent .Header :where(.middle, .right) {
+    width: 100%;
+  }
+
+  .FirstSetupContent .Header .middle {
+    margin: 10px 0;
+  }
+
+  .FirstSetupContent .Header .right {
+    text-align: center;
+  }
+
+  .TabsItemDescription {
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .TabsItemDescription .left {
+    width: 100%;
+    order: 2;
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .TabsItemDescription .right {
+    width: 100%;
+    order: 1;
+  }
+
+  .FirstSetupContent {
+    padding: 30px 15px;
+  }
+
+  .TabsItemDescription {
+    padding: 0px;
+  }
+
+
+
+
+
 }

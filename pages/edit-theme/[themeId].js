@@ -11,7 +11,7 @@ import { baseTest } from '../../constant/constant';
 import { useToast } from '../../hook/useToast';
 import { headers, shopId, userId } from '../api';
 
-const index = () => {
+const ThemeIdPage = () => {
     const [update, setUpdate] = useState(false)
     const [reviewImage, setReviewImage] = useState([])
     const [productImage, setProductImage] = useState([])
@@ -242,4 +242,4 @@ const index = () => {
 
 }
 
-export default index
+export default ThemeIdPage

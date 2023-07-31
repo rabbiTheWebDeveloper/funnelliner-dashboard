@@ -15,9 +15,7 @@ const HomePageCart = ({ data, setFetchData, startDate, setStartDate, endDate, se
     const [anchorEl, setAnchorEl] = React.useState(null);
     ;
     const open = Boolean(anchorEl);
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
+
     const handleClose = () => {
         setAnchorEl(null);
     };
@@ -36,12 +34,7 @@ const HomePageCart = ({ data, setFetchData, startDate, setStartDate, endDate, se
                 showToast('Sales Target update successfully!', 'success');
             })
             .catch(function (error) {
-                // Swal.fire({
-                //     icon: "error",
-                //     title: "Oops...",
-                //     text: error.msg,
-                //     footer: '<a href="">Why do I have this issue?</a>',
-                // });
+
             });
         reset();
         setOpenSales(false);
@@ -145,7 +138,7 @@ const HomePageCart = ({ data, setFetchData, startDate, setStartDate, endDate, se
                                 <li>Delivery : <span> {deliveryCount} </span></li>
                                 <li>Return : <span> {deliveryReturnCount} </span></li>
                                 <li>Return Ratio : <span> {returnRatioCount} %</span></li>
-                            
+
                             </>
                         }
                         {
@@ -189,7 +182,7 @@ const HomePageCart = ({ data, setFetchData, startDate, setStartDate, endDate, se
 
                 {/* Footer */}
                 <div className="Footer">
-                    <h6 className={increase}> {increaseTitle} <i className={cartIcon}></i> </h6>
+                    <h6 className={ data !== 'custom' && increase}> {data !== 'custom' && increaseTitle} <i className={ data !== 'custom' && cartIcon}></i> </h6>
                 </div>
 
                 {/* img */}
@@ -281,8 +274,8 @@ const HomePageCart = ({ data, setFetchData, startDate, setStartDate, endDate, se
 
                                     <div className="duelButton">
 
-                                        <Button type="submit">Save Changes</Button>
-                                        <Button type="reset" className="red">Reset</Button>
+                                        {/* <Button type="reset" className="red">Reset</Button> */}
+                                        <Button type="submit" className='One'>Save Changes</Button>
 
                                     </div>
                                 </form>

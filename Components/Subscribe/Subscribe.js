@@ -75,8 +75,8 @@ const Subscribe = () => {
                     <ul>
                         <li><span>{timerDays}</span> Days</li>
                         <li><span>{timerHours}</span> Hours</li>
-                        <li><span>{timerMinutes}</span> Minutes</li>
-                        <li><span>{timerSeconds}</span> Seconds</li>
+                        <li><span>{timerMinutes}</span> Mins</li>
+                        <li><span>{timerSeconds}</span> Secs</li>
                     </ul>
 
                     <h5> left in your free trial ! Upgrade paid for additional benefits.</h5>

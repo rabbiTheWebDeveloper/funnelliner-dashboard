@@ -232,7 +232,7 @@ const StockIn = () => {
                                                     <div className="MiddleSectionContent">
 
                                                         <div className="img">
-                                                            <img src="/error.svg" alt="" />
+                                                            <img src="/images/empty.png" alt="" />
                                                         </div>
 
                                                         <div className="text">

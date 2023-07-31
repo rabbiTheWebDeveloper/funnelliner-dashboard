@@ -27,8 +27,7 @@ const CashIn = ({ handleFetch, balanceFetch, payment, data, categoryList, paymen
     const handleOpenSuggestNote1 = () => setOpenSuggestNote1(true);
 
 
-    const handleOpenSuggestNote2 = () => setOpenSuggestNote1(true);
-    const handleCloseSuggestNote2 = () => setOpenSuggestNote1(false);
+
 
 
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
@@ -44,11 +43,7 @@ const CashIn = ({ handleFetch, balanceFetch, payment, data, categoryList, paymen
     });
     options1.push({ value: "addPayable", label: "+ Add New Payable/Payor" });
 
-    const handleInputChange = (inputValue, action) => {
-        if (action.action !== "input-blur" && action.action !== "menu-close") {
-            setInputValue(inputValue);
-        }
-    };
+
 
 
     const handleSelectChange = (selectedOption) => {
@@ -56,23 +51,19 @@ const CashIn = ({ handleFetch, balanceFetch, payment, data, categoryList, paymen
         if (selectedOption.value === "add") {
             setInputValue("")
             handleOpenSuggestNote();
-            //   / Open the modal
+
         }
     };
 
-    const handleInputChange1 = (inputValue, action) => {
-        if (action.action !== "input-blur" && action.action !== "menu-close") {
-            setInputValue1(inputValue);
-        }
-    };
+
 
     const handleSelectChange1 = (selectedOption) => {
         setInputValue1(selectedOption.value);
 
         if (selectedOption.value === "addPayable") {
-            // setInputValue1("");
+
             handleOpenSuggestNote1();
-            // Open the modal
+
         }
     };
 
@@ -87,59 +78,17 @@ const CashIn = ({ handleFetch, balanceFetch, payment, data, categoryList, paymen
                 .then(function (response) {
 
                     if (data === "check") {
-                        // router.push("/account-dashboard");
+
                     }
                 })
                 .catch(function (error) {
-                    // Swal.fire({
-                    //     icon: "error",
-                    //     title: error?.response?.data?.msg,
-                    // });
+
                 });
 
 
         }
     };
 
-
-
-
-    const addPayable = (data) => {
-        axios.post(baseTest + "/client/accounts/payor/add", data, {
-            headers: headers
-        })
-            .then(function (response) {
-                Swal.fire("Category/Ledger    Add!", response.data.msg, "success");
-                // handleCloseSuggestNote(true)
-            })
-            .catch(function (error) {
-             
-                Swal.fire({
-                    icon: "error",
-                    title: error?.response?.data?.msg,
-                });
-            });
-        // reset()
-        // setInputValue1("");
-        // setInputValue("");
-    }
-
-    const handleApiAlert = (response, successMessage) => {
-        if (response.success) {
-            Swal.fire({
-                icon: "success",
-                title: "Category/Ledger Added!",
-                text: successMessage,
-            });
-            handleCloseSuggestNote1(); // Close the modal
-        } else {
-            Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: response.error,
-            });
-        }
-    }
 
     const handleSave = (data) => {
         cashForm(data);

@@ -35,20 +35,7 @@ const CourierModal = ({handleCourierModalOpen, handleCourierModalClose, city, or
 
     const handleSelect = async (area_id) => {
         setAreaId(area_id)
-        // SuperFetch.post('/client/courier/send-order',{
-        //     zone_id: singleZone,
-        //     city_id: singleCity,
-        //     area_id: area_id,
-        //     provider: 'pathao',
-        //     order_id: order_id
-        // }, {headers: headers}).then((res) => {
-        //     handleCourierModalClose()
-        //     if(res.data.success === true) {
-        //         showToast(res.data?.message)
-        //     } else {
-        //         showToast(Object.keys(res.data?.message?.errors)?.map((error) => res.data?.message?.errors[error])?.join('\n'), 'error');
-        //     }
-        // })
+
     }
     const handleSubmitPathaoLocation = async () => {
         SuperFetch.post('/client/courier/send-order',{
@@ -63,7 +50,7 @@ const CourierModal = ({handleCourierModalOpen, handleCourierModalClose, city, or
                 showToast("res.data?.message")
             } else {
                 showToast("Success")
-                // showToast(Object.keys(res.data?.message?.errors)?.map((error) => res.data?.message?.errors[error])?.join('\n'), 'error');
+                
             }
 
         }).catch((err)=>{

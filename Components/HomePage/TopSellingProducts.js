@@ -16,61 +16,14 @@ const TopSellingProducts = () => {
         });
     }, []);
 
-    // Dropdown
-    const [anchorEl, setAnchorEl] = useState(null);
-    const open = Boolean(anchorEl);
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+
+
  
 
     return (
 
         <>
-
-            {/* <section className='TopSellingProducts'>
-
-                <HeaderDescription headerIcon={'flaticon-order-1'} title={`Top Selling Products ${TopSellingProducts?.length}`} subTitle={'Your Best Selling Products Of Your Shop'} search={false}></HeaderDescription>
-
-                <Container maxWidth='sm'>
-
-                    <div className='TopSellingContent'>
-                        <Grid container spacing={3}>
-                            {TopSellingProducts?.map((item, index) => {
-                                return (
-                                    <Grid item xs={12} sm={6} md={4} key={index}>
-                                        <div className='TopSellingItem boxShadow'>
-                                            <h5>{item?.product_name}</h5>
-
-
-                                            <div className='Product d_flex'>
-                                                <div className='img'>
-                                                    <img src={item?.product_main_image ?? '/images/placeholder.png'} alt='' />
-                                                </div>
-
-                                                <div className='text'>
-                                                    <ul>
-                                                        <li>
-                                                            Total Sold: <span className='bg'>{item?.total}</span>
-                                                        </li>
-                                                        <li>
-                                                            Available Stock: <span>{item?.product_qty < 0 ? <span style={{ color: 'red' }}>stock out</span>: item?.product_qty}</span>
-                                                        </li>
-                                                    
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Grid>
-                                );
-                            })}
-                        </Grid>
-                    </div>
-                </Container>
-            </section> */}
+ 
 
             <div className="TopSelling boxShadow">
 

@@ -4,13 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { baseTest } from '../../constant/constant';
 import { headers } from '../../pages/api';
 
-const FilterReceverItem = ({ selectReciver, setPayment, handleFetch , setBalance ,balanceFetch }) => {
+const FilterReceverItem = ({ selectReciver, setPayment, handleFetch, setBalance, balanceFetch }) => {
 
     const [selectedItem, setSelectedItem] = useState([]);
     const handleItemSelected = (event, value) => {
         const selectedIds = value.map((option) => option?.id);
         setSelectedItem(selectedIds);
-        // setSelectedItem(selectedItem);
+
     };
 
     const searchCategoryWise = () => {
@@ -45,7 +45,7 @@ const FilterReceverItem = ({ selectReciver, setPayment, handleFetch , setBalance
         if (selectedItem.length === 0) balanceFetch()
     }, [selectedItem])
 
-  
+
     return (
         <Autocomplete
             multiple

@@ -15,8 +15,17 @@ import useConfirmationDialog from "../../../hook/useConfirmationDialog";
 import { useToast } from "../../../hook/useToast";
 import { headers } from "../../../pages/api";
 import HeaderDescription from "../../Common/HeaderDescription/HeaderDescription";
+import SmallLoader from "../../SmallLoader/SmallLoader";
 
 const Product = ({ category }) => {
+    const showToast = useToast();
+    const [age, setAge] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+    const [products, setProducts] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [perPage, setPerPage] = useState(10);
     //confirmation alert
     const handleConfirmationDialog = useConfirmationDialog(
         'Delete Product?',
@@ -24,10 +33,7 @@ const Product = ({ category }) => {
         "Yes, delete"
     )
     //delete success hooks
-    const showToast = useToast();
 
-    const [age, setAge] = useState("");
-    const [isLoading, setIsLoading] = useState(true);
 
     const handleChange = (event) => {
         setAge(event.target.value);
@@ -35,8 +41,7 @@ const Product = ({ category }) => {
 
 
     // handleClick Move To Completed
-    const [anchorEl, setAnchorEl] = useState(null);
-    const open = Boolean(anchorEl);
+
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -54,35 +59,40 @@ const Product = ({ category }) => {
         setAnchorEl2(null);
     };
 
-    const [products, setProducts] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [perPage, setPerPage] = useState(10);
 
-    useEffect(() => {
+
+    const fetchProduct = () => {
         axios
-            .get(process.env.API_URL + "/client/products", { headers: headers })
-            .then(function (response) {
-                // handle success
-                setProducts(response.data.data);
-                setIsLoading(false);
-            })
-            .catch(function (error) {
-                if (error.response.data.api_status === "401") {
-                    window.location.href = "/login"
-                    Cookies.remove("token");
-                    localStorage.clear("token");
-                    Cookies.remove("user");
-                    localStorage.clear("user");
+        .get(process.env.API_URL + "/client/products", { headers: headers })
+        .then(function (response) {
+            // handle success
+            setProducts(response.data.data);
+            setIsLoading(false);
+        })
+        .catch(function (error) {
+            if (error.response.data.api_status === "401") {
+                window.location.href = "/login"
+                Cookies.remove("token");
+                localStorage.clear("token");
+                Cookies.remove("user");
+                localStorage.clear("user");
 
-                    window.location.href = "/login"
-                }
-            });
+                window.location.href = "/login"
+            }
+        });
+
+    }
+    useEffect(() => {
+        fetchProduct()  
     }, []);
+
+
 
 
     const deleteProduct = async (id) => {
         const confirmed = await handleConfirmationDialog();
         if (confirmed) {
+            setIsLoading(true)
             axios
                 .delete(process.env.API_URL + "/client/products/" + id, { headers: headers })
                 .then(function (result) {
@@ -96,8 +106,14 @@ const Product = ({ category }) => {
                         showToast('Product delete successfully!', 'success')
                     } else {
                         showToast('Something went wrong!', 'error')
+
                     }
-                });
+                    setIsLoading(false)
+                }).catch((err) => {
+                    console.error("err", err)
+                    setIsLoading(false)
+                })
+                ;
         }
 
     };
@@ -125,22 +141,33 @@ const Product = ({ category }) => {
 
 
     const [modalOpen, setModalOpen] = useState(false);
-    const [opnedModalID, setOpendModalID] = useState(null)
-    const handleOpenModal = (id) => {
-        setModalOpen(true)
-        setOpendModalID(id)
 
+    const [viewModalOpen, setViewModalOpen] = useState(false);
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [productModalViewId, setProductModalViewId] = useState(null)
+    const [ProductEditModalID, setProductEditModalID] = useState(null)
+    const handleOpenModal = (id, modal) => {
+        if (modal === "edit") {
+            setProductEditModalID(id)
+            setEditModalOpen(true)
+        } if (modal === "view") {
+            setProductModalViewId(id)
+            setViewModalOpen(true)
+        }
     };
     const handleCloseModal = () => {
-        setOpendModalID(null)
-        setModalOpen(false)
+        setProductModalViewId(null)
+        setProductEditModalID(null)
+        setViewModalOpen(false)
+        setEditModalOpen(false)
     };
-
-
     return (
         <>
             <section className="TopSellingProducts DashboardSetting Order">
-
+                {
+                    isLoading && <div className="orderSection_preloader"> <SmallLoader /> </div>
+                }
+                {/* <SmallLoader /> */}
                 {/* header */}
                 <HeaderDescription headerIcon={'flaticon-new-product'} title={'Product List'} subTitle={'Find Your Product'} search={false}></HeaderDescription>
 
@@ -243,17 +270,17 @@ const Product = ({ category }) => {
 
                                                                     <div className="action">
 
-                                                                      
-                                                                        <Button className='viewActionBtn' onClick={() => handleOpenModal(product.id)}><i className="flaticon-view" ></i></Button>
+
+                                                                        <Button className='viewActionBtn' onClick={() => handleOpenModal(product.id, "view")}><i className="flaticon-view" ></i></Button>
                                                                         {
-                                                                            product.id === opnedModalID && <ShowProduct id={product.id} modalOpen={modalOpen} handleCloseModal={handleCloseModal} product={product}></ShowProduct>
+                                                                            product.id === productModalViewId && <ShowProduct id={product.id} modalOpen={viewModalOpen} handleCloseModal={handleCloseModal} product={product}></ShowProduct>
                                                                         }
 
-                                                                        <Button className='updateActionBtn' onClick={() => handleOpenModal(product.id)}><i className="flaticon-edit"></i></Button>
+                                                                        <Button className='updateActionBtn' onClick={() => handleOpenModal(product.id, "edit")}><i className="flaticon-edit"></i></Button>
                                                                         {
-                                                                             product.id === opnedModalID &&  <ProductUpdate id={product.id} category={category} modalOpen={modalOpen} handleCloseModal={handleCloseModal} product={product}></ProductUpdate>
+                                                                            product.id === ProductEditModalID && <ProductUpdate id={product.id} category={category} modalOpen={editModalOpen} handleCloseModal={handleCloseModal} product={product} fetchProduct={fetchProduct}/>
                                                                         }
-                                                                       
+
                                                                         <Button className='deleteActionBtn' onClick={() => deleteProduct(product.id)}>
                                                                             <i className="flaticon-trash"></i>
                                                                         </Button>
@@ -314,7 +341,7 @@ const Product = ({ category }) => {
                                                                         <ShowProduct id={product.id}></ShowProduct>
                                                                     </Button>
                                                                     <Button className="ButtonEdit">
-                                                                        <ProductUpdate id={product.id} category={category}></ProductUpdate>
+                                                                        <ProductUpdate id={product.id} category={category} fetchProduct={fetchProduct}></ProductUpdate>
                                                                     </Button>
                                                                     <Link
                                                                         href=""
@@ -336,7 +363,7 @@ const Product = ({ category }) => {
                                                 <section className="MiddleSection">
                                                     <div className="MiddleSectionContent">
                                                         <div className="img">
-                                                            <img src="/error.svg" alt="" />
+                                                            <img src="/images/empty.png" alt="" />
                                                         </div>
 
                                                         <div className="text">

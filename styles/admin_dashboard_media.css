@@ -1,9 +1,5 @@
 /* // X-Large devices (large desktops, less than 1400px) */
 @media (max-width: 1700px) {
-  h4 {
-    font-size: 22px;
-    line-height: 34px;
-  }
 
   .WebsiteLinkItem ul li {
     width: 30%;
@@ -147,18 +143,11 @@
   }
 
   .Order .date-range .MuiInputBase-root {
-    height: 35px;
-    margin-right: 10px;
-    width: 200px;
+    /* height: 35px; */
+    /* margin-right: 10px; */
+    /* width: 200px; */
   }
 
-  .nice-dates-popover {
-    max-width: 500px;
-  }
-
-  .nice-dates-popover .nice-dates-grid {
-    height: 300px !important;
-  }
 
   .LandingWebsite a {
     font-size: 14px;
@@ -263,12 +252,6 @@
     font-size: 13px;
   }
 
-  .MiddleSectionContent a {
-    font-size: 16px;
-    line-height: 24px;
-    padding: 8px 30px;
-  }
-
   .TotalOrder.TotalSMSSent .TotalOrderItem h5 {
     font-size: 14px;
   }
@@ -310,13 +293,6 @@
     font-size: 14px;
     line-height: 20px;
   }
-
-  
-  h4 {
-    font-size: 20px;
-    line-height: 30px;
-  }
-
 
   .NoticeBoardContent h3 {
     font-size: 20px;
@@ -373,9 +349,9 @@
   }
 
   .nice-dates .date-range .MuiFormControl-root {
-    height: 36px;
+    /* height: 36px; */
     margin-right: 10px;
-    width: 200px;
+    /* width: 200px; */
   }
 
   .nice-dates .date-range .MuiFormControl-root .MuiInputBase-root {
@@ -390,11 +366,6 @@
   .TopSellingProducts .MuiSelect-select {
     padding: 6px 10px;
     font-size: 12px;
-  }
-
-  .nice-dates-popover {
-    margin: 0px 0 !important;
-    max-width: 400px !important;
   }
 
   .nice-dates-day {
@@ -461,65 +432,12 @@
 
 @media (max-width: 1280px) {
 
-
-  p {
-    font-size: 14px;
-    line-height: 22px;
-  }
-
-
-  .TotalOrderItem {
-    padding: 15px;
-    height: 185px;
-  }
-
-  .TotalOrderItem h5 {
-    font-size: 13px;
-    line-height: 18px;
-  }
-
-  .TopSellingProducts.Subscription .TotalOrderItem .Main h3 {
-    font-size: 30px;
-    line-height: 40px;
-  }
-
-  .TopSellingProducts.Subscription .TotalOrderItem a {
-    padding: 5px 18px;
-    font-size: 13px;
-    line-height: 20px;
-  }
-
-  .MenubarContent {
-    margin-top: 20px;
-  }
-
-  .MenubarContent .Left h4 {
-    font-size: 17px;
-    line-height: 28px;
-  }
-
   .MenubarContent .right .CustomeInput {
     width: 60%;
   }
 
-  #Profile .MuiPaper-root.MuiPaper-elevation {
-    top: 83px !important;
-    right: 20px;
-  }
-
-  #Profile a {
-    padding: 6px 20px;
-    font-size: 14px;
-    line-height: 20px;
-  }
-
   .TopSellingProducts .Header {
     padding: 15px;
-  }
-
-  h4 {
-    font-size: 20px;
-    line-height: 30px;
   }
 
   .Header p {
@@ -957,11 +875,6 @@
     top: 47px;
   }
 
-  .MuiContainer-root {
-    max-width: calc(100% - 0px) !important;
-    padding: 0 30px !important;
-  }
-
   .DedsktopMenu {
     display: none !important;
   }
@@ -1039,11 +952,6 @@
     padding: 0 15px;
     padding-bottom: 25px;
     height: 75vh;
-  }
-
-  #Profile .MuiPaper-root.MuiPaper-elevation {
-    top: 75px !important;
-    right: 25px;
   }
 
   .TopSellingProducts .Header .Left {
@@ -1184,9 +1092,6 @@
 }
 
 @media (max-width: 767.9px) {
-  .MuiContainer-root {
-    padding: 0 20px !important;
-  }
 
   .MenubarContent {
     padding: 5px 15px;

@@ -62,7 +62,7 @@ const DomainVerification = ({ shopName, data }) => {
                             {htmlString}
                         </pre>
 
-                        <input defaultValue={data?.domain_verify} type="text" {...register("domain_verify", { required: true })} placeholder='87hou17rngj5wue2286dmhwa1qzpwfuuu"' />
+                        <input defaultValue={data?.domain_verify} type="text" {...register("domain_verify", { required: true })} placeholder='Meta verification content' />
                     </div>
 
                     {/* AddCancel */}

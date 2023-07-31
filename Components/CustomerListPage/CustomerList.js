@@ -12,12 +12,6 @@ import PendingOrderCustomers from "./PendingOrderCustomers";
 import HeaderDescription from "../../Components/Common/HeaderDescription/HeaderDescription";
 
 const CustomerList = () => {
-    // Filter
-    const [age, setAge] = useState("");
-
-    const handleChange = (event) => {
-        setAge(event.target.value);
-    };
 
     // Tabs
     const [value, setValue] = useState("1");
@@ -26,19 +20,7 @@ const CustomerList = () => {
         setValue(newValue);
     };
 
-    // handleClick Move To Completed
-    const [anchorEl, setAnchorEl] = useState(null);
-    const open = Boolean(anchorEl);
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
 
-    // UpdateStockModal
-    const [openStock, setOpenStock] = useState(false);
-    const handleOpenStock = () => setOpenStock(true);
 
     const [merchants, setMerchants] = useState([]);
     useEffect(() => {
@@ -76,11 +58,12 @@ const CustomerList = () => {
                                         onChange={handleChangeTab}
                                         aria-label='lab API tabs example'
                                     >
-                                        <Tab label='Confirm Order Customers' value='1' />
-                                        <Tab label='Pending Order Customers' value='2' />
-                                        <Tab label='Cancel Order Customers' value='3' />
-                                        <Tab label='Follow Up Order Customers' value='4' />
-                                        <Tab label='Order Return Customers' value='5' />
+                                        <Tab label='Confirm Order' value='1' />
+                                        <Tab label='Pending Order' value='2' />
+                                        <Tab label='Cancel Order' value='3' />
+                                        <Tab label='Follow Up Order' value='4' />
+                                        <Tab label='Order Return' value='5' />
+                                        
                                     </TabList>
                                 </Box>
 
@@ -100,7 +83,6 @@ const CustomerList = () => {
 
                                 <TabPanel value='3'>
                                     <CancelOrderCustomers></CancelOrderCustomers>
-
                                 </TabPanel>
 
                                 {/* Follow Up Order Customers */}

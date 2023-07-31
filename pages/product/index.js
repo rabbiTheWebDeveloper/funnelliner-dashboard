@@ -6,7 +6,7 @@ import withAuth from '../../hook/PrivateRoute';
 import { headers } from '../api';
 
 
-const index = () => {
+const ProductPage = () => {
     const [category, setCategory] = useState([])
     const hanldeFetchCategories = () => {
         axios
@@ -32,6 +32,6 @@ const index = () => {
 
 }
 
-export default withAuth(index, {
+export default withAuth(ProductPage, {
     isProtectedRoute: true
 });

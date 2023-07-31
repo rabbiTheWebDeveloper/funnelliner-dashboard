@@ -10,7 +10,7 @@ import AddCategory from './AddCategory';
 import AddPayable from './AddPayable';
 import AddPayment from './AddPayment';
 
-const CashOut = ({ handleFetch, balanceFetch, payment, categoryList, paymentList, reciverList, handelFetchCategory, handelFetchReciver ,handelFetchPaymentlist }) => {
+const CashOut = ({ handleFetch, balanceFetch, payment, categoryList, paymentList, reciverList, handelFetchCategory, handelFetchReciver, handelFetchPaymentlist }) => {
 
     const [open, setOpen] = useState(false);
     const [openSuggestNote, setOpenSuggestNote] = useState(false);
@@ -38,11 +38,7 @@ const CashOut = ({ handleFetch, balanceFetch, payment, categoryList, paymentList
     options1.push({ value: "addPayable", label: "+ Add New Payable/Payor" });
 
 
-    const handleInputChange = (inputValue, action) => {
-        if (action.action !== "input-blur" && action.action !== "menu-close") {
-            setInputValue(inputValue);
-        }
-    };
+
     const handleSelectChange = (selectedOption) => {
         setInputValue(selectedOption.value);
         if (selectedOption.value === "add") {
@@ -51,16 +47,12 @@ const CashOut = ({ handleFetch, balanceFetch, payment, categoryList, paymentList
             //   / Open the modal
         }
     };
-    const handleInputChange1 = (inputValue, action) => {
-        if (action.action !== "input-blur" && action.action !== "menu-close") {
-            setInputValue1(inputValue);
-        }
-    };
+
     const handleSelectChange1 = (selectedOption) => {
         setInputValue1(selectedOption.value);
 
         if (selectedOption.value === "addPayable") {
-            // setInputValue1("");
+
             handleOpenSuggestNote1();
             // Open the modal
         }
@@ -169,7 +161,7 @@ const CashOut = ({ handleFetch, balanceFetch, payment, categoryList, paymentList
                                         <select name="" {...register("payment_type")} onChange={handlePaymentTypeChange}>
                                             <option value="">Select Payment Method</option>
                                             {Array.isArray(paymentList) ? paymentList.map((payment, index) => (
-                                                <option key={index} value={payment.name}>{payment.name}</option>
+                                                <option key={paymentList.id} value={payment.name}>{payment.name}</option>
 
                                             )) : null}
                                             <option value="addPayment">+ Add New Payment Method</option>

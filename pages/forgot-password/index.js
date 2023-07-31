@@ -13,7 +13,7 @@ import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 const ReactCodeInput = dynamic(import("react-code-input"));
 const axios = require("axios");
 const steps = ["Select campaign settings", "Create an ad group", "Password Input"];
-const index = () => {
+const ForgetPasswordPage = () => {
     const { publicRuntimeConfig } = getConfig();
     const apiUrl = publicRuntimeConfig.API_URL;
     const router = useRouter();
@@ -322,7 +322,7 @@ const index = () => {
                                     <div className='customInput'>
 
                                         <label> New Password </label>
-                                        <input type="text"
+                                        <input 
                                             {...register2("new_password", {
                                                 required: true,
                                             })}
@@ -341,7 +341,7 @@ const index = () => {
                                     <div className='customInput'>
                                         <label> Confirm New Password </label>
 
-                                        <input type="text"
+                                        <input
                                             {...register2("confirm_password", {
                                                 required: true,
                                             })}
@@ -374,4 +374,4 @@ const index = () => {
     );
 };
 
-export default index;
+export default ForgetPasswordPage;

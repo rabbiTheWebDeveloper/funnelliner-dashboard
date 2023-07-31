@@ -4,7 +4,6 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import moment from "moment/moment";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
@@ -14,30 +13,22 @@ import { useGetCategoryQuery } from "../../../redux/features/category/categoryAp
 import HeaderDescription from "../../Common/HeaderDescription/HeaderDescription";
 import ShowCategory from "./ShowCategory";
 import UpdateCategory from "./UpdateCategory";
+import SmallLoader from "../../SmallLoader/SmallLoader";
 
-// import HeaderDescription from "../../Components/Common/HeaderDescription/HeaderDescription";
 
 const SubProduct = () => {
-    const{data}=useGetCategoryQuery()
     const showToast = useToast()
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
     const [isLoading, setIsLoading] = useState(true);
-    const [page, setPage] = useState(1);
-    const router = useRouter();
+
+
 
     // handleClick Move To Completed
     const [anchorEl, setAnchorEl] = useState(null);
-    const open = Boolean(anchorEl);
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
 
-   
+
 
     const hanldeFetchCategories = () => {
         axios.get(process.env.API_URL + "/client/categories", { headers: headers })
@@ -64,6 +55,7 @@ const SubProduct = () => {
         hanldeFetchCategories()
     }, []);
 
+    const [isPageLoader, setIsPageLoader] = useState(false)
     const deleteProduct = (id) => {
         Swal.fire({
             text: "Are you sure you want to delete?",
@@ -78,6 +70,7 @@ const SubProduct = () => {
             confirmButtonText: "Yes, delete",
         }).then((result) => {
             if (result.isConfirmed) {
+                setIsPageLoader(true)
                 axios
                     .delete(process.env.API_URL + "/client/categories/" + id, { headers: headers })
                     .then(function (result) {
@@ -87,12 +80,16 @@ const SubProduct = () => {
                                 const filter = products.filter((prod) => {
                                     return prod.id !== id;
                                 });
+                                showToast("Category has been deleted.")
                                 return [...filter];
+                                
                             });
-                        } else {
                         }
+                        setIsPageLoader(false)
+                    }).catch((err) => {
+                        setIsPageLoader(false)
+
                     });
-                showToast("Category has been deleted.")
             }
         });
     };
@@ -116,6 +113,10 @@ const SubProduct = () => {
     return (
         <>
             <section className="TopSellingProducts DashboardSetting Order">
+
+                {
+                    isPageLoader && <SmallLoader />
+                }
 
                 {/* header */}
                 <HeaderDescription headerIcon={'flaticon-order-delivery'} title={'Category'} subTitle={'Shop Category List'} search={false}></HeaderDescription>
@@ -218,7 +219,7 @@ const SubProduct = () => {
                                                     <section className="MiddleSection">
                                                         <div className="MiddleSectionContent">
                                                             <div className="img">
-                                                                <img src="/error.svg" alt="" />
+                                                                <img src="/images/empty.png" alt="" />
                                                             </div>
 
                                                             <div className="text">

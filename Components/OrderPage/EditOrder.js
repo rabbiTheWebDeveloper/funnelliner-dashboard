@@ -199,7 +199,7 @@ const EditOrderModal = ({ order, handleCloseViewModal, viewModalOpen, handleFetc
                     <div className="d_flex">
                         <div className="ViewModalNote" style={{marginRight:'20px'}}>
                             <label>Note</label>
-                            <textarea rows="3" defaultValue={order?.note} onKeyDown={(event) => handleKeyDownNote(event, order.id, order.order_status)} />
+                            <textarea rows="3" defaultValue={order?.order_note} onKeyDown={(event) => handleKeyDownNote(event, order.id, order.order_status)} />
                         </div>
                         <div className="ViewModalNote" style={{marginRight:'20px'}}>
                         <label>Invoice Note</label>
@@ -271,3 +271,5 @@ const EditOrderModal = ({ order, handleCloseViewModal, viewModalOpen, handleFetc
     )
 }
 export default EditOrderModal
+
+

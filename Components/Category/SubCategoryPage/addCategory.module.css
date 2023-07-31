@@ -1,5 +1,5 @@
 .header {
-    margin-top: 30px;
+    margin-top: 10px;
 }
 
 .header p {
@@ -7,7 +7,7 @@
 }
 
 .FormValidation {
-    margin-top: 20px;
+    margin-top: 0px;
     display: flex;
     align-items: self-start;
     gap: 20px;
@@ -42,6 +42,7 @@
     font-size: 15px !important;
     line-height: 20px !important;
     font-weight: 400 !important;
+    text-transform: capitalize !important;
 }
 
 

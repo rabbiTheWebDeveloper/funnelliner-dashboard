@@ -29,21 +29,8 @@ const AccountExcelReport = () => {
     const [payment, setPayment] = useState([]);
     const [balance, setBalance] = useState({});
     const [update, setUpdate] = useState(false)
-    const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-    const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-    let top100Films = payment?.length === 0 ? [] : payment?.map(function (item) {
-        return { title: item.payment_recevier };
-    })
-    // const top100Films = [
-    //     { title: 'The Shawshank', year: 1994 },
-    //     { title: 'The Godfather', year: 1972 },
-    //     { title: 'The Godfather: Part II', year: 1974 },
-    //     { title: 'The Dark Knight', year: 2008 },
-    //     { title: '12 Angry Men', year: 1957 },
-    //     { title: "Schindler", year: 1993 },
-    //     { title: 'P' }
-    // ];
+
 
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -145,21 +132,6 @@ const AccountExcelReport = () => {
 
 
 
-    const [selectedItems, setSelectedItems] = useState([]);
-
-    const handleItemSelected = (event, value) => {
-        setSelectedItems(value);
-    };
-
-    const filterData = (inputValue) => {
-        return top100Films.filter((item) => item.title.toLowerCase().includes(inputValue.toLowerCase()));
-    };
-
-    useEffect(() => {
-        const filteredItems = payment?.filter(item => selectedItems?.title?.includes(item?.payment_recevier));
-    
-
-    }, [selectedItems])
 
     const newStartDate = moment(startDate).format("DD-MM-YYYY")
     const newEndDate = moment(endDate).format("DD-MM-YYYY")
@@ -173,7 +145,7 @@ const AccountExcelReport = () => {
                 headers: headers,
             });
             setPayment(data?.data?.data)
-      
+
 
         } catch (err) {
 
@@ -256,8 +228,33 @@ const AccountExcelReport = () => {
         return item
     })
     let selectPayment = paymentList?.length === 0 ? [] : paymentList?.map(function (item) {
-        return item.payment_method;
+        return item.name;
     })
+
+
+    const [filterOption, setOptionFilter] = useState("today")
+    const handleFetchFilterdDataByDate = async () => {
+        try {
+            let data = await axios({
+                method: "get",
+                url: `${process.env.API_URL}/client/accounts/payment-search-datewise/${filterOption}`,
+                headers: headers,
+            });
+            setPayment(data?.data?.data.search)
+            // setTodayData(data?.data?.data)
+            setBalance(data?.data?.data);
+
+
+
+        } catch (err) {
+
+        }
+    };
+    useEffect(() => {
+        if (filterOption !== "") {
+            handleFetchFilterdDataByDate()
+        }
+    }, [filterOption , fetchApi])
 
 
 
@@ -270,6 +267,18 @@ const AccountExcelReport = () => {
                 <div className="Selector">
 
                     <h4>Transactions Report </h4>
+
+                </div>
+                <div className="Selector d_flex">
+
+                    <Button className={filterOption === 'today' && 'active'} onClick={() => setOptionFilter("today")}>Today</Button>
+                    <Button className={filterOption === 'yesterday' && 'active'} onClick={() => setOptionFilter("yesterday")}>Yesterday</Button>
+                    <Button className={filterOption === 'week' && 'active'} onClick={() => setOptionFilter("week")}>This Week</Button>
+                    <Button className={filterOption === 'month' && 'active'} onClick={() => setOptionFilter("month")}>This Month</Button>
+
+
+
+                 
 
                 </div>
 
@@ -428,6 +437,7 @@ const AccountExcelReport = () => {
                             <tbody>
                                 {
                                     payment.length > 0 ? payment.map((item, index) => {
+
                                         return (
                                             <tr key={index}>
                                                 <td>#{item?.bill_no}</td>

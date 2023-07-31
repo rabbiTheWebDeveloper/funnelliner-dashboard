@@ -7,15 +7,15 @@ import { FiEdit } from "react-icons/fi";
 import { useToast } from "../../hook/useToast";
 import { headers } from "../../pages/api";
 import useLoading from "../../hook/useLoading";
-import Spinner from "../commonSection/Spinner/Spinner";
+
 
 const BussnessInfo = ({ redirectFrom, response }) => {
     const [isLoading, startLoading, stopLoading] = useLoading();
     const router = useRouter()
     const showToast = useToast()
     const [busInfo, setBusInfo] = useState({});
-    const [user, setUser] = useState({});
-    const [mainImg, setMainImg] = useState();
+
+
     const [selectedImage, setSelectedImage] = useState(null);
     const [tfValue, setTFValue] = useState('');
     const [address, setAddress] = useState('');
@@ -34,9 +34,7 @@ const BussnessInfo = ({ redirectFrom, response }) => {
     const [youtube, setYoutube] = useState("");
 
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
-    const handleMainImage = (e) => {
-        setMainImg(e.target.files[0]);
-    };
+
 
 
     const businessSubmit = (data) => {
@@ -71,7 +69,7 @@ const BussnessInfo = ({ redirectFrom, response }) => {
                 }
             })
             .catch(function (error) {
-                console.log("error", error.response.data.msg                )
+                console.log("error", error.response.data.msg)
                 stopLoading()
                 showToast(error?.response?.data?.msg, "error")
             });
@@ -87,7 +85,6 @@ const BussnessInfo = ({ redirectFrom, response }) => {
         setAddress(response?.data?.data?.address)
         setWebsiteTitle(response?.data?.data?.shop_meta_title)
         setDesc(response?.data?.data?.shop_meta_description)
-
         setFbLink(response?.data?.data?.fb != "null" ? response?.data?.data?.fb : "https://")
         setLinkedin(response?.data?.data?.linkedin != "null" ? response?.data?.data?.linkedin : "https://")
         setInstagram(response?.data?.data?.instagram != "null" ? response?.data?.data?.instagram : "https://")
@@ -281,13 +278,6 @@ const BussnessInfo = ({ redirectFrom, response }) => {
                                     <Button disabled={isLoading} type="submit">
                                         Update
                                     </Button>
-                                    {/* {
-                                        isLoading ? <Button disabled type="submit">
-                                           <> <Spinner /></> Update                                          
-                                        </Button>:<Button type="submit">
-                                            Update                                          
-                                        </Button>
-                                    } */}
 
                                     
                                 </div>

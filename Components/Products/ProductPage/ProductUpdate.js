@@ -10,7 +10,7 @@ import style from './style.module.css';
 import { useToast } from "../../../hook/useToast";
 import { headers } from "../../../pages/api";
 
-const ProductUpdate = ({ id, product, category, modalOpen, handleCloseModal }) => {
+const ProductUpdate = ({ id, product, category, modalOpen, handleCloseModal, fetchProduct }) => {
     const showToast = useToast();
     const [value, setValue] = useState("1");
     const [tabSelect, setTabSelect] = useState("1");
@@ -26,7 +26,7 @@ const ProductUpdate = ({ id, product, category, modalOpen, handleCloseModal }) =
         setValue(newValue);
     };
 
-    useEffect(() => {     
+    useEffect(() => {
         setDelivery(product?.delivery_charge)
         setInsideDhaka(product?.inside_dhaka)
         setOutDhaka(product?.outside_dhaka)
@@ -80,23 +80,21 @@ const ProductUpdate = ({ id, product, category, modalOpen, handleCloseModal }) =
 
         axios.post(process.env.API_URL + "/client/products/" + id, formData, { headers: headers })
             .then(function (response) {
+
                 if (response?.data?.success) {
                     showToast('Product update successfully!', 'success');
-                    router.push("/product");
-                } else {
-                    showToast('Something went wrong!', 'error');
+                    handleCloseModal()
+                    fetchProduct()
                 }
             })
             .catch(function (error) {
-                if (error.response.status === 400) {
-                    showToast(error.response.data.error, 'error')
+                if (error?.response?.status === 400) {
+                    showToast(error?.response?.data.error, 'error')
                 }
                 else {
                     showToast('Something went wrong!', 'error');
                 }
             });
-        // reset();
-        setOpenSales(false)
     };
 
     const [imageUrl, setImageUrl] = useState(main_image?.name);

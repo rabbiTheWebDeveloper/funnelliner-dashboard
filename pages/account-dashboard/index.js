@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import AccountDashboard from '../../Components/AccountingModeul/AccountDashboard';
 import { headers } from '../api';
 
-const index = ({ myAddonsList ,isApiResponse }) => {
+const AccountDashboardPage = ({ myAddonsList ,isApiResponse }) => {
     const [fetchApi, setFetch] = useState(false)
     const [payment, setPayment] = useState([]);
     const handleFetch = () => {
@@ -18,7 +18,7 @@ const index = ({ myAddonsList ,isApiResponse }) => {
                 url: `${process.env.API_URL}/client/accounts/payment-list`,
                 headers: headers,
             });
-            setPayment(data?.data?.data);
+            // setPayment(data?.data?.data);
 
         } catch (err) {
 
@@ -55,9 +55,6 @@ const index = ({ myAddonsList ,isApiResponse }) => {
 
 
 
-   
-
-
     if (  myAddonsList[0]?.addons_id === 16 && myAddonsList[0]?.status === 1) {
         return (
             <>
@@ -70,7 +67,7 @@ const index = ({ myAddonsList ,isApiResponse }) => {
 
                             <Grid item xs={12}>
 
-                                <AccountDashboard payment={payment} setPayment={setPayment} handleFetch={handleFetch}></AccountDashboard>
+                                <AccountDashboard fetchApi={fetchApi} payment={payment} setPayment={setPayment} handleFetch={handleFetch}></AccountDashboard>
 
                             </Grid>
 
@@ -114,7 +111,4 @@ const index = ({ myAddonsList ,isApiResponse }) => {
 
 
 
-
-
-
-export default index
+export default AccountDashboardPage

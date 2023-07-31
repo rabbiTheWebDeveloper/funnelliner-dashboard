@@ -52,18 +52,22 @@ const AddProduct = () => {
   const handleChangeItem = (e) => {
     if (e.value === "add") {
       handleOpenSuggestNote();
+      return
     }
     setCategoryID(e.value)
   }
   //  add product form 
   const onSubmit = (data) => {
-    if(openSuggestNote){
-      return 
+    //while open category create modal unfortunnatly called prodduct create fucntion
+    if (openSuggestNote) {
+      return
     }
-    if (selectedImage?.size > 5 * 1024 * 1024) {
-      showToast("Product image is too big !", 'error')
+
+    if (selectedImage?.size > 1 * 1024 * 1024) {
+      showToast("Product image size is too big !", 'error')
       return;
     }
+
     else if (categoryID == null) {
       showToast("Category required", "error")
       return;
@@ -134,9 +138,9 @@ const AddProduct = () => {
         if (response.status === 200) {
           stopLoading()
           showToast('Product Add successfully!', 'success')
-          if (router.query.redierct_from) {
+          if (router.query.redirect_from) {
             router.push("/?current_steap=panel3")
-          } else if (router.query.redierct_from !== true) {
+          } else if (router.query.redirect_from !== true) {
             router.push("/product")
           }
         }
@@ -203,7 +207,6 @@ const AddProduct = () => {
   return (
     <>
       <section className="DashboardSetting">
-
         {/* header */}
         <HeaderDescription headerIcon={'flaticon-order-delivery'} title={'Add New Products'} subTitle={'Add new products in your shop'} search={false}></HeaderDescription>
 
@@ -249,13 +252,13 @@ const AddProduct = () => {
                         <div className={style.customInput}>
                           <label>Selling Price <span>*</span></label>
                           <input type="text" placeholder="Example: 599"
-                            {...register("price", { required: true, pattern: /^[0-9]+$/ })}
+                            {...register("price", { required: true, pattern:  /^(?!0)[1-9][0-9]*$/ })}
                           />
                           {errors.price && (
                             <p className="error" >Invalid Price</p>
                           )}
                         </div>
-                      
+
 
                         <div className={style.customInput}>
                           <label>Product Code <span>*</span></label>
@@ -316,7 +319,7 @@ const AddProduct = () => {
                         </div>
 
                         <div className={style.customInput}>
-                          <label>Image <span className={style.mustBe}>Must be:</span> (png, jpg, jpeg) ; <span className={style.mustBe}>Image Size: </span> (Width: 500px, height: 500px)</label>
+                          <label>Image <span className={style.mustBe}>Must be:</span> (png, jpg, jpeg) ; <span className={style.mustBe}>Image Size: </span> (Max-width: 500px, Max-height: 500px)</label>
 
                           <div className={style.imgUploader}>
 

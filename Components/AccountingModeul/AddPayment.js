@@ -9,23 +9,7 @@ import { headers } from '../../pages/api';
 const AddPayment = ({ handleClosePaymentMethod, openSuggestNote1, handelFetchReciver ,handelFetchPaymentlist }) => {
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
-    const handleApiAlert = (response, successMessage) => {
-        handleCloseSuggestNote1()
-        if (response.success) {
-            Swal.fire({
-                icon: "success",
-                title: "Category/Ledger Added!",
-                text: successMessage,
-            });
-            handleCloseSuggestNote1(); // Close the modal
-        } else {
-            Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: response.error,
-            });
-        }
-    }
+
 
     const addPayable = (data) => {
         axios.post(baseTest + "/client/accounts/payment-method-add", data, {
@@ -33,11 +17,9 @@ const AddPayment = ({ handleClosePaymentMethod, openSuggestNote1, handelFetchRec
         })
             .then(function (response) {
                 handelFetchPaymentlist()
-                // handelFetchReciver()
+
                 handleClosePaymentMethod()
-                    // handleApiAlert(response.data, "Category/Ledger Added!");
-                    // Swal.fire("Category/Ledger Added!", response.data.msg, "success");
-                    ; // Close the modal
+
             })
             .catch(function (error) {
                 Swal.fire({

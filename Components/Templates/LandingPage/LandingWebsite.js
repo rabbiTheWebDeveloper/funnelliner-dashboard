@@ -14,9 +14,10 @@ import { useToast } from "../../../hook/useToast";
 import { allThemeList, domain, getWebsiteSettings, headers, importLandingPage, importTheme } from "../../../pages/api";
 import HeaderDescription from "../../Common/HeaderDescription/HeaderDescription";
 import Spinner from "../../commonSection/Spinner/Spinner";
+import SmallLoader from "../../SmallLoader/SmallLoader";
 const axios = require("axios");
 
-const LandingWebsite = () => {
+const LandingWebsite = ({ busInfo }) => {
     const [isLoading, startLoading, stopLoading] = useLoading();
     const showToast = useToast()
     const router = useRouter();
@@ -58,7 +59,7 @@ const LandingWebsite = () => {
         });
     }, []);
 
-    const [pageTittle, setPageTittle] = useState();
+    const [pageTittle, setPageTittle] = useState("");
     const [videoLink, setVideoLink] = useState("");
 
 
@@ -89,7 +90,7 @@ const LandingWebsite = () => {
             if (res.status === 200) {
                 showToast('The page has been created successfully')
                 importTheme("landing", landingId).then((res) => {
-                    if (router.query.redierct_from) {
+                    if (router.query.redirect_from) {
                         router.push("/")
                     }
                     router.push('/myLandingPage')
@@ -109,7 +110,12 @@ const LandingWebsite = () => {
     };
     const [mas, setMas] = useState("");
 
-    const textToCopy = domain_request !== null ? `${themeUrl}/${domain}/p/` : `https://funnelliner.com/${domain}/p/${pageTittle}`;
+
+
+    const textToCopy = domain_request !== null ? `https://${domain_request} /${domain}/p/${pageTittle}` : `https://funnelliner.com/${domain}/p/${pageTittle}`;
+
+
+    console.log("domain_request", domain_request)
 
     const handleCopyToClick = () => {
         const clipboard = new Clipboard(".SocialLink", {
@@ -161,6 +167,7 @@ const LandingWebsite = () => {
     const handlePaginationClick = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
+    console.log("   busInfo?.domain_status" ,    busInfo?.domain_status)
 
     return (
         <>
@@ -168,7 +175,7 @@ const LandingWebsite = () => {
 
                 {/* header */}
                 <HeaderDescription headerIcon={'flaticon-web-design'} title={'Landing Page Template'} subTitle={'choose your theme here and customize as you want'} search={false}></HeaderDescription>
-
+                {landingPageTemplate.length === 0 && <SmallLoader />}
                 <Container maxWidth="sm">
 
                     <Grid Container spacing={3}>
@@ -263,9 +270,18 @@ const LandingWebsite = () => {
                                                                                         className="SocialLink"
                                                                                         alt="Copy to clipboard"
                                                                                     >
-                                                                                        {textToCopy}
+                                                                                        {
+                                                                                            busInfo?.domain_status
+                                                                                                !== "pending" ?
+                                                                                                `https://${domain_request} /${domain}/p/${pageTittle}`
+                                                                                                :
+                                                                                                `https://funnelliner.com/${domain}/p/${pageTittle}`
 
-                                                                                        {pageTittle}
+
+                                                                                        }
+
+
+                                                                                        {/* {pageTittle} */}
                                                                                         <AiOutlineLink
                                                                                             onClick={handleCopyToClick}
                                                                                         />{" "}

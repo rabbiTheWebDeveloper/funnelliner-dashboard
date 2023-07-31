@@ -64,7 +64,7 @@ const UpdateStock = ({ productId, handleFetch }) => {
                             <div className='left'>
                                 <i className="flaticon-edit"></i>
                                 <h4>Update Stock</h4>
-                                <p>Update Your Stock, Increase And Decrease Your Stock</p>
+                                {/* <p>Update Your Stock, Increase And Decrease Your Stock</p> */}
                             </div>
 
                             <div className='right' onClick={handleStockClose}>

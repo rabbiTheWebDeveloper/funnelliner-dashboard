@@ -12,21 +12,13 @@ import { shopId, userId } from "../../pages/api";
 import Uplode from "../edit-theme/Uplode";
 
 const Banner = ({ response }) => {
-    const router = useRouter()
+
     const showToast = useToast()
     const [reviewImage, setReviewImage] = useState([])
 
-    const [user, setUser] = useState(null);
-    const [ownInfo, setOwnInfo] = useState({});
-    // Filter
-    const [age, setAge] = useState("");
-
-    const handleChange = (event) => {
-        setAge(event.target.value);
-    };
     // Tabs
     const [value, setValue] = useState("1");
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+    const { formState: { errors } } = useForm();
 
     const handleChangeTab = (event, newValue) => {
         setValue(newValue);

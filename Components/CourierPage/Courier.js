@@ -9,12 +9,13 @@ import SuperFetch from "../../hook/Axios";
 import useLoading from "../../hook/useLoading";
 import { useToast } from "../../hook/useToast";
 import { activateCourier, headers } from "../../pages/api";
+import SmallLoader from "../SmallLoader/SmallLoader";
 
 const Courier = ({ busInfo }) => {
     const router = useRouter()
     const showToast = useToast();
     const [isLoading, startLoading, stopLoading] = useLoading();
-    const [isLoadingPathao, setIsLoadingPathao] = useState(false);
+
     let [showApi, setShowApi] = useState(false);
     let [secretApi, setSecretApi] = useState(false);
     const [showPathaoSicrets, setShowPathaoSicrets] = useState({
@@ -22,10 +23,10 @@ const Courier = ({ busInfo }) => {
         password: false,
     })
     const data = Cookies.get();
-    const [status, setStatus] = useState({})
+
     const [openSteadFast, setOpenSteadFast] = useState(false);
     const [openPathao, setOpenPathao] = useState(false);
-    const { register, handleSubmit, watch, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors } } = useForm();
     const [pathaoData, setPathaoData] = useState()
     const [steadFastData, setSteadFastData] = useState({})
     // handleApiKey
@@ -37,9 +38,7 @@ const Courier = ({ busInfo }) => {
         }
     }
 
-    const handleSecretKey = () => {
-        setSecretApi(!secretApi)
-    }
+ 
     const label = { inputProps: { "aria-label": "Switch demo" } };
     const mainData = data?.user;
     let parseData;
@@ -65,7 +64,7 @@ const Courier = ({ busInfo }) => {
                 if (res?.status === 200) {
                     stopLoading()
                     showToast("Steadfast details have been successfully submitted.")
-                    if (router.query.redierct_from) {
+                    if (router.query.redirect_from ) {
                         router.push("/?current_steap=panel6")
                     }
 
@@ -77,7 +76,7 @@ const Courier = ({ busInfo }) => {
 
     //pathao
     const handlePathaoSubmit = (data) => {
-        setIsLoadingPathao(true)
+        startLoading()
         const config = {
             "client_id": data.client_id,
             "client_secret": data.client_secret,
@@ -87,19 +86,20 @@ const Courier = ({ busInfo }) => {
             "store_id": data.store_id
         }
         const configData = JSON.stringify(config);
-        activateCourier(merchantId, "pathao", "active", configData).then((res) => {
-            setIsLoadingPathao(false)
+        activateCourier(merchantId, "pathao", "active", configData).then((res) => {       
             if (res.status === 200) {
                 showToast("Pathao details have been successfully submitted.")
-                if (router.query.redierct_from) {
+                if (router.query.redirect_from) {
                     router.push("/?current_steap=panel6")
                 }
             }
+            stopLoading()
         });
     };
 
 
     useEffect(() => {
+        startLoading()
         SuperFetch.get("/client/courier/list", { headers: headers })
             .then(function (response) {
                 if (response.data?.data?.length > 0) {
@@ -114,8 +114,10 @@ const Courier = ({ busInfo }) => {
                         }
                     }
                 }
+                stopLoading()
             })
             .catch(function (error) {
+                stopLoading()
             });
 
     }, [])
@@ -140,6 +142,10 @@ const Courier = ({ busInfo }) => {
     return (
         <>
             <section className='Courier'>
+                {
+                    isLoading &&  <SmallLoader/>
+                }
+               
                 {/* header */}
                 <HeaderDescription headerIcon={'flaticon-courier'} title={'Courier'} subTitle={'Deliver your products with your preferred courier service'} search={false}></HeaderDescription>
 
@@ -226,7 +232,7 @@ const Courier = ({ busInfo }) => {
                                                 </div>
 
                                                 <div className="duelButton">
-                                                    <Button disabled={isLoading} type="submit">Submit</Button>
+                                                    <Button type="submit">Submit</Button>
 
                                                 </div>
 
@@ -305,7 +311,7 @@ const Courier = ({ busInfo }) => {
                                                 </div>
 
                                                 <div className="duelButton">
-                                                    <Button disabled={isLoadingPathao} type="submit">Submit</Button>
+                                                    <Button type="submit">Submit</Button>
                                                     {/* <Button disabled={isLoading} type="submit">{isLoading && <i><Spinner /> </i>}Submit</Button> */}
                                                 </div>
 

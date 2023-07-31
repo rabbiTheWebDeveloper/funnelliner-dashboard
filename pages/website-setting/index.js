@@ -5,7 +5,7 @@ import withAuth from '../../hook/PrivateRoute';
 import { headers } from "../api";
 
 
-const index = () => {
+const WebsiteSettingPage_2 = () => {
     const [response, setResponse] = useState({})
 
     const handleFetchWebsite = async () => {
@@ -38,6 +38,6 @@ const index = () => {
 
 }
 
-export default withAuth(index, {
+export default withAuth(WebsiteSettingPage_2, {
     isProtectedRoute: true
 });

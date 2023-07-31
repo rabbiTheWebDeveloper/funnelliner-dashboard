@@ -5,7 +5,7 @@ import withAuth from '../../hook/PrivateRoute';
 import { getWebsiteSettings } from '../api';
 
 
-const index = () => {
+const AboutUsPage = () => {
     const [websiteSettingData, setWebsiteSettingData]=useState({})
     useEffect(() => {
         getWebsiteSettings()
@@ -22,6 +22,6 @@ const index = () => {
         </>
     )
 }
-export default withAuth(index, {
+export default withAuth(AboutUsPage, {
     isProtectedRoute: true
 });

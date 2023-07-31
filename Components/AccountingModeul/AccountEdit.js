@@ -1,6 +1,5 @@
 import { Box, Button, Modal } from '@mui/material';
 import axios from 'axios';
-import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { default as AsyncSelect } from "react-select";
@@ -20,7 +19,6 @@ const AccountEdit = ({ id, payment, handleFetch, balanceFetch, paymentList, cate
     const [inputValue1, setInputValue1] = useState(info?.payor_id || "");
 
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
-    const router = useRouter()
 
     const handleFetchEditInfo = async () => {
         try {
@@ -50,19 +48,11 @@ const AccountEdit = ({ id, payment, handleFetch, balanceFetch, paymentList, cate
         return { value: item.id, label: item.name };
     })
 
-    const handleInputChange = (inputValue, action) => {
-        if (action.action !== "input-blur" && action.action !== "menu-close") {
-            setInputValue(inputValue);
-        }
-    };
+
     const handleSelectChange = (selectedOption) => {
         setInputValue(selectedOption.value);
     };
-    const handleInputChange1 = (inputValue, action) => {
-        if (action.action !== "input-blur" && action.action !== "menu-close") {
-            setInputValue1(inputValue);
-        }
-    };
+
     const handleSelectChange1 = (selectedOption) => {
         setInputValue1(selectedOption.value);
     };

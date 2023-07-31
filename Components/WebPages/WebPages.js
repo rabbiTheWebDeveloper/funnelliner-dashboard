@@ -14,11 +14,13 @@ import { domain, headers } from '../../pages/api';
 import Skeletor from '../commonSection/Skeleton/Skeleton';
 import useLoading from '../../hook/useLoading';
 import TableSkeletor from '../commonSection/TableSkeletor/TableSkeletor';
+import SmallLoader from '../SmallLoader/SmallLoader';
+import { useToast } from '../../hook/useToast';
 
 
 const WebPages = () => {
     const [isLoading, startLoading, stopLoading] = useLoading()
-
+    const showToast = useToast()
     const [status, setStatus] = useState({})
     const domain_request = Cookies.get('domain_request')
     const handleConfirmationDialog = useConfirmationDialog(
@@ -68,7 +70,9 @@ const WebPages = () => {
                 stopLoading()
             })
             .catch(function (error) {
+                stopLoading()
                 return error
+
             });
 
     }, [status]);
@@ -86,6 +90,7 @@ const WebPages = () => {
         shop_id: merchantShopId
 
     }
+    const token = Cookies.get("token");
     const addPageSubmit = (data) => {
         data.status = "0"
         axios.post(process.env.API_URL + `/client/pages?id=${merchantId}&status=0&title=${product.title}&theme=${id}&slug=hello2`, {
@@ -107,50 +112,29 @@ const WebPages = () => {
     const deleteProduct = async (id) => {
         const isConfirm = await handleConfirmationDialog();
         if (isConfirm) {
+            startLoading()
             axios
                 .delete(process.env.API_URL + "/client/pages/" + id, { headers: headers })
                 .then(function (result) {
+                    stopLoading()
                     // handle success
-                    if (result) {
+                    if (result.status === 200) {
+
+                        showToast(result?.data?.message)
                         setProducts((pd) => {
                             const filter = products.filter((prod) => {
                                 return prod.id !== id;
                             });
                             return [...filter];
                         });
+
                     } else {
                     }
+                }).catch((err) => {
+                    stopLoading()
                 });
-            Swal.fire("Deleted!", "Landing has been deleted.", "success");
         }
-        // const isConfirm = handleConfirmationDialog();
-        // Swal.fire({
-        //     title: "Are you sure?",
-        //     text: "There is no way to undo this.!",
-        //     icon: "warning",
-        //     showCancelButton: true,
-        //     confirmButtonColor: "#3085d6",
-        //     cancelButtonColor: "#d33",
-        //     confirmButtonText: "Yes, delete it!",
-        // }).then((result) => {
-        //     if (isConfirm) {
-        //         axios
-        //             .delete(process.env.API_URL + "/client/pages/" + id, { headers: headers })
-        //             .then(function (result) {
-        //                 // handle success
-        //                 if (result) {
-        //                     setProducts((pd) => {
-        //                         const filter = products.filter((prod) => {
-        //                             return prod.id !== id;
-        //                         });
-        //                         return [...filter];
-        //                     });
-        //                 } else {
-        //                 }
-        //             });
-        //         Swal.fire("Deleted!", "Your file has been deleted.", "success");
-        //     }
-        // });
+
     };
 
     return (
@@ -163,7 +147,9 @@ const WebPages = () => {
 
                 {/* header */}
                 <HeaderDescription headerIcon={'flaticon-web-design'} title={'Pages'} subTitle={'Pages List'} search={false}></HeaderDescription>
-
+                {
+                    isLoading && <SmallLoader />
+                }
                 <Container maxWidth="sm">
 
                     {/* DashboardSettingTabs */}
@@ -215,7 +201,8 @@ const WebPages = () => {
                                                                         </Link></td>
                                                                         <td>{moment(product.created_at).fromNow()}</td>
                                                                         <td className=''>
-                                                                            <Button className={product.status === 1 ? "UpdateStock" : "Unpublished"}>Published</Button>
+                                                                            {product.status === 1 ? "Published" : "Unpublished"}
+                                                                            {/* <Button className={product.status === 1 ? "UpdateStock" : "Unpublished"}>{product.status === 1 ? "Published" : "Unpublished"}</Button> */}
                                                                         </td>
 
 
@@ -223,6 +210,20 @@ const WebPages = () => {
                                                                         <td>
 
                                                                             <div className="action">
+                                                                                <Link
+                                                                                    target="_blank"
+                                                                                    href={
+                                                                                        `https://editor.funnelliner.com/design.php?sid=` +
+                                                                                        product?.shop_id +
+                                                                                        "&id=" +
+                                                                                        product?.id +
+                                                                                        "&uid=" +
+                                                                                        product?.user_id +
+                                                                                        "&au=" +
+                                                                                        `${token}`}
+                                                                                    className='updateActionBtn'>
+                                                                                    Customize
+                                                                                </Link>
 
                                                                                 <Link className='viewActionBtn' target="_blank"
                                                                                     href={domain_request != 'null' ? `https://${domain_request}` + "/p/" + product.slug : `${themeUrl}/${domain}` + "/p/" + product.slug}>
@@ -247,7 +248,7 @@ const WebPages = () => {
                                                             }) : null}
 
                                                     {
-                                                        isLoading === false && products&& products?.length === 0 && 
+                                                        isLoading === false && products && products?.length === 0 &&
                                                         <tr>
                                                             <td colSpan={7}>
                                                                 <div className='NullPage'>

@@ -69,7 +69,7 @@ const AddProductCategory = ({ handleCloseSuggestNote, openSuggestNote, handelFet
                                                 <p>This will be displayed on your Category page</p>
                                             </div>
                                             <div className={style.FormValidation}>
-                                                <div className={style.customInput}>
+                                                <div className={style.customInput} >
                                                     <label>Category Name <span>*</span></label>
                                                     <input
                                                         type="text"

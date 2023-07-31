@@ -15,10 +15,7 @@ const NoticeBoard = ({ busInfo }) => {
     // doment notice 
     const { domain_status, domain_request } = busInfo;
     return (
-
-
         <>
-
             <section className='NoticeBoard'>
 
                 <Container maxWidth="sm">

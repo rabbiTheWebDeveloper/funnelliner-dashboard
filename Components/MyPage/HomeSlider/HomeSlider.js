@@ -2,14 +2,14 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, Button, Container, Grid, Tab } from "@mui/material";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useRouter } from 'next/router';
+
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { baseTest } from "../../../constant/constant";
 import { useToast } from "../../../hook/useToast";
 import { shopId, userId } from "../../../pages/api";
 // Css
-// import Banner from "../Banner/Banner";
+
 
 import HeaderDescription from "../../Common/HeaderDescription/HeaderDescription";
 import UploderNew from "../../edit-theme/UploderNew";
@@ -22,25 +22,18 @@ import Spinner from "../../commonSection/Spinner/Spinner";
 
 const HomeSlider = ({ response, IsHeaderDescription }) => {
     const [isLoading, startLoading, stopLoading] = useLoading();
-    const router = useRouter()
+
     const showToast = useToast()
     const [imageData, setImageData] = useState([]);
     const [slider_list, setSlider_list] = useState([])
-    const [isApiCallAgain, setIsAPIcallAgain] = useState(false)
+
     // { file: null, previewURL: '' }
     const [links, setLinks] = useState([]);
 
-    const [user, setUser] = useState(null);
-    const [ownInfo, setOwnInfo] = useState({});
-    // Filter
-    const [age, setAge] = useState("");
 
-    const handleChange = (event) => {
-        setAge(event.target.value);
-    };
     // Tabs
     const [value, setValue] = useState("1");
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+    const {reset, formState: { errors } } = useForm();
 
     const handleChangeTab = (event, newValue) => {
         setValue(newValue);
@@ -94,7 +87,7 @@ const HomeSlider = ({ response, IsHeaderDescription }) => {
             .then(function (response) {
                 stopLoading()
                 fetch_slider()
-                showToast("Sliders Image update success")
+                showToast(response?.data?.msg)
                 // setIsLoading(false)
                 // setUpdate(true)
             })
@@ -175,7 +168,7 @@ const HomeSlider = ({ response, IsHeaderDescription }) => {
                                                         <br />
                                                         <label>
                                                             Image <span className="mustBe">Must be:</span> (png, jpg, jpeg) ;
-                                                            <span className="mustBe">Image Size:</span> (Width: 500px, height: 500px)
+                                                            <span className="mustBe">Image Size:</span> (Width:  1300px , height: 520px)
                                                         </label>
 
                                                         <div className={style.homeSliderDivMain}>
@@ -209,7 +202,7 @@ const HomeSlider = ({ response, IsHeaderDescription }) => {
                                                             isLoading ? <Button disabled className="theme_edit_submit_btn" sx={{ mb: 2 }}>
                                                                 <React.Fragment> <Spinner /></React.Fragment> Add Slider
                                                             </Button> : <Button disabled={isLoading} onClick={editForm} className="theme_edit_submit_btn" sx={{ mb: 2 }}>
-                                                                <i className="flaticon-install"></i> Add Slider</Button>
+                                                                <i className="flaticon-install"></i>Confirm Slider</Button>
                                                         }
 
                                                     </div>

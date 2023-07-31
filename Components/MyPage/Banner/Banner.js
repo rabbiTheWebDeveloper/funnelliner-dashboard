@@ -2,7 +2,7 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, Button, Container, Grid, Tab } from "@mui/material";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useRouter } from 'next/router';
+
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { baseTest } from "../../../constant/constant";
@@ -15,29 +15,23 @@ import useLoading from "../../../hook/useLoading";
 
 const Banner = ({ response }) => {
     const [isLoading, startLoading, stopLoading] = useLoading();
-    const router = useRouter()
+
     const showToast = useToast()
     const [bannerList, setBannerList] = useState([]);
     const [imageData, setImageData] = useState([{ file: null, previewURL: '' }]);
     const [links, setLinks] = useState([]);
-    const [user, setUser] = useState(null);
-    const [ownInfo, setOwnInfo] = useState({});
-    // Filter
-    const [age, setAge] = useState("");
-    const handleChange = (event) => {
-        setAge(event.target.value);
-    };
+
 
 
     // Tabs
     const [value, setValue] = useState("1");
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+    const { reset, formState: { errors } } = useForm();
     const handleChangeTab = (event, newValue) => {
         setValue(newValue);
         // router.push(`/dashboard-setting?pass=${newValue}`)
     };
     const token = Cookies.get("token");
-    const [fetchApi, setFetch] = useState(false)
+
     // addons show and hode 
 
     const fetch_banners = () => {
@@ -85,6 +79,7 @@ const Banner = ({ response }) => {
         })
             .then(function (response) {
                 if (response.status === 200) {
+                    showToast(response?.data?.msg)
                     fetch_banners()
                 }
             })
@@ -149,7 +144,7 @@ const Banner = ({ response }) => {
                                                         <br />
                                                         <label>
                                                             Image <span className="mustBe">Must be:</span> (png, jpg, jpeg) ;
-                                                            <span className="mustBe">Image Size:</span> (Width: 500px, height: 500px)
+                                                            <span className="mustBe">Image Size:</span> (Width:375px, height: 275px)
                                                         </label>
 
                                                         <div className={style.homeSliderDivMain}>

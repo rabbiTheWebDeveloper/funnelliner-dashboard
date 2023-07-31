@@ -7,7 +7,7 @@ import withAuth from '../../hook/PrivateRoute';
 import { headers } from '../api';
 
 
-const index = () => {
+const DashboardSettingPage = () => {
     const[response ,setResponse]=useState({})
 
     useEffect(() => {
@@ -38,6 +38,6 @@ const index = () => {
 
 }
 
-export default withAuth(index, {
+export default withAuth(DashboardSettingPage, {
     isProtectedRoute: true
 });

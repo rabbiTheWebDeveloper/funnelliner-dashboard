@@ -12,11 +12,11 @@ const BkashDashboard = ({ bkashBalance }) => {
     const pass = Cookies.get('m_b_k_p')
     const [TrxsSearchString, setTrxsSearchString] = useState("")
     const [searchedData, setSearchedData] = useState([])
-    const [isOpenNextBtn, setIsOpenNextBtn] = useState(false)
+
     const [trxList, setTrxList] = useState([])
     const [nextToken, setNextToken] = useState(null)
     const [isLoading, setIsLoading] = useState(false)
-    const [filterData, setFilterData] = useState([])
+
     const handleFetchMerchentTransaction = (nextToken) => {
         setIsLoading(true)
         axios.post(process.env.Bkash_URL, {
@@ -46,13 +46,7 @@ const BkashDashboard = ({ bkashBalance }) => {
         handleFetchMerchentTransaction()
     }, [])
 
-    let totalTransaction = trxList.reduce(function (acc, item) {
-        let value = parseInt(item?.amount);
-        if (value < 0) {
-            value = -value;
-        }
-        return acc + value;
-    }, 0);
+
 
     const handleSearchTransication = () => {
         const filtered = trxList.filter(item => item?.trxId?.toLowerCase().toString().includes(TrxsSearchString.toLowerCase()));
@@ -192,6 +186,7 @@ const BkashDashboard = ({ bkashBalance }) => {
 
                 </div>
 
+
                 {/* BkashDashboardTable */}
                 <div className="BkashDashboardTable">
 
@@ -213,6 +208,7 @@ const BkashDashboard = ({ bkashBalance }) => {
 
                                 {
                                     TrxsSearchString.length > 0 && searchedData.map((item, index) => <tr key={index}>
+                                        
                                         <td>{item?.dateTime}</td>
                                         <td>{item?.wallet}</td>
                                         <td>{item?.trxId}</td>

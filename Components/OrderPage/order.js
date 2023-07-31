@@ -32,7 +32,7 @@ import SmallLoader from "../../Components/SmallLoader/SmallLoader";
 import useLoading from "../../hook/useLoading";
 
 
-const index = ({ orderUpdate }) => {
+const Order = ({ orderUpdate }) => {
     const showToast = useToast();
     const [isLoading, startLoading, stopLoading] = useLoading()
     const [active, setDefault] = useState('pending')
@@ -1196,6 +1196,6 @@ const index = ({ orderUpdate }) => {
 
 }
 // export default index;
-export default withAuth(index, {
+export default withAuth(Order, {
     isProtectedRoute: true
 });

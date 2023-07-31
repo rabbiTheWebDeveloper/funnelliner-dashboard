@@ -21,22 +21,11 @@ import FilterCategoryItem from './FilterCategoryItem';
 import FilterPaymentItem from './FilterPaymentItem';
 import FilterReceverItem from './FilterReceverItem';
 
-const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
-    const router = useRouter();
+const AccountDashboard = ({ payment, setPayment, handleFetch  ,fetchApi}) => {
+
     const [search, setSearch] = useState(null)
-    const [showPicker, setShowPicker] = useState(false);
-    const [openDialog, setOpenDialog] = useState(false)
-    const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-    const checkedIcon = <CheckBoxIcon fontSize="small" />;
-    // Dropdown
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const open = Boolean(anchorEl);
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+
+
     // Custom Date
     const [startDate, setStartDate] = useState();
     const [endDate, setEndDate] = useState();
@@ -53,6 +42,8 @@ const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
     const balanceFetch = () => {
         setUpdate(true);
     }
+
+
 
 
     //   delete 
@@ -79,7 +70,6 @@ const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
                             });
                             setUpdate(true)
                             Swal.fire("Deleted!", "Your file has been deleted.", "success");
-                        } else {
                         }
                     }).catch((errr) => {
                         alert("Some thing went wrong")
@@ -108,7 +98,7 @@ const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
     }, [update]);
 
     //filter data by date
-    const [filterOption, setOptionFilter] = useState("")
+    const [filterOption, setOptionFilter] = useState("today")
     const handleFetchFilterdDataByDate = async () => {
         try {
             let data = await axios({
@@ -117,7 +107,10 @@ const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
                 headers: headers,
             });
             setPayment(data?.data?.data.search)
+            setTodayData(data?.data?.data)
             setBalance(data?.data?.data);
+
+
 
         } catch (err) {
 
@@ -127,7 +120,7 @@ const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
         if (filterOption !== "") {
             handleFetchFilterdDataByDate()
         }
-    }, [filterOption])
+    }, [filterOption , fetchApi])
     const handleFetchSearch = async () => {
         try {
             let data = await axios({
@@ -149,46 +142,6 @@ const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
 
         }
     }, [search])
-    const [followUpChange, setFollowUpInputChange] = useState("")
-    const [selectedValue, setSelectedValue] = useState(null)
-
-    const menuItemHoverStyle = {
-        '&:hover': {
-            backgroundColor: '#894bca',
-            color: '#fff'
-        },
-        '&.Mui-selected': {
-            backgroundColor: '#894bca',
-            color: '#fff'
-        }
-    };
-    const FilterDateInput = styled(TextField)({
-        '& .MuiInputBase-root': {
-            height: '42px',
-            marginRight: '10px',
-            width: '250px'
-        },
-    })
-
-    const handleOpenDialog = () => {
-        setOpenDialog(true)
-    }
-
-    const handleCloseDialog = () => {
-        setOpenDialog(false)
-    }
-
-
-    const handleSelected = (value) => {
-        setFollowUpInputChange(value)
-        setOpenDialog(false)
-        if (value === 'custom') {
-            setShowPicker(true);
-        } else {
-            setShowPicker(false);
-        }
-        setSelectedValue(value)
-    }
 
 
     const newStartDate = moment(startDate).format("DD-MM-YYYY")
@@ -227,7 +180,7 @@ const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
                 headers: headers,
             });
             setReciverList(data?.data?.data)
-           
+
 
         } catch (err) {
 
@@ -253,7 +206,7 @@ const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
                 headers: headers,
             });
             setCategoryList(data?.data?.data)
-     
+
 
         } catch (err) {
 
@@ -272,10 +225,10 @@ const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
 
 
 
-   
-    // payment list 
 
-    const [paymentList, setPaymentList] = useState([])
+    // payment list 
+    const [todayData, setTodayData] = useState([])
+    const [paymentList, setPaymentList] = useState(todayData)
     const [fetchPaymentList, setFetchPaymentList] = useState(false)
 
     const handleFetchPaymentList = async () => {
@@ -309,7 +262,7 @@ const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
         return item;
     })
     let selectPayment = paymentList?.length === 0 ? [] : paymentList?.map(function (item) {
-        return item.payment_method;
+        return item.name;
     })
 
 
@@ -440,7 +393,7 @@ const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
 
                     {/* Item */}
                     <div className="HeaderItemContent">
-                        <CashIn handelFetchPaymentlist={handelFetchPaymentlist}  handleFetch={handleFetch} balanceFetch={balanceFetch} payment={payment} paymentList={paymentList} categoryList={categoryList} reciverList={reciverList} handelFetchCategory={handelFetchCategory} handelFetchReciver={handelFetchReciver} />
+                        <CashIn handelFetchPaymentlist={handelFetchPaymentlist} handleFetch={handleFetch} balanceFetch={balanceFetch} payment={payment} paymentList={paymentList} categoryList={categoryList} reciverList={reciverList} handelFetchCategory={handelFetchCategory} handelFetchReciver={handelFetchReciver} />
                     </div>
 
                     {/* Item */}
@@ -470,7 +423,7 @@ const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
                         </div>
 
                         <div className="FilterItem">
-                            <FilterCategoryItem  balanceFetch={balanceFetch} setBalance={setBalance} selectCatgory={selectCatgory} setPayment={setPayment} handleFetch={handleFetch}></FilterCategoryItem>
+                            <FilterCategoryItem balanceFetch={balanceFetch} setBalance={setBalance} selectCatgory={selectCatgory} setPayment={setPayment} handleFetch={handleFetch}></FilterCategoryItem>
                         </div>
 
                         <div className="FilterItem">
@@ -524,7 +477,7 @@ const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
                                                 <td>{item?.description}</td>
                                                 <td>{item?.ledgerName}</td>
                                                 <td>{item?.payment_type}</td>
-                                                <td style={item.status !== 'CashIn' ? { color: 'red' } : { color: 'green' , fontWeight:600 }}>
+                                                <td style={item.status !== 'CashIn' ? { color: 'red' } : { color: 'green', fontWeight: 600 }}>
                                                     {item.status === 'CashIn' ? '+' : '-'}
                                                     {item?.amount.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                                                 </td>

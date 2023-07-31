@@ -4,7 +4,7 @@ import AllNotification from "../../Components/Common/AllNotification/AllNotifica
 import { headers } from "../api";
 import withAuth from "../../hook/PrivateRoute";
 
-const index = ({ busInfo }) => {
+const NotificationPage = ({ busInfo }) => {
   const [data, setData] = useState([])
   const { id } = busInfo
   const notification = () => {
@@ -35,7 +35,7 @@ const index = ({ busInfo }) => {
   );
 };
 
-export default withAuth(index, {
+export default withAuth(NotificationPage, {
   isProtectedRoute: true,
   show: false,
 });

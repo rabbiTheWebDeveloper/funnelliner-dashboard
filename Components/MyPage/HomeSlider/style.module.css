@@ -84,6 +84,7 @@
 
 .homeSliderDiv{
   width: 16%;
+  position: relative;
 }
 
 .homeSliderDiv img{
@@ -93,9 +94,6 @@
   object-fit: cover;
 }
 
-.homeSliderDiv {
- position: relative;
-}
 
 .homeSliderDiv i{
   position: absolute;
@@ -105,6 +103,21 @@
   right: 0;
 }
 
+
+@media (max-width: 1399px) {
+  
+  .HomeSlider .HomeSliderContent .Add button {
+    font-size: 16px;
+    line-height: 20px;
+  }
+
+  .homeSliderDiv img {
+    height: 150px;
+  }
+
+
+
+}
 
 
 @media (max-width: 575px) {

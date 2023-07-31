@@ -1,35 +1,35 @@
-.HomeSlider{
+.HomeSlider {
     margin-top: 30px;
 }
 
-.HomeSlider .HomeSliderContent .customInput{
+.HomeSlider .HomeSliderContent .customInput {
     margin-top: 20px;
 }
 
-.HomeSlider .HomeSliderContent .customInput input{
+.HomeSlider .HomeSliderContent .customInput input {
     width: 40%;
     /* margin-top: -14px; */
 }
 
-.HomeSlider .HomeSliderContent label span{
+.HomeSlider .HomeSliderContent label span {
     color: var(--header-color);
 }
 
-.HomeSlider .HomeSliderContent .close{
+.HomeSlider .HomeSliderContent .close {
     cursor: pointer;
     margin-top: -8px;
 }
 
-.HomeSlider .HomeSliderContent .close i{
+.HomeSlider .HomeSliderContent .close i {
     font-size: 30px;
     color: var(--red-color);
 }
 
-.HomeSlider .HomeSliderContent .Add{
+.HomeSlider .HomeSliderContent .Add {
     margin-top: 20px;
 }
 
-.HomeSlider .HomeSliderContent .Add button{
+.HomeSlider .HomeSliderContent .Add button {
     background: var(--active-color);
     border: 1px solid var(--active-color);
     padding: 10px 30px;
@@ -41,18 +41,18 @@
     align-items: center;
 }
 
-.HomeSlider .HomeSliderContent .Add button i{
+.HomeSlider .HomeSliderContent .Add button i {
     font-size: 14px;
     line-height: 18px;
     margin-right: 10px;
     margin-bottom: -5px;
 }
 
-.Submit{
+.Submit {
     text-align: center;
 }
 
-.Submit button{
+.Submit button {
     background: var(--main-color);
     border: 1px solid var(--main-color);
     padding: 10px 50px;
@@ -65,55 +65,70 @@
     text-align: right;
 }
 
-.Submit button i{
+.Submit button i {
     font-size: 25px;
     margin-right: 10px;
 }
 
-.Submit button:hover{
+.Submit button:hover {
     background: var(--main-hover-color);
 }
 
-.homeSliderDivMain{
+.homeSliderDivMain {
     display: flex;
-    gap:30px;
+    gap: 30px;
     flex-wrap: wrap;
     margin-bottom: 20px;
-  }
-  
-  .homeSliderDiv{
-    width: 30%;
-  }
-  
-  .homeSliderDiv img{
+}
+
+.homeSliderDiv {
+    /* width: 30%; */
+}
+
+.homeSliderDiv img {
     display: flex;
     width: 100%;
     height: 250px;
     object-fit: cover;
-  }
+}
 
-  .homeSliderDiv {
+.homeSliderDiv {
     position: relative;
-   }
-   
-   .homeSliderDiv i{
-     position: absolute;
-     font-size: 30px;
-     cursor: pointer;
-     color: red;
-     right: 0;
-     
-   }
+}
 
-   @media (max-width: 575px) {
-  
-    .homeSliderDiv{
-      width: 100%;
+.homeSliderDiv i {
+    position: absolute;
+    font-size: 30px;
+    cursor: pointer;
+    color: red;
+    right: 0;
+
+}
+
+@media (max-width: 1399px) {
+
+    .homeSliderDiv img {
+        width: auto;
+        height: 150px;
     }
 
-    .homeSliderDiv img{
-        height: 200px;
+    .HomeSlider .HomeSliderContent .Add button {
+        font-size: 16px;
+        line-height: 20px;
       }
+    
 
-  
-  }
+}
+
+@media (max-width: 575px) {
+
+    .homeSliderDiv {
+        width: 100%;
+    }
+
+    .homeSliderDiv img {
+        height: 200px;
+    }
+
+
+}

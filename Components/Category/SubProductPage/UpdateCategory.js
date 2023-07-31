@@ -14,18 +14,12 @@ const UpdateCategory = ({ id }) => {
     const showToast = useToast()
     const [products, setProducts] = useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
-    const [mainImg, setMainImg] = useState();
+
     const [openSales, setOpenSales] = useState(false);
     const handleOpenSales = () => setOpenSales(true);
     const handleCloseSales = () => setOpenSales(false);
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
-    const [previewMainImg, setPreviewMainImg] = useState({ file: null });
 
-    const handleMainImage = (e) => {
-        setMainImg(e.target.files[0]);
-        const file = e.target.files[0];
-        setPreviewMainImg({ file: URL.createObjectURL(file) });
-    };
 
 
     const onCategorySubmit = (data) => {

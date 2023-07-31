@@ -14,10 +14,9 @@ import { headers } from "../../../pages/api";
 
 const AddCategory = () => {
     const [selectedImage, setSelectedImage] = useState(null);
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors } } = useForm();
     const [text, setText] = useState('');
-
-    const [addCategory, { }] = useAddCategoryMutation();
+    const [addCategory, setAddCategory] = useAddCategoryMutation();
     const showToast = useToast()
     const [isLoading, startLoading, stopLoading] = useLoading();
 
@@ -66,25 +65,6 @@ const AddCategory = () => {
         setText(event.target.value);
     };
 
-    // const onCategorySubmit = (data) => {
-
-    //     data.parent_id = "0";
-    //     data.description = "sada";
-    //     data.status = "1";
-    //     const formData = new FormData();
-    //     formData.append('category_image', selectedImage);
-    //     formData.append('name', data.name);
-    //     formData.append('description', data.description);
-    //     formData.append('parent_id', data.parent_id);
-    //     formData.append('status', data.status);
-
-    //     // if (selectedImage?.size > 1024 * 1024) {
-    //     //     showToast("Image size is too big !", 'error')
-    //     //     return;
-    //     // }
-    //     console.log(data)
-    //     addCategory(data)
-    // };
     const [imageUrl, setImageUrl] = useState(null);
 
     useEffect(() => {

@@ -3,10 +3,10 @@ import BulkSms from '../../Components/BulkSmsPage/BulkSms';
 import withAuth from '../../hook/PrivateRoute';
 
 
-const index = () => {
+const index = ({busInfo , handelFetchBusInfo}) => {
     return (
         <>
-            <BulkSms></BulkSms>
+            <BulkSms busInfo={busInfo} handelFetchBusInfo={handelFetchBusInfo}></BulkSms>
 
         </>
 

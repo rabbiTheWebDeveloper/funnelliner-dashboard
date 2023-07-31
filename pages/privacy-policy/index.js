@@ -5,7 +5,7 @@ import { getWebsiteSettings } from '../api';
 import PrivacyPolicy from '../../Components/MyPage/privacyPolicy/PrivacyPolicy';
 
 
-const index = () => {
+const PrivacyPolicyPage = () => {
     const [websiteSettingData, setWebsiteSettingData]=useState({})
     useEffect(() => {
         getWebsiteSettings()
@@ -22,6 +22,6 @@ const index = () => {
         </>
     )
 }
-export default withAuth(index, {
+export default withAuth(PrivacyPolicyPage, {
     isProtectedRoute: true
 });

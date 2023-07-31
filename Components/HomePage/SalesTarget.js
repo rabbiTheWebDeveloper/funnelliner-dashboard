@@ -10,10 +10,9 @@ const SalesTarget = ({ salesTarget, salesTargetRfatch }) => {
     const [openSales, setOpenSales] = useState(false);
     const handleOpenSales = () => setOpenSales(true);
     const handleCloseSales = () => setOpenSales(false);;
-    const percentage = 75;
     const calculatePercentage = (achievement) => {
         const numberValue = parseFloat(achievement?.replace(/,/g, ''))
-        console.log(numberValue)
+     
         let percent = Math.min(numberValue, 100);
         return percent;
     }

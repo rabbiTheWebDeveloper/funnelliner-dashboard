@@ -27,32 +27,10 @@ const publicIp = require("react-public-ip");
 const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
   const dispatch = useDispatch();
   const { id } = busInfo;
-  const [openCategory, setOpenCategory] = React.useState(false);
-  const [openStock, setOpenStock] = React.useState(false);
-  const [openTemplate, setOpenTemplate] = React.useState(false);
-  const [openMyTemplate, setOpenMyTemplate] = React.useState(false);
+
   const [token, setToken] = useState("");
   const router = useRouter();
-  // handleCategory
-  const handleCategory = () => {
-    setOpenCategory(!openCategory);
-  };
-  // handleStock
-  const handleStock = () => {
-    setOpenStock(!openStock);
-  };
-  // handleTemplate
-  const handleTemplate = () => {
-    setOpenTemplate(!openTemplate);
-  };
-  // handleTemplate
-  const handleMyTemplate = () => {
-    setOpenMyTemplate(!openMyTemplate);
-  };
 
-  const handleClose = () => {
-    setAnchorElMenu(null);
-  };
 
   useEffect(() => {
     // Perform localStorage action
@@ -81,7 +59,6 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
         if (response.status === 200) {
           Cookies.remove("token");
           Cookies.remove("Skip_status");
-          // Cookies.remove("total_task");
           Cookies.remove("domain_request");
 
           Cookies.remove();
@@ -96,8 +73,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
 
 
 
-  // SideMenu Toggle
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
 
   //dispatch call when dropdown change
   const handleDropdownChange = (value, popupState) => {
@@ -113,7 +89,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
   const handelNotify = () => {
     setNotifyfac(true);
   }
-  const [countNotify, setCountNotify] = useState('');
+
 
 
   const [data, setData] = useState([])
@@ -131,10 +107,8 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
       .catch((error) => {
 
       });
-
     // setNotifyfac(false)
   }
-
   useEffect(() => {
     notification();
     // setNotifyfac(false)
@@ -142,12 +116,9 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
 
   const unread = () => {
     const newdata = data.length > 0 && Array.isArray(data) ? data.filter(data => data.read === null) : []
-
     return newdata.length
 
   }
-
-
   // Sidebar All work
   const [openSidebar, setOpenSidebar] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState({
@@ -172,11 +143,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
     };
   }, [isInsideLongSidebar]);
 
-  // handleClickSubmenu
-  // const handleClickSubmenu = (event) => {
-  //   setOpenSubmenu(!openSubmenu);
-  //   setOpenSidebar(true)
-  // };
+
 
   const handleClickSubmenu = (submenuName) => {
     setOpenSubmenu((prevState) => ({
@@ -199,6 +166,26 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
   };
 
 
+  const notificationRead = (id) => {
+    const orderBody = {
+      notify_id: id,
+      type: "order"
+    }
+    axios.post(process.env.API_URL + `/client/notifications-read`, orderBody, {
+      headers: headers,
+    })
+      .then(function (res) {
+        handelNotify()
+        // setData(res.data.data)
+      })
+      .catch((error) => {
+
+      });
+
+    // setNotifyfac(false)
+  }
+
+
   return (
 
     <>
@@ -208,13 +195,16 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
         {/* logo */}
         <div className="Logo">
 
-          {/* <img className="ShortLogo" src="/images/short-logo.png" alt="" />
-          <img className="LongLogo" src="/images/funnel-liner-logo-beta.png" alt="" /> */}
+          {/* <img className="ShortLogo" src="/images/short-logo.png" alt="" />*/}
+
+          {/* <img className="LongLogo" src="/images/funnel-liner-logo-beta.png" alt="" /> */}
 
           <Link href='/'>
             {
+
               busInfo?.shop_logo?.name ? <img className="ShortLogo" src={busInfo?.shop_logo?.name} alt='' /> : <i className="flaticon-home-3"></i>
             }
+
           </Link>
 
           <h4>
@@ -254,7 +244,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
             </li>
 
             {/* Products */}
-            <li className={openSubmenu.product && router.pathname === "/product" || openSubmenu.product && router.pathname === "/product" || openSubmenu.product && router.pathname === "/category-list" ? "active" : ""}>
+            <li className={openSubmenu.product && router.pathname === "/product" || openSubmenu.product && router.pathname === "/category-list" ? "active" : ""}>
 
               <Tooltip title="Products" placement="right">
                 <h6 onClick={() => handleClickSubmenu('product')} > <i className="flaticon-checkout"></i> <span> Products </span> </h6>
@@ -284,7 +274,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
             </li>
 
             {/* Stock */}
-            <li className={router.pathname === "/inventory" || router.pathname === "/inventory" || router.pathname === "/stockin" || router.pathname === "/product-return" ? "active" : ""}>
+            <li className={router.pathname === "/inventory" || router.pathname === "/stockin" || router.pathname === "/product-return" ? "active" : ""}>
 
               <Tooltip title="Stock" placement="right">
                 <h6 onClick={() => handleClickSubmenu('stock')}> <i className="flaticon-in-stock"></i> <span> Stock </span> </h6>
@@ -333,7 +323,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
             </li>
 
             {/* Templates */}
-            <li className={router.pathname === "/landing-page" || router.pathname === "/landing-page" || router.pathname === "/multi-page" ? "active" : ""}>
+            <li className={router.pathname === "/landing-page" || router.pathname === "/multi-page" ? "active" : ""}>
 
               <Tooltip title="Templates" placement="right">
                 <h6 onClick={() => handleClickSubmenu('template')}> <i className="flaticon-template"></i> <span> Templates </span> </h6>
@@ -354,7 +344,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
             </li>
 
             {/* My Page */}
-            <li className={router.pathname === "/myLandingPage" || router.pathname === "/myLandingPage" || router.pathname === "/myMultiWebsite" || router.pathname === "/web-pages" || router.pathname === "/home-slider" || router.pathname === "/about-us" || router.pathname === "/terms-and-condition" || router.pathname === "/privacy-policy" ? "active" : ""}>
+            <li className={router.pathname === "/myLandingPage" || router.pathname === "/myMultiWebsite" || router.pathname === "/web-pages" || router.pathname === "/home-slider" || router.pathname === "/about-us" || router.pathname === "/terms-and-condition" || router.pathname === "/privacy-policy" ? "active" : ""}>
 
               <Tooltip title="My Page" placement="right">
                 <h6 onClick={() => handleClickSubmenu('myPage')}> <i className="flaticon-computer"></i> <span> My Page </span> </h6>
@@ -419,10 +409,10 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
               Array.isArray(myAddonsList) ? myAddonsList?.map((addon, index) => {
                 return (
                   addon?.addons_id === 16 && addon?.status === 1 &&
-                  <li className={router.pathname === "/account-dashboard" || router.pathname === "/account-dashboard" || router.pathname === "/account-report" ? "active" : ""}>
+                  <li className={router.pathname === "/account-dashboard" || router.pathname === "/account-report" ? "active" : ""}>
 
                     <Tooltip title="Accounting Modules" placement="right">
-                      <h6 onClick={() => handleClickSubmenu('account')}> <i className="flaticon-in-Accounting-Modules"></i> <span> Accounting Modules </span> </h6>
+                      <h6 onClick={() => handleClickSubmenu('account')}> <i className="flaticon-cash-on-delivery"></i> <span> Accounting Modules </span> </h6>
                     </Tooltip>
 
                     {
@@ -500,9 +490,9 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
                     <PopupState variant="popover" popupId="Profile">
                       {(popupState) => (
                         <>
-                          <Button {...bindTrigger(popupState)}>
-                            <i className="flaticon-notification"></i>
-                            <h6>{unread()}</h6>
+                          <Button {...bindTrigger(popupState)} >
+                            <i onClick={() => notificationRead(id)} className="flaticon-notification"></i>
+                            <h6 onClick={() => notificationRead(id)}>{unread()}</h6>
                           </Button>
                           <Menu
                             {...bindMenu(popupState)}
@@ -584,6 +574,38 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
         </Container>
 
       </section>
+
+      <div className="MobileFooterMenu">
+
+        <ul>
+
+          <li className={router.pathname === "/" ? "active" : ""}>
+            <Link href='/'> <i className="flaticon-home-1"></i>  </Link>
+          </li>
+
+          <li className={router.pathname === "/order" ? "active" : ""}>
+            <Link href='/order'> <i className="flaticon-express-delivery"></i></Link>
+          </li>
+
+          <li className={router.pathname === "/product" ? "active" : ""}>
+            <Link href='/product'> <i className="flaticon-order-delivery"></i> </Link>
+          </li>
+
+          <li className={router.pathname === "/myLandingPage" ? "active" : ""}>
+            <Link href='/myLandingPage'><i className="flaticon-browser-1"></i></Link>
+          </li>
+
+          {/* <li className={router.pathname === "/support-ticket" ? "active" : ""}>
+            <Link href='/support-ticket'> <i className="flaticon-customer-service"></i> </Link>
+          </li>
+
+          <li className={router.pathname === "/website-setting" ? "active" : ""}>
+            <Link href='/website-setting'> <i className="flaticon-settings-4"></i>  </Link>
+          </li> */}
+
+        </ul>
+
+      </div>
 
     </>
 

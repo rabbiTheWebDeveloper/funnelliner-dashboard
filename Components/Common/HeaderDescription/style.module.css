@@ -90,7 +90,7 @@ Midia
 ------------------------------------------------------------------------------------------
 */
 
-@media (max-width: 1023px) {}
+
 
 
 
@@ -102,12 +102,9 @@ Midia
 
     .customInput {
         margin-top: 20px;
-        width: auto;
-    }
-
-    .customInput {
         width: 100%;
     }
+
 
     .HeaderDescriptionContent .Left {
         justify-content: center;

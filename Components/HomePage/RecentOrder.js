@@ -9,15 +9,6 @@ import { headers } from '../../pages/api';
 const RecentOrder = () => {
     const [recentOrder, setRecentOrder] = useState([]);
 
-    // Dropdown
-    const [anchorEl, setAnchorEl] = useState(null);
-    const open = Boolean(anchorEl);
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
 
 
     const handleFetchRecentOrder = async () => {
@@ -151,10 +142,7 @@ const RecentOrder = () => {
                                                 </span>
                                             </Tooltip>
                                         </div>
-                                        <div className="name">
-                                            <div className="icon">
-                                                <i className="flaticon-taka"></i>
-                                            </div>
+                                        <div className="name">                                  
                                             {
                                                 order?.order_details?.reduce((prevVal, currentVal) => {
                                                     return prevVal + (currentVal?.product_qty)

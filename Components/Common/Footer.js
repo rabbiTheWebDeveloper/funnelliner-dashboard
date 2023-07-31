@@ -15,7 +15,7 @@ const Footer = () => {
 
                         <Grid item xs={12}>
 
-                            <p> FunnelLiner - V1.0 | Copyright © 2023 <img src="/images/light-logo.png" alt="" /> All rights reserved </p>
+                            <p> <img src="/images/light-logo.png" alt="" /> Version-1.0 </p>
 
                         </Grid>
 
@@ -24,6 +24,8 @@ const Footer = () => {
                 </Container>
 
             </footer>
+
+            
 
         </>
 

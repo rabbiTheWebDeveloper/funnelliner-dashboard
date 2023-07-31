@@ -43,10 +43,7 @@ const WebsiteSettingPage = ({ response }) => {
     const previewClose = () => setOpenPreview(false);
 
     const [selectedImage, setSelectedImage] = useState(null);
-    const [favIcon, setFavicon] = useState(null);
-
-
-
+  
     // DropDown Menu
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -131,9 +128,9 @@ const WebsiteSettingPage = ({ response }) => {
         if (selectedImage !== null) {
             formData.append("shop_logo", selectedImage);
         }
-        if (favIcon !== null) {
-            formData.append("shop_favicon", favIcon);
-        }
+        // if (favIcon !== null) {
+        //     formData.append("shop_favicon", favIcon);
+        // }
         formData.append("shop_id", shopId);
         formData.append("shop_meta_title", data.websiteTitle);
         formData.append("shop_meta_description", data.description);
@@ -167,10 +164,8 @@ const WebsiteSettingPage = ({ response }) => {
         if (selectedImage) {
             setImageUrl(URL.createObjectURL(selectedImage));
         }
-        if (favIcon) {
-            setFaviconPreview(URL.createObjectURL(favIcon));
-        }
-    }, [selectedImage, favIcon]);
+        
+    }, [selectedImage]);
 
 
     useEffect(() => {
@@ -499,7 +494,7 @@ const WebsiteSettingPage = ({ response }) => {
                                                     </Grid>
                                                 </div>
 
-                                                <div className="BusinessInfoItem SupportTicketItem">
+                                                {/* <div className="BusinessInfoItem SupportTicketItem">
                                                     <Grid container spacing={3}>
 
                                                         <Grid item xs={12} sm={12}>
@@ -542,7 +537,7 @@ const WebsiteSettingPage = ({ response }) => {
                                                                         </Box>
                                                                     )}
 
-                                                                    {/* {faviconPreview && favIcon ? "":(
+                                                                    {faviconPreview && favIcon ? "":(
 
                                                                         <Box mt={2} textAlign="center">
 
@@ -553,13 +548,13 @@ const WebsiteSettingPage = ({ response }) => {
                                                                                 Height="100px"
                                                                             />
                                                                         </Box>
-                                                                    )} */}
+                                                                    )}
                                                                 </div>
 
                                                             </div>
                                                         </Grid>
                                                     </Grid>
-                                                </div>
+                                                </div> */}
 
 
                                                 <div className="BusinessInfoItem SupportTicketItem">

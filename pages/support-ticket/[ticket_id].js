@@ -10,7 +10,7 @@ import { useToast } from '../../hook/useToast';
 import { useState } from 'react';
 import withAuth from '../../hook/PrivateRoute';
 
-const ticket_id = () => {
+const Ticket_id = () => {
     const router = useRouter()
     const showToast = useToast()
     const ticket_ID = router?.query?.ticket_id;
@@ -132,6 +132,6 @@ const ticket_id = () => {
     );
 };
 
-export default withAuth(ticket_id, {
+export default withAuth(Ticket_id, {
     isProtectedRoute: true
 });

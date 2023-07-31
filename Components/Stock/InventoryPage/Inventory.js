@@ -57,7 +57,7 @@ const Inventory = () => {
     const [productSearchValue, setProductSearchValue] = useState("")
     const [filterProducts, setFilterProducts] = useState([])
     const handleChangeSearchBox = () => {
-        const filtered = products.filter(item => item?.id?.toString().includes(productSearchValue) || item?.product_name?.toLowerCase().includes(productSearchValue.toLowerCase()) || item?.product_code?.toLowerCase().includes(productSearchValue.toLowerCase()));
+        const filtered = products?.filter(item => item?.id?.toString().includes(productSearchValue) || item?.product_name?.toLowerCase().includes(productSearchValue.toLowerCase()) || item?.product_code?.toLowerCase().includes(productSearchValue.toLowerCase()));
         setFilterProducts(filtered)
     }
     useEffect(()=>{
@@ -148,7 +148,7 @@ const Inventory = () => {
                                                 <section className="MiddleSection">
                                                     <div className="MiddleSectionContent">
                                                         <div className="img">
-                                                            <img src="/error.svg" alt="" />
+                                                            <img src="/images/empty.png" alt="" />
                                                         </div>
                                                         <div className="text">
                                                             <p>Not found</p>

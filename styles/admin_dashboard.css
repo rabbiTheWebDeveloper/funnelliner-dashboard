@@ -1089,7 +1089,7 @@ DashboardSetting
 .DashboardSettingTabs {
   /* margin-top: 30px; */
   overflow: hidden;
-  padding-bottom: 60px;
+  /* padding-bottom: 60px; */
 }
 
 .DashboardSetting .MuiBox-root {
@@ -1123,7 +1123,7 @@ DashboardSetting
 }
 
 .DashboardTabsItem {
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 .DashboardForm {
@@ -1131,7 +1131,8 @@ DashboardSetting
 }
 
 .DashboardForm .left {
-  margin-top: 20px;
+  /* margin-top: 20px; */
+  margin-bottom: -20px;
 }
 
 .DashboardForm h5 {
@@ -1805,13 +1806,10 @@ span.MuiSkeleton-root.MuiSkeleton-text.MuiSkeleton-pulse.css-z7erpk {
   font-weight: 500;
 }
 
+.MiddleSectionContent{
+  margin-top: 10px;
+}
+
 .MiddleSectionContent a {
-  background: var(--bg_color);
-  color: var(--white);
-  font-size: 20px;
-  line-height: 30px;
-  font-weight: 500;
-  padding: 8px 30px;
-  margin-top: 20px;
-  border-radius: 5px;
+  color: var(--white-color);
 }

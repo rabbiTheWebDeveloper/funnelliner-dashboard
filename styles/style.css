@@ -41,7 +41,6 @@ Subscription Start
     -moz-appearance: none;
     background: #fff;
     border: 1px solid var(--main-color);
-    border-radius: 50%;
     cursor: pointer;
     outline: none;
     transition: background 0.1s ease-out, border-color 0.1s ease-out;
@@ -394,6 +393,10 @@ Product End
   width: 48%;
 }
 
+.LandingWebsiteItem .DuelButton .right a{
+  width: 100%;
+}
+
 .LandingWebsiteItem .DuelButton .right button {
   background: var(--pending-color);
 }
@@ -418,19 +421,12 @@ Product End
   padding-right: 0 !important;
 }
 
-.DashboardSetting.WebsiteSetting
-  .style_HomeSlider__hmi81
-  .MuiContainer-root
-  .boxShadow {
+.DashboardSetting.WebsiteSetting .style_HomeSlider__hmi81 .MuiContainer-root .boxShadow {
   padding: 0;
   box-shadow: none;
 }
 
-.DashboardSetting.WebsiteSetting
-  .style_HomeSlider__hmi81
-  .MuiContainer-root
-  .boxShadow
-  .MuiTabPanel-root {
+.DashboardSetting.WebsiteSetting .style_HomeSlider__hmi81 .MuiContainer-root .boxShadow .MuiTabPanel-root {
   margin-top: 20px;
   border-top: 1px solid var(--border-color);
 }
@@ -565,7 +561,7 @@ START Otp PART
   margin-top: 10px;
 }
 
-disabled,
+
 button[disabled] {
   border: 1px solid #999999;
   background-color: #cccccc;
@@ -578,7 +574,7 @@ button[disabled] {
   color: #666666;
 }
 
-.ql-toolbar.ql-snow + .ql-container.ql-snow {
+.ql-toolbar.ql-snow+.ql-container.ql-snow {
   border-radius: 0 0 20px 20px;
 }
 
@@ -645,7 +641,7 @@ button[disabled] {
 }
 
 .nice-dates-popover {
-  width: 400px !important;
+  /* width: 400px !important; */
 }
 
 /* BkashSignUp */
@@ -890,7 +886,7 @@ button[disabled] {
 }
 
 .nice-dates-popover {
-  width: 140% !important;
+  /* width: 140% !important; */
 }
 
 .AccountDashboard .HeaderItemContent {
@@ -1123,10 +1119,7 @@ button[disabled] {
   border-radius: 10px;
 }
 
-.AccountTable
-  .Filter
-  .MuiOutlinedInput-root
-  .MuiAutocomplete-input::placeholder {
+.AccountTable .Filter .MuiOutlinedInput-root .MuiAutocomplete-input::placeholder {
   font-size: 12px;
   color: var(--text-color);
 }
@@ -1637,9 +1630,10 @@ SupportTicket Start
   padding: 12px 20px !important;
   box-shadow: none !important;
   border-radius: 10px !important;
-  font-size: 15px !important;
+  font-size: 14px !important;
   line-height: 20px !important;
   font-weight: 400 !important;
+  text-transform: capitalize !important;
 }
 
 .SelectImgButton:hover {
@@ -1828,6 +1822,8 @@ WebsiteSetting Start
 
 .InvoiceFormateItem button.red {
   background: #9376e0;
+  display: block;
+  margin-left: 10px;
 }
 
 .InvoiceFormateItem button.red:hover {
@@ -2085,7 +2081,7 @@ WebsiteSetting Start
 /* DashboardSetting */
 
 .DashboardSettingItem {
-  margin-top: 30px;
+  margin-top: 10px;
 }
 
 .DashboardSettingItem h4 {
@@ -2120,7 +2116,7 @@ Home Page Design
 ------------------------------- */
 
 .WebsiteLink {
-  margin-bottom: 30px;
+  /* margin-bottom: 30px; */
 }
 
 .WebsiteLinkContent .left ul li {
@@ -2256,7 +2252,11 @@ Home Page Design
   margin: 0 -20px;
   padding: 0 20px;
   margin-bottom: 15px;
-  padding-bottom: 20px;
+  padding-bottom: 15px;
+}
+
+.HomePage .Header .right {
+  position: relative;
 }
 
 .HomePage .Header button {
@@ -2277,7 +2277,6 @@ Home Page Design
 .SalesTargetBox {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
   gap: 20px;
   width: 100%;
 }
@@ -2295,6 +2294,12 @@ Home Page Design
 .HomePage .SalesTargetContent .SalesTargetItem h5 {
   font-size: 16px;
   line-height: 24px;
+}
+
+.HomePage .SalesTargetContent .SalesTargetItem h5:nth-child(2) {
+  font-weight: 400;
+  color: var(--text-color);
+  font-size: 14px;
 }
 
 .HomePage .SalesTargetItemBox .item {
@@ -2344,13 +2349,14 @@ Home Page Design
   text-align: center;
 }
 
-.HomePage .SalesTargetItemBox .right .overlay span{
-  font-size: 20px;
+.HomePage .SalesTargetItemBox .right .overlay span {
+  font-size: 18px;
+  line-height: 20px;
   font-weight: 700;
   color: var(--main-color);
 }
 
-.HomePage .SalesTargetItemBox .right .overlay p{
+.HomePage .SalesTargetItemBox .right .overlay p {
   font-size: 12px;
   margin-top: 1px;
   font-weight: 500;
@@ -2555,6 +2561,7 @@ Home Page Design
 
 .HomePageCart .Footer {
   margin-top: 20px;
+  padding: 0;
 }
 
 .HomePageCart .img {
@@ -2606,7 +2613,8 @@ Home Page Design
  Start RecentOrder
 ------------------------------- */
 
-.RecentOrder, .TopSelling{
+.RecentOrder,
+.TopSelling {
   height: 500px;
 }
 
@@ -2684,7 +2692,6 @@ Home Page Design
 
 .RecentOrder .RecentOrderItem .item .name {
   font-size: 12px;
-  font-weight: 20px;
   color: var(--text-color);
   font-weight: 600;
   display: flex;
@@ -2836,7 +2843,6 @@ Home Page Design
 
 .SectionCustomize .bg {
   width: 100%;
-  margin-top: -250px;
 }
 
 .SectionCustomizeBox {
@@ -2919,7 +2925,7 @@ Home Page Design
     transform: rotate(45deg);
   }
 
-  .SelectSectionBox .radio:checked + .img {
+  .SelectSectionBox .radio:checked+.img {
     border: 1px solid var(--main-color);
   }
 }
@@ -2956,6 +2962,7 @@ Home Page Design
 .ColorSection .showColor {
   position: relative;
   padding: 10px;
+  height: 20px;
   background: #eeeeee;
   border-radius: 10px;
 }
@@ -2975,10 +2982,10 @@ Home Page Design
   background: none;
   border: 0;
   cursor: pointer;
-  height: 40px;
-  width: 40px;
+  height: 30px;
+  width: 30px;
   position: absolute;
-  top: 2px;
+  top: 5px;
   right: 10px;
 }
 
@@ -3061,6 +3068,7 @@ Media
 ---------------------------------------------------  --------------------------------------------------- --------------------------------------------------- 
 --------------------------------------------------- --------------------------------------------------- ---------------------------------------------------  */
 @media (max-width: 1399px) {
+
   .css-13cymwt-control,
   .css-t3ipsp-control {
     padding: 0px 10px !important;
@@ -3199,6 +3207,69 @@ Media
     margin-left: 0;
     margin-top: 10px;
   }
+
+  .ChannelContent .left .leftItem {
+    width: 45%;
+  }
+
+  .Channels .recharts-responsive-container svg {
+    height: 310px;
+  }
+
+  .ChartJs.Channels {
+    height: 364px;
+  }
+
+  .HomePage .Header button i {
+    font-size: 10px;
+    margin-bottom: -1px;
+  }
+
+  .HomePage .SalesTargetItemBox .item h3 {
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .HomePage .SalesTargetItemBox .item h6 {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .progressbar_ProgressCircleMain__x3b_x {
+    width: 130px !important;
+    height: 130px !important;
+  }
+
+  .HomePage h4 {
+    font-size: 16px;
+  }
+
+  .HomePage .SalesTargetContent .SalesTargetItem h5 {
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  .HomePage .SalesTargetContent .SalesTargetItem h5:nth-child(2) {
+    font-size: 12px;
+  }
+
+  .RecentOrder .RecentOrderItem .item .name a {
+    font-size: 12px;
+  }
+
+  .nice-dates-week-header_day {
+    font-size: 11px;
+  }
+
+  .ColorSection .ColorSectionItem:first-child {
+    padding-right: 30px;
+  }
+
+  .ColorSection .ColorSectionItem:last-child {
+    padding-left: 30px;
+  }
+
+
 }
 
 /* ---------------------------------------------------  --------------------------------------------------- --------------------------------------------------- 
@@ -3218,6 +3289,78 @@ Media
   .ChooseDomainItem .DropDown {
     right: 85px;
   }
+
+  .HomePage .Header {
+    border-bottom: 1px solid var(--border-color);
+    margin: 0 -15px;
+    padding: 0 15px;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    height: 35px;
+  }
+
+  .progressbar_ProgressCircleMain__x3b_x {
+    width: 100px !important;
+    height: 100px !important;
+  }
+
+  .HomePage .SalesTargetItemBox .right .overlay p {
+    display: none;
+  }
+
+  .HomePage .SalesTargetItemBox .right .overlay span {
+    font-size: 14px;
+  }
+
+  .HomePage .SalesTargetContent .SalesTargetItem h5:nth-child(2) {
+    font-size: 10px;
+  }
+
+  .HomePage .SalesTargetItemBox .item {
+    margin-bottom: 10px;
+  }
+
+  #Profile .MuiPaper-root.MuiPaper-elevation {
+    top: 90px !important;
+    width: 320px;
+    right: 20px;
+  }
+
+  .style_NotificationContent__Q3Idx ul li {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+  }
+
+  h4 {
+    font-size: 20px;
+    line-height: 30px;
+  }
+
+  .RecentOrder,
+  .TopSelling {
+    height: auto;
+  }
+
+  .HomePage .SalesTargetContent .SalesTargetItem .SalesTargetItemBox {
+    flex-direction: column;
+  }
+
+  .HomePage .SalesTargetContent .SalesTargetItem .SalesTargetItemBox .left {
+    margin-top: 10px;
+    order: 2;
+  }
+
+  .HomePage .SalesTargetContent .SalesTargetItem .SalesTargetItemBox .right {
+    width: 100%;
+    order: 1;
+  }
+
+  .progressbar_ProgressCircleMain__x3b_x {
+    width: 130px !important;
+    height: 130px !important;
+    margin:  0 auto;
+  }
+
 }
 
 /* ---------------------------------------------------  --------------------------------------------------- --------------------------------------------------- 
@@ -3225,7 +3368,7 @@ Media
 Media 
 ---------------------------------------------------  --------------------------------------------------- --------------------------------------------------- 
 --------------------------------------------------- --------------------------------------------------- ---------------------------------------------------  */
-@media (max-width: 550px) {
+@media (max-width: 600px) {
   .AccountDashboard .HeaderItemContent {
     width: 100%;
   }
@@ -3373,8 +3516,101 @@ Media
     width: 90%;
     padding: 20px;
   }
+
+  .SalesTargetBox {
+    display: block;
+  }
+
+  .HomePage .SalesTargetContent .SalesTargetItem {
+    width: -webkit-fill-available;
+  }
+
+  .HomePage .SalesTargetContent .Header button {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+
+  .HomePage h4 {
+    font-size: 14px;
+  }
+
+  .ChartJs.Channels {
+    height: auto;
+  }
+
+  .ChannelContent .left {
+    width: 100%;
+  }
+
+  .HomePage .Header {
+    padding-bottom: 15px;
+  }
+
+  .Channels .recharts-responsive-container {
+    width: auto !important;
+    height: 250px !important;
+    margin-left: 0;
+  }
+
+  .Channels .recharts-wrapper {
+    height: auto;
+  }
+
+  .RecentOrder,
+  .TopSelling {
+    height: auto;
+    overflow: scroll;
+    width: 450px;
+  }
+
+  h4 {
+    font-size: 18px;
+    line-height: 30px;
+  }
+
+  .WebsiteLinkContent .left ul li {
+    margin-bottom: 5px;
+  }
+
+  .MobileFooterMenu {
+    width: -webkit-fill-available;
+  }
+
+  .MobileFooterMenu ul {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .MobileFooterMenu li a {
+    font-size: 30px;
+  }
+
+  .MobileFooterMenu li.active a {
+    color: var(--main-color);
+  }
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 .suggested_note {
   display: none;
+}
+
+
+
+nav.MuiPagination-root ul.MuiPagination-ul.css-wjh20t-MuiPagination-ul {
+  margin-top: 30px;
 }

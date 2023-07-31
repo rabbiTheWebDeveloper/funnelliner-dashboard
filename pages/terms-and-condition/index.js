@@ -5,7 +5,7 @@ import { getWebsiteSettings } from '../api';
 import TermsAndCondition from '../../Components/MyPage/TermsAndCondition/TermsAndCondition';
 
 
-const index = () => {
+const TermsAndConditionPage = () => {
     const [websiteSettingData, setWebsiteSettingData]=useState({})
     useEffect(() => {
         getWebsiteSettings()
@@ -23,6 +23,6 @@ const index = () => {
         </>
     )
 }
-export default withAuth(index, {
+export default withAuth(TermsAndConditionPage, {
     isProtectedRoute: true
 });

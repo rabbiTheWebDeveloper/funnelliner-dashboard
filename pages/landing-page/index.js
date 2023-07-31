@@ -3,7 +3,7 @@ import LandingWebsite from '../../Components/Templates/LandingPage/LandingWebsit
 import withAuth from '../../hook/PrivateRoute';
 
 
-const index = () => {
+const index = ({busInfo}) => {
 
 
     return (
@@ -12,7 +12,7 @@ const index = () => {
         <>
 
           
-            <LandingWebsite></LandingWebsite>
+            <LandingWebsite busInfo={busInfo}></LandingWebsite>
 
         </>
 

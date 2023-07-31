@@ -18,26 +18,14 @@ const TotalOrder = ({ allProduct, busInfo }) => {
     const showToast = useToast();
     const [salesTarget, setSalesTarget] = useState({});
     const [salesUpdate, setSalesUpdate] = useState({});
-    const [updateOrder, setUpdateOrder] = useState([]);
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
-    const [selectedOrder, setSelectedOrder] = useState('Today')
 
-    // handleClickOrder
-    const [anchorEl, setAnchorEl] = useState(null);
-    const open = Boolean(anchorEl);
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+
+
 
     const [openSales, setOpenSales] = useState(false);
     const handleOpenSales = () => setOpenSales(true);
     const handleCloseSales = () => setOpenSales(false);
-    const [isFunctionClick, setIsFunctionClick] = useState(false)
-    const [todayOrder, setTodayOrder] = useState([])
-    const [allProducts, setAllProducts] = useState([]);
     const [date, setTotalOrderDate] = useState('today');
     const [confirmed_date, setTotalConfirmedDate] = useState('today');
     const [sales_date, setTotalSalesDate] = useState('today');
@@ -441,8 +429,8 @@ const TotalOrder = ({ allProduct, busInfo }) => {
 
                                                         <div className="duelButton">
 
-                                                            <Button type="submit">Save Changes</Button>
-                                                            <Button type="reset" className="red">Reset</Button>
+                                                            <Button type="submit" className='One'>Save Changes</Button>
+                                                            {/* <Button type="reset" className="red">Reset</Button> */}
 
                                                         </div>
                                                     </form>

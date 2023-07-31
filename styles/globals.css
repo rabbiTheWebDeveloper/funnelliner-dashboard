@@ -32,6 +32,10 @@ button {
   list-style-type: none;
 }
 
+ul {
+  padding-top: 0;
+}
+
 /* color Setup */
 :root {
   --header-color: #101840;
@@ -140,9 +144,13 @@ button.bg:hover {
 .duelButton button {
   background: var(--main-color);
   color: var(--white-color);
-  padding: 6px 10px;
-  width: 48%;
+  padding: 8px 10px;
+  width: 100%;
   font-size: 14px;
+}
+
+.duelButton:nth-child(2) {
+  /* display: none; */
 }
 
 .duelButton button.One {
@@ -156,6 +164,7 @@ button.bg:hover {
 
 .duelButton button.red {
   background: var(--red-color);
+  display: none;
 }
 
 .duelButton button.red:hover {
@@ -234,6 +243,11 @@ select option:nth-child(even) {
   position: relative;
 }
 
+.customInput p {
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
 .customInput .eye {
   position: absolute;
   top: 43px;
@@ -258,8 +272,8 @@ select option:nth-child(even) {
 }
 
 main {
-  padding-bottom: 60px;
-  height: 100%;
+  padding-bottom: 40px;
+  height: 100vh;
   overflow-y: auto;
 }
 
@@ -305,6 +319,11 @@ Media
     font-size: 15px;
     line-height: 26px;
   }
+
+  main {
+    overflow-x: hidden;
+  }
+
 }
 
 .orderSection_preloader {

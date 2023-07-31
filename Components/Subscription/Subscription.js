@@ -206,7 +206,7 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
                         }
                         <Grid item xs={12}>
 
-                            <div className="SubscriptionInvoice boxShadow">
+                            <div className="SubscriptionInvoice">
                                 <div className="Pending">
                                     <div className="Table">
                                         <table>
@@ -342,7 +342,8 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
 
                                     <div className="terms-condition">
                                         <input type="checkbox" id="checkbox" checked />
-                                        <label for="checkbox">By pressing “Continue” you agree to the <Link href="https://funnelliner.com/terms" target="/blank">Terms and Conditions</Link> </label>
+                                        {/* You accept the terms and conditions by clicking the "Pay Now" button */}
+                                        <label for="checkbox">By pressing “Pay Now” you agree to the <Link href="https://funnelliner.com/terms" target="/blank">Terms and Conditions</Link> </label>
                                     </div>
 
                                     <div className="duelButton">

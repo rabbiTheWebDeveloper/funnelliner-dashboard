@@ -8,10 +8,10 @@ import Footer from "./Footer";
 export default function Layout({ children, busInfo, myAddonsList, pendingOrderCount }) {
   const [isWindowExist, setIsWindowExist] = useState(false)
   const {merchant} =busInfo
-   const pay =paymentStatus
+
   useEffect(() => {
-    const windowObj = window;
-    if (windowObj !== "undefined") {
+
+    if (window !== "undefined") {
       setIsWindowExist(true)
     }
   })

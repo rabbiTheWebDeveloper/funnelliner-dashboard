@@ -19,7 +19,7 @@ import HeaderDescription from "../../Components/Common/HeaderDescription/HeaderD
 import style from './customerList.module.css';
 
 
-const index = () => {
+const CustomerListPage = () => {
 
     const [active, setDefault] = useState('pending')
 
@@ -212,7 +212,7 @@ const index = () => {
     doc.autoTable({
         theme: 'grid',
         head: [['SL.', 'Customer Name', 'Contact No.', 'Address.', 'Purchase Date']],
-        body: uniqueCustomer?.map((product, index) => [index + 1, product?.customer_name, product?.phone, product?.address, moment(product?.created_at).format(
+        body: uniqueCustomer?.map((product, index) => [index + 1, product?.name, product?.phone, product?.address, moment(product?.created_at).format(
             "DD-MM-YYYY"
         )]),
         beforePageContent: function (data) {
@@ -252,8 +252,8 @@ const index = () => {
         }
     };
 
+    const newCustomer = Array.isArray(orders) ? orders?.filter(obj => obj.order !== 0) : [];
 
-    console.log("orders", orders)
     return (
         <div>
             <section className={style.CustomerList}>
@@ -263,38 +263,38 @@ const index = () => {
 
                 <Container maxWidth="sm">
 
-                    <div className="boxShadow">
+                    <div className="">
 
                         <div className={style.CustomerListContent}>
 
                             <div className="CommonTab">
                                 <Box sx={{ width: "100%", typography: "body1" }}>
                                     <BootstrapButton className={active === 'pending' ? 'filterActive' : ''}
-                                        onClick={e => setDefault('pending')}>Pending Order Customers</BootstrapButton>
+                                        onClick={e => setDefault('pending')}>Pending Order </BootstrapButton>
                                     <BootstrapButton className={active === 'followup' ? 'filterActive' : ''}
-                                        onClick={e => setDefault('followup')}>Follow Up Order Customers</BootstrapButton>
+                                        onClick={e => setDefault('followup')}>Follow Up Order </BootstrapButton>
                                     <BootstrapButton className={active === 'confirm' ? 'filterActive' : ''}
-                                        onClick={e => setDefault('confirm')}>Confirm Order Customers</BootstrapButton>
+                                        onClick={e => setDefault('confirm')}>Confirm Order </BootstrapButton>
                                     <BootstrapButton className={active === 'cancel' ? 'filterActive' : ''}
-                                        onClick={e => setDefault('cancel')}>Cancel Order Customers</BootstrapButton>
+                                        onClick={e => setDefault('cancel')}>Cancel Order </BootstrapButton>
 
                                     <BootstrapButton className={active === 'return' ? 'filterActive' : ''}
-                                        onClick={e => setDefault('return')}>Order Return Customers</BootstrapButton>
+                                        onClick={e => setDefault('return')}>Order Return </BootstrapButton>
                                 </Box>
                             </div>
 
-                            <div className={style.select}>
+                        </div>
 
-                                <select name="downloadReport" value={selectedOption} onChange={handleOptionChange}>
-                                    <option value="" disabled>
-                                        Download Report
-                                    </option>
-                                    <option value="pdf">As PDF</option>
-                                    <option value="image">As Image</option>
-                                    <option value="excel">As Excel</option>
-                                </select>
-                            </div>
+                        <div className={style.select}>
 
+                            <select name="downloadReport" value={selectedOption} onChange={handleOptionChange}>
+                                <option value="" disabled>
+                                    Download Report
+                                </option>
+                                <option value="pdf">As PDF</option>
+                                <option value="image">As Image</option>
+                                <option value="excel">As Excel</option>
+                            </select>
                         </div>
 
                     </div>
@@ -331,7 +331,7 @@ const index = () => {
                             {/* DataTableRow */}
                             {/* item */}
 
-                            {orders.length > 0 ? orders.map((order, index) => {
+                            {newCustomer.length > 0 ? newCustomer.map((order, index) => {
                                 return (
                                     <div className="DataTableRow" key={index}>
                                         <div className="DataTableColum">
@@ -345,35 +345,37 @@ const index = () => {
                                                     title={order?.name}
                                                     placement="top-start"
                                                 >
-                                                    <span>
+                                                    <>
                                                         {order?.name.length < 15 ? (
                                                             <span>{order?.name}</span>
                                                         ) : (
-                                                            <span>
+                                                            <>
                                                                 {order?.name.slice(0, 13)}
                                                                 ...
-                                                            </span>
+                                                            </>
                                                         )}
-                                                    </span>
+                                                    </>
                                                 </Tooltip>
                                             </div>
                                         </div>
 
-                                   
 
 
 
 
+
+                                        <div className="DataTableColum">
+                                            <div className="TotalPrice">
+                                                {order?.phone}
+
+                                            </div>
+
+                                        </div>
                                         <div className="DataTableColum">
                                             <div className="TotalPrice">
                                                 {order?.address}
-                                            </div>
 
-                                        </div>
-                                        <div className="DataTableColum">
-                                            <div className="TotalPrice">
 
-                                                {order?.phone}
                                             </div>
 
                                         </div>
@@ -381,7 +383,7 @@ const index = () => {
 
                                         <div className="DataTableColum">
                                             <div className="TotalPrice">
-                                                <i className='flaticon-taka'></i>
+
                                                 {order?.order}
                                             </div>
                                         </div>
@@ -428,6 +430,6 @@ const index = () => {
 
 }
 
-export default withAuth(index, {
+export default withAuth(CustomerListPage, {
     isProtectedRoute: true
 });

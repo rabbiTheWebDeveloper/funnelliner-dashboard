@@ -2,7 +2,7 @@ import React from 'react';
 import { Sector } from 'recharts';
 
 const renderActiveShape = (props) => {
-  const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value, activeIndex } = props;
+  const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, activeIndex } = props;
 
   // Check if the current shape is active based on activeIndex
   const isActive = activeIndex === props.index;
@@ -21,7 +21,7 @@ const renderActiveShape = (props) => {
   const my = cy + (outerRadius + 30) * sin;
   const ex = mx + (cos >= 0 ? 1 : -1) * 22;
   const ey = my;
-  const textAnchor = cos >= 0 ? 'start' : 'end';
+
 
   return (
     <g>

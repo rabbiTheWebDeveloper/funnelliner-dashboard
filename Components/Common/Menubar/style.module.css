@@ -57,10 +57,10 @@ Menubar
 .MenubarContent .CustomeInput button {
   position: absolute;
   padding: 0;
-  right: 0;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 20px;
+  font-size: 16px;
+  right: 20px;
   color: var(--bg_color);
 }
 
@@ -135,10 +135,6 @@ Menubar
   min-width: unset;
 }
 
-.MenubarContent .CustomeInput button {
-  font-size: 16px;
-  right: 20px;
-}
 
 /* --------------------------------------------------------------------------
 Notification Start
@@ -305,10 +301,6 @@ Notification Start
     justify-content: space-between;
     box-shadow: 0px 22px 113.46px rgba(0, 0, 0, 0.03);
     background: var(--white-color);
-  }
-
-  .MenubarContent {
-    padding: 20px;
   }
 
   .Notification button i {

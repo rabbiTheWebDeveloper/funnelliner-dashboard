@@ -12,7 +12,7 @@ const Note = ({ isOpenOrderNoteModal, handleCloseOrderNoteModal, handleFetch, id
 
 
 
-  console.log("orderNote", orderNote)
+ 
 
   useEffect(() => {
     setNoteData(orderNote?.order_note || '');
@@ -64,10 +64,10 @@ const Note = ({ isOpenOrderNoteModal, handleCloseOrderNoteModal, handleFetch, id
   const handleSubmitNote = () => {
     startLoading()
     let data = {
-      note: noteData.length > 0 ? noteData : '',
+      note: noteData,
       type: status,
-      courier_note: courierNote.length > 0 ? courierNote : '',
-      invoice_note: invoiceNote.length > 0 ? invoiceNote : '',
+      courier_note: courierNote.length > 0 ? courierNote : "0",
+      invoice_note: invoiceNote.length > 0 ? invoiceNote : "0",
 
     }
     axios.post(process.env.API_URL + `/client/order/note/${orderNo}/update`, data, {
@@ -154,9 +154,11 @@ const Note = ({ isOpenOrderNoteModal, handleCloseOrderNoteModal, handleFetch, id
 
                           <label>Note</label>
                           <textarea
-                            value={invoiceNote}
+                            value={invoiceNote !== "0" ? invoiceNote : ""}
                             onChange={(e) => setInvoiceNote(e.target.value)}
                             rows="3"
+                          
+                         
                           >
 
                           </textarea>
@@ -175,7 +177,7 @@ const Note = ({ isOpenOrderNoteModal, handleCloseOrderNoteModal, handleFetch, id
 
                           <label>Note</label>
                           <textarea
-                            value={courierNote}
+                            value={courierNote !== "0" ? courierNote : ""}
                             onChange={(e) => setCourierNote(e.target.value)}
                             rows="3"
                           >

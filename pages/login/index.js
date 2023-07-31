@@ -16,6 +16,7 @@ const publicIp = require('react-public-ip');
 const Login_Part = () => {
   const [isLoading, startLoading, stopLoading] = useLoading();
   const [emailValue, setEmailValue] = useState('');
+  const [passwordValue, setPasswordValue] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showPass, setShowPass] = useState(true);
   const [errorText, setErrorText] = useState('');
@@ -52,12 +53,14 @@ const Login_Part = () => {
     setShowPass(!showPass);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = (e) => {
+    e.preventDefault();
+
     startLoading()
-    data.email = emailValue;
+
     SuperFetch.post(
       '/login',
-      { email: data.email, password: data.password },
+      { email: emailValue, password: passwordValue },
       {
         headers: {
           ipAddress: ipAddress,
@@ -103,21 +106,21 @@ const Login_Part = () => {
   };
 
   const handleSuggestionClick = (suggestion) => {
-    setEmailValue(emailValue + suggestion);
-    setShowSuggestions(false);
+    if (!emailValue.includes('@gmail' || '@yahoo' || '@hotmail' || '@outlook')) {
+      setEmailValue(emailValue + suggestion);
+      setShowSuggestions(false);
+    } else {
+      setSuggestText(emailValue);
+      setShowSuggestions(false);
+    }
   };
 
   const handleInputFocus = () => {
     if (emailValue) setShowSuggestions(true);
 
   };
-
-
-
-  useEffect(() => {
-
-  }, [emailValue])
-
+  console.log("emailValue", emailValue)
+  console.log("passwordValue", passwordValue)
   return (
     <section className={styles.login}>
       <div className={`${styles.loginContent} ${styles.boxShadow}`}>
@@ -135,7 +138,7 @@ const Login_Part = () => {
           </div>
 
           <div className={styles.formValidation}>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={onSubmit}>
               <div className="customInput">
                 <label>Phone Number or Email</label>
                 <input
@@ -167,7 +170,8 @@ const Login_Part = () => {
                 <input
                   type={showPass ? 'password' : 'text'}
                   placeholder="password"
-                  {...register('password')}
+                  // {...register('password')}
+                  onChange={(e) => setPasswordValue(e.target.value)}
                 />
                 <div className="eye" onClick={handleShow}>
                   {showPass ? <i className="flaticon-hide"></i> : <i className="flaticon-view"></i>}
@@ -185,9 +189,7 @@ const Login_Part = () => {
                     Login
                   </Button>
                 }
-                {/* <Button type="submit" className="bg">
-                  Login
-                </Button> */}
+
               </div>
 
               <div className={styles.forgetPassword}>

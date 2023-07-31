@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import HeaderDescription from "../../../Components/Common/HeaderDescription/HeaderDescription";
 import { allThemeList, importTheme } from "../../../pages/api";
 import { useToast } from "../../../hook/useToast";
+import SmallLoader from "../../SmallLoader/SmallLoader";
 
 const MultiWebsite = () => {
     const showToast = useToast()
@@ -41,7 +42,7 @@ const MultiWebsite = () => {
                 importTheme("multiple", themeId).then((res) => {
                     if (res.status === 200) {
                         showToast("Theme activate successfully")
-                        if (router.query.redierct_from === "panel3") {
+                        if (router.query.redirect_from === "panel3") {
                             router.push("/?current_steap=panel4")
                         }
                     } else {
@@ -56,7 +57,7 @@ const MultiWebsite = () => {
     return (
         <>
             <section className='LandingWebsite'>
-
+                {multiPageTemplate.length === 0 && <SmallLoader />}
                 {/* header */}
                 <HeaderDescription headerIcon={'flaticon-web-design'} title={'Multiple Page Template'} subTitle={'choose your theme here and customize as you want'} search={false}></HeaderDescription>
 
@@ -79,10 +80,12 @@ const MultiWebsite = () => {
 
                                                 <div className='DuelButton d_flex d_justify'>
                                                     <div className='left'>
-                                                        <Button >
-                                                            <a target="_blank" href={item?.url}
-                                                                rel="noopener noreferrer"> Preview</a>
-                                                        </Button>
+
+                                                        <a target="_blank" href={item?.url}
+                                                            rel="noopener noreferrer">
+                                                            <Button >Preview</Button>
+                                                        </a>
+
                                                         <Modal
                                                             open={openPreview}
                                                             onClose={previewClose}

@@ -9,22 +9,6 @@ import { headers } from '../../pages/api';
 const AddPayable = ({ handleCloseSuggestNote1, openSuggestNote1, handelFetchReciver }) => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
-  const handleApiAlert = (response, successMessage) => {
-    if (response.success) {
-      Swal.fire({
-        icon: "success",
-        title: "Category/Ledger Added!",
-        text: successMessage,
-      });
-      handleCloseSuggestNote1(); // Close the modal
-    } else {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: response.error,
-      });
-    }
-  }
 
   const addPayable = (data) => {
     axios.post(baseTest + "/client/accounts/payor/add", data, {
@@ -34,9 +18,7 @@ const AddPayable = ({ handleCloseSuggestNote1, openSuggestNote1, handelFetchReci
     
         handelFetchReciver()
         handleCloseSuggestNote1()
-        // handleApiAlert(response.data, "Category/Ledger Added!");
-        // Swal.fire("Category/Ledger Added!", response.data.msg, "success");
-        ; // Close the modal
+
       })
       .catch(function (error) {
         Swal.fire({

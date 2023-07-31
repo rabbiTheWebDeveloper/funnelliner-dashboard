@@ -5,7 +5,6 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FiEdit } from 'react-icons/fi';
-// import { useToast } from '../../../hook/useToast';
 import { headers } from '../../../pages/api';
 import HeaderDescription from '../../Common/HeaderDescription/HeaderDescription';
 import AddCategory from './AddCategory';
@@ -14,11 +13,8 @@ import { useToast } from '../../../hook/useToast';
 
 const SubCategory = () => {
     const showToast = useToast()
-    // Filter
-    const [age, setAge] = useState('');
-    const handleChange = (event) => {
-        setAge(event.target.value);
-    };
+
+
     // Tabs
     const [value, setValue] = useState('1');
     const router = useRouter();

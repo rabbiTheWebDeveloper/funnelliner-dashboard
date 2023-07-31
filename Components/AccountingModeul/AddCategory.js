@@ -20,8 +20,6 @@ const AddCategory = ({ handleCloseSuggestNote, openSuggestNote ,handelFetchCateg
             .then(function (response) {
                 
                 handelFetchCategory()
-                // Swal.fire("Category/Ledger    Add!", response.data.msg, "success");
-                // handleCloseSuggestNote(true)
                 handleCloseSuggestNote()
             })
             .catch(function (error) {
@@ -32,8 +30,7 @@ const AddCategory = ({ handleCloseSuggestNote, openSuggestNote ,handelFetchCateg
                 });
             });
         reset()
-        // setInputValue1("");
-        // setInputValue("");
+
 
 
     }

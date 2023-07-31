@@ -167,25 +167,25 @@ const ChartJs = () => {
                         <div className="leftItem">
                             <p>Landing Page</p>
                             <h3>{landing[0]?.value > 0 ? landing[0]?.value : "0"}</h3>
-                            <h6 className={cannelRatio?.landing?.startsWith("-") === false ? "increase" : "decrease"}>{cannelRatio?.landing} <i className={cannelRatio?.landing?.startsWith("-") === false ? "flaticon-trend" : "flaticon-down-arrow-2"}></i> </h6>
+                            <h6 className={cannelRatio?.landing?.startsWith("-") === false ? "increase" : "decrease"}>{ cannel_date !== 'custom' && cannelRatio?.landing !== null ? cannelRatio?.landing : "0%"} <i className={cannelRatio?.landing?.startsWith("-") === false ? "flaticon-trend" : "flaticon-down-arrow-2"}></i> </h6>
                         </div>
 
                         <div className="leftItem">
                             <p>Website </p>
                             <h3>{website[0]?.value > 0 ? website[0]?.value : "0"}</h3>
-                            <h6 className={cannelRatio?.website?.startsWith("-") === false ? "increase" : "decrease"}>{cannelRatio?.website}<i className={cannelRatio?.website?.startsWith("-") === false ? "flaticon-trend" : "flaticon-down-arrow-2"}></i> </h6>
+                            <h6 className={cannelRatio?.website?.startsWith("-") === false ? "increase" : "decrease"}>{ cannel_date !== 'custom' &&  cannelRatio?.website !== null ? cannelRatio?.website : "0%"}<i className={cannelRatio?.website?.startsWith("-") === false ? "flaticon-trend" : "flaticon-down-arrow-2"}></i> </h6>
                         </div>
 
                         <div className="leftItem">
                             <p>Phone Call</p>
                             <h3>{phone[0]?.value > 0 ? phone[0]?.value : "0"}</h3>
-                            <h6 className={cannelRatio?.phone?.startsWith("-") === false ? "increase" : "decrease"}>{cannelRatio?.phone}<i className={cannelRatio?.phone?.startsWith("-") === false ? "flaticon-trend" : "flaticon-down-arrow-2"}></i> </h6>
+                            <h6 className={cannelRatio?.phone?.startsWith("-") === false ? "increase" : "decrease"}>{ cannel_date !== 'custom' && cannelRatio?.phone !== null ? cannelRatio?.phone : "0%"}<i className={cannelRatio?.phone?.startsWith("-") === false ? "flaticon-trend" : "flaticon-down-arrow-2"}></i> </h6>
                         </div>
 
                         <div className="leftItem">
                             <p>Social Media</p>
                             <h3>{socal[0]?.value > 0 ? socal[0]?.value : "0"}</h3>
-                            <h6 className={cannelRatio?.social?.startsWith("-") === false ? "increase" : "decrease"}>{cannelRatio?.social} <i className={cannelRatio?.social?.startsWith("-") === false ? "flaticon-trend" : "flaticon-down-arrow-2"}></i> </h6>
+                            <h6 className={cannelRatio?.social?.startsWith("-") === false ? "increase" : "decrease"}>{ cannel_date !== 'custom' && cannelRatio?.social !== null ? cannelRatio?.social : "0%" } <i className={cannelRatio?.social?.startsWith("-") === false ? "flaticon-trend" : "flaticon-down-arrow-2"}></i> </h6>
                         </div>
 
                     </div>

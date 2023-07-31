@@ -100,8 +100,8 @@ const SalesTargetModal = ({salesTarget , openSales ,handleOpenSales ,handleClose
 
                             <div className="duelButton">
 
-                                <Button type="submit">Save Changes</Button>
-                                <Button type="reset" className="red">Reset</Button>
+                                <Button type="submit" className='One'>Save Changes</Button>
+                                {/* <Button type="reset" className="red">Reset</Button> */}
 
                             </div>
                         </form>
