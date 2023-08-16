@@ -46,6 +46,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import Capitalized from "../../constant/capitalized";
 
 const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
   const showToast = useToast();
@@ -1610,7 +1611,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                       <div className="DataTableColum">
                         <div className="TotalPrice" style={{ color: orderType(order?.order_type) }}>
 
-                          {order?.order_type}
+                          { Capitalized(order?.order_type)}
                         </div>
                       </div>
 
