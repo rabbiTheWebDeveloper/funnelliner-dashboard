@@ -11,11 +11,10 @@ import SmallLoader from "../../SmallLoader/SmallLoader";
 
 const MyLandingPage = () => {
   // ViewPreviewModel
-  const [openPreview, setOpenPreview] = useState(false);
+
   const [isImportedTheme, setIsImportedTheme] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const handlePreview = () => setOpenPreview(true);
-  const previewClose = () => setOpenPreview(false);
+
   const [multiPageTemplate, setMultiPageTemplate] = useState([]);
   useEffect(() => {
     setIsLoading(true);
@@ -61,9 +60,7 @@ const MyLandingPage = () => {
     } catch (err) {}
   };
 
-  const handlePaginationClick = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+
 
   return (
     <>
@@ -105,7 +102,7 @@ const MyLandingPage = () => {
                         <Grid key={index} item xs={12} sm={6} md={4}>
                           <div className="LandingWebsiteItem boxShadow">
                             <div className="img">
-                              <img src={item?.media?.name} alt="" />
+                              <img src={item?.media} alt={item?.page?.title} />                         
                               <h4>{item?.page?.title}</h4>
                             </div>
 

@@ -38,9 +38,9 @@ const HeaderDescription = ({
                         onKeyUp={(e) => setSearch(e.target.value)}
                       />
 
-                      <Button id="orderSearchButton">
+                      {/* <Button id="orderSearchButton">
                         <i className="flaticon-search"></i>
-                      </Button>
+                      </Button> */}
                     </div>
                   </div>
                 )}

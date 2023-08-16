@@ -9,7 +9,7 @@ import axios from "axios";
 import SuperFetch from "../../hook/Axios";
 import { headers } from "../../pages/api";
 import cartImg1 from "../../public/images/homepage-icon/1.png";
-import cartImg10 from "../../public/images/homepage-icon/10.png";
+
 import cartImg11 from "../../public/images/homepage-icon/11.png";
 import cartImg2 from "../../public/images/homepage-icon/2.png";
 import cartImg3 from "../../public/images/homepage-icon/3.png";
@@ -172,7 +172,7 @@ const Dashboard = ({ busInfo }) => {
           </Grid>
 
           {/* Total Visitor */}
-          <Grid item xs={12} sm={6} md={4}>
+          {/* <Grid item xs={12} sm={6} md={4}>
             <HomePageCart
               title="Total Visitor"
               increase="increase"
@@ -182,7 +182,7 @@ const Dashboard = ({ busInfo }) => {
               increaseTitle="+65% (30 days)"
               cartImg={cartImg1}
             />
-          </Grid>
+          </Grid> */}
 
           {/* Total Order */}
           <Grid item xs={12} sm={6} md={4}>

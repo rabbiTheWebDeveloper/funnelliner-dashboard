@@ -19,10 +19,10 @@ import SmallLoader from "../../SmallLoader/SmallLoader";
 
 const Product = ({ category }) => {
     const showToast = useToast();
-    const [age, setAge] = useState("");
+
     const [isLoading, setIsLoading] = useState(true);
-    const [anchorEl, setAnchorEl] = useState(null);
-    const open = Boolean(anchorEl);
+
+
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
@@ -32,33 +32,6 @@ const Product = ({ category }) => {
         "Are you sure you want to delete?",
         "Yes, delete"
     )
-    //delete success hooks
-
-
-    const handleChange = (event) => {
-        setAge(event.target.value);
-    };
-
-
-    // handleClick Move To Completed
-
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    // handleConfirmed
-    const [anchorEl2, setAnchorEl2] = useState(null);
-    const open2 = Boolean(anchorEl2);
-    const handleConfirmed = (event) => {
-        setAnchorEl2(event.currentTarget);
-    };
-    const handleCloseConfirmed = () => {
-        setAnchorEl2(null);
-    };
-
 
 
     const fetchProduct = () => {
@@ -140,7 +113,7 @@ const Product = ({ category }) => {
     }
 
 
-    const [modalOpen, setModalOpen] = useState(false);
+
 
     const [viewModalOpen, setViewModalOpen] = useState(false);
     const [editModalOpen, setEditModalOpen] = useState(false);
@@ -207,18 +180,18 @@ const Product = ({ category }) => {
                                         <tr>
                                             <td colSpan={13}>
                                                 <Box sx={{ width: 40 }}>
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
                                                 </Box>
                                             </td>
                                         </tr>
@@ -233,7 +206,7 @@ const Product = ({ category }) => {
                                                                     {index + 1 + currentPage * perPage - perPage}
                                                                 </td>
                                                                 <td>
-                                                                    <img src={product?.main_image?.name} alt="" />
+                                                                    <img src={product?.main_image} alt="" />
                                                                 </td>
 
                                                                 <td>
@@ -302,7 +275,7 @@ const Product = ({ category }) => {
                                                                     <td>{index + 1}</td>
                                                                 </td>
                                                                 <td>
-                                                                    <img src={product?.main_image?.name} alt="" />
+                                                                    <img src={product?.main_image} alt="" />
                                                                 </td>
 
                                                                 <td>

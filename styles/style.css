@@ -393,7 +393,7 @@ Product End
   width: 48%;
 }
 
-.LandingWebsiteItem .DuelButton .right a{
+.LandingWebsiteItem .DuelButton .right a {
   width: 100%;
 }
 
@@ -421,12 +421,19 @@ Product End
   padding-right: 0 !important;
 }
 
-.DashboardSetting.WebsiteSetting .style_HomeSlider__hmi81 .MuiContainer-root .boxShadow {
+.DashboardSetting.WebsiteSetting
+  .style_HomeSlider__hmi81
+  .MuiContainer-root
+  .boxShadow {
   padding: 0;
   box-shadow: none;
 }
 
-.DashboardSetting.WebsiteSetting .style_HomeSlider__hmi81 .MuiContainer-root .boxShadow .MuiTabPanel-root {
+.DashboardSetting.WebsiteSetting
+  .style_HomeSlider__hmi81
+  .MuiContainer-root
+  .boxShadow
+  .MuiTabPanel-root {
   margin-top: 20px;
   border-top: 1px solid var(--border-color);
 }
@@ -561,7 +568,6 @@ START Otp PART
   margin-top: 10px;
 }
 
-
 button[disabled] {
   border: 1px solid #999999;
   background-color: #cccccc;
@@ -574,7 +580,7 @@ button[disabled] {
   color: #666666;
 }
 
-.ql-toolbar.ql-snow+.ql-container.ql-snow {
+.ql-toolbar.ql-snow + .ql-container.ql-snow {
   border-radius: 0 0 20px 20px;
 }
 
@@ -1119,7 +1125,10 @@ button[disabled] {
   border-radius: 10px;
 }
 
-.AccountTable .Filter .MuiOutlinedInput-root .MuiAutocomplete-input::placeholder {
+.AccountTable
+  .Filter
+  .MuiOutlinedInput-root
+  .MuiAutocomplete-input::placeholder {
   font-size: 12px;
   color: var(--text-color);
 }
@@ -1518,6 +1527,43 @@ Courier Start
 
 .Courier .CourierItem .customInput {
   text-align: left;
+}
+
+.CourierItem .customInput.Pathao label {
+  color: var(--text-color);
+}
+
+.CourierItem .customInput.pathao span {
+  color: var(--main-color);
+  margin: 0 5px;
+}
+
+.CourierItem .customInput.pathao ul li {
+  color: var(--text-color);
+  font-size: 16px;
+  line-height: 20px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin-bottom: 10px;
+}
+
+.CourierItem .customInput.pathao ul li h5 {
+  font-size: 14px;
+  font-weight: 700;
+  width: 90%;
+  word-wrap: break-word;
+}
+
+.CourierItem .customInput.pathao ul li button {
+  padding: 0;
+  background: none !important;
+  text-align: right;
+}
+
+.CourierItem .customInput.pathao ul li button i {
+  font-size: 16px;
+  color: var(--main-color);
 }
 
 .Courier .CourierItem .img {
@@ -2383,7 +2429,7 @@ Home Page Design
 .HomePage .Header button i {
   font-size: 13px;
   margin-left: 10px;
-  margin-bottom: -5px;
+  margin-bottom: 0px;
 }
 
 .HomePage .HomePageCart .duelButton {
@@ -2841,8 +2887,13 @@ Home Page Design
  Start SectionCustomize
 -------------------------------------------------------------------------- */
 
+.SectionCustomize .UpdateButtonCustomize {
+  text-align: right;
+}
+
 .SectionCustomize .bg {
-  width: 100%;
+  width: 50%;
+  margin-top: 10px;
 }
 
 .SectionCustomizeBox {
@@ -2925,7 +2976,7 @@ Home Page Design
     transform: rotate(45deg);
   }
 
-  .SelectSectionBox .radio:checked+.img {
+  .SelectSectionBox .radio:checked + .img {
     border: 1px solid var(--main-color);
   }
 }
@@ -2991,6 +3042,17 @@ Home Page Design
 
 .ColorSection .showColor input:focus {
   outline: none;
+}
+
+.SectionButton {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.SectionButton .bg {
+  width: auto;
+  background: var(--cart-color-1);
+  color: var(--header-color);
 }
 
 /* --------------------------------------------------------------------------
@@ -3068,7 +3130,6 @@ Media
 ---------------------------------------------------  --------------------------------------------------- --------------------------------------------------- 
 --------------------------------------------------- --------------------------------------------------- ---------------------------------------------------  */
 @media (max-width: 1399px) {
-
   .css-13cymwt-control,
   .css-t3ipsp-control {
     padding: 0px 10px !important;
@@ -3268,8 +3329,6 @@ Media
   .ColorSection .ColorSectionItem:last-child {
     padding-left: 30px;
   }
-
-
 }
 
 /* ---------------------------------------------------  --------------------------------------------------- --------------------------------------------------- 
@@ -3358,9 +3417,8 @@ Media
   .progressbar_ProgressCircleMain__x3b_x {
     width: 130px !important;
     height: 130px !important;
-    margin:  0 auto;
+    margin: 0 auto;
   }
-
 }
 
 /* ---------------------------------------------------  --------------------------------------------------- --------------------------------------------------- 
@@ -3580,6 +3638,7 @@ Media
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 0 20px;
   }
 
   .MobileFooterMenu li a {
@@ -3589,28 +3648,22 @@ Media
   .MobileFooterMenu li.active a {
     color: var(--main-color);
   }
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 .suggested_note {
   display: none;
 }
 
-
-
 nav.MuiPagination-root ul.MuiPagination-ul.css-wjh20t-MuiPagination-ul {
   margin-top: 30px;
+}
+
+.LandingWebsite button {
+  margin-top: 30px !important;
+}
+
+.LandingWebsiteContent a button {
+  background: var(--main-color) !important;
+  padding: 8px 20px;
+  border-radius: 30px;
 }

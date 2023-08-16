@@ -337,73 +337,72 @@ const Plugin = ({ setFetch }) => {
                       <Grid container spacing={3}>
                         {Array.isArray(myAddonsList)
                           ? myAddonsList.map((Addons, index) => {
-                              return (
-                                <Grid item xs={12} sm={6} md={4} key={index}>
-                                  <div
-                                    className={`AddonsTabItem boxShadow commonCart ${
-                                      index == 0 && "cart-1"
-                                    } ${index == 1 && "cart-2"} ${
-                                      index == 2 && "cart-3"
-                                    } ${index == 3 && "cart-4"} ${
-                                      index == 4 && "cart-5"
+                            return (
+                              <Grid item xs={12} sm={6} md={4} key={index}>
+                                <div
+                                  className={`AddonsTabItem boxShadow commonCart ${index == 0 && "cart-1"
+                                    } ${index == 1 && "cart-2"} ${index == 2 && "cart-3"
+                                    } ${index == 3 && "cart-4"} ${index == 4 && "cart-5"
                                     }`}
-                                  >
-                                    <div
-                                      className={
-                                        Addons?.addons_details?.payment_type ===
+                                >
+                                  <div
+                                    className={
+                                      Addons?.addons_details?.payment_type ===
                                         "free"
-                                          ? "PainUnpaid Free"
-                                          : "PainUnpaid"
-                                      }
-                                    >
-                                      <h5>
-                                        {Addons?.addons_details?.payment_type}
-                                      </h5>
-                                    </div>
-                                    <div className="img">
-                                      <img
-                                        src={Addons.addons_image_details?.name}
-                                        alt={Addons?.addons_details?.name}
-                                      />
-                                    </div>
-                                    <div className="text">
-                                      <h4>{Addons?.addons_details?.name}</h4>
+                                        ? "PainUnpaid Free"
+                                        : "PainUnpaid"
+                                    }
+                                  >
+                                    <h5>
+                                      {Addons?.addons_details?.payment_type}
+                                    </h5>
+                                  </div>
+                                  <div className="img">
+                                 
+                                    <img
+                                      src={Addons.addons_image}
+                                      alt={Addons?.addons_details?.name}
+                                    />
+                                  </div>
+                                  <div className="text">
+                                    <h4>{Addons?.addons_details?.name}</h4>
 
-                                      <div className="DualButton">
-                                        {Addons?.status === 0 ? (
-                                          <>
-                                            <Button
-                                              onClick={() =>
-                                                addonsActive(Addons?.id)
-                                              }
-                                            >
-                                              Active
-                                            </Button>
-                                            <Button
-                                              className="Deactivated"
-                                              onClick={() =>
-                                                addonsUninstall(Addons.id)
-                                              }
-                                            >
-                                              Uninstall
-                                            </Button>
-                                          </>
-                                        ) : (
+                                    <div className="DualButton">
+                                      {Addons?.status === 0 ? (
+                                        <>
                                           <Button
-                                            className="Deactivated"
                                             onClick={() =>
                                               addonsActive(Addons?.id)
                                             }
                                           >
-                                            Deactivate
+                                            Active
                                           </Button>
-                                        )}
-                                      </div>
+                                          <Button
+                                            disabled
+                                            className="Deactivated"
+                                            onClick={() =>
+                                              addonsUninstall(Addons.id)
+                                            }
+                                          >
+                                            Uninstall
+                                          </Button>
+                                        </>
+                                      ) : (
+                                        <Button
+                                          className="Deactivated"
+                                          onClick={() =>
+                                            addonsActive(Addons?.id)
+                                          }
+                                        >
+                                          Deactivate
+                                        </Button>
+                                      )}
                                     </div>
                                   </div>
-                                </Grid>
-                              );
-                            })
+                                </div>
+                              </Grid>
+                            );
+                          })
                           : null}
                       </Grid>
                     </TabPanel>
@@ -412,19 +411,16 @@ const Plugin = ({ setFetch }) => {
                     <TabPanel value="1">
                       <Grid container spacing={3}>
                         {/* item */}
-
+                       
                         {addonsList.length > 0 &&
                           addonsList.map((addon, index) => {
                             return (
                               <Grid item xs={12} sm={6} md={4} key={index}>
                                 <div
-                                  className={`AddonsTabItem boxShadow commonCart ${
-                                    index == 0 && "cart-1"
-                                  } ${index == 1 && "cart-2"} ${
-                                    index == 2 && "cart-3"
-                                  } ${index == 3 && "cart-4"} ${
-                                    index == 4 && "cart-5"
-                                  }`}
+                                  className={`AddonsTabItem boxShadow commonCart ${index == 0 && "cart-1"
+                                    } ${index == 1 && "cart-2"} ${index == 2 && "cart-3"
+                                    } ${index == 3 && "cart-4"} ${index == 4 && "cart-5"
+                                    }`}
                                 >
                                   <div
                                     className={
@@ -435,9 +431,9 @@ const Plugin = ({ setFetch }) => {
                                   >
                                     <h5>{addon?.payment_type}</h5>
                                   </div>
-                                  <div className="img">
+                                  <div className="img">                                                    
                                     <img
-                                      src={addon?.addons_image?.name}
+                                      src={addon?.addons_image}
                                       alt=""
                                     />
                                   </div>
@@ -445,19 +441,19 @@ const Plugin = ({ setFetch }) => {
                                     <h4>{addon?.name}</h4>
                                     {addon?.payment_type !== "free"
                                       ? addonsTextBeforeVerifyWithPay(
-                                          addon.id,
-                                          addon
-                                        )
+                                        addon.id,
+                                        addon
+                                      )
                                       : null}
 
-                                    <h5>{addon?.amount}.00 Tk</h5>
+                                    <h5>{addon?.amount} Tk</h5>
                                     <div className="DualButton">
                                       {addon?.payment_type === "free"
                                         ? addonsInstallVerify(addon?.id, addon)
                                         : addonsInstallVerifyWithPay(
-                                            addon.id,
-                                            addon
-                                          )}
+                                          addon.id,
+                                          addon
+                                        )}
                                     </div>
                                   </div>
                                 </div>

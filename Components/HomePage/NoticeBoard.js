@@ -2,7 +2,7 @@ import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Box, Container, Grid, Tab } from '@mui/material';
 import Link from 'next/link';
 import React, { useState } from 'react';
-import { RiComputerLine } from 'react-icons/ri';
+
 import { domain } from '../../pages/api';
 
 

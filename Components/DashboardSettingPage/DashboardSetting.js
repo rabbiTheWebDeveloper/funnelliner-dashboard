@@ -26,11 +26,9 @@ const DashboardSetting = ({ response }) => {
     reset,
     formState: { errors },
   } = useForm();
-  const [age, setAge] = useState("");
 
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
+
+
 
   const handleChangeTab = (event, newValue) => {
     setValue(newValue);
@@ -56,7 +54,7 @@ const DashboardSetting = ({ response }) => {
       })
       .then(function (response) {
         showToast("Owner information has been successfully updated");
-        // reset();
+
       })
       .catch(function (error) {
         showToast("Something went wrong!", "error");
@@ -169,6 +167,7 @@ const DashboardSetting = ({ response }) => {
                                   type="text"
                                   defaultValue={ownInfo.owner_name}
                                   {...register("owner_name")}
+                                  required
                                 />
                               </div>
 
@@ -180,6 +179,7 @@ const DashboardSetting = ({ response }) => {
                                   type="number"
                                   defaultValue={ownInfo?.owner_number}
                                   {...register("owner_number")}
+                                  required
                                 />
                               </div>
 
@@ -192,6 +192,7 @@ const DashboardSetting = ({ response }) => {
                                   InputProps={{ readOnly: true }}
                                   value={ownInfo?.owner_email}
                                   {...register("owner_email")}
+                                  required
                                 />
                               </div>
 

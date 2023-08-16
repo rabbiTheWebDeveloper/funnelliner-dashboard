@@ -71,49 +71,7 @@ const UploderNew = ({ imageData, setImageData, setLinks, links , bannerList }) =
     return (
 
         <> 
-       {/* {
-        bannerList.map((item ,index) => {
 
-            <div className={style.SliderUploaderContent} key={index}>
-            <div className={style.imgUploader}>
-              
-                    <input
-                        accept="image/*"
-                        type="file"
-                        id={`select-image-${image.id}`}
-                        style={{ display: 'none' }}
-                        onChange={event => handleImageUpload(event, index)}
-                    />
-
-                    <label htmlFor={`select-image-${image.id}`}>
-                        <Button className={style.SelectImgButton} variant="contained" color="primary" component="span">
-                            Upload Image
-                        </Button>
-                    </label>
-              
-                {image.previewURL && (
-                    <Box mt={2} textAlign="center">
-                        <h6>Image Preview:</h6>
-                        <img src={image.previewURL} alt="Preview" style={{ width: '100px', height: 'auto' }} />
-                        <div className={style.close} onClick={() => clearImage(index)}>
-                            <i className="flaticon-close-1"></i>
-                        </div>
-                    </Box>
-                )}
-            </div>
-
-            <input
-                type="text" onChange={e => handleLinkChange(index, e.target.value)}
-                className={style.InputLink}
-                placeholder='Photo Link'
-            />
-            <div className={style.close}>
-                <i className="flaticon-close-1"></i>
-            </div>
-        </div>
-        })
-
-       } */}
             {imageData.map((image, index) => (
                 <div className={style.SliderUploaderContent} key={index}>
                     <div className={style.imgUploader}>
@@ -146,7 +104,7 @@ const UploderNew = ({ imageData, setImageData, setLinks, links , bannerList }) =
                     <input
                         type="text" onChange={e => handleLinkChange(index, e.target.value)}
                         className={style.InputLink}
-                        defaultValue="#"
+                        value={links}
                         placeholder='Photo Link'
                     />
                     {/* <div className={style.close}>

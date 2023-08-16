@@ -17,46 +17,24 @@ const handleClose = () => {
 };
 
 const DelivereOrder = ({ searchQuery, allProducts, advanceStatus }) => {
-    const { data, isLoading, isError } = useGetOrdersQuery("delivered");
+    const { data, isLoading } = useGetOrdersQuery("delivered");
     const [products, setProducts] = useState([]);
     const [filterProducts, setFilterProducts] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
     const [perPage, setPerPage] = useState(25);
-    const [page, setPage] = useState(1);
-    const [selectedOption, setSelectedOption] = useState("");
 
-    // Filter
-    const [age, setAge] = useState([]);
 
-    const handleChange = (event) => {
-        setAge(event.target.value);
-    };
+
+
+
 
     // Tabs
     const [value, setValue] = useState("1");
 
-    const handleChangeTab = (event, newValue) => {
-        setValue(newValue);
-    };
-    // handleClick Move To Completed
-    const [anchorEl, setAnchorEl] = useState(null);
-    const open = Boolean(anchorEl);
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
 
-    // handleConfirmed
-    const [anchorEl2, setAnchorEl2] = useState(null);
-    const open2 = Boolean(anchorEl2);
-    const handleConfirmed = (event) => {
-        setAnchorEl2(event.currentTarget);
-    };
-    const handleCloseConfirmed = () => {
-        setAnchorEl2(null);
-    };
+
+
+
 
   
 
@@ -112,7 +90,7 @@ const DelivereOrder = ({ searchQuery, allProducts, advanceStatus }) => {
         handleChangeSearchBox()
     }, [searchQuery])
 
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
     const today = new Date().toISOString().slice(0, 10);
     return (
         <>
@@ -222,7 +200,7 @@ const DelivereOrder = ({ searchQuery, allProducts, advanceStatus }) => {
                                                             </Tooltip>
                                                         </td>
                                                         <td>
-                                                            {/* {product?.order_details[0]?.product?.product_name} */}
+
                                                             <Tooltip
                                                                 title={
                                                                     product?.order_details[0]?.product
@@ -284,57 +262,7 @@ const DelivereOrder = ({ searchQuery, allProducts, advanceStatus }) => {
                                                             Home
                                                         </td>
 
-                                                        {/* <td>
-       <div className="DropDown">
-         <Select
-           {...props}
-           className="select__color"
-           onChange={(e) => {statusSubmit(product?.id ,e.value)}}
-           defaultValue={options[0]}
-           options={options}
-           styles={{
-             option: (provided, state) => ({
-               ...provided,
-               borderBottom: "1px solid #ddd",
-               color: state.isSelected ? "#fff" : "#666",
-               background: state.isSelected ? "#556FF6" : "#fff",
-               cursor: "pointer",
-               margin: "0px",
-               ":active": {
-                 backgroundColor: "#ddd",
-                 cursor: "pointer",
-               },
-             }),
-             singleValue: (provided, state) => ({
-               ...provided,
-               color: "#fff",
-
-                                                        </td>
-                                                        <td>
-                                                            {product?.due}
-                                                        </td>
-
-               ":focus-within": {
-                 ...styles[":focus-within"],
-                 border: "none",
-                 boxShadow: "none",
-               },
-             }),
-             menuList: (styles) => ({
-               ...styles,
-               margin: "0px",
-               padding: "0px",
-             }),
-             noOptionsMessage: (styles) => ({
-               ...styles,
-               background: "red",
-               color: "#fff",
-             }),
-           }}
-         />
-       </div>
-     </td> */}
-                                                        {/* <td>Note</td> */}
+                                                        
                                                     </tr>
                                                 );
                                             })}
@@ -434,11 +362,11 @@ const DelivereOrder = ({ searchQuery, allProducts, advanceStatus }) => {
                                                                     )}
                                                                 </span>
                                                             </Tooltip>
-                                                            {/* {product?.customer?.name} */}
+                                         
                                                         </td>
                                                         <td>{product?.phone}</td>
                                                         <td>
-                                                            {/* {product?.customer?.address} */}
+                                                
                                                             <Tooltip
                                                                 title={product?.address}
                                                                 placement='top-start'
@@ -514,61 +442,8 @@ const DelivereOrder = ({ searchQuery, allProducts, advanceStatus }) => {
                                                             Home Delivery
                                                         </td>
 
-                                                        {/* <td>
-   <div className="DropDown">
-     <Select
-       {...props}
-       className="select__color"
-       onChange={(e) => {statusSubmit(product?.id ,e.value)}}
-       defaultValue={options[0]}
-       options={options}
-       styles={{
-         option: (provided, state) => ({
-           ...provided,
-           borderBottom: "1px solid #ddd",
-           color: state.isSelected ? "#fff" : "#666",
-           background: state.isSelected ? "#556FF6" : "#fff",
-           cursor: "pointer",
-           margin: "0px",
-           ":active": {
-             backgroundColor: "#ddd",
-             cursor: "pointer",
-           },
-         }),
-         singleValue: (provided, state) => ({
-           ...provided,
-           color: "#fff",
-
-           fontSize: "15px",
-         }),
-         control: (styles) => ({
-           ...styles,
-           backgroundColor: "#556FF6",
-           padding: "3px 0px",
-           margin: "0px 0px",
-           border: "none",
-
-           ":focus-within": {
-             ...styles[":focus-within"],
-             border: "none",
-             boxShadow: "none",
-           },
-         }),
-         menuList: (styles) => ({
-           ...styles,
-           margin: "0px",
-           padding: "0px",
-         }),
-         noOptionsMessage: (styles) => ({
-           ...styles,
-           background: "red",
-           color: "#fff",
-         }),
-       }}
-     />
-   </div>
- </td> */}
-                                                        {/* <td>Note</td> */}
+                                                       
+                                                
                                                     </tr>
                                                 );
                                             })}

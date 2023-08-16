@@ -1,12 +1,9 @@
-import { Container, Grid } from "@mui/material";
+
 import React, { useEffect, useState } from "react";
 import { topSellingProducts } from "../../pages/api";
-import Button from '@mui/material/Button';
-import Fade from '@mui/material/Fade';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 
-import HeaderDescription from "../Common/HeaderDescription/HeaderDescription";
+
+
 
 const TopSellingProducts = () => {
     const [TopSellingProducts, setTopSellingProduct] = useState([]);
@@ -15,10 +12,6 @@ const TopSellingProducts = () => {
             setTopSellingProduct(result?.data?.data);
         });
     }, []);
-
-
-
- 
 
     return (
 

@@ -1,4 +1,4 @@
-import { Badge, Collapse, List, ListItemButton } from "@mui/material";
+import { Badge, Collapse, List, ListItemButton, Skeleton } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from 'next/router';
 import React from "react";
@@ -62,9 +62,8 @@ const Sidebar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
                 <div className='Shop'>
                     <Link href='/'>
                         {
-                            busInfo?.shop_logo?.name ? <img src={busInfo?.shop_logo?.name} alt='' /> : <BsShop />
-                        }
-
+                            busInfo?.shop_logo ? <img src={busInfo?.shop_logo} alt='' /> : <BsShop />
+                        }                     
                     </Link>
                     <h4>{busInfo?.name}</h4>
                     <p>ID: {shopId}</p>

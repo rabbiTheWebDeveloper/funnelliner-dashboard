@@ -102,7 +102,7 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
             phone: data.phone,
             msg: data.msg,
         };
-        console.log(data);
+      
         startLoading();
         if (data.phone.length < 15) {
             SuperFetch.post("/client/single-sms-send", newddata, {
@@ -162,7 +162,7 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
                 headers: headers,
             });
             if (response.status === 200) {
-                router.push(res.data).then((r) => r);
+                router.push(response.data).then((r) => r);
             }
         } catch (err) {
             showToast(err?.message, "error");
@@ -304,7 +304,7 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
                             </div>
                         </Grid>
                         <Grid item xs={12} sm={12} md={6}>
-                            <BulkSmsStatus />
+                            <BulkSmsStatus handelFetchBusInfo={handelFetchBusInfo} />
                         </Grid>
                     </Grid>
                 </Container>
@@ -488,7 +488,7 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
 
                                     <div className="duelButton">
                                         <Button
-                                            onClick={() => handlePaymentMethod(selectedPayment)}
+                                            onClick={() => makePayment(selectedPayment)}
                                         >
                                             Pay Now
                                         </Button>

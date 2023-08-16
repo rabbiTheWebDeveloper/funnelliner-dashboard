@@ -21,7 +21,7 @@ import { useToast } from '../../hook/useToast';
 const WebPages = () => {
     const [isLoading, startLoading, stopLoading] = useLoading()
     const showToast = useToast()
-    const [status, setStatus] = useState({})
+    const [status, setStatus] = useState(false)
     const domain_request = Cookies.get('domain_request')
     const handleConfirmationDialog = useConfirmationDialog(
         'Delete Product?',
@@ -75,6 +75,8 @@ const WebPages = () => {
 
             });
 
+            setStatus(false)
+
     }, [status]);
     //   status create
     const data = Cookies.get();
@@ -98,6 +100,7 @@ const WebPages = () => {
         })
             .then(function (response) {
                 Swal.fire("Own Info Add!", response.data.msg, "success");
+                setStatus(true)
             })
             .catch(function (error) {
                 Swal.fire({
@@ -107,6 +110,26 @@ const WebPages = () => {
                 });
             });
         reset();
+    };
+
+    const duplicatePage = (id) => {
+
+        axios.post(process.env.API_URL + `/client/pages/${id}/duplicate`, {}, {
+            headers: headers,
+        })
+            .then(function (response) {
+              
+                Swal.fire(response.data.message, response.data.message, "success");
+                setStatus(true)
+
+            })
+            .catch(function (error) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    footer: '<a href="">Why do I have this issue?</a>',
+                });
+            });
     };
 
     const deleteProduct = async (id) => {
@@ -224,6 +247,10 @@ const WebPages = () => {
                                                                                     className='updateActionBtn'>
                                                                                     Customize
                                                                                 </Link>
+                                                                                <Button onClick={() => duplicatePage(product.id)} className='updateActionBtn'
+                                                                                >
+                                                                                <i className="flaticon-google-docs"></i>
+                                                                                </Button>
 
                                                                                 <Link className='viewActionBtn' target="_blank"
                                                                                     href={domain_request != 'null' ? `https://${domain_request}` + "/p/" + product.slug : `${themeUrl}/${domain}` + "/p/" + product.slug}>
@@ -248,7 +275,7 @@ const WebPages = () => {
                                                             }) : null}
 
                                                     {
-                                                        isLoading === false && products && products?.length === 0 &&
+                                                        isLoading === false && products?.length === 0 &&
                                                         <tr>
                                                             <td colSpan={7}>
                                                                 <div className='NullPage'>

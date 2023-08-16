@@ -1,11 +1,10 @@
 
-import React, { useState, useMemo } from 'react'
-import { Box, Button, Container, Grid, Pagination, Stack, TextField } from "@mui/material";
+import React, { useState } from 'react'
+import { Button, Container} from "@mui/material";
 import dynamic from 'next/dynamic'
 import 'react-quill/dist/quill.snow.css'
 import axios from 'axios';
-import { getWebsiteSettings, headers, shopId } from "../../../pages/api";
-import Swal from 'sweetalert2';
+import {  headers } from "../../../pages/api";
 import { useToast } from '../../../hook/useToast';
 const QuillNoSSRWrapper = dynamic(import('react-quill'), {
     ssr: false,

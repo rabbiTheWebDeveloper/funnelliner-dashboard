@@ -5,36 +5,39 @@ import { useForm } from "react-hook-form";
 import Swal from 'sweetalert2';
 import { baseUrl } from "../../constant/constant";
 import { headers, shopId } from "../../pages/api";
+import { useToast } from "../../hook/useToast";
+import useLoading from "../../hook/useLoading";
 
-const DomainVerification = ({ shopName, data }) => {
+const DomainVerification = ({ data }) => {
+    const showToast = useToast()
+    const [isLoading, startLoading, stopLoading] = useLoading()
     const { register, handleSubmit, formState: { errors } } = useForm();
     const onSubmit = data => {
-        data.shop_name = shopName
-        data.shop_id = shopId
-        axios.post(`${baseUrl}/client/settings/domain-meta/update`, data, {
+        startLoading()
+        const domain_verify_id = data.domain_verify.match(/content="([^"]+)"/)[1];
+        const bodyData = {
+            shop_id: shopId,
+            domain_verify: domain_verify_id
+        }
+        axios.post(`${baseUrl}/client/settings/domain-meta/update`, bodyData, {
             headers: headers,
         })
             .then(function (response) {
-
-
-                Swal.fire(
-                    "Verify Your Domain Information Updated",
-
-                )
+                showToast(response?.data?.msg)
+                stopLoading()
             })
             .catch(function (error) {
-
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: error.msg,
-                    footer: '<a href="">Why do I have this issue?</a>',
-                });
+                stopLoading()
+                showToast("Something went wrong updating your domain", "error")
             });
     }
-    
-    const htmlString = '<meta name="facebook-domain-verification" content="87hou17rngj5dfdfwue2286dmhwa1qzpwf" />';
 
+    const htmlString = '<meta name="facebook-domain-verification" content="test*****************************" />';
+    const domainVerificationCode = (verificationCOde) => {
+        if(verificationCOde){
+            return `<meta name="facebook-domain-verification" content="${verificationCOde}" />`
+        }
+    }
     return (
         <div className='DashboardTabsItem DomainVerification'>
 
@@ -51,23 +54,20 @@ const DomainVerification = ({ shopName, data }) => {
             {/* Add Another Verification Meta Tag */}
 
             <div className="AddAnotherVerification">
-
                 <form onSubmit={handleSubmit(onSubmit)}>
-
                     {/* domain_verify */}
-
                     <div className="customInput">
                         <h4>Verify Your Domain</h4>
                         <pre>
                             {htmlString}
                         </pre>
-
-                        <input defaultValue={data?.domain_verify} type="text" {...register("domain_verify", { required: true })} placeholder='Meta verification content' />
+                        <input defaultValue={domainVerificationCode(data?.domain_verify)} type="text" {...register("domain_verify", { required: true, pattern: /<meta\s+name="facebook-domain-verification"\s+content="([^"]+)"\s*\/>/g })} placeholder='Meta verification content' />
+                        {errors.domain_verify && <p style={{ color: "red" }}>Valid meta tag required</p>}
                     </div>
 
                     {/* AddCancel */}
                     <div className="duelButton">
-                        <Button type="submit" >Save</Button>
+                        <Button disabled={isLoading} type="submit" >Save</Button>
                         <Button className="red">Reset</Button>
                     </div>
                 </form>

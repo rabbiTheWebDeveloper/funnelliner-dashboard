@@ -11,17 +11,16 @@ import Head from 'next/head';
 
 
 
-const index = () => {
+const InvoicePage = () => {
     const { publicRuntimeConfig } = getConfig();
     const apiUrl = publicRuntimeConfig.API_URL;
     const [isApiResponse, setIsApiResponse] = useState(false)
     const [invoices, setInvoices] = useState([])
     const [busInfo, setBusInfo] = useState({});
-    const [ownInfo, setOwnInfo] = useState({});
     const router = useRouter()
     const { oderId } = router.query;
     const token = Cookies.get("token");
-    console.log('oderId', oderId)
+   
 
 
     useEffect(() => {
@@ -49,7 +48,7 @@ const index = () => {
     };
 
     useEffect(() => {
-        // const timeoutId = setTimeout(() => {
+
         axios
             .get(apiUrl + "/client/order-invoice", config)
             .then(function (response) {
@@ -62,19 +61,10 @@ const index = () => {
                 // handle error
                 console.error(error);
             });
-        // }, 1000);
 
-        // return () => clearTimeout(timeoutId);
+
+
     }, [oderId]);
-
-
-
-
-
-
-
-
-
 
 
 
@@ -134,7 +124,6 @@ const index = () => {
 
 
 
-
     const capitalizeWords = (str) => {
         return (str || '').toLowerCase()
             .split(' ')
@@ -147,21 +136,23 @@ const index = () => {
 
     if (invoices !== undefined) {
 
-
         return (
 
             <>
+                <Head>
+                    <title>Invoice-3</title>
+                    <style dangerouslySetInnerHTML={{ __html: "\n        :where(h1, h2, h3, h4, h5, h6, p, ) {\n            margin: 0;\n            padding: 0;\n        }\n\n        .invoice-4 {\n            font-family: 'Montserrat', sans-serif;\n            width: 700px;  height: 100%; \n \n            margin: 0 auto;\n            padding: 10px 20px;\n            padding-bottom: 0;\n            border: 1px solid #ddd;\n        background: #FFF;\n            -webkit-print-color-adjust: exact;\n        display: flex;\n            flex-direction: column;\n            justify-content: space-between;\n            flex-wrap: wrap;\n        }\n\n        .invoice-4 .item{\n            height: 50%;\n        }\n\n        .invoice-4 .bdr{\n            border-top: 2px dashed #DDD;\n            margin: 20px -20px; margin-bottom: 40px; position:relative\n        }\n\n  .invoice-4 .bdr img{ position: absolute; top: -15px; left: 0px; opacity: .5; height:30px; } \n\n  .invoice-4 .item:nth-child(even) .bdr{display: none;} \n\n    .header {\n            display: flex;\n            align-items: self-start;\n            justify-content: space-between;\n            border-bottom: 1px solid #ddd;\n            margin: 0 -20px;\n            padding: 0 20px;\n            padding-bottom: 10px;\n            border-collapse: collapse;\n        }\n\n        .header h2 {\n            font-size: 25px;\n            line-height: 35px;\n            font-weight: 700;\n            color: #000;\n        }\n\n        .header h4 {\n            font-size: 13px;\n            line-height: 15px;\n            color: #737373;\n            font-weight: 400;\n            margin-top: 5px;\n        }\n\n        .header h4 span {\n            font-weight: 700;\n            color: #000;\n        }\n\n        .logo {\n            text-align: right;\n        }\n\n        .logo img {\n            height: 50px;\n        }\n\n        .table {\n            width: 100%;\n            margin-top: 10px;\n        }\n\n        .table table {\n            width: 100%;\n            border-collapse: collapse;\n        }\n\n        .table table thead tr {\n            border-bottom: 1px solid #ddd;\n        }\n\n        .table table th {\n            font-size: 13px;\n            text-align: center;\n            padding: 5px 20px;\n            color: #000;\n            font-weight: 700;\n        }\n\n        .table table td {\n            text-align: center;\n            padding: 5px 20px;\n            color: #000;\n            font-weight: 400;\n            font-size: 14px;\n            line-height: 16px;\n        }\n\n        .table table tbody tr:nth-child(odd) {\n            background: #CFE2FF;\n        }\n\n        .table table tbody tr:nth-child(even) {\n            background: #f3f3f3;\n        }\n\n\n        .billing {\n            margin-top: 20px;\n            display: flex;\n            align-items: flex-start;\n            justify-content: space-between;\n        }\n\n        .billing .left {\n            width: 43%;\n        }\n\n        .billing .right {\n            width: 47%;\n            text-align: right;\n        }\n\n        .billing h4 {\n            font-size: 14px;\n            line-height: 20px;\n            color: #737373;\n            margin-bottom: 5px;\n        }\n\n        .billing p {\n            font-size: 13px;\n            line-height: 20px;\n            color: #000;\n            font-weight: 400;\n            margin-top: 5px;\n            color: #737373;\n        }\n\n        .billing p span {\n            font-weight: 700;\n        }\n\n        .billing h5 {\n            font-size: 13px;\n            line-height: 20px;\n            color: #737373;\n            font-weight: 400;\n            margin-top: 5px;\n        }\n\n        .billing h5 span {\n            font-weight: 700;\n            color: #000;\n        }\n\n        .billing ul {\n            list-style-type: none;\n            margin: 0;\n            padding: 0;\n        }\n\n        .billing ul li {\n            display: flex;\n            align-items: center;\n            justify-content: space-between;\n            margin-bottom: 0px;\n            padding: 2px 7px;\n        }\n\n        .billing ul li h3 {\n            font-size: 14px;\n            line-height: 20px;\n            color: #000;\n            font-weight: 700;\n            width: 45%;\n        }\n\n        .billing ul li p {\n            width: 40%;\n            font-size: 14px;\n            font-weight: 400;\n            color: #737373;\n            margin-top: 0;\n        }\n\n        .billing ul li:last-child {\n            background: #894bca;\n            margin-bottom: 0;\n            margin-top: 5px;\n        }\n\n        .billing ul li:last-child h3 {\n            color: #fff;\n            font-size: 16px;\n            line-height: 24px;\n        }\n\n        .billing ul li:last-child p {\n            color: #fff;\n            font-size: 16px;\n            line-height: 24px;\n        }\n\n        .footer {\n            background: rgba(255, 0, 0, 0.04);\n            border-top: 2px solid rgba(255, 0, 0, 0.16);\n            margin: 0 -20px;\n            padding: 10px 20px;\n            margin-top: 10px;\n            display: flex;\n            align-items: center;\n            justify-content: space-between;\n        }\n\n        .footer h3{\n            font-size: 15px;\n            line-height: 24px;\n            color: #000;\n            font-weight: 700;\n        }\n\n        .footer h5 {\n        \n            font-size: 14px;\n            line-height: 20px;\n            color: #000;\n            font-weight: 400;\n            margin-top: 3px;\n        }\n\n\n    " }} />
 
-                {
-                    isApiResponse && invoices.length > 0 && invoices.map((invoice, index) => {
-                        return (
-                            <>
-                                <Head>
-                                    <title>Invoice-3</title>
-                                    <style dangerouslySetInnerHTML={{ __html: "\n        :where(h1, h2, h3, h4, h5, h6, p, ) {\n            margin: 0;\n            padding: 0;\n        }\n\n        .invoice-4 {\n            font-family: 'Montserrat', sans-serif;\n            width: 700px;\n            height: 900px;\n            margin: 0 auto;\n            padding: 10px 20px;\n            padding-bottom: 0;\n            border: 1px solid #ddd;\n            background: #FFF;\n            -webkit-print-color-adjust: exact;\n            display: flex;\n            flex-direction: column;\n            justify-content: space-between;\n            flex-wrap: wrap;\n        }\n\n        .invoice-4 .item{\n            height: 48%;\n        }\n\n        .invoice-4 .bdr{\n            border: 2px dashed #DDD;\n            margin: 0 -20px;\n        }\n\n        .header {\n            display: flex;\n            align-items: self-start;\n            justify-content: space-between;\n            border-bottom: 1px solid #ddd;\n            margin: 0 -20px;\n            padding: 0 20px;\n            padding-bottom: 10px;\n            border-collapse: collapse;\n        }\n\n        .header h2 {\n            font-size: 25px;\n            line-height: 35px;\n            font-weight: 700;\n            color: #000;\n        }\n\n        .header h4 {\n            font-size: 13px;\n            line-height: 15px;\n            color: #737373;\n            font-weight: 400;\n            margin-top: 5px;\n        }\n\n        .header h4 span {\n            font-weight: 700;\n            color: #000;\n        }\n\n        .logo {\n            text-align: right;\n        }\n\n        .logo img {\n            height: 50px;\n        }\n\n        .table {\n            width: 100%;\n            margin-top: 10px;\n        }\n\n        .table table {\n            width: 100%;\n            border-collapse: collapse;\n        }\n\n        .table table thead tr {\n            border-bottom: 1px solid #ddd;\n        }\n\n        .table table th {\n            font-size: 13px;\n            text-align: center;\n            padding: 5px 20px;\n            color: #000;\n            font-weight: 700;\n        }\n\n        .table table td {\n            text-align: center;\n            padding: 5px 20px;\n            color: #000;\n            font-weight: 400;\n            font-size: 14px;\n            line-height: 16px;\n        }\n\n        .table table tbody tr:nth-child(odd) {\n            background: #CFE2FF;\n        }\n\n        .table table tbody tr:nth-child(even) {\n            background: #f3f3f3;\n        }\n\n\n        .billing {\n            margin-top: 20px;\n            display: flex;\n            align-items: flex-start;\n            justify-content: space-between;\n        }\n\n        .billing .left {\n            width: 43%;\n        }\n\n        .billing .right {\n            width: 47%;\n            text-align: right;\n        }\n\n        .billing h4 {\n            font-size: 14px;\n            line-height: 20px;\n            color: #737373;\n            margin-bottom: 5px;\n        }\n\n        .billing p {\n            font-size: 13px;\n            line-height: 20px;\n            color: #000;\n            font-weight: 400;\n            margin-top: 5px;\n            color: #737373;\n        }\n\n        .billing p span {\n            font-weight: 700;\n        }\n\n        .billing h5 {\n            font-size: 13px;\n            line-height: 20px;\n            color: #737373;\n            font-weight: 400;\n            margin-top: 5px;\n        }\n\n        .billing h5 span {\n            font-weight: 700;\n            color: #000;\n        }\n\n        .billing ul {\n            list-style-type: none;\n            margin: 0;\n            padding: 0;\n        }\n\n        .billing ul li {\n            display: flex;\n            align-items: center;\n            justify-content: space-between;\n            margin-bottom: 0px;\n            padding: 2px 7px;\n        }\n\n        .billing ul li h3 {\n            font-size: 14px;\n            line-height: 20px;\n            color: #000;\n            font-weight: 700;\n            width: 45%;\n        }\n\n        .billing ul li p {\n            width: 40%;\n            font-size: 14px;\n            font-weight: 400;\n            color: #737373;\n            margin-top: 0;\n        }\n\n        .billing ul li:last-child {\n            background: #894bca;\n            margin-bottom: 0;\n            margin-top: 5px;\n        }\n\n        .billing ul li:last-child h3 {\n            color: #fff;\n            font-size: 16px;\n            line-height: 24px;\n        }\n\n        .billing ul li:last-child p {\n            color: #fff;\n            font-size: 16px;\n            line-height: 24px;\n        }\n\n        .footer {\n            background: rgba(255, 0, 0, 0.04);\n            border-top: 2px solid rgba(255, 0, 0, 0.16);\n            margin: 0 -20px;\n            padding: 10px 20px;\n            margin-top: 10px;\n            display: flex;\n            align-items: center;\n            justify-content: space-between;\n        }\n\n        .footer h3{\n            font-size: 15px;\n            line-height: 24px;\n            color: #000;\n            font-weight: 700;\n        }\n\n        .footer h5 {\n        \n            font-size: 14px;\n            line-height: 20px;\n            color: #000;\n            font-weight: 400;\n            margin-top: 3px;\n        }\n\n\n    " }} />
+                </Head>
 
-                                </Head>
-                                <div className="invoice-4">
+                <div className="invoice-4">
+
+                    {
+                        isApiResponse && invoices.length > 0 && invoices.map((invoice, index) => {
+                            return (
+
+                                <>
+
                                     {/* item */}
                                     <div className="item">
                                         {/* header */}
@@ -172,7 +163,7 @@ const index = () => {
                                                 <h4> <span>Invoice:</span> #{invoice?.order_no} </h4>
                                             </div>
                                             <div className="logo">
-                                                <img src={busInfo?.shop_logo?.name} alt="" />
+                                                <img src={busInfo?.shop_logo} alt="" />
                                             </div>
                                         </div>
                                         <div className="table">
@@ -202,20 +193,7 @@ const index = () => {
                                                             <td>{data?.price * data?.quantity}</td>
                                                         </tr>
                                                     })}
-                                                    {/* <tr>
-                                                <td>1</td>
-                                                <td>i-phone</td>
-                                                <td>Tk. 250.00</td>
-                                                <td>1</td>
-                                                <td>Tk. 250.00</td>
-                                            </tr>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>i-phone</td>
-                                                <td>Tk. 250.00</td>
-                                                <td>1</td>
-                                                <td>Tk. 250.00</td>
-                                            </tr> */}
+
                                                 </tbody>
                                             </table>
                                         </div>
@@ -267,145 +245,21 @@ const index = () => {
                                         </div>
                                     </div>
                                     {/* bdr */}
-                                    <div className="bdr" />
-                                    {/* item */}
-
-                                </div>
-                            </>
-
-
-                        )
-                    })
-                }
-
-
-
-
-
-
-
-                {/* <div className="InvoiceOne">
-
-
-                    <div className="InvoiceOneContent">
-
-                        <div className="Thankyou">
-                            <p>Thank you for your being with us !</p>
-
-                            <div className="FooterAddress">
-
-                                <div className="Header">
-
-                               
-                                    <div className="Text">
-                                        <ul>
-                                            <li> <BiPhoneCall /> {busInfo?.phone}</li>
-                                            <li> <FaRegEnvelope />{busInfo?.email}</li>
-                                            <li> <MdLocationPin />{busInfo?.address}</li>
-                                        </ul>
+                                    <div className="bdr">
+                                        <img src="/images/cut.png" alt="" />
                                     </div>
 
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                      
-                        <div className="Header d_flex d_justify">
-
-                            <div className="Logo d_flex">
-                                <img src={busInfo?.shop_logo?.name} alt="" />
-                                <h4>{invoice?.shop_info?.name}</h4>
-                            </div>
-
-                            <div className="Title">
-                                <h3>INVOICE</h3>
-                                <h4>Invoice No: <span>{" "} {invoice?.order_no}</span></h4>
-                                <h4>Invoice date: <strong>{moment().format("DD-MM-YYYY")}</strong> </h4>
-                            </div>
 
 
-                        </div>
+                                </>
+                            )
+                        }
 
-                     
-                        <div className="Table">
-
-                            <table>
-
-                                <thead>
-                                    <tr>
-                                        <th>SL</th>
-                                        <th>PRODUCT DESCRIPTION</th>
-                                        <th>PRICE</th>
-                                        <th>QTY</th>
-                                        <th>AMOUNT</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-
-                                    {order_details?.map((data, index) => {
-                                        return <tr key={data.order_id} >
-                                            <td>
-                                                <h4>{index + 1}</h4>
-                                            
-                                            </td>
-                                            <td>
-                                                <h4>{data?.product}</h4>
-                                              
-                                            </td>
-                                            <td>{data?.price}</td>
-                                            <td>{data?.quantity}</td>
-                                            <td>{data?.price * data?.quantity}</td>
-                                        </tr>
-                                    })}
+                        )
+                    }
 
 
-                                </tbody>
-
-                            </table>
-
-                        </div>
-
-                      
-                        <div className="Total d_flex d_justify">
-
-                            <div className="Left">
-                                <h4>Invoice to: </h4>
-                                <p>{invoice?.customer_name}</p>
-                                <p> {invoice?.address}</p>
-                                <p>{invoice?.phone}</p>
-                            </div>
-
-                            <div className="Right">
-
-                                <ul>
-                                    <li><span>SubTotal  <strong>:</strong></span>  <h6>{invoice?.grand_total} <TbCurrencyTaka/> </h6></li>
-                                    <li><span>Discount  <strong>:</strong></span>  <h6>{invoice?.discount} <TbCurrencyTaka/> </h6></li>
-                                    <li><span>Advance  <strong>:</strong></span>  <h6>{invoice?.advanced} <TbCurrencyTaka/> </h6></li>
-                                    <li><span>Shipping Cost  <strong>:</strong></span> <h6>{invoice?.shipping_cost} <TbCurrencyTaka/> </h6></li>
-                                </ul>
-
-                                <h3>Total Due: BDT {invoice?.due}</h3>
-                                
-
-                            </div>
-
-                        </div>
-
-                        <div className="InWord">
-                            <h5>In word: {numberToWord(invoice?.due)}</h5>
-                        </div>
-
-
-                    </div>
-
-
-                </div> */}
-
-
-
+                </div>
 
             </>
 
@@ -418,4 +272,4 @@ const index = () => {
 
 }
 
-export default index
+export default InvoicePage

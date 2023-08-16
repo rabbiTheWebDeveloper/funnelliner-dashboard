@@ -117,8 +117,9 @@ const ChartDesign = ({ data }) => {
             color: 'var(--grey-40, #A2A3A5)',
             lineHeight: '5px',
             marginTop: '10px'
+          
           }}
-            margin={{ top: 50 }} />
+            margin={{ top: 50 }}   padding={{ left: 30, right: 30 , bottom: 30 }} />
           <YAxis
             tickFormatter={(value) => (value >= 1000 ? `${value / 1000}k` : value)}
             tick={CustomYAxisTick}

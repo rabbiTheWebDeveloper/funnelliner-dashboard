@@ -2,6 +2,7 @@ import Cookies from 'js-cookie';
 import moment from 'moment';
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { nextDueDate } from '../pages/api';
 
 const withAuth = (Component = null, options = {}) => {
   const WithAuthComponent = (props) => {
@@ -30,12 +31,12 @@ const withAuth = (Component = null, options = {}) => {
         return;
       }
 
-      if (!options.show && user?.status === 'expired' && user?.payment_status === 'unpaid' && token) {
-        router.replace('/subscription');
+      if (!options.show && user?.status === 'expired' && user?.payment_status === 'unpaid' && nextDueDate === null && token) {
+        router.replace('/billing');
         return;
       }
-      if (!options.show && nextDuData === tomorrow && token) {
-        router.replace('/subscription');
+      if (!options.show && nextDueDate === null && token) {
+        router.replace('/billing');
         return;
       }
 

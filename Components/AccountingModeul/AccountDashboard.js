@@ -1,6 +1,6 @@
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import { Button, TextField } from '@mui/material';
+import { Button, TextField, Tooltip } from '@mui/material';
 import axios from 'axios';
 import { enGB } from 'date-fns/locale';
 import moment from 'moment';
@@ -21,7 +21,7 @@ import FilterCategoryItem from './FilterCategoryItem';
 import FilterPaymentItem from './FilterPaymentItem';
 import FilterReceverItem from './FilterReceverItem';
 
-const AccountDashboard = ({ payment, setPayment, handleFetch  ,fetchApi}) => {
+const AccountDashboard = ({ payment, setPayment, handleFetch, fetchApi }) => {
 
     const [search, setSearch] = useState(null)
 
@@ -120,7 +120,7 @@ const AccountDashboard = ({ payment, setPayment, handleFetch  ,fetchApi}) => {
         if (filterOption !== "") {
             handleFetchFilterdDataByDate()
         }
-    }, [filterOption , fetchApi])
+    }, [filterOption, fetchApi])
     const handleFetchSearch = async () => {
         try {
             let data = await axios({
@@ -155,7 +155,8 @@ const AccountDashboard = ({ payment, setPayment, handleFetch  ,fetchApi}) => {
                 url: `${process.env.API_URL}/client/accounts/payment-search-custom-datewise?start_date=${newStartDate}&end_date=${newEndDate}`,
                 headers: headers,
             });
-            setPayment(data?.data?.data)
+            setPayment(data?.data?.data.search)
+            setBalance(data?.data?.data);
 
 
         } catch (err) {
@@ -458,6 +459,7 @@ const AccountDashboard = ({ payment, setPayment, handleFetch  ,fetchApi}) => {
                                     <th>Bill No</th>
                                     <th>Date & Time</th>
                                     <th>Description</th>
+                                    <th>Payable/Payor</th>
                                     <th>Category/Ledger</th>
                                     <th>Payment  Method</th>
                                     <th>Amount</th>
@@ -473,8 +475,36 @@ const AccountDashboard = ({ payment, setPayment, handleFetch  ,fetchApi}) => {
                                         return (
                                             <tr key={index}>
                                                 <td>#{item?.bill_no}</td>
-                                                <td>{moment(item?.created_at).calendar()}</td>
-                                                <td>{item?.description}</td>
+                                                <td>
+                                                     {/* {moment(item?.date).format("h:mm a")} */}
+                                                   
+                                                        {moment(item?.created_at).format("MMMM DD, YYYY")}
+                                                   
+
+
+                                                    {/* {moment(item?.created_at).calendar()} */}
+                                                    </td>
+
+                                                <Tooltip
+                                                    title={item?.description}
+                                                    placement="top-start"
+                                                >
+                                                    <td>
+                                                        {item?.description?.length < 15 ? (
+                                                            <>{item?.description}</>
+                                                        ) : (
+                                                            <>
+                                                                {item?.description?.slice(
+                                                                    0,
+                                                                    13
+                                                                )}
+                                                                ...
+                                                            </>
+                                                        )}
+                                                    </td>
+                                                </Tooltip>
+                                                {/* <td>{item?.description}</td> */}
+                                                <td>{item?.payorName}</td>
                                                 <td>{item?.ledgerName}</td>
                                                 <td>{item?.payment_type}</td>
                                                 <td style={item.status !== 'CashIn' ? { color: 'red' } : { color: 'green', fontWeight: 600 }}>
@@ -482,7 +512,7 @@ const AccountDashboard = ({ payment, setPayment, handleFetch  ,fetchApi}) => {
                                                     {item?.amount.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                                                 </td>
 
-                                                <td>{item?.balance}</td>
+                                                <td>{item?.balance?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
                                                 <td>
 
                                                     <div className="action">

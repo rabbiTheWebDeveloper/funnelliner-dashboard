@@ -1,3 +1,5 @@
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import axios from "axios";
 import Cookies from "js-cookie";
 import Head from "next/head";
@@ -9,20 +11,17 @@ import "react-toastify/dist/ReactToastify.css";
 import Layout from "../Components/Common/layout";
 import Loader from "../Components/Loader/Loader";
 import "../public/fonts/flaticon_mycollection.css";
+import "../public/fonts2/flaticon_mycollection.css";
 import { store } from "../redux/app/store";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
-import "../styles/globals.css";
 import "../styles/Register.css";
 import "../styles/admin_dashboard.css";
 import "../styles/admin_dashboard_media.css";
 import "../styles/common.css";
+import "../styles/globals.css";
 import "../styles/style.css";
 
 import { headers } from "./api";
-import SuperFetch from "../hook/Axios";
-import moment from "moment";
 
 function MyApp({ Component, pageProps, router }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +34,7 @@ function MyApp({ Component, pageProps, router }) {
   const [fetchApi, setFetch] = useState(false);
   // addons show and hode
   const [myAddonsList, setMyAddonsList] = useState([]);
-
+ 
   const style = {
     style: {
       border: "1px solid #894bca",
@@ -64,7 +63,7 @@ function MyApp({ Component, pageProps, router }) {
     });
   }, [Router]);
 
-  // console.log("today", today)
+ 
   const handleFetchBusInfo = async () => {
     try {
       let data = await axios({

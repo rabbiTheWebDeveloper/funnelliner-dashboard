@@ -1,17 +1,6 @@
-import { Box, Button, Modal } from "@mui/material";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { headers } from "../../../pages/api";
-
-
+import { Box, Modal } from "@mui/material";
 const ShowProduct = ({ id, product, modalOpen, handleCloseModal}) => {
-    // const [products, setProducts] = useState([]);
-    // useEffect(() => {
-    //     axios.get(process.env.API_URL + "/client/products/" + id, { headers: headers })
-    //         .then(function (response) {
-    //             setProducts(response.data.data);
-    //         });
-    // }, [id]);
+
 
     return (
         <div>
@@ -69,7 +58,7 @@ const ShowProduct = ({ id, product, modalOpen, handleCloseModal}) => {
                                 <tr>
 
                                     <th>Product Image</th>
-                                    <td><img src={product?.main_image?.name} alt="" /></td>
+                                    <td><img src={product?.main_image} alt="" /></td>
 
                                     <th></th>
                                     <td></td>
@@ -82,19 +71,6 @@ const ShowProduct = ({ id, product, modalOpen, handleCloseModal}) => {
                         </div>
 
                     </div>
-
-                    {/* <div className="SalesTargetModal">
-                        <div className="Form">
-                            <div className="CustomeInput">
-                                <label> </label>
-                                <TextField id="outlined-basic" disabled variant="outlined" value={products?.product_qty > 0 ? products?.product_qty : <span style={{ color: 'red' }}> />
-                            </div>
-                            <div className="CustomeInput">
-                                <label> </label>
-                                
-                            </div>
-                        </div>
-                    </div> */}
                 </Box>
             </Modal>
         </div>

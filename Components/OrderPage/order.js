@@ -7,7 +7,7 @@ import moment from 'moment';
 import getConfig from "next/config";
 import Link from "next/link";
 
-import { useRouter } from "next/router";
+
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { DateRangePicker } from 'react-nice-dates';
@@ -61,7 +61,7 @@ const Order = ({ orderUpdate }) => {
     const [search, setSearch] = useState(null)
     const [followUpChange, setFollowUpInputChange] = useState("")
     const [courierModal, setCourierModal] = useState(false)
-    const router = useRouter()
+
 
     const BootstrapButton = styled(Button)({
         backgroundColor: '#fff',
@@ -131,11 +131,6 @@ const Order = ({ orderUpdate }) => {
         followUpStatus.push({ item: 'Hold On', value: 'hold_on' });
     }
 
-    const couriers = [
-        { item: 'Office Delivery', value: 'office_delivery' },
-        { item: 'SteadFast', value: 'steadfast' },
-        { item: 'Pathao', value: 'pathao' },
-    ]
 
     const steadfast = [
         { item: 'in_review', value: 'In Review' },
@@ -183,13 +178,7 @@ const Order = ({ orderUpdate }) => {
         setCount(1)
     };
 
-    const handleOpenDialog = () => {
-        setOpenDialog(true)
-    }
 
-    const handleCloseDialog = () => {
-        setOpenDialog(false)
-    }
 
     const formatDate = (date) => {
         if (!date) return "";
@@ -244,7 +233,7 @@ const Order = ({ orderUpdate }) => {
         end_date: endDate,
         filter_date: selectedValue,
     }
-    const [statusChangeLoading, setStatusChangeLoading] = useState(false)
+
     const handleStatusChange = (event, id) => {
         startLoading()
         const params = {
@@ -461,8 +450,7 @@ const Order = ({ orderUpdate }) => {
                             });
                             Swal.fire("Deleted!", "Your order has been deleted.", "success");
                             orderUpdate()
-                        } else {
-                        }
+                        } 
                     }).catch((errr) => {
                         alert("something went wrong")
                     })
@@ -518,10 +506,6 @@ const Order = ({ orderUpdate }) => {
         }
     };
 
-
-    const handleTabChange = (event, newTabValue) => {
-        setTabValue(newTabValue);
-    };
 
     useEffect(() => {
         SuperFetch.get('/client/courier/list', { headers: headers })
@@ -952,32 +936,6 @@ const Order = ({ orderUpdate }) => {
                                                     </td>
 
 
-                                                    {/* } */}
-                                                    {/* <td>
-                                                        <FormControl sx={{ m: 1, width: 300 }}>
-
-                                                            <Select
-                                                                displayEmpty
-                                                                defaultValue=""
-                                                                onChange={(event) => handleCourier(event, order?.id)}
-                                                                input={<OutlinedInput />}
-                                                                inputProps={{ 'aria-label': 'Without label' }}
-                                                            >
-                                                                <MenuItem disabled value="">
-                                                                    <em>Select Courier</em>
-                                                                </MenuItem>
-                                                                {couriers.map((item, index) => (
-                                                                    <MenuItem
-                                                                        key={index}
-                                                                        value={item.value}
-                                                                    >
-                                                                        {item.item}
-                                                                    </MenuItem>
-                                                                ))}
-                                                            </Select>
-                                                        </FormControl>
-                                                        </td> */}
-
                                                     <td>
                                                         <td>
                                                             <select key={order?.id} name=""
@@ -1124,20 +1082,6 @@ const Order = ({ orderUpdate }) => {
 
                                                     </div>
 
-                                                    {/* <div>
-                                                        <Link href='' onClick={(e) => handleOrderDetails(e, order?.id)}>
-                                                            <MdOutlineRemoveRedEye color={'#6f6f6f'} size={'1.4em'}
-                                                                style={{ marginRight: '5px' }} />
-                                                        </Link>
-                                                       
-                                                        <button>
-                                                            <OrderUpdate products={products} id={order.id} handleFetch={handleFetch} />
-                                                        </button>
-                                                        <Link href='' onClick={() => deleteProduct(order.id)}>
-                                                            <RiDeleteBin6Line color={'#6f6f6f'} size={'1.4em'} />
-                                                        </Link>
-
-                                                    </div> */}
 
                                                 </td>
                                             }

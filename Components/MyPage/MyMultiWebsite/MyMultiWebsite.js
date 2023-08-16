@@ -10,7 +10,7 @@ import SmallLoader from "../../SmallLoader/SmallLoader";
 const MyMultiWebsite = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [openPreview, setOpenPreview] = useState(false);
-  const handlePreview = () => setOpenPreview(true);
+
   const previewClose = () => setOpenPreview(false);
   const [isImportedTheme, setIsImportedTheme] = useState(false);
 
@@ -63,7 +63,7 @@ const MyMultiWebsite = () => {
                         <Grid key={index} item xs={12} sm={6} md={4}>
                           <div className="LandingWebsiteItem boxShadow">
                             <div className="img">
-                              <img src={item.media.name} alt="" />
+                              <img src={item?.media} alt="" />
                               <h4>Multi Page</h4>
                             </div>
 
@@ -89,7 +89,7 @@ const MyMultiWebsite = () => {
                                 >
                                   <Box>
                                     <div className="InvoiceModal">
-                                      <img src={item.media.name} alt="" />
+                                      <img src={item?.media} alt="" />
                                     </div>
                                   </Box>
                                 </Modal>

@@ -1,22 +1,25 @@
 import React, { useState } from 'react';
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import renderActiveShape from './HomePageCart/renderActiveShape';
+import { border } from '@mui/system';
 
-const COLORS = ['#26BF94', '#F5B849', '#23B7E5', '#6B2CD1'];
-
+const COLORS = ['#F5B849', '#6B2CD1','#23B7E5', '#26BF94'];
 
 
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
+    const activeData = payload[0];
     return (
-      <div className="custom-tooltip">
-        <p className="label" style={{color:"black"}}>{`${payload[0].name}: ${payload[0].value}%`}</p>
+      <div className="custom-tooltip" style={{ backgroundColor: '#fff', border: '1px solid #ccc', padding: '5px', color: activeData.fill }}>
+        <p>{`${activeData.name}: ${activeData.value}%`}</p>
       </div>
     );
   }
 
   return null;
 };
+
+
 
 const PieChartPage = ({ newCannelList }) => {
   const [activeIndex, setActiveIndex] = useState(-1); // Initialize activeIndex to -1
@@ -41,7 +44,7 @@ const PieChartPage = ({ newCannelList }) => {
 
   // Usage example
   const transformedData = convertToPercentages(newCannelList);
-  console.log(transformedData);
+
 
   return (
     <ResponsiveContainer width="100%" height={400}>

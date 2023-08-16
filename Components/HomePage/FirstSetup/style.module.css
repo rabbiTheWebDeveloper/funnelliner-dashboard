@@ -261,10 +261,6 @@
     padding: 30px;
   }
 
-  .FirstSetupContent h3 {
-    font-size: 20px;
-    line-height: 30px;
-  }
 
   .FirstSetupContent .Header h5 {
     font-size: 14px;
@@ -320,6 +316,16 @@
 
 
 
+@media (max-width: 1023px) {
+
+  .TabsItemContent .headerH2.done::before {
+    width: 45px;
+    height: 45px;
+}
+
+}
+
+
 
 
 
@@ -354,6 +360,7 @@
   .TabsItemDescription {
     flex-direction: column;
     justify-content: center;
+    padding: 0px;
   }
 
   .TabsItemDescription .left {
@@ -372,9 +379,7 @@
     padding: 30px 15px;
   }
 
-  .TabsItemDescription {
-    padding: 0px;
-  }
+
 
 
 

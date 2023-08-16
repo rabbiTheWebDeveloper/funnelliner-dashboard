@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import { useToast } from '../../hook/useToast';
 import { headers } from '../../pages/api';
 
-const BulkSmsStatus = () => {
+const BulkSmsStatus = ({ handelFetchBusInfo }) => {
     const showToast = useToast();
     const [data, setData] = useState({});
     const [state, setState] = useState({});
@@ -24,6 +24,7 @@ const BulkSmsStatus = () => {
             .then(function (response) {
 
                 showToast(response?.data?.message, 'success');
+              
             })
             .catch(function (error) {
                 Swal.fire({
@@ -41,6 +42,7 @@ const BulkSmsStatus = () => {
 
             setData(response?.data?.data);
             setState(response?.data?.data);
+           
         } catch (err) {
 
         }

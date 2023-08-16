@@ -2,7 +2,7 @@ import { Box, Button } from "@mui/material";
 import Skeleton from "@mui/material/Skeleton";
 import axios from "axios";
 import moment from "moment";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import Tooltip from "@mui/material/Tooltip";
 import { toast } from "react-toastify";
@@ -20,7 +20,7 @@ const handleClose = () => {
 };
 
 const FollowUpOrder = ({ searchQuery, allProducts, show, advanceStatus }) => {
-  const { data, isLoading, isError } = useGetOrdersQuery("follow_up");
+  const { data, isLoading } = useGetOrdersQuery("follow_up");
   const [searchQueryString, setSearchQueryString] = useState(searchQuery);
   useEffect(() => {
     setSearchQueryString(searchQuery);
@@ -31,40 +31,17 @@ const FollowUpOrder = ({ searchQuery, allProducts, show, advanceStatus }) => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(25);
-  const [page, setPage] = useState(1);
-  const [selectedOption, setSelectedOption] = useState("");
-  // const [isLoading, setIsLoading] = useState(true);
+
+
+
   const [updateData, setUpdateData] = useState("");
 
   const [openStock, setOpenStock] = useState(false);
   const handleOpenStock = () => setOpenStock(true);
 
-  // Filter
-  const [age, setAge] = useState([]);
-  
 
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
 
-  const [updateValue, setUpdateValue] = useState();
 
-  // Tabs
-  const [value, setValue] = useState("1");
-
-  const handleChangeTab = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  // handleClick Move To Completed
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   useEffect(() => {
     const userProduct = data?.data?.filter(
@@ -193,12 +170,11 @@ const FollowUpOrder = ({ searchQuery, allProducts, show, advanceStatus }) => {
     }
   }, [searchQueryString]);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+ 
 
   const today = new Date().toISOString().slice(0, 10);
 
-  const [follwUpDate, setFollowupDate] = useState("");
-  const [followUpNote, setFollowUpNote] = useState("");
+
 
   const onChangeDate = (orderId, e) => {
     // setFollowupDate(e.target)
@@ -221,38 +197,10 @@ const FollowUpOrder = ({ searchQuery, allProducts, show, advanceStatus }) => {
         }
       });
   };
-  const onBlurNote = (orderId, e) => {
-    const postBody = {
-      follow_up_note: e.target.value,
-    };
 
-    if (e.target.value.length > 3) {
-      axios
-        .post(baseUrl + `/client/order/follow-up/${orderId}/update`, postBody, {
-          headers: headers,
-        })
-        .then(function (response) {
-          if (response.status === 200) {
-            toast.success("success", {
-              autoClose: 2000,
-              hideProgressBar: true,
-              closeOnClick: true,
-              pauseOnHover: false,
-            });
-          }
-        });
-    }
-  };
 
   // note update
-  const inputRef = useRef(null);
 
-  const [valueNote, setValueNote] = useState("");
-  const [previousValue, setPreviousValue] = useState("");
-
-  const handleChangeNote = (event) => {
-    setValueNote(event.target.value);
-  };
 
   const handleKeyDown = (id, event) => {
     if (event.key === "Enter") {
@@ -276,53 +224,16 @@ const FollowUpOrder = ({ searchQuery, allProducts, show, advanceStatus }) => {
             progress: undefined,
             theme: "dark",
           });
-          //   setUpdateData(response.data.msg);
+
         });
     }
   };
 
   var curr = new Date();
   curr.setDate(curr.getDate() + 3);
-  var date = curr.toISOString().substring(0, 10);
 
-  const advanceAdd = (id, tk) => {
-    let adv = {
-      advanced: tk,
-    };
 
-  
-    if (tk?.length > 0) {
-      axios
-        .post(
-          process.env.API_URL + `/client/order/advance-payment/${id}/update`,
-          adv,
-          {
-            headers: headers,
-          }
-        )
-        .then(function (response) {
-          toast.success("Note updated for pending order!", {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "dark",
-          });
-          setUpdateData(response);
-        })
-        .catch(function (error) {
-          Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: error?.response?.data?.msg,
-            footer: error?.response?.data?.msg,
-          });
-        });
-    }
-  };
+
 
   const handleKeyDownAdvance = (id, event, tk) => {
     if (event.key === "Enter") {
@@ -408,13 +319,7 @@ const FollowUpOrder = ({ searchQuery, allProducts, show, advanceStatus }) => {
 
   //filter followUp order by custom date range
 
-  const [dateRangeState, setDateRangeState] = useState([
-    {
-      start: new Date(),
-      endDate: null,
-      key: "selection",
-    },
-  ]);
+
 
   const [fromDate, setFormDate] = useState();
   const [toDate, setToDate] = useState();

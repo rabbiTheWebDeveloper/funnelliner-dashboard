@@ -1,11 +1,12 @@
 import { Box, Button, Modal } from "@mui/material";
 import { useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import SuperFetch from "../../hook/Axios";
 import useLoading from "../../hook/useLoading";
 import { useToast } from "../../hook/useToast";
 import { headers, shopId } from "../../pages/api";
 import Spinner from "../commonSection/Spinner/Spinner";
+import Select from "react-select"
 
 const OrderModal = ({
   modalOpen,
@@ -17,6 +18,7 @@ const OrderModal = ({
   const showToast = useToast();
   const [isLoading, startLoading, stopLoading] = useLoading();
   const {
+    control,
     register,
     handleSubmit,
     reset,
@@ -55,6 +57,8 @@ const OrderModal = ({
       data.delivery_location = selectedDeliveryLocation;
     }
     startLoading();
+
+   	
     SuperFetch.post("/client/orders", data, { headers: headers })
       .then(function (response) {
         showToast("Order create success", "success");
@@ -157,23 +161,23 @@ const OrderModal = ({
                     );
                   }}
                 >
-                  <option disabled>
+                  <option value="">
                     {products.length === 0
                       ? "Please Add Product"
                       : "Select Product"}
                   </option>
                   {Array.isArray(products)
                     ? products?.map((data) => {
-                        return (
-                          <option
-                            key={data?.id}
-                            value={data.id}
-                            delivery_charge={data.delivery_charge}
-                          >
-                            {data?.product_name}
-                          </option>
-                        );
-                      })
+                      return (
+                        <option
+                          key={data?.id}
+                          value={data.id}
+                          delivery_charge={data.delivery_charge}
+                        >
+                          {data?.product_name}
+                        </option>
+                      );
+                    })
                     : null}
                 </select>
               </div>
@@ -201,12 +205,30 @@ const OrderModal = ({
                   Order Source<span>*</span>
                 </label>
 
+
+
+{/* 
+                <Controller
+                  name="order_type"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      options={[
+                        { value: "social", label: "Social Media" },
+                        { value: "phone", label: "Phone Call" },
+                      
+                      ]}
+                    />
+                  )}
+                /> */}
+
                 <select
                   name=""
                   {...register("order_type", { required: true })}
                   native={true}
                 >
-                  <option disabled>Select Order Type</option>
+                  <option value="">Select Order Source</option>
 
                   <option key={"social"} value={"social"}>
                     Social Media

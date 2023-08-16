@@ -17,18 +17,37 @@ export const filterOrder = (data) => {
 
 }
 
+
+
+export const filterChannelData = (data) => {
+    if (data === 'today') {
+        return 'Today'
+    } else if (data === 'yesterday') {
+        return 'Yesterday'
+    } else if (data === 'weekly') {
+        return 'Last 7 Days'
+    } else if (data === 'monthly') {
+        return 'This Month'
+    }
+    else if (data === 'custom') {
+        return 'Custom'
+    }
+
+
+}
+
 export const filterOverview = (data) => {
     if (data === 'week') {
         return ' Last Weekly'
     } else if (data === 'today') {
         return 'Today'
-    } 
+    }
     else if (data === 'yesterday') {
         return 'Yesterday'
     }
     else if (data === 'month') {
         return 'Last 30th days'
-    }else if (data === 'year') {
+    } else if (data === 'year') {
         return 'Yearly'
     }
 

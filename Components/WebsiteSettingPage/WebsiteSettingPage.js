@@ -484,7 +484,7 @@ const WebsiteSettingPage = ({ response }) => {
                                                                         imageUrl && selectedImage ? "" :
                                                                             <Box mt={2} textAlign="center">
                                                                                 <h6>Image Preview:</h6>
-                                                                                <img src={websiteSettingsData?.shop_logo?.name} alt={""} Height="100px" />
+                                                                                <img src={websiteSettingsData?.shop_logo} alt={""} Height="100px" />
                                                                             </Box>
                                                                     }
                                                                 </div>

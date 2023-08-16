@@ -1,23 +1,14 @@
-
-import SubProduct from '../../Components/Category/SubProductPage/SubProduct';
-import withAuth from '../../hook/PrivateRoute';
-
+import SubProduct from "../../Components/Category/SubProductPage/SubProduct";
+import withAuth from "../../hook/PrivateRoute";
 
 const index = () => {
-
-
-    return (
-
-        <>
-
-            <SubProduct></SubProduct>
-
-        </>
-
-    )
-
-}
+  return (
+    <>
+      <SubProduct />
+    </>
+  );
+};
 
 export default withAuth(index, {
-    isProtectedRoute: true
+  isProtectedRoute: true,
 });

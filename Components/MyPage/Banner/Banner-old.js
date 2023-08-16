@@ -2,7 +2,7 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, Button, Container, Grid, Tab } from "@mui/material";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useRouter } from 'next/router';
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { BiSlider } from "react-icons/bi";

@@ -21,6 +21,7 @@ export let registrationDate = parseData?.created_at
 export let userId = parseData?.id
 export let created = parseData?.created_at
 export let paymentStatus = parseData?.payment_status
+export let nextDueDate = parseData?.next_due_date
 // let userId = parseData?.user_id
 
 export const headers = {

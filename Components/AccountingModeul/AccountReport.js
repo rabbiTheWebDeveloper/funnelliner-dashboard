@@ -1,7 +1,7 @@
 
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import { Button, Menu, MenuItem } from '@mui/material';
+import { Button, Menu, MenuItem, Tooltip } from '@mui/material';
 import Fade from '@mui/material/Fade';
 import axios from 'axios';
 import { enGB } from 'date-fns/locale';
@@ -144,7 +144,8 @@ const AccountExcelReport = () => {
                 url: `${process.env.API_URL}/client/accounts/payment-search-custom-datewise?start_date=${newStartDate}&end_date=${newEndDate}`,
                 headers: headers,
             });
-            setPayment(data?.data?.data)
+            setPayment(data?.data?.data.search)
+            setBalance(data?.data?.data);
 
 
         } catch (err) {
@@ -426,6 +427,7 @@ const AccountExcelReport = () => {
                                     <th>Bill No </th>
                                     <th>Date & Time </th>
                                     <th>Description</th>
+                                    <th>Payable/Payor</th>
                                     <th>Payable/Receivable</th>
                                     <th>Category/Ledger</th>
                                     <th>Payment  Method</th>
@@ -442,7 +444,25 @@ const AccountExcelReport = () => {
                                             <tr key={index}>
                                                 <td>#{item?.bill_no}</td>
                                                 <td>{moment(item?.created_at).calendar()}</td>
-                                                <td>{item?.description}</td>
+                                                <Tooltip
+                                                    title={item?.description}
+                                                    placement="top-start"
+                                                >
+                                                    <td>
+                                                        {item?.description?.length < 15 ? (
+                                                            <>{item?.description}</>
+                                                        ) : (
+                                                            <>
+                                                                {item?.description?.slice(
+                                                                    0,
+                                                                    13
+                                                                )}
+                                                                ...
+                                                            </>
+                                                        )}
+                                                    </td>
+                                                </Tooltip>
+                                                <td>{item?.payorName}</td>
                                                 <td>{item?.payorName}</td>
                                                 <td>{item?.ledgerName}</td>
 

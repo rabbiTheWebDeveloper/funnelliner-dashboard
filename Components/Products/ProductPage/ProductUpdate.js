@@ -1,6 +1,5 @@
 import { Box, Button, Modal } from "@mui/material";
 import axios from "axios";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -12,19 +11,13 @@ import { headers } from "../../../pages/api";
 
 const ProductUpdate = ({ id, product, category, modalOpen, handleCloseModal, fetchProduct }) => {
     const showToast = useToast();
-    const [value, setValue] = useState("1");
-    const [tabSelect, setTabSelect] = useState("1");
-    const [mainImg, setMainImg] = useState();
-    // const [products, setProducts] = useState({});
     const [delivery, setDelivery] = useState("Free Delivery Charge")
     const [insideDhaka, setInsideDhaka] = useState(0)
     const [outDhaka, setOutDhaka] = useState(0)
     const { main_image } = product
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
-    const router = useRouter();
-    const handleChangeTab = (event, newValue) => {
-        setValue(newValue);
-    };
+    const { register, handleSubmit, formState: { errors } } = useForm();
+
+
 
     useEffect(() => {
         setDelivery(product?.delivery_charge)
@@ -32,12 +25,9 @@ const ProductUpdate = ({ id, product, category, modalOpen, handleCloseModal, fet
         setOutDhaka(product?.outside_dhaka)
     }, [id]);
     const [selectedImage, setSelectedImage] = useState(null);
-    const [previewMainImg, setPreviewMainImg] = useState({ file: null });
-    const handleMainImage = (e) => {
-        setMainImg(e.target.files[0]);
-        const file = e.target.files[0];
-        setPreviewMainImg({ file: URL.createObjectURL(file) });
-    }
+
+
+
     const onSubmit = (data) => {
         data.size = "XL";
         data.color = "white";
@@ -97,7 +87,7 @@ const ProductUpdate = ({ id, product, category, modalOpen, handleCloseModal, fet
             });
     };
 
-    const [imageUrl, setImageUrl] = useState(main_image?.name);
+    const [imageUrl, setImageUrl] = useState(main_image);
 
     useEffect(() => {
         if (selectedImage) {
@@ -256,7 +246,7 @@ const ProductUpdate = ({ id, product, category, modalOpen, handleCloseModal, fet
                                         {
                                             imageUrl && selectedImage ? "" : <Box mt={2} textAlign="center">
                                                 <h6>Image Preview:</h6>
-                                                <img src={product?.main_image?.name} alt={product?.main_image?.type} Height="100px" />
+                                                <img src={product?.main_image} alt={product?.main_image} Height="100px" />
                                             </Box>
                                         }
 
@@ -285,176 +275,5 @@ const ProductUpdate = ({ id, product, category, modalOpen, handleCloseModal, fet
 
 export default ProductUpdate;
 
-
-{/* <Box>
-    <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="SalesTargetModal">
-            <div className="Header d_flex">
-                <div className="svg">
-                    <BiReceipt />
-                </div>
-
-                <div className="text">
-                    <h5>Products Update</h5>
-                    <p>Shop Products Update </p>
-                </div>
-            </div>
-            <div className="Form">
-                <div className="CustomeInput">
-                    <label>Product Name <span>*</span></label>
-                    <TextField
-                        id="outlined-basic"
-                        variant="outlined"
-                        defaultValue={products?.product_name}
-                        {...register("product_name", { required: true })}
-
-                    />
-                    {errors.product_name && (
-                        <span>This Product Name required</span>
-                    )}
-                </div>
-                <div className="CustomeInput">
-                    <label>Selling Price <span>*</span></label>
-                    <TextField
-                        id="outlined-basic"
-                        variant="outlined"
-                        defaultValue={products?.price}
-                        {...register("price")}
-                    />
-                    {errors.price && (
-                        <span>Enter selling price here</span>
-                    )}
-                </div>
-
-                <div className="CustomeInput">
-                    <label>Product Code <span>*</span></label>
-                    <TextField
-                        id="outlined-basic"
-                        variant="outlined"
-                        defaultValue={products?.product_code}
-                        {...register("product_code")}
-
-                    />
-                    {errors.product_code && (
-                        <span>This Product Name required</span>
-                    )}
-                </div>
-
-                <div className="CustomeInput">
-                    <label>Available Quantity <span>*</span></label>
-                    <TextField
-                        id="outlined-basic"
-                        variant="outlined"
-                        InputProps={{ readOnly: true, disableUnderline: true }}
-                        {...register("product_qty", { required: true })}
-                        defaultValue={products?.product_qty}
-                    />
-                    {errors.product_qty && (
-                        <span>This Product Name required</span>
-                    )}
-                </div>
-                <div className="CustomeInput">
-                    <label>Category Name <span>*</span></label>
-
-                    <select
-                        {...register("category_id")}
-
-
-                        defaultValue={products?.category_id}
-                    >
-                        {Array.isArray(category)
-                            ? category.map((data) => {
-                                return (
-                                    <option
-                                        key={data?.id}
-                                        value={data?.id}
-                                    >
-                                        {data?.name}
-                                    </option>
-                                );
-                            })
-                            : null}
-                    </select>
-                </div>
-
-                <div className="TopSellingProducts">
-                    <div className="DashboardForm">
-                        <div className="DelivaryCharge">
-                            <div className="Item CustomeInput">
-                                <label> Delivery Charge <span>*</span></label>
-                                <select defaultValue={delivery !== "paid" ? "free" : "paid"} name="" onChange={(e) => {
-                                    setDelivery(e.target.value);
-                                }}>
-                                    <option value="free" >Free Delivery Charge</option>
-                                    <option value="paid">Paid Delivery Charge</option>
-                                </select>
-                            </div>
-                            {delivery === "paid" && <div className="Item">
-
-                                <div className="DelivaryItem d_flex d_justify">
-
-                                    <TextField
-                                        onChange={(e) => setInsideDhaka(e.target.value)}
-                                        defaultValue={products?.inside_dhaka}
-                                        id="outlined-basic"
-                                        label="Delivery Charge in Dhaka"
-                                        variant="outlined"
-                                    />
-                                    <TextField
-                                        onChange={(e) => setOutDhaka(e.target.value)}
-                                        defaultValue={products?.outside_dhaka}
-                                        id="outlined-basic"
-                                        label="Delivery Charge out of Dhaka"
-                                        variant="outlined"
-                                    />
-                                </div>
-                            </div>}
-                        </div>
-                    </div>
-                </div>
-                <div className="CustomeInput">
-                    <div className="Item Upload">
-                        <label>Product  Image <span>*</span></label>
-                        <p>Image must be a file of type: <span>png, jpg, jpeg</span></p>
-                        <p>Image Size: <span>(Width: 500px, Height: 500px)</span> </p>
-
-                        <input
-                            accept="image/*"
-                            type="file"
-                            id="select-image"
-                            style={{ display: "none" }}
-                            onChange={(e) => setSelectedImage(e.target.files[0])}
-                        />
-                        <label htmlFor="select-image">
-                            <Button variant="contained" color="primary" component="span">
-                                Upload Image
-                            </Button>
-                        </label>
-                        {imageUrl && selectedImage && (
-                            <Box mt={2} textAlign="center">
-                                <h6>Image Preview:</h6>
-                                <img src={imageUrl} alt={selectedImage.name} Height="100px" />
-                            </Box>
-                        )}
-                        {
-                            imageUrl && selectedImage ? "" : <Box mt={2} textAlign="center">
-                                <h6>Image Preview:</h6>
-                                <img src={products?.main_image?.name} alt={products?.main_image?.type} Height="100px" />
-                            </Box>
-                        }
-                    </div>
-                </div>
-                <div className="CustomeInput">
-                    <div className="DuelButton">
-                        <Button type="submit">Update</Button>
-                        <Button type="reset" onClick={handleCloseSales} className="Delete">
-                            Cancel
-                        </Button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
-</Box> */}
 
 

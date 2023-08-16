@@ -10,6 +10,15 @@ const SalesTargetModal = ({salesTarget , openSales ,handleOpenSales ,handleClose
 
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
     const onSubmit = (data) => {
+        console.log(typeof(data.daily));
+        console.log(data.monthly);
+        data.daily= parseInt(data.daily) > 0 ? data.daily : 0
+        data.monthly=parseInt(data.monthly) > 0 ? data.monthly : 0
+        data.custom = data.custom > 0 ? data.custom : 0
+
+
+
+
         axios.post(process.env.API_URL + "/client/sales-target/update", data, {
             headers: headers,
         })
@@ -51,7 +60,7 @@ const SalesTargetModal = ({salesTarget , openSales ,handleOpenSales ,handleClose
 
                             <div className="customInput">
                                 <label>Enter Daily Sales Target <span>*</span></label>
-                                <input type="text" defaultValue={salesTarget?.daily} {...register("daily")} />
+                                <input type="number" defaultValue={salesTarget?.daily} {...register("daily")} />
                                 {errors.daily && (
                                     <p className="error">This field is required</p>
                                 )}
@@ -59,7 +68,7 @@ const SalesTargetModal = ({salesTarget , openSales ,handleOpenSales ,handleClose
 
                             <div className="customInput">
                                 <label>Enter Monthly Sales Target <span>*</span></label>
-                                <input type="text" defaultValue={salesTarget?.monthly} {...register("monthly")} />
+                                <input type="number" defaultValue={salesTarget?.monthly} {...register("monthly")} />
                                 {errors.weekly && (
                                     <p className="error">This field is required</p>
                                 )}
@@ -67,7 +76,7 @@ const SalesTargetModal = ({salesTarget , openSales ,handleOpenSales ,handleClose
 
                             <div className="customInput">
                                 <label>Enter Custom Sales Target <span>*</span></label>
-                                <input type="text" defaultValue={salesTarget?.custom} {...register("custom")} />
+                                <input type="number" defaultValue={salesTarget?.custom} {...register("custom")} />
                                 {errors.custom && (
                                     <p className="error">This field is required</p>
                                 )}

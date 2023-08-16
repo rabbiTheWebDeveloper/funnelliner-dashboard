@@ -660,9 +660,13 @@ Table
   background: #b27aee;
 }
 
-.Table td .action button.updateActionBtn,
-.Table td .action a.updateActionBtn {
+.Table td .action button.updateActionBtn, .Table td .action a.updateActionBtn {
   background: var(--main-color);
+  padding: 6px 15px;
+}
+
+.Table td button.updateActionBtn{
+  padding: 0;
 }
 
 .Table td .action button.deleteActionBtn {
@@ -1091,6 +1095,7 @@ div#Profile.ProfileMenu .MuiPaper-root.MuiPaper-elevation ul {
 div#Profile.ProfileMenu .MuiPaper-root.MuiPaper-elevation ul li a {
   display: inline-flex;
   align-items: center;
+  width: 100%;
 }
 
 div#Profile.ProfileMenu .MuiPaper-root.MuiPaper-elevation ul li a i {
@@ -1375,6 +1380,10 @@ dataTable
   min-width: auto;
 }
 
+.DataTable .DataTableColum.Address:nth-child(2) {
+  width: 15%;
+}
+
 .DataTable .DataTableColum:last-child {
   width: 20px;
   text-align: right;
@@ -1524,7 +1533,7 @@ dataTable
 
 .DataTable .TotalPrice .invoice a {
   border: 1px solid var(--border-color);
-  padding: 5px 20px;
+  padding: 5px 15px;
   border-radius: 30px;
   display: flex;
   align-items: center;
@@ -1676,7 +1685,8 @@ dataTable
   }
 
   .DataTable .DataTableColum .Note button {
-    font-size: 12px;
+    font-size: 10px;
+    line-height: 14px;
   }
 
   .DataTable .DataTableColum select {
@@ -1840,13 +1850,13 @@ Media
   }
 
   .DataTable .DataTableColum .Note button h6 {
-    font-size: 10px;
-    width: 20px;
-    height: 20px;
+    font-size: 9px;
+    width: 16px;
+    height: 16px;
   }
 
   .DataTable .DataTableColum .Note button h6 i {
-    font-size: 9px;
+    font-size: 7px;
   }
 
   .DataTable .TotalPrice .invoice a {
@@ -2094,7 +2104,7 @@ Media
   }
 
   .HomePage .WebsiteLink .MuiContainer-root {
-    width: 500px;
+    /* width: 500px; */
     overflow-x: auto;
   }
 

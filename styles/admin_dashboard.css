@@ -96,7 +96,9 @@ Login
 .LoginContent .Logo img {
   height: 125px;
 }
-
+.side_bar_shop_name span{
+  margin: 0 auto;
+}
 .LoginContent h3 {
   color: var(--main-color);
   margin-top: 20px;
@@ -1674,9 +1676,9 @@ span.MuiSkeleton-root.MuiSkeleton-text.MuiSkeleton-pulse.css-z7erpk {
   /* width: 100% !important; */
 }
 
-.MuiSkeleton-root {
+/* .MuiSkeleton-root {
   width: 100% !important;
-}
+} */
 
 .MuiBox-root ul {
   justify-content: center !important;

@@ -167,7 +167,7 @@ const DataTable = () => {
                                     aria-expanded={open ? 'true' : undefined}
                                     onClick={handleClick}
                                 >
-                                    Status <i className="flaticon-down-arrow"></i>
+                                    Status <i className="flaticon-arrow-down-sign-to-navigate"></i>
                                 </Button>
 
                                 <Menu
@@ -323,7 +323,7 @@ const DataTable = () => {
                                     aria-expanded={open ? 'true' : undefined}
                                     onClick={handleClick}
                                 >
-                                    Status <i className="flaticon-down-arrow"></i>
+                                    Status <i className="flaticon-arrow-down-sign-to-navigate"></i>
                                 </Button>
 
                                 <Menu
@@ -479,7 +479,7 @@ const DataTable = () => {
                                     aria-expanded={open ? 'true' : undefined}
                                     onClick={handleClick}
                                 >
-                                    Status <i className="flaticon-down-arrow"></i>
+                                    Status <i className="flaticon-arrow-down-sign-to-navigate"></i>
                                 </Button>
 
                                 <Menu

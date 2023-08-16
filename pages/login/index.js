@@ -1,36 +1,41 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import { Button } from '@mui/material';
-import { detect } from 'detect-browser';
-import Cookies from 'js-cookie';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import * as yup from 'yup';
-import SuperFetch from '../../hook/Axios';
-import { useToast } from '../../hook/useToast';
-import styles from './login.module.css';
-import useLoading from '../../hook/useLoading';
-import Spinner from '../../Components/commonSection/Spinner/Spinner';
-const publicIp = require('react-public-ip');
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Button } from "@mui/material";
+import { detect } from "detect-browser";
+import Cookies from "js-cookie";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import SuperFetch from "../../hook/Axios";
+import { useToast } from "../../hook/useToast";
+import styles from "./login.module.css";
+import useLoading from "../../hook/useLoading";
+import Spinner from "../../Components/commonSection/Spinner/Spinner";
+const publicIp = require("react-public-ip");
 
 const Login_Part = () => {
   const [isLoading, startLoading, stopLoading] = useLoading();
-  const [emailValue, setEmailValue] = useState('');
-  const [passwordValue, setPasswordValue] = useState('');
+  const [emailValue, setEmailValue] = useState("");
+  const [passwordValue, setPasswordValue] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showPass, setShowPass] = useState(true);
-  const [errorText, setErrorText] = useState('');
-  const [ipAddress, setIpAddress] = useState('');
-  const [browserName, setBrowserName] = useState('');
+  const [errorText, setErrorText] = useState("");
+  const [ipAddress, setIpAddress] = useState("");
+  const [browserName, setBrowserName] = useState("");
   const showToast = useToast();
 
   const validationSchema = yup.object().shape({
-    email: yup.string().required('Email is a required field'),
-    password: yup.string().required('Password is a required field'),
+    email: yup.string().required("Email is a required field"),
+    password: yup.string().required("Password is a required field"),
   });
 
-  const { handleSubmit, register, formState: { errors }, reset } = useForm({
-    mode: 'onChange',
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+    reset,
+  } = useForm({
+    mode: "onChange",
     resolver: yupResolver(validationSchema),
   });
 
@@ -40,13 +45,12 @@ const Login_Part = () => {
 
   const getIpAddress = async () => {
     try {
-      const ipAddress = await publicIp.v4() || '';
-      const browserName = detect().name === 'chrome' ? 'Google Chrome' : detect().name;
+      const ipAddress = (await publicIp.v4()) || "";
+      const browserName =
+        detect().name === "chrome" ? "Google Chrome" : detect().name;
       setIpAddress(ipAddress);
       setBrowserName(browserName);
-    } catch (error) {
-
-    }
+    } catch (error) { }
   };
 
   const handleShow = () => {
@@ -56,10 +60,10 @@ const Login_Part = () => {
   const onSubmit = (e) => {
     e.preventDefault();
 
-    startLoading()
+    startLoading();
 
     SuperFetch.post(
-      '/login',
+      "/login",
       { email: emailValue, password: passwordValue },
       {
         headers: {
@@ -69,36 +73,38 @@ const Login_Part = () => {
       }
     )
       .then((response) => {
-        stopLoading()
-        if (response.data.success === true || response.data?.error_type === 'PartialAuthorized') {
+        if (
+          response.data.success === true ||
+          response.data?.error_type === "PartialAuthorized"
+        ) {
           if (response.data.data.phone_verified !== true) {
-            window.location.href = `https://funnelliner.com/signup?unverified_user=${emailValue}`
-          } if (response.data.data.phone_verified) {
-            showToast(response.data.message, 'success');
-            Cookies.set('token', response.data.token);
-            Cookies.set('user', JSON.stringify(response.data.data));
-            setEmailValue('');
+            window.location.href = `https://funnelliner.com/signup?unverified_user=${emailValue}`;
+          }
+          if (response.data.data.phone_verified) {
+            showToast(response.data.message, "success");
+            Cookies.set("token", response.data.token);
+            Cookies.set("user", JSON.stringify(response.data.data));
+            setEmailValue("");
             reset();
-            setTimeout(() => {
-              window.location.href = '/';
-            }, 1000);
+            window.location.href = "/";
           }
         } else {
-          showToast(response.data.message, 'error');
+          showToast(response.data.message, "error");
+          stopLoading();
         }
       })
       .catch((error) => {
-        stopLoading()
-        showToast('Something went wrong!', 'error');
-        setErrorText('Something went wrong');
+        showToast("Something went wrong!", "error");
+        setErrorText("Something went wrong");
+        stopLoading();
       });
   };
 
   setTimeout(function () {
-    setErrorText('');
+    setErrorText("");
   }, 4000);
 
-  const [suggestText, setSuggestText] = useState('');
+  const [suggestText, setSuggestText] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const handleInputChange = (event) => {
@@ -106,7 +112,9 @@ const Login_Part = () => {
   };
 
   const handleSuggestionClick = (suggestion) => {
-    if (!emailValue.includes('@gmail' || '@yahoo' || '@hotmail' || '@outlook')) {
+    if (
+      !emailValue.includes("@gmail" || "@yahoo" || "@hotmail" || "@outlook")
+    ) {
       setEmailValue(emailValue + suggestion);
       setShowSuggestions(false);
     } else {
@@ -117,10 +125,8 @@ const Login_Part = () => {
 
   const handleInputFocus = () => {
     if (emailValue) setShowSuggestions(true);
-
   };
-  console.log("emailValue", emailValue)
-  console.log("passwordValue", passwordValue)
+
   return (
     <section className={styles.login}>
       <div className={`${styles.loginContent} ${styles.boxShadow}`}>
@@ -143,23 +149,32 @@ const Login_Part = () => {
                 <label>Phone Number or Email</label>
                 <input
                   type="text"
-                  {...register('email')}
+                  {...register("email")}
                   value={emailValue}
                   onChange={handleInputChange}
                   onFocus={handleInputFocus}
                   // {...register('email')}
                   placeholder="Please enter your Phone Number or Email"
                 />
-                {errors.email && (isSubmitted || errors.email.type === 'manual') && (
-                  <p className="error">{errors.email.message}</p>
-                )}
+                {errors.email &&
+                  (isSubmitted || errors.email.type === "manual") && (
+                    <p className="error">{errors.email.message}</p>
+                  )}
                 {showSuggestions && (
                   <div className={styles.suggestion}>
                     <ul>
-                      <li onClick={() => handleSuggestionClick('@gmail.com')}>@gmail.com</li>
-                      <li onClick={() => handleSuggestionClick('@yahoo.com')}>@yahoo.com</li>
-                      <li onClick={() => handleSuggestionClick('@hotmail.com')}>@hotmail.com</li>
-                      <li onClick={() => handleSuggestionClick('@outlook.com')}>@outlook.com</li>
+                      <li onClick={() => handleSuggestionClick("@gmail.com")}>
+                        @gmail.com
+                      </li>
+                      <li onClick={() => handleSuggestionClick("@yahoo.com")}>
+                        @yahoo.com
+                      </li>
+                      <li onClick={() => handleSuggestionClick("@hotmail.com")}>
+                        @hotmail.com
+                      </li>
+                      <li onClick={() => handleSuggestionClick("@outlook.com")}>
+                        @outlook.com
+                      </li>
                     </ul>
                   </div>
                 )}
@@ -168,37 +183,47 @@ const Login_Part = () => {
               <div className="customInput">
                 <label>Password</label>
                 <input
-                  type={showPass ? 'password' : 'text'}
+                  type={showPass ? "password" : "text"}
                   placeholder="password"
                   // {...register('password')}
                   onChange={(e) => setPasswordValue(e.target.value)}
                 />
                 <div className="eye" onClick={handleShow}>
-                  {showPass ? <i className="flaticon-hide"></i> : <i className="flaticon-view"></i>}
+                  {showPass ? (
+                    <i className="flaticon-hide"></i>
+                  ) : (
+                    <i className="flaticon-view"></i>
+                  )}
                 </div>
-                {errors.password && (errors.password.type === 'required' || errors.password.type === 'manual') && (
-                  <p className="error">{errors.password.message}</p>
-                )}
+                {errors.password &&
+                  (errors.password.type === "required" ||
+                    errors.password.type === "manual") && (
+                    <p className="error">{errors.password.message}</p>
+                  )}
               </div>
 
               <div className="customInput">
-                {
-                  isLoading ? <> <Button disabled type="submit" className="bg">
-                    <Spinner />Login
-                  </Button></> : <Button type="submit" className="bg">
+                {isLoading ? (
+                  <Button  key="login_submit_btn1" disabled type="submit" className="bg">
+                    <Spinner key="login_submit_btn1_Spinner"/>
                     Login
                   </Button>
-                }
-
+                ) : (
+                  <Button key="login_submit_btn2" type="submit" className="bg">
+                    Login
+                  </Button>
+                )}
               </div>
-
+              
+            
               <div className={styles.forgetPassword}>
                 <Link href="/forgot-password">Forgot Password?</Link>
               </div>
 
               <div className={styles.noAccount}>
                 <p>
-                  Don't have an account? <Link href="https://funnelliner.com/signup">Register</Link>
+                  Don't have an account?{" "}
+                  <Link href="https://funnelliner.com/signup">Register</Link>
                 </p>
               </div>
             </form>

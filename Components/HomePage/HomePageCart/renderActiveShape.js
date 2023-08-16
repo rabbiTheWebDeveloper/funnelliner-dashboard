@@ -46,8 +46,8 @@ const renderActiveShape = (props) => {
         outerRadius={outerRadius + 10}
         fill={fill}
       />
-      <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
-      <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
+      <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`}  stroke="#000" fill={fill} />
+      {/* <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" /> */}
     </g>
   );
 };

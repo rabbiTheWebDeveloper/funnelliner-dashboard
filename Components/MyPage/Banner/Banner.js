@@ -12,9 +12,11 @@ import { shopId, userId } from "../../../pages/api";
 import UploderNew from "../../edit-theme/UploderNew";
 import style from './style.module.css';
 import useLoading from "../../../hook/useLoading";
+import Link from "next/link";
 
 const Banner = ({ response }) => {
     const [isLoading, startLoading, stopLoading] = useLoading();
+
 
     const showToast = useToast()
     const [bannerList, setBannerList] = useState([]);
@@ -59,6 +61,9 @@ const Banner = ({ response }) => {
 
         if (links && links.length > 0) {
             for (let i = 0; i < links.length; i++) {
+                if(links[i] === ''){
+                    formData.append("link[]", '#');
+                }
                 formData.append("link[]", links[i]);
             }
         }
@@ -81,12 +86,14 @@ const Banner = ({ response }) => {
                 if (response.status === 200) {
                     showToast(response?.data?.msg)
                     fetch_banners()
+                    stopLoading()
                 }
             })
             .catch(function (error) {
-                showToast(error?.response?.data?.msg ? error?.response?.data?.msg : "Something went wrong", "error")
+                showToast(error?.response?.data?.msg, "error")
+                stopLoading()
             });
-        stopLoading()
+
         reset()
         setImageData([])
     }
@@ -105,13 +112,12 @@ const Banner = ({ response }) => {
         })
             .then(function (response) {
                 setBannerList((banners) => banners.filter((banner) => banner.id !== banner_id))
-                showToast("Delete Success")
+                showToast(response?.data?.msg)
             })
             .catch(function (error) {
                 // setIsLoading(false)
                 // showToast(error?.response?.data?.msg ? error?.response?.data?.msg : "Something went wrong", "error")
             });
-
     }
 
     return (
@@ -119,78 +125,78 @@ const Banner = ({ response }) => {
 
             <section className={style.HomeSlider}>
                 {/* <Container maxWidth="sm"> */}
-                    <div className="boxShadow">
-                        <div className="CommonTab">
-                            <Box sx={{ width: "100%", typography: "body1" }}>
-                                <TabContext value={value}>
+                <div className="boxShadow">
+                    <div className="CommonTab">
+                        <Box sx={{ width: "100%", typography: "body1" }}>
+                            <TabContext value={value}>
 
-                                    <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                                        <TabList
-                                            onChange={handleChangeTab}
-                                            aria-label="Bussiness"
-                                        >
-                                            <Tab label="Banner" value="1" />
+                                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                                    <TabList
+                                        onChange={handleChangeTab}
+                                        aria-label="Bussiness"
+                                    >
+                                        <Tab label="Banner" value="1" />
 
-                                        </TabList>
-                                    </Box>
-                                    {/* Business Information */}
-                                    <TabPanel value="1">
-                                        <div className={style.HomeSliderContent}>
-                                            <Grid container spacing={0}>
-                                                <Grid item xs={12} sm={12}>
-                                                    {/* item */}
-                                                    <div className={style.customInput}>
-                                                        <label>Photos &amp; Link</label>
-                                                        <br />
-                                                        <label>
-                                                            Image <span className="mustBe">Must be:</span> (png, jpg, jpeg) ;
-                                                            <span className="mustBe">Image Size:</span> (Width:375px, height: 275px)
-                                                        </label>
+                                    </TabList>
+                                </Box>
+                                {/* Business Information */}
+                                <TabPanel value="1">
+                                    <div className={style.HomeSliderContent}>
+                                        <Grid container spacing={0}>
+                                            <Grid item xs={12} sm={12}>
+                                                {/* item */}
+                                                <div className={style.customInput}>
+                                                    <label>Photos &amp; Link</label>
+                                                    <br />
+                                                    <label>
+                                                        Image <span className="mustBe">Must be:</span> (png, jpg, jpeg) ;
+                                                        <span className="mustBe">Image Size:</span> (Width:375px, height: 275px)
+                                                    </label>
 
-                                                        <div className={style.homeSliderDivMain}>
+                                                    <div className={style.homeSliderDivMain}>
 
                                                         {
-                                                            bannerList?.map((item, index) => <div key={item?.id}   className={style.homeSliderDiv}>
+                                                            bannerList?.map((item, index) => <div key={item?.id} className={style.homeSliderDiv}>
                                                                 <i onClick={() => handleDeleteBanner(item?.id)} className="flaticon-close-1" ></i>
-                                                                <img className={style.homeSlider} style={{ margin: "0 5px", borderRadius: "2%" }} src={item?.image} />
+                                                                <Link href={item?.link}>
+                                                                    <img className={style.homeSlider} style={{ margin: "0 5px", borderRadius: "2%" }} src={item?.image} />
+                                                                </Link>
                                                             </div>)
                                                         }
 
                                                     </div>
 
-                                                        <UploderNew bannerList={bannerList} links={links} imageData={imageData} setImageData={setImageData} setLinks={setLinks}></UploderNew>
+                                                        <UploderNew bannerList={bannerList} links={links} imageData={imageData} setImageData={setImageData} setLinks={setLinks} />
                                                     </div>
 
 
-                                                    {/* Add */}
-                                                    <div className={style.Add}>
-                                                        <Button onClick={addImageUploader}> <i className="flaticon-plus"></i> Add  </Button>
-                                                    </div>
+                                                {/* Add */}
+                                                <div className={style.Add}>
+                                                    <Button onClick={addImageUploader}> <i className="flaticon-plus"></i> Add  </Button>
+                                                </div>
 
-                                                    {/* Submit */}
-                                                    <div className={style.Submit}>
-                                                        <Button disabled={isLoading} onClick={editForm} className="theme_edit_submit_btn" sx={{ mb: 2 }}>
-                                                            <i className="flaticon-install"></i> Add Banner
-                                                        </Button>
-                                                        {/* <Button onClick={editForm} className="theme_edit_submit_btn" sx={{ mb: 2 }}>
-                                                            <i className="flaticon-install"></i> Add Banner
-                                                        </Button> */}
-                                                    </div>
+                                                {/* Submit */}
+                                                <div className={style.Submit}>
+                                                    <Button disabled={isLoading} onClick={editForm} className="theme_edit_submit_btn" sx={{ mb: 2 }}>
+                                                        <i className="flaticon-install"></i> Update Banner
+                                                    </Button>
 
-                                                </Grid>
+                                                </div>
 
                                             </Grid>
 
-                                        </div>
+                                        </Grid>
 
-                                    </TabPanel>
+                                    </div>
 
-                                </TabContext>
-                            </Box>
+                                </TabPanel>
 
-                        </div>
+                            </TabContext>
+                        </Box>
 
                     </div>
+
+                </div>
 
                 {/* </Container> */}
 

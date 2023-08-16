@@ -17,7 +17,7 @@ const index = () => {
     )
 
 }
-// export default index;
+
 
 export default withAuth(index, {
     isProtectedRoute: true

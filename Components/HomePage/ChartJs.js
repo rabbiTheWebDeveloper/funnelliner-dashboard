@@ -3,7 +3,6 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
 import React, { useEffect, useState } from 'react';
-import { AiFillCaretDown } from 'react-icons/ai';
 import SuperFetch from '../../hook/Axios';
 import { headers } from '../../pages/api';
 import ChartDesign from './ChartDesign';
@@ -60,7 +59,7 @@ const ChartJs = () => {
                                             aria-expanded={open ? 'true' : undefined}
                                             onClick={handleClick} {...bindTrigger(popupState)}>
 
-                                            {filterOverview(overview_data)} <i className="flaticon-down-arrow"></i>
+                                            {filterOverview(overview_data)} <i className="flaticon-arrow-down-sign-to-navigate"></i>
 
                                         </Button>
 

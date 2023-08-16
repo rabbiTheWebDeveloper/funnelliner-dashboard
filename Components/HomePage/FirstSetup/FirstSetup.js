@@ -14,8 +14,6 @@ import { domain, headers } from "../../../pages/api";
 const FirstSetup = ({ skip, busInfo = {} }) => {
   const { domain_status, domain_request } = busInfo;
   const router = useRouter();
-  const [tabSelect, setTabSelect] = useState("first");
-  const handleSelect = (eventKey) => setTabSelect(eventKey);
   const [expanded, setExpanded] = useState();
 
   useEffect(() => {
@@ -39,7 +37,7 @@ const FirstSetup = ({ skip, busInfo = {} }) => {
         headers: headers,
       });
       setShopStep(data?.data?.data);
-    } catch (err) {}
+    } catch (err) { }
   };
 
   useEffect(() => {
@@ -100,9 +98,8 @@ const FirstSetup = ({ skip, busInfo = {} }) => {
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1a-content"
                     id="panel1a-header"
-                    className={`${style.headerH2} ${
-                      shopStep.business_info === 1 && style.done
-                    }`}
+                    className={`${style.headerH2} ${shopStep.business_info === 1 && style.done
+                      }`}
                   >
                     <div className={style.headerH2Content}>
                       <div className={style.img}>
@@ -149,9 +146,8 @@ const FirstSetup = ({ skip, busInfo = {} }) => {
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1a-content"
                     id="panel1a-header"
-                    className={`${style.headerH2} ${
-                      shopStep.product_info === 1 && style.done
-                    }`}
+                    className={`${style.headerH2} ${shopStep.product_info === 1 && style.done
+                      }`}
                   >
                     <div className={style.headerH2Content}>
                       <div className={style.img}>
@@ -198,9 +194,8 @@ const FirstSetup = ({ skip, busInfo = {} }) => {
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1a-content"
                     id="panel1a-header"
-                    className={`${style.headerH2} ${
-                      shopStep.desing_website === 1 && style.done
-                    }`}
+                    className={`${style.headerH2} ${shopStep.desing_website === 1 && style.done
+                      }`}
                   >
                     <div className={style.headerH2Content}>
                       <div className={style.img}>
@@ -246,9 +241,8 @@ const FirstSetup = ({ skip, busInfo = {} }) => {
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1a-content"
                     id="panel1a-header"
-                    className={`${style.headerH2} ${
-                      shopStep.custom_domain === 1 && style.done
-                    }`}
+                    className={`${style.headerH2} ${shopStep.custom_domain === 1 && style.done
+                      }`}
                   >
                     <div className={style.headerH2Content}>
                       <div className={style.img}>
@@ -269,9 +263,17 @@ const FirstSetup = ({ skip, busInfo = {} }) => {
                         <h3>Domain Name</h3>
                         <p>
                           Your current domain is{" "}
-                          <span> https://funnelliner.com/{domain}</span> but you
-                          can add a custom domain to help customers find your
-                          online store
+                          <span style={{fontWeight:"500"}}>
+                            {
+                              domain_status === "connected"
+                                ? `https://${domain_request}`
+                                : `https://funnelliner.com/${domain} `
+                            }                 
+                          </span>
+                          {
+                            domain_status !== "connected" && "but you can add a custom domain to help customers find your  online store"
+                          }
+                           
                         </p>
 
                         <Link href="/website-setting?domain=3&redirect_from=panel4">
@@ -296,9 +298,8 @@ const FirstSetup = ({ skip, busInfo = {} }) => {
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1a-content"
                     id="panel1a-header"
-                    className={`${style.headerH2} ${
-                      shopStep.courier === 1 && style.done
-                    }`}
+                    className={`${style.headerH2} ${shopStep.courier === 1 && style.done
+                      }`}
                   >
                     <div className={style.headerH2Content}>
                       <div className={style.img}>
@@ -355,9 +356,8 @@ const FirstSetup = ({ skip, busInfo = {} }) => {
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1a-content"
                     id="panel1a-header"
-                    className={`${style.headerH2} ${
-                      shopStep.landing_page === 1 && style.done
-                    }`}
+                    className={`${style.headerH2} ${shopStep.landing_page === 1 && style.done
+                      }`}
                   >
                     <div className={style.headerH2Content}>
                       <div className={style.img}>
@@ -385,7 +385,7 @@ const FirstSetup = ({ skip, busInfo = {} }) => {
                         </p>
                         <p>
                           Add your landing page to see the entire business
-                          scenario at a look
+                          scenario  at a look
                         </p>
 
                         <Link href="/landing-page?redirect_from=panel6">

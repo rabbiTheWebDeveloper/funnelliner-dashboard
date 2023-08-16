@@ -40,27 +40,7 @@ const Note = ({ isOpenOrderNoteModal, handleCloseOrderNoteModal, handleFetch, id
         });
     }
   };
-  // const handleKeyDownSuggest = (event) => {
-  //   if (event.key === 'Enter') {
-  //     let data = {
-  //       note: event.target.value,
-  //       type: status,
-  //     };
 
-  //     axios
-  //       .post(process.env.API_URL + `/client/order/note/${id}/update`, data, {
-  //         headers: headers,
-  //       })
-  //       .then(function (res) {
-  //         handleFetch();
-  //         showToast(res.data?.message);
-  //         handleCloseNote();
-  //       })
-  //       .catch((error) => {
-  //         showToast('Something went wrong. Please wait for some time', 'error');
-  //       });
-  //   }
-  // };
   const handleSubmitNote = () => {
     startLoading()
     let data = {

@@ -6,27 +6,15 @@ import { headers } from "../../../pages/api";
 
 const Inventory = () => {
     // Filter
-    const [age, setAge] = useState("");
+
     const [isLoading, setIsLoading] = useState(true);
 
-    const handleChange = (event) => {
-        setAge(event.target.value);
-    };
-    // handleClick Move To Completed
-    const [anchorEl, setAnchorEl] = useState(null);
-    const open = Boolean(anchorEl);
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
 
     // product api implement
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
-    const [page, setPage] = useState(1);
+
 
     useEffect(() => {
         axios
@@ -95,18 +83,18 @@ const Inventory = () => {
                                         <tr>
                                             <td colSpan={13}>
                                                 <Box sx={{ width: 40 }}>
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
-                                                    <Skeleton width={1570} height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
+                                                    <Skeleton width="100%" height={28} />
                                                 </Box>
                                             </td>
                                         </tr>
@@ -118,7 +106,7 @@ const Inventory = () => {
                                                         <tr key={product?.id}>
                                                             <td>{index+1+currentPage*perPage-perPage}</td>
                                                             <td>
-                                                                <img src={product?.main_image?.name} alt="" />
+                                                                <img src={product?.main_image} alt="" />
                                                             </td>
                                                             <td>{product?.product_name}</td>
                                                             <td>{product?.product_code}</td>

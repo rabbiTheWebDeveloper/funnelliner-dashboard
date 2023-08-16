@@ -1,8 +1,11 @@
 import {
+  Box,
   Button,
   Grid,
   Menu,
   MenuItem,
+  Skeleton,
+  Stack,
   Tooltip
 } from "@mui/material";
 import { Container } from "@mui/system";
@@ -26,8 +29,7 @@ const publicIp = require("react-public-ip");
 
 const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
   const dispatch = useDispatch();
-  const { id } = busInfo;
-
+  const { id } = busInfo || {};
   const [token, setToken] = useState("");
   const router = useRouter();
 
@@ -194,29 +196,31 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
 
         {/* logo */}
         <div className="Logo">
-
-          {/* <img className="ShortLogo" src="/images/short-logo.png" alt="" />*/}
-
-          {/* <img className="LongLogo" src="/images/funnel-liner-logo-beta.png" alt="" /> */}
-
           <Link href='/'>
             {
 
-              busInfo?.shop_logo?.name ? <img className="ShortLogo" src={busInfo?.shop_logo?.name} alt='' /> : <i className="flaticon-home-3"></i>
+              busInfo?.shop_logo ? <img className="ShortLogo" src={busInfo?.shop_logo} alt='' /> : <i className="flaticon-home-3"></i>
             }
-
           </Link>
+          <h4 className="side_bar_shop_name">
 
-          <h4>
             {
-              openSidebar
-                ?
-                busInfo?.name
-                :
-                busInfo?.name?.slice(0, 6) + "..."
+              busInfo?.name === undefined && <Skeleton variant="rounded" width={130} height={30} />
             }
+            {
+              openSidebar && busInfo?.name !== undefined && busInfo?.name
+            }
+            {
+              openSidebar !== true && busInfo?.name !== undefined && busInfo?.name?.slice(0, 6) + "..."
+            }
+
           </h4>
-          <p>ID: {shopId}</p>
+
+          <p>
+            {
+              busInfo?.shop_id ? `ID ${busInfo?.shop_id}` : <Skeleton variant="rounded" width={130} height={30} />
+            }
+          </p>
 
         </div>
 
@@ -238,7 +242,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
             <li className={router.pathname === "/order" ? "active" : ""}>
 
               <Tooltip title="Order" placement="right">
-                <Link href='/order'> <i className="flaticon-order-delivery"></i> <span> Order </span> </Link>
+                <Link href='/order'> <i className="flaticon-sent"></i> <span> Order </span> </Link>
               </Tooltip>
 
             </li>
@@ -247,7 +251,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
             <li className={openSubmenu.product && router.pathname === "/product" || openSubmenu.product && router.pathname === "/category-list" ? "active" : ""}>
 
               <Tooltip title="Products" placement="right">
-                <h6 onClick={() => handleClickSubmenu('product')} > <i className="flaticon-checkout"></i> <span> Products </span> </h6>
+                <h6 onClick={() => handleClickSubmenu('product')} > <i className="flaticon-product"></i> <span> Products </span> </h6>
               </Tooltip>
 
               {
@@ -277,7 +281,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
             <li className={router.pathname === "/inventory" || router.pathname === "/stockin" || router.pathname === "/product-return" ? "active" : ""}>
 
               <Tooltip title="Stock" placement="right">
-                <h6 onClick={() => handleClickSubmenu('stock')}> <i className="flaticon-in-stock"></i> <span> Stock </span> </h6>
+                <h6 onClick={() => handleClickSubmenu('stock')}> <i className="flaticon-warehouse"></i> <span> Stock </span> </h6>
               </Tooltip>
 
               {
@@ -326,7 +330,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
             <li className={router.pathname === "/landing-page" || router.pathname === "/multi-page" ? "active" : ""}>
 
               <Tooltip title="Templates" placement="right">
-                <h6 onClick={() => handleClickSubmenu('template')}> <i className="flaticon-template"></i> <span> Templates </span> </h6>
+                <h6 onClick={() => handleClickSubmenu('template')}> <i className="flaticon-website-design"></i> <span> Templates </span> </h6>
               </Tooltip>
 
               {
@@ -347,7 +351,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
             <li className={router.pathname === "/myLandingPage" || router.pathname === "/myMultiWebsite" || router.pathname === "/web-pages" || router.pathname === "/home-slider" || router.pathname === "/about-us" || router.pathname === "/terms-and-condition" || router.pathname === "/privacy-policy" ? "active" : ""}>
 
               <Tooltip title="My Page" placement="right">
-                <h6 onClick={() => handleClickSubmenu('myPage')}> <i className="flaticon-computer"></i> <span> My Page </span> </h6>
+                <h6 onClick={() => handleClickSubmenu('myPage')}> <i className="flaticon-page"></i> <span> My Page </span> </h6>
               </Tooltip>
 
               {
@@ -373,7 +377,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
             <li className={router.pathname === "/website-setting" ? "active" : ""}>
 
               <Tooltip title="Website Setting" placement="right">
-                <Link href='/website-setting'> <i className="flaticon-settings-4"></i> <span> Website Setting </span> </Link>
+                <Link href='/website-setting'> <i className="flaticon-coding"></i> <span> Website Setting </span> </Link>
               </Tooltip>
 
             </li>
@@ -382,7 +386,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
             <li className={router.pathname === "/plug-in" ? "active" : ""}>
 
               <Tooltip title="Addons" placement="right">
-                <Link href='/plug-in'> <i className="flaticon-people"></i> <span> Addons </span> </Link>
+                <Link href='/plug-in'> <i className="flaticon-extension"></i> <span> Addons </span> </Link>
               </Tooltip>
 
             </li>
@@ -392,7 +396,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
               return (
                 addon?.addons_details?.id === 17 && addon?.addons_details?.status === 1 &&
 
-                <li className={router.pathname === "/bkash-marcent" ? "active" : ""}>
+                <li key={index} className={router.pathname === "/bkash-marcent" ? "active" : ""}>
 
                   <Tooltip title="Bkash Merchant" placement="right">
                     <Link href='/bkash-marcent'> <i className="flaticon-people"></i> <span> Bkash Merchant </span> </Link>
@@ -436,13 +440,13 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
             }
 
             {/* Subscription */}
-            <li className={router.pathname === "/subscription" ? "active" : ""}>
+            {/* <li className={router.pathname === "/subscription" ? "active" : ""}>
 
               <Tooltip title="Subscription" placement="right">
                 <Link href='/subscription'> <i className="flaticon-subscribe"></i> <span> Subscription </span> </Link>
               </Tooltip>
 
-            </li>
+            </li> */}
 
             {/* Billing */}
             <li className={router.pathname === "/billing" ? "active" : ""}>
@@ -516,13 +520,12 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
                     <PopupState variant="popover" popupId="Profile">
                       {(popupState) => (
                         <>
-                          <Button {...bindTrigger(popupState)}>
+                          <Button {...bindTrigger(popupState)} className={style.profileButton}>
                             <div className={style.img} id="resources-button">
-                              {busInfo?.shop_logo?.name ? (
-                                <img src={busInfo?.shop_logo?.name} alt="" />
-                              ) : (
-                                <i className="flaticon-home-3"></i>
-                              )}
+                              {
+
+                                busInfo?.shop_logo ? <img className="ShortLogo" src={busInfo?.shop_logo} alt='' /> : <i className="flaticon-home-3"></i>
+                              }                  
                             </div>
                           </Button>
                           <Menu {...bindMenu(popupState)} className="ProfileMenu">
@@ -588,7 +591,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
           </li>
 
           <li className={router.pathname === "/product" ? "active" : ""}>
-            <Link href='/product'> <i className="flaticon-order-delivery"></i> </Link>
+            <Link href='/product'> <i className="flaticon-sent"></i> </Link>
           </li>
 
           <li className={router.pathname === "/myLandingPage" ? "active" : ""}>

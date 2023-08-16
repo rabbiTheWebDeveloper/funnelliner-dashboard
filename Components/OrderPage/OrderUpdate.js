@@ -8,10 +8,9 @@ import { headers } from "../../pages/api";
 
 const OrderUpdate = ({ id, products, handleFetch }) => {
     const showToast = useToast();
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors } } = useForm();
     const [order, setOrder] = useState({});
     const [openSales, setOpenSales] = useState(false)
-    const [productId, setProductId] = useState([]);
     const handleOpenSales = () => setOpenSales(true);
     const handleCloseSales = () => setOpenSales(false);
     const [update, setUpdate] = useState(false);
@@ -27,19 +26,11 @@ const OrderUpdate = ({ id, products, handleFetch }) => {
     }, [id, update]);
 
 
-    const { order_details } = order
+
     const formData = new FormData()
-    const handleChangeItem = (data) => {
 
-        const productIDs = []
-        setProductId(productIDs)
-    }
 
-    let options = products?.length === 0 ? [] : products?.map(function (item) {
-        return { value: item.id, label: item.product_name, };
-    })
 
-    const defaultProductForSelect = order && order?.order_details && order?.order_details.map(product => ({ value: product.product_id, label: product.product }));
     const onSubmit = (data) => {
 
         formData.append("_method", "patch");
@@ -131,67 +122,7 @@ const OrderUpdate = ({ id, products, handleFetch }) => {
 
                     </div>
 
-                    {/* <div className="SalesTargetModal OrderModalPopup">
-                        <div className="Header d_flex">
-                            <div className="svg">
-                                <BiReceipt />
-                            </div>
-
-                            <div className="text">
-                                <h5>Update Order Details</h5>
-                            </div>
-                        </div>
-
-                        <form onSubmit={handleSubmit(onSubmit)}>
-                            <div className="Form OrderModal d_flex d_justify">
-
-                                <div className="CustomeInput">
-                                    <label>Customer Name</label>
-                                    <TextField
-                                        id="outlined-basic"
-                                        variant="outlined"
-                                        defaultValue={order?.customer_name}
-                                        {...register("customerName")}
-                                    />
-                                </div>
-
-                                <div className="CustomeInput">
-                                    <label>Contact No</label>
-                                    <TextField
-                                        id="outlined-basic"
-                                        variant="outlined"
-                                        defaultValue={order?.phone}
-                                        {...register("phone")}
-                                    />
-                                </div>
-
-                                <div className="CustomeInput">
-                                    <label>Address</label>
-                                    <TextField
-                                        id="outlined-basic"
-                                        variant="outlined"
-                                        defaultValue={order?.address}
-                                        {...register("address")}
-                                    />
-                                </div>
-                                <div className="CustomeInput">
-                                    <label>Shipping Cost</label>
-                                    <TextField
-                                        key={order.id}
-                                        id="outlined-basic"
-                                        variant="outlined"
-                                        defaultValue={order?.shipping_cost}
-                                        {...register("shipping_cost")}
-                                    />
-                                </div>
-                            </div>
-                            <div className="CustomeInput">
-                                <div className="DuelButton">
-                                    <Button type="submit">Update</Button>
-                                </div>
-                            </div>
-                        </form>
-                    </div> */}
+                    
 
                 </Box>
             </Modal>

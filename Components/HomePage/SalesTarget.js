@@ -16,8 +16,6 @@ const SalesTarget = ({ salesTarget, salesTargetRfatch }) => {
         let percent = Math.min(numberValue, 100);
         return percent;
     }
-
-
     return (
 
         <>

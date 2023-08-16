@@ -9,7 +9,7 @@
 
 .login .loginContent {
   width: 450px;
-  height: 530px;
+  height: 500px;
   background: var(--white-color);
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   border-radius: 15px;
@@ -28,6 +28,7 @@
 .login .loginContent h2 {
   font-size: 30px;
   line-height: 40px;
+  margin-top: 10px;
 }
 
 .text {
@@ -35,7 +36,7 @@
 }
 
 .login .logo img {
-  height: 80px;
+  height: 50px;
 }
 
 .login .formValidation {
@@ -104,9 +105,6 @@
 
 /* 769px to 1279px */
 @media only screen and (max-width: 1279px) {
-  .login .logo img {
-    height: 80px;
-  }
 
   .login .loginContent h2 {
     font-size: 30px;
@@ -124,6 +122,3 @@
   }
 }
 
-/* 480px */
-@media only screen and (max-width: 500px) {
-}

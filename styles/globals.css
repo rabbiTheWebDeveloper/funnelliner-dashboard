@@ -149,6 +149,10 @@ button.bg:hover {
   font-size: 14px;
 }
 
+.duelButton.Account button{
+  width: 48%;
+}
+
 .duelButton:nth-child(2) {
   /* display: none; */
 }
@@ -323,6 +327,10 @@ Media
   main {
     overflow-x: hidden;
   }
+
+  .MuiContainer-root {
+    padding-left: 20px !important;
+} 
 
 }
 

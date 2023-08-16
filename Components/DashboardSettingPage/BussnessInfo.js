@@ -1,9 +1,8 @@
-import { Box, Button, Grid, TextField } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { FiEdit } from "react-icons/fi";
 import { useToast } from "../../hook/useToast";
 import { headers } from "../../pages/api";
 import useLoading from "../../hook/useLoading";
@@ -69,7 +68,7 @@ const BussnessInfo = ({ redirectFrom, response }) => {
                 }
             })
             .catch(function (error) {
-                console.log("error", error.response.data.msg)
+               
                 stopLoading()
                 showToast(error?.response?.data?.msg, "error")
             });
@@ -118,26 +117,26 @@ const BussnessInfo = ({ redirectFrom, response }) => {
 
                                 <div className="customInput">
                                     <label>Shop Name <span>*</span></label>
-                                    <input type="text" {...register("shop_name")} onChange={(newValue) => setTFValue(newValue.target.value)} value={tfValue}
+                                    <input type="text" {...register("shop_name")} onChange={(newValue) => setTFValue(newValue.target.value)} value={tfValue} required
                                         InputProps={{ readOnly: true, disableUnderline: true }}
                                     />
                                 </div>
                                 <div className="customInput">
                                     <label>Phone Number <span>*</span></label>
-                                    <input type="text" {...register("phone",)} value={phone} onChange={(newValue) => setPhone(newValue.target.value)} />
+                                    <input type="text" {...register("phone",)} value={phone} onChange={(newValue) => setPhone(newValue.target.value)} required />
 
                                     {errors.phone && <p className="error" >This field is required</p>}
 
                                 </div>
                                 <div className="customInput">
                                     <label>Email Address <span>*</span></label>
-                                    <input type="text" {...register("email",)} onChange={(newValue) => setEmail(newValue.target.value)} value={email} />
+                                    <input type="text" {...register("email",)} onChange={(newValue) => setEmail(newValue.target.value)} value={email} required />
                                     {errors.email && <p className="error">This field is required</p>}
                                 </div>
 
                                 <div className="customInput">
                                     <label>Shop Address  <span>*</span></label>
-                                    <input type="text" {...register("shop_address",)} onChange={(newValue) => setAddress(newValue.target.value)} value={address} />
+                                    <input type="text" {...register("shop_address",)} onChange={(newValue) => setAddress(newValue.target.value)} value={address} required />
                                     {errors.shop_address && <span style={{ color: "red" }}>This field is required</span>}
                                 </div>
 
@@ -188,7 +187,7 @@ const BussnessInfo = ({ redirectFrom, response }) => {
                                             imageUrl && selectedImage ? "" :
                                                 <Box mt={2} textAlign="center">
                                                     <h6>Image Preview:</h6>
-                                                    <img src={busInfo?.shop_logo?.name} alt={""} Height="100px" />
+                                                    <img src={busInfo?.shop_logo} alt={""} Height="100px" />
                                                 </Box>
                                         }
                                     </div>

@@ -73,7 +73,7 @@ const HomePageCart = ({ data, setFetchData, startDate, setStartDate, endDate, se
                                         {(popupState) => (
                                             <>
                                                 <Button {...bindTrigger(popupState)}>
-                                                    {filterOrder(data)} <i className="flaticon-down-arrow"></i>
+                                                    {filterOrder(data)} <i className="flaticon-arrow-down-sign-to-navigate"></i>
                                                 </Button>
 
                                                 <Menu id="fade-menu"

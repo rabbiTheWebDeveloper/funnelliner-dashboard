@@ -2,21 +2,22 @@ import { Box, Container, Grid, Link } from "@mui/material";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SuperFetch from "../../hook/Axios";
 import { useToast } from "../../hook/useToast";
-import { created, headers } from "../../pages/api";
+import { created, headers, nextDueDate, paymentStatus } from "../../pages/api";
 
 import style from './style.module.css';
 
 import Cookies from "js-cookie";
 import moment from "moment";
 import dynamic from 'next/dynamic';
-import HeaderDescription from "../../Components/Common/HeaderDescription/HeaderDescription";
 import useLoading from "../../hook/useLoading";
+import HeaderDescription from "../Common/HeaderDescription/HeaderDescription";
 import Spinner from "../commonSection/Spinner/Spinner";
 import Billing from "./Billing";
-// import Skeletor from "../commonSection/Skeleton/Skeletor";
+import axios from "axios";
+
 
 const HtmlToPdf = dynamic(() => import('html2pdf.js'), { ssr: false });
 
@@ -33,7 +34,7 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
     const handleUpdateModalClose = () => setUpdateModal(false);
 
     const params = {
-        amount: 1,
+        amount: 2999,
         order_type: 'package'
     }
     const makePaymentSsl = () => {
@@ -42,10 +43,8 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
                 showToast(res.data.message, "error")
             }
             router.push(res.data).then(r => {
-
-                handelFetchBusInfo(),
-                    Cookies.set('user', JSON.stringify(merchant));
-
+                handelFetchBusInfo()
+                Cookies.set('user', JSON.stringify(merchant));
             })
         })
     }
@@ -61,7 +60,6 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
             }
         })
     }
-
     const makePaymentNagad = () => {
         SuperFetch.get('/client/nagad/pay', { params: params, headers: headers }).then((res) => {
             if (res.status === 200) {
@@ -69,8 +67,6 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
             }
         })
     }
-
-
     const handlePaymentMethod = async (e) => {
         setModalOpen(false)
         switch (e) {
@@ -88,16 +84,11 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
                 makePaymentSsl();
         }
     }
-
     const handlePaymentMethodChange = (event) => {
         setSelectedPayment(event.target.value);
     };
-
-
     const lastPayment = subscriptions[0]?.api_response
     const data1 = lastPayment !== undefined ? JSON?.parse(lastPayment) : "";
-
- 
     const [downLoading_invoce_index, setDownLoading_invoce_index] = useState(null)
     const downloadInvoice = async (id, invoice, index) => {
         try {
@@ -122,20 +113,40 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
     };
 
 
-   
+    const [billingList, setBillingList] = useState([]);
+    const handleFetchBillingList = async () => {
+        try {
+            let data = await axios({
+                method: "get",
+                url: `${process.env.API_URL}/client/transaction/list`,
+                headers: headers,
+            });
+            setBillingList(data?.data?.data);
+        } catch (err) { }
+    };
 
+    useEffect(() => {
+        handleFetchBillingList();
+    }, []);
     return (
         <>
             <section className='TopSellingProducts DashboardSetting Courier Subscription'>
 
                 {/* header */}
-                <HeaderDescription headerIcon={'flaticon-wallet'} title={'Subscription'} subTitle={'Subscription for software'} search={false}></HeaderDescription>
+                {/* <HeaderDescription headerIcon={'flaticon-wallet'} title={'Subscription'} subTitle={'Subscription for software'} search={false}></HeaderDescription> */}
+
+                <HeaderDescription
+                    headerIcon={"flaticon-wallet"}
+                    title={"Billing"}
+                    subTitle={"Billing List"}
+                    search={false}
+                ></HeaderDescription>
 
                 <Container maxWidth='sm'>
 
                     <Grid container spacing={3}>
                         {
-                            isApiResponse && subscriptions.length === 0 &&
+                            paymentStatus == null &&
                             <Grid item xs={12} sm={6} md={4}>
 
                                 <div className="commonCart boxShadow cart-2">
@@ -170,7 +181,7 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
                         {/* Total Order */}
 
                         {
-                            data1?.amount === '3000.00' || data1?.transactionStatus === "Completed"
+                            paymentStatus === "paid"
                             &&
                             <Grid item xs={12} sm={6} md={4}>
 
@@ -183,18 +194,25 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
                                         </div>
 
                                         <div className="middle">
-                                            <h3>
-                                                <i className="flaticon-taka"></i>
-                                                3000
-                                            </h3>
+                                            <h2>
+                                                {/* <i className="flaticon-taka"></i>
+                                                2999 */}
+
+                                                Depends on your order
+                                            </h2>
                                         </div>
                                         <div className="list">
                                             <ul>
                                                 <li>Your Registration Date: <span>{created}</span> </li>
-                                                <li>Your Last Payment Date: <span>{subscriptions[0]?.created_at}</span> </li>
-                                                <li className="nextPayment">Next Due Date: <span>{moment(subscriptions[0]?.next_due_date).format('Do MMMM YYYY')}</span> </li>
+                                                <li>Your Last Payment Date: <span>{moment(billingList[0]?.created_at).format('Do MMMM YYYY')}</span> </li>
+                                                <li className="nextPayment">Next Due Date: <span>{moment(nextDueDate).format('Do MMMM YYYY')}</span> </li>
                                             </ul>
+
+
+
                                         </div>
+
+
 
 
                                     </div>
@@ -204,7 +222,7 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
                             </Grid>
 
                         }
-                        <Grid item xs={12}>
+                        {/* <Grid item xs={12}>
 
                             <div className="SubscriptionInvoice">
                                 <div className="Pending">
@@ -272,7 +290,7 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
 
                             </div>
 
-                        </Grid>
+                        </Grid> */}
 
                     </Grid>
 
@@ -280,7 +298,7 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
                 </Container>
             </section>
 
-            <Billing></Billing>
+            <Billing billingList={billingList}></Billing>
 
             <Modal
                 keepMounted

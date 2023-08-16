@@ -1,41 +1,43 @@
 
 import { Box, Button, Modal } from "@mui/material";
 import axios from "axios";
-import { useState } from "react";
+
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import { useToast } from "../../hook/useToast";
 import { headers } from "../../pages/api";
 
-const OrderUpdateModal = ({ order,orderId, handleCloseOrderUpdateModal, modalOpenUpdate, products, handleFetch }) => {
+const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOpenUpdate, products, handleFetch }) => {
     const showToast = useToast();
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors } } = useForm();
 
-    const [openSales, setOpenSales] = useState(false)
-    const [productId, setProductId] = useState([]);
-    const handleOpenSales = () => setOpenSales(true);
-    const handleCloseSales = () => setOpenSales(false);
+
 
     const { order_details } = order
     const formData = new FormData()
-    const handleChangeItem = (data) => {
 
-        const productIDs = []
-        setProductId(productIDs)
-    }
 
     let options = products?.length === 0 ? [] : products?.map(function (item) {
         return { value: item.id, label: item.product_name, };
     })
 
-    const defaultProductForSelect = order && order?.order_details && order?.order_details.map(product => ({ value: product.product_id, label: product.product }));
+
     const onSubmit = (data) => {
 
         formData.append("_method", "patch");
         formData.append("customer_name", data.customerName);
         formData.append("customer_address", data.address);
+        formData.append("order_type", order?.order_type);
         formData.append("customer_phone", data.phone);
         formData.append("shipping_cost", data.shipping_cost);
+        if(data.order_status === "confirmed" || data.order_status === "shipped"){
+            formData.append("order_status", data.order_status);
+        }
+        else{
+            formData.append("order_status", order.order_status);
+
+        }
+      
 
         //    debugger
         axios.post(process.env.API_URL + "/client/orders/" + orderId, formData, {
@@ -44,8 +46,8 @@ const OrderUpdateModal = ({ order,orderId, handleCloseOrderUpdateModal, modalOpe
             .then(function (response) {
                 showToast('Order Update   Successfully !', 'success');
                 handleFetch()
-           
-             
+
+
             })
             .catch(function (error) {
                 Swal.fire({
@@ -53,10 +55,10 @@ const OrderUpdateModal = ({ order,orderId, handleCloseOrderUpdateModal, modalOpe
                     text: "Something went wrong",
                 });
             });
-        // setOpenSales(false);
+
         handleCloseOrderUpdateModal()
         handleFetch()
-      
+
     }
 
     return (
@@ -89,27 +91,52 @@ const OrderUpdateModal = ({ order,orderId, handleCloseOrderUpdateModal, modalOpe
 
                             <div className='customInput'>
                                 <label>Customer Name</label>
-                                <input type="text" placeholder="Name" defaultValue={order?.customer_name}
+                                <input type="text" placeholder="Customer Name" defaultValue={order?.customer_name}
                                     {...register("customerName")} />
                             </div>
 
                             <div className='customInput'>
                                 <label>Contact No</label>
-                                <input type="text" placeholder="Name" defaultValue={order?.phone}
+                                <input type="text" placeholder="Contact No" defaultValue={order?.phone}
                                     {...register("phone")} />
                             </div>
 
                             <div className='customInput'>
                                 <label>Address</label>
-                                <input type="text" placeholder="Name" defaultValue={order?.address}
+                                <input type="text" placeholder="Address" defaultValue={order?.address}
                                     {...register("address")} />
                             </div>
 
                             <div className='customInput'>
                                 <label>Shipping Cost</label>
-                                <input type="text" placeholder="Name" defaultValue={order?.shipping_cost}
+                                <input type="text" placeholder="Shipping Cost" defaultValue={order?.shipping_cost}
                                     {...register("shipping_cost")} />
                             </div>
+
+                            {
+                                order?.order_status === "confirmed" || order?.order_status === "shipped" ?
+                                    <div className='customInput'>
+                                        <label>
+                                            Status</label>
+                                        <select
+                                            name="order_status"
+                                            {...register("order_status")}
+                                            native={true}
+                                            defaultValue={order?.order_status}
+                                        >
+                                            <option value="">Select Status</option>
+
+                                            <option key={"follow_up"} value={"follow_up"}>
+                                                Follow Up
+                                            </option>
+                                            <option key={"cancelled"} value={"cancelled"}>
+                                                Cancelled
+                                            </option>
+                                        </select>
+                                    </div> : null
+
+                            }
+
 
                         </div>
 

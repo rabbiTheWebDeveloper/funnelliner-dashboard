@@ -7,6 +7,7 @@ import AsyncSelect from "react-select";
 import useLoading from "../../../hook/useLoading";
 import { useToast } from "../../../hook/useToast";
 import { headers } from "../../../pages/api";
+import SmallLoader from "../../SmallLoader/SmallLoader";
 
 const SectionCustomize = () => {
   const showToast = useToast();
@@ -21,10 +22,8 @@ const SectionCustomize = () => {
   const { id } = router.query;
   const {
     register,
-    control,
     handleSubmit,
     setValue,
-    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -46,6 +45,7 @@ const SectionCustomize = () => {
       footer_text_color: "",
       footer_heading_color: "",
       footer_b_color: "",
+      order_title: ""
     },
   });
   const handelFooterList = async () => {
@@ -56,7 +56,7 @@ const SectionCustomize = () => {
         headers: headers,
       });
       setFooterList(data?.data?.data);
-    } catch (err) {}
+    } catch (err) { }
   };
 
   useEffect(() => {
@@ -71,7 +71,7 @@ const SectionCustomize = () => {
         headers: headers,
       });
       setCheckoutList(data?.data?.data);
-    } catch (err) {}
+    } catch (err) { }
   };
 
   useEffect(() => {
@@ -86,7 +86,7 @@ const SectionCustomize = () => {
         headers: headers,
       });
       setProductsList(data?.data?.data);
-    } catch (err) {}
+    } catch (err) { }
   };
 
   useEffect(() => {
@@ -97,14 +97,16 @@ const SectionCustomize = () => {
     productsList?.length === 0
       ? []
       : productsList?.map(function (item) {
-          return { value: item?.id, label: item?.product_name };
-        });
+        return { value: item?.id, label: item?.product_name };
+      });
 
   const [selectedProductId, setSelectedProductId] = useState();
   const handleSelectChange = (selectedOption) => {
     setSelectedProductId(selectedOption.value);
   };
+  const [isDataFetchLoading, setIsDataFetchLoading] = useState(false)
   const handelPageInfo = async () => {
+    setIsDataFetchLoading(true)
     try {
       let data = await axios({
         method: "get",
@@ -131,7 +133,12 @@ const SectionCustomize = () => {
       setValue("linkedin", page_data?.linkedin);
       setValue("instagram", page_data?.instagram);
       setValue("youtube", page_data?.youtube);
-    } catch (err) {}
+      setValue("order_title", page_data?.order_title);
+
+      setIsDataFetchLoading(false)
+    } catch (err) {
+      setIsDataFetchLoading(false)
+    }
   };
 
   useEffect(() => {
@@ -141,6 +148,7 @@ const SectionCustomize = () => {
     const formData = new FormData();
     formData.append("title", data.title);
     formData.append("product_id", selectedProductId);
+    formData.append("order_title", data.order_title);
     if (data.descriptions) {
       formData.append("descriptions", data.descriptions);
     }
@@ -236,8 +244,28 @@ const SectionCustomize = () => {
       setImageUrl(URL.createObjectURL(selectedImage));
     }
   }, [selectedImage]);
+
+  const handleResetFooterAndCheckoutColor = async () => {
+    try {
+      let data = await axios({
+        method: "post",
+        url: `${process.env.API_URL}/client/footer/color/reset/${id}`,
+        headers: headers,
+      });
+      if (data.status === 200) {
+        showToast(data?.data?.message)
+        handelPageInfo();
+      }
+    } catch (err) {
+      showToast(err?.msg, "error")
+    }
+  }
   return (
     <>
+      {
+        isDataFetchLoading && <SmallLoader />
+      }
+
       <div className="SectionCustomize">
         <Container maxWidth="sm">
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -291,11 +319,29 @@ const SectionCustomize = () => {
                 </div>
                 {/* Checkout Form Design Selection */}
                 <div className="SectionCustomizeBox boxShadow">
+
                   <div className="Header">
                     <h4>Checkout Form Design Selection</h4>
                   </div>
 
-                  <div className="SelectSectionBox">
+                  <div className="customInput">
+                    <label>
+                      Checkout Form Title
+                    </label>
+                    <input
+                      type="text"
+                      {...register("order_title", { required: true })}
+                    />
+                    {errors.order_title && (
+                      <span style={{ color: "red" }}>
+                        {/* {errors.order_title.message} */}
+                        This Field is required
+                      </span>
+                    )}
+                  </div>
+                  <br />
+
+                  <div className="SelectSectionBox my-3">
                     {checkoutList.length > 0 &&
                       checkoutList.map((item, index) => {
                         return (
@@ -442,7 +488,7 @@ const SectionCustomize = () => {
                 {/* Personal Info */}
                 <div className="SectionCustomizeBox boxShadow">
                   <div className="Header">
-                    <h4>Personal Info</h4>
+                    <h4>Footer Information</h4>
                   </div>
                   <div className="Form">
                     {/* Phone */}
@@ -678,13 +724,24 @@ const SectionCustomize = () => {
                       </div>
                     </div>
                   </div>
+                  <div className="SectionButton">
+
+                    <p className="text-center">If you click "reset colour," the "footer form colour" and "checkout form colour" will be removed.</p>
+                    <Button onClick={handleResetFooterAndCheckoutColor} className="bg">Reset Color</Button>
+
+                  </div>
+
                 </div>
               </Grid>
               {/* Save */}
               <Grid item xs={12}>
-                <Button disabled={isLoading} type="submit" className="bg">
-                  Save Data
-                </Button>
+
+                <div className="UpdateButtonCustomize">
+                  <Button disabled={isLoading} type="submit" className="bg">
+                    Update
+                  </Button>
+                </div>
+
               </Grid>
             </Grid>
           </form>

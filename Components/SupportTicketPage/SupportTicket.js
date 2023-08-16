@@ -13,33 +13,14 @@ const SupportTicket = () => {
     const showToast = useToast()
     const [isLoading, startLoading, stopLoading] = useLoading();
     // Filter
-    const [age, setAge] = useState("");
+
     const [update, setUpdate] = useState({});
     const [selectedImage, setSelectedImage] = useState(null);
     const [imageUrl, setImageUrl] = useState(null);
-    const handleChange = (event) => {
-        setAge(event.target.value);
-    };
-    // handleClickOrder
-    const [anchorEl, setAnchorEl] = useState(null);
-    const open = Boolean(anchorEl);
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+
+
 
     // Dropdown
-    const [anchorElMenu, setAnchorElMenu] = useState(null);
-
-    const openMenu = Boolean(anchorElMenu);
-    const handleClickMenu = (event) => {
-        setAnchorElMenu(event.currentTarget);
-    };
-    const handleCloseDropdown = () => {
-        setAnchorElMenu(null);
-    };
 
     const [merchant, setMerchant] = useState({});
     useEffect(() => {
@@ -53,11 +34,6 @@ const SupportTicket = () => {
         formState: { errors },
     } = useForm();
 
-    const [openTicketConversation, setOpenConversation] = useState({
-        open: false,
-        ticket_id: null,
-        conversation: [],
-    });
 
     const [previewPicture, setPreviewPicture] = useState('');
     const [attachFile, setAttachFile] = useState();

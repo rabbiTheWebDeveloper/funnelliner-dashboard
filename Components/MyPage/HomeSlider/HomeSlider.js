@@ -17,6 +17,7 @@ import style from './style.module.css';
 import Banner from "../Banner/Banner";
 import useLoading from "../../../hook/useLoading";
 import Spinner from "../../commonSection/Spinner/Spinner";
+import Link from "next/link";
 
 
 
@@ -33,7 +34,7 @@ const HomeSlider = ({ response, IsHeaderDescription }) => {
 
     // Tabs
     const [value, setValue] = useState("1");
-    const {reset, formState: { errors } } = useForm();
+    const { reset, formState: { errors } } = useForm();
 
     const handleChangeTab = (event, newValue) => {
         setValue(newValue);
@@ -114,14 +115,16 @@ const HomeSlider = ({ response, IsHeaderDescription }) => {
             },
         })
             .then(function (response) {
-                setSlider_list((sliders) => sliders.filter((slider) => slider.id !== slider_id))
-                showToast("Delete Success")
+                if (response.status === 200) {
+                    setSlider_list((sliders) => sliders.filter((slider) => slider.id !== slider_id))
+                    showToast(response?.data?.msg)
+                } else {
+                    showToast("Something went wrong")
+                }
             })
             .catch(function (error) {
-                // setIsLoading(false)
                 showToast(error?.response?.data?.msg ? error?.response?.data?.msg : "Something went wrong", "error")
             });
-
     }
 
     return (
@@ -178,7 +181,10 @@ const HomeSlider = ({ response, IsHeaderDescription }) => {
                                                             {
                                                                 slider_list?.map((item, index) => <div key={item?.id} className={style.homeSliderDiv}>
                                                                     <i onClick={() => handleDeleteSlider(item?.id)} className="flaticon-close-1" >  </i>
-                                                                    <img className={style.homeSlider} style={{ margin: "0 5px", borderRadius: "10px" }} src={item?.image} />
+                                                                    <Link href={item?.link ? item?.link : "#"}>
+
+                                                                        <img className={style.homeSlider} style={{ margin: "0 5px", borderRadius: "10px" }} src={item?.image} />
+                                                                    </Link>
                                                                 </div>)
                                                             }
 
@@ -198,13 +204,8 @@ const HomeSlider = ({ response, IsHeaderDescription }) => {
 
                                                     {/* Submit */}
                                                     <div className={style.Submit}>
-                                                        {
-                                                            isLoading ? <Button disabled className="theme_edit_submit_btn" sx={{ mb: 2 }}>
-                                                                <React.Fragment> <Spinner /></React.Fragment> Add Slider
-                                                            </Button> : <Button disabled={isLoading} onClick={editForm} className="theme_edit_submit_btn" sx={{ mb: 2 }}>
-                                                                <i className="flaticon-install"></i>Confirm Slider</Button>
-                                                        }
-
+                                                        <Button disabled={isLoading} onClick={editForm} className="theme_edit_submit_btn" sx={{ mb: 2 }}>
+                                                            <i className="flaticon-install"></i>Update Slider</Button>
                                                     </div>
 
                                                 </Grid>

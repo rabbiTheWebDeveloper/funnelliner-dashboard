@@ -10,6 +10,7 @@ import useLoading from "../../hook/useLoading";
 import { useToast } from "../../hook/useToast";
 import { activateCourier, headers } from "../../pages/api";
 import SmallLoader from "../SmallLoader/SmallLoader";
+import Pathao from "./Pathao";
 
 const Courier = ({ busInfo }) => {
     const router = useRouter()
@@ -190,7 +191,7 @@ const Courier = ({ busInfo }) => {
                                                 <div className='customInput'>
 
                                                     <label>API Key</label>
-                                                    <input {...register("apiKey", { required: true })} type={showApi ? 'password' : 'text'}
+                                                    <input {...register("apiKey", { required: true })} type={showApi ?  'text' :  'password'}
                                                         defaultValue={decodeJson(steadFastData?.config)['Api-Key'] !== undefined ? decodeJson(steadFastData?.config)['Api-Key'] : null} />
                                                     <div className="eye" onClick={() => handleApiKey("apiKey")}>
                                                         {
@@ -212,7 +213,7 @@ const Courier = ({ busInfo }) => {
                                                 <div className="customInput">
                                                     <label>Secret Key</label>
                                                     <input {...register("apiSecret", { required: true })} defaultValue={decodeJson(steadFastData?.config)['Secret-Key']}
-                                                        type={secretApi ? 'password' : 'text'} />
+                                                        type={secretApi ? 'text' :  'password'} />
 
                                                     <div className="eye" onClick={() => handleApiKey("secretKey")}>
                                                         {
@@ -263,60 +264,61 @@ const Courier = ({ busInfo }) => {
                                         </div>
                                     </div>
                                     {openPathao === true ? (
-                                        <div className='InputField'>
-                                            <form onSubmit={handleSubmit(handlePathaoSubmit)}>
+                                        <Pathao merchantId={merchantId }  stopLoading={stopLoading} startLoading={startLoading} showPathaoSicrets={showPathaoSicrets}  pathaoData={pathaoData} hanldeInputTypeChange={hanldeInputTypeChange} ></Pathao>
+                                        // <div className='InputField'>
+                                        //     <form onSubmit={handleSubmit(handlePathaoSubmit)}>
 
-                                                <div className='customInput'>
-                                                    <label>Client Id</label>
-                                                    <input type="text" {...register('client_id', { required: true })} defaultValue={decodeJson(pathaoData?.config)?.client_id} />
-                                                </div>
+                                        //         <div className='customInput'>
+                                        //             <label>Client Id</label>
+                                        //             <input type="text" {...register('client_id', { required: true })} defaultValue={decodeJson(pathaoData?.config)?.client_id} />
+                                        //         </div>
 
-                                                <div className='customInput'>
-                                                    <label>Client Secret</label>
-                                                    <input type={showPathaoSicrets?.sicretKey ? "text" : "password"} {...register('client_secret', { required: true })} defaultValue={decodeJson(pathaoData?.config)?.client_secret} />
-                                                    <div className="eye" onClick={() => hanldeInputTypeChange("sicretKey")}>
-                                                        {
-                                                            showPathaoSicrets?.sicretKey
-                                                                ?
-                                                                <i className="flaticon-view"></i>
-                                                                :
-                                                                <i className="flaticon-hide"></i>
-                                                        }
-                                                    </div>
-                                                </div>
-                                                <div className='customInput'>
-                                                    <label>Username</label>
-                                                    <input type="text" {...register('username', { required: true })} defaultValue={decodeJson(pathaoData?.config)?.username} />
-                                                </div>
-                                                <div className='customInput'>
-                                                    <label>Password</label>
-                                                    <input type={showPathaoSicrets?.password ? "text" : "password"} {...register('password', { required: true })} defaultValue={decodeJson(pathaoData?.config)?.password} />
-                                                    <div className="eye" onClick={() => hanldeInputTypeChange("password")}>
-                                                        {
-                                                            showPathaoSicrets?.password
-                                                                ?
-                                                                <i className="flaticon-view"></i>
-                                                                :
-                                                                <i className="flaticon-hide"></i>
-                                                        }
-                                                    </div>
-                                                </div>
-                                                {/* <div className='customInput'>
-                                                    <label>Grant Type</label>
-                                                    <input type="text" {...register('grant_type', { required: true })} defaultValue={decodeJson(pathaoData?.config)?.grant_type} />
-                                                </div> */}
-                                                <div className='customInput'>
-                                                    <label>Store ID</label>
-                                                    <input type="text" {...register('store_id', { required: true })} defaultValue={decodeJson(pathaoData?.config)?.store_id} />
-                                                </div>
+                                        //         <div className='customInput'>
+                                        //             <label>Client Secret</label>
+                                        //             <input type={showPathaoSicrets?.sicretKey ? "text" : "password"} {...register('client_secret', { required: true })} defaultValue={decodeJson(pathaoData?.config)?.client_secret} />
+                                        //             <div className="eye" onClick={() => hanldeInputTypeChange("sicretKey")}>
+                                        //                 {
+                                        //                     showPathaoSicrets?.sicretKey
+                                        //                         ?
+                                        //                         <i className="flaticon-view"></i>
+                                        //                         :
+                                        //                         <i className="flaticon-hide"></i>
+                                        //                 }
+                                        //             </div>
+                                        //         </div>
+                                        //         <div className='customInput'>
+                                        //             <label>Username</label>
+                                        //             <input type="text" {...register('username', { required: true })} defaultValue={decodeJson(pathaoData?.config)?.username} />
+                                        //         </div>
+                                        //         <div className='customInput'>
+                                        //             <label>Password</label>
+                                        //             <input type={showPathaoSicrets?.password ? "text" : "password"} {...register('password', { required: true })} defaultValue={decodeJson(pathaoData?.config)?.password} />
+                                        //             <div className="eye" onClick={() => hanldeInputTypeChange("password")}>
+                                        //                 {
+                                        //                     showPathaoSicrets?.password
+                                        //                         ?
+                                        //                         <i className="flaticon-view"></i>
+                                        //                         :
+                                        //                         <i className="flaticon-hide"></i>
+                                        //                 }
+                                        //             </div>
+                                        //         </div>
+                                        //         {/* <div className='customInput'>
+                                        //             <label>Grant Type</label>
+                                        //             <input type="text" {...register('grant_type', { required: true })} defaultValue={decodeJson(pathaoData?.config)?.grant_type} />
+                                        //         </div> */}
+                                        //         <div className='customInput'>
+                                        //             <label>Store ID</label>
+                                        //             <input type="text" {...register('store_id', { required: true })} defaultValue={decodeJson(pathaoData?.config)?.store_id} />
+                                        //         </div>
 
-                                                <div className="duelButton">
-                                                    <Button type="submit">Submit</Button>
-                                                    {/* <Button disabled={isLoading} type="submit">{isLoading && <i><Spinner /> </i>}Submit</Button> */}
-                                                </div>
+                                        //         <div className="duelButton">
+                                        //             <Button type="submit">Submit</Button>
+                                        //             {/* <Button disabled={isLoading} type="submit">{isLoading && <i><Spinner /> </i>}Submit</Button> */}
+                                        //         </div>
 
-                                            </form>
-                                        </div>
+                                        //     </form>
+                                        // </div>
                                     ) : (
                                         ""
                                     )}

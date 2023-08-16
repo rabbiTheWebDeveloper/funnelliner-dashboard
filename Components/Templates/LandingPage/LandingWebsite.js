@@ -20,48 +20,44 @@ const axios = require("axios");
 const LandingWebsite = ({ busInfo }) => {
     const [isLoading, startLoading, stopLoading] = useLoading();
     const showToast = useToast()
+    const [pageTittle, setPageTittle] = useState("");
+    const [openPreview, setOpenPreview] = useState(false);
+    const [landingId, setLandingId] = useState(null);
     const router = useRouter();
     const domain_request = Cookies.get('domain_request')
     // ViewPreviewModel
     const [products, setProducts] = useState([]);
-
+    const [search, setSearch] = useState("");
     const [product_id, setProductID] = useState()
-
+    const [videoLink, setVideoLink] = useState("");
     const handleChangeItem = (e) => {
         setProductID(e.value)
     }
-
-    const [openPreview, setOpenPreview] = useState(false);
-    const [landingId, setLandingId] = useState(null);
-
     const handlePreview = () => setOpenPreview(true);
     const previewClose = () => setOpenPreview(false);
-
     // OpenSales Modal
     const [openSales, setOpenSales] = useState(false);
     const handleOpenSales = (e) => {
         setLandingId(e.target.id);
         setOpenSales(true);
+        setPageTittle('')
     };
     const handleCloseSales = () => setOpenSales(false);
     const [landingPageTemplate, setLandingPageTemplate] = useState([]);
     const [websiteSettingData, setWebsiteSettingData] = useState({});
-
     //This id add for custom 
     const idsToSkip = Array.from({ length: 200 }, (_, i) => (i + 206).toString());
     useEffect(() => {
+        startLoading()
         allThemeList("landing").then((result) => {
             const filteredItems = result?.data?.data.filter(item => !idsToSkip.includes(item.name));
             setLandingPageTemplate(filteredItems);
+            stopLoading()
         });
         getWebsiteSettings().then((res) => {
             setWebsiteSettingData(res?.data?.data);
         });
     }, []);
-
-    const [pageTittle, setPageTittle] = useState("");
-    const [videoLink, setVideoLink] = useState("");
-
 
     const handlePageTitleChange = (e) => {
         const pageName = e.target.value;
@@ -109,27 +105,6 @@ const LandingWebsite = ({ busInfo }) => {
         });
     };
     const [mas, setMas] = useState("");
-
-
-
-    const textToCopy = domain_request !== null ? `https://${domain_request} /${domain}/p/${pageTittle}` : `https://funnelliner.com/${domain}/p/${pageTittle}`;
-
-
-    console.log("domain_request", domain_request)
-
-    const handleCopyToClick = () => {
-        const clipboard = new Clipboard(".SocialLink", {
-            text: () => textToCopy,
-        });
-
-        clipboard.on("success", (e) => {
-            setMas("Copied to Link!");
-            e.clearSelection();
-        });
-        clipboard.on("error", (e) => {
-        });
-    };
-
     //product fetching and add with theme
     useEffect(() => {
         axios
@@ -158,7 +133,7 @@ const LandingWebsite = ({ busInfo }) => {
     );
 
     const pageNumbers = [];
-    for (let i = 1; i <= Math.ceil(landingPageTemplate.length / perPage); i++) {
+    for (let i = 1; i <= Math.ceil(landingPageTemplate?.length / perPage); i++) {
         pageNumbers.push(i);
     }
 
@@ -167,22 +142,52 @@ const LandingWebsite = ({ busInfo }) => {
     const handlePaginationClick = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
-    console.log("   busInfo?.domain_status" ,    busInfo?.domain_status)
 
+    const handleFetchTemplateSearch = async () => {
+        startLoading()
+        try {
+            let data = await axios({
+                method: "get",
+                url: `${process.env.API_URL}/client/themes/landing/page/search/${search}`,
+                headers: headers,
+            });
+            setLandingPageTemplate(data?.data?.data);
+            stopLoading()
+        } catch (err) {
+            stopLoading()
+            if (err?.response?.status === 401 || err?.message === "Network Error") {
+                Cookies.remove("token");
+                Cookies.remove("user");
+            }
+        }
+    };
+
+    useEffect(() => {
+        search?.length > 0 && handleFetchTemplateSearch();
+    }, [search]);
+
+    const indentifyLink = (status  , domain , pageTittle) => {
+        console.log("status", status)
+        if (status === null) {
+            return `https://funnelliner.com/${domain}/p/${pageTittle}`
+        } else if (status === "pending") {
+            return `https://funnelliner.com/${domain}/p/${pageTittle}`
+
+        }else if (status === "connected"){
+            return `https://${domain_request}/p/${pageTittle}`
+        }
+
+    }
     return (
         <>
             <section className="LandingWebsite">
-
                 {/* header */}
-                <HeaderDescription headerIcon={'flaticon-web-design'} title={'Landing Page Template'} subTitle={'choose your theme here and customize as you want'} search={false}></HeaderDescription>
-                {landingPageTemplate.length === 0 && <SmallLoader />}
+                <HeaderDescription headerIcon={'flaticon-web-design'} title={'Landing Page Template'} setSearch={setSearch} subTitle={'choose your theme here and customize as you want'} search={true}></HeaderDescription>
+                {isLoading && <SmallLoader />}
                 <Container maxWidth="sm">
-
                     <Grid Container spacing={3}>
-
                         {/* LandingWebsite */}
                         <div className="LandingWebsiteContent">
-
                             <Grid container spacing={3}>
                                 {/* item */}
                                 {currentProduct?.map((item, index) => {
@@ -190,10 +195,9 @@ const LandingWebsite = ({ busInfo }) => {
                                         <Grid item xs={12} sm={6} md={4} key={index}>
                                             <div className="LandingWebsiteItem boxShadow">
                                                 <div className="img">
-                                                    <img src={item?.media?.name} alt="" />
-                                                    <h4>{item?.theme_name + "-" + item.name}</h4>
+                                                    <img src={item?.media} alt="" />
+                                                    <h4>{item?.theme_name + "-" + item.name}</h4>                                                
                                                 </div>
-
                                                 <div className="DuelButton d_flex d_justify">
 
                                                     <div className='left'>
@@ -204,8 +208,6 @@ const LandingWebsite = ({ busInfo }) => {
                                                                     rel="noopener noreferrer"> Preview</a> */}
                                                             </Button>
                                                         </Link>
-
-
                                                         <Modal
                                                             open={openPreview}
                                                             onClose={previewClose}
@@ -214,7 +216,7 @@ const LandingWebsite = ({ busInfo }) => {
                                                         >
                                                             <Box>
                                                                 <div className='InvoiceModal'>
-                                                                    <img src={item?.media?.name} alt='' />
+                                                                    <img src={item?.media} alt='' />
                                                                 </div>
                                                             </Box>
                                                         </Modal>
@@ -228,7 +230,6 @@ const LandingWebsite = ({ busInfo }) => {
                                                         >
                                                             Import
                                                         </Button>
-
                                                         {/* modal */}
                                                         {
                                                             landingId == item.id && <Modal
@@ -271,19 +272,14 @@ const LandingWebsite = ({ busInfo }) => {
                                                                                         alt="Copy to clipboard"
                                                                                     >
                                                                                         {
-                                                                                            busInfo?.domain_status
-                                                                                                !== "pending" ?
-                                                                                                `https://${domain_request} /${domain}/p/${pageTittle}`
-                                                                                                :
-                                                                                                `https://funnelliner.com/${domain}/p/${pageTittle}`
 
+
+                                                                                            indentifyLink(busInfo?.domain_status , domain , pageTittle)
 
                                                                                         }
-
-
-                                                                                        {/* {pageTittle} */}
+                                                                                       
                                                                                         <AiOutlineLink
-                                                                                            onClick={handleCopyToClick}
+
                                                                                         />{" "}
                                                                                     </Link>
                                                                                     <p>{mas}</p>

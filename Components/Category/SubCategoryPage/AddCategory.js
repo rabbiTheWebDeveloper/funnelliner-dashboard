@@ -27,16 +27,19 @@ const AddCategory = () => {
         data.description = "";
         data.status = "1";
         const formData = new FormData();
-        formData.append('category_image', selectedImage);
+        if (selectedImage?.size > 1024 * 1024) {
+            showToast("Image size is too big !", 'error')
+            return;
+        }
+        if(selectedImage){
+            formData.append('category_image', selectedImage);
+        }     
         formData.append('name', data.name);
         formData.append('description', data.description);
         formData.append('parent_id', data.parent_id);
         formData.append('status', data.status);
 
-        if (selectedImage?.size > 1024 * 1024) {
-            showToast("Image size is too big !", 'error')
-            return;
-        }
+       
         startLoading()
         axios.post(process.env.API_URL + "/client/categories", formData, { headers: headers })
             .then(function (response) {
@@ -48,15 +51,14 @@ const AddCategory = () => {
             })
             .catch(function (error) {
                 stopLoading()
-                if (error?.response?.status === 422) {
-                    showToast("This category already exist !", "error")
-                } else if (error?.response?.status === 400) {
-                    showToast("Category image required!. ", "error")
+                if (error?.response?.status === 422) {                     
+                    showToast(error?.response?.data?.errors.category[0], "error")
+                } else if (error?.response?.status === 400) {          
+                    showToast(error?.response.data.message, "error")
                 }
                 else {
                     showToast("Something went wrong!", "error")
                 }
-
             });
 
     };

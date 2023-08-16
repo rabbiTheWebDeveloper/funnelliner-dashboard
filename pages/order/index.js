@@ -3,13 +3,12 @@ import {
   Button,
   Checkbox,
   Container,
-  Fade,
   FormControl,
   OutlinedInput,
   Pagination,
   Select,
   TextField,
-  Tooltip,
+  Tooltip
 } from "@mui/material";
 import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import dayjs from "dayjs";
@@ -23,7 +22,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { DatePicker, DateRangePicker } from "react-nice-dates";
+import { DateRangePicker } from "react-nice-dates";
 
 import "react-nice-dates/build/style.css";
 import Swal from "sweetalert2";
@@ -50,6 +49,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 
 const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
   const showToast = useToast();
+  const router = useRouter();
   const [isLoading, startLoading, stopLoading] = useLoading();
   const [active, setDefault] = useState("pending");
   const [products, setProducts] = useState([]);
@@ -82,6 +82,9 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
   const [courierList, setCourierList] = useState({});
   const [tabValue, setTabValue] = useState("1");
   const [cities, setCities] = useState();
+  const [followUpDate, setFollowUpDate] = useState();
+  const [selectedSingleCourier, setSelectedSingleCourier] = useState("");
+  const [selectedOrder, setSelectedOrder] = useState();
 
   const BootstrapButton = styled(Button)({
     backgroundColor: "#fff",
@@ -146,8 +149,15 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     { item: "Confirmed", value: "confirmed", color: "green" },
     { item: "Cancelled", value: "cancelled", color: "red" },
   ];
+  const cancelledOnStatus = [
+    { item: "Cancelled", value: "cancelled", color: "red" },
+    { item: "Follow Up", value: "follow_up", color: "blue" },
+    { item: "Confirmed", value: "confirmed", color: "green" },
+
+  ];
   if (holdOnConfig) {
     followUpStatus.push({ item: "Hold On", value: "hold_on" });
+    cancelledOnStatus.push({ item: "Hold On", value: "hold_on" });
   }
 
   const couriers = [
@@ -457,8 +467,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     setFetch(true);
   };
 
-  const handleOrderDetails = (event, id) => {
-    event.preventDefault();
+  const handleOrderDetails = (id) => {
     SuperFetch.get(`/client/orders/${id}`, { headers: headers })
       .then((res) => {
         setViewOrderModalOpen(true);
@@ -472,8 +481,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
       });
   };
 
-  const handleOrderUpdate = (event, id) => {
-    event.preventDefault();
+  const handleOrderUpdate = (id) => {
     SuperFetch.get(`/client/orders/${id}`, { headers: headers })
       .then((res) => {
         setModalOpenUpdate(true);
@@ -495,7 +503,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
           setFetch(false);
         }
       })
-      .catch((e) => {});
+      .catch((e) => { });
 
     if (callCount === 0) {
       SuperFetch.get("/client/products", { headers: headers }).then((res) => {
@@ -540,10 +548,13 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
   const [openStock, setOpenStock] = useState(false);
   const handleOpenStock = () => setOpenStock(true);
 
-  const onChangeDate = (orderId, e) => {
-    // setFollowupDate(e.target)
+  const onChangeDate = (orderId) => {
+    if (followUpDate === undefined) {
+      showToast("Please select valid Date", "error");
+      return;
+    }
     const postBody = {
-      date: e.target.value,
+      date: `${followUpDate.$y}-${followUpDate.$M + 1}-${followUpDate.$D}`,
       type: "follow_up",
     };
     axios
@@ -609,31 +620,35 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     });
   };
 
-  const courierSubmit = (id, provider) => {
+  const [courierViewValue, setCourierViewValue] = useState("");
+
+  const courierSubmit = (event, id) => {
+
+    setCourierViewValue(event.target.value);
     startLoading();
-    if (provider === "pathao") {
+    if (event.target.value === "pathao") {
       SuperFetch.get("/client/courier/pathao/city-list", {
         headers: headers,
         order_id: id,
-        provider: provider,
+        provider: event.target.value,
       }).then((res) => {
         if (res?.data?.success) {
           setCities(res.data?.data);
           setOrderId(id);
           handleCourierModalOpen();
           orderUpdate();
+          setCourierViewValue("");
         } else {
           showToast(res?.data?.message, "error");
         }
         stopLoading();
       });
-    }
-    if (provider === "steadfast") {
+    } else if (event.target.value === "steadfast") {
       SuperFetch.post(
         "/client/courier/send-order",
         {
           order_id: [id],
-          provider: provider,
+          provider: event.target.value,
         },
         { headers: headers }
       ).then((res) => {
@@ -641,9 +656,9 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
         handleFetch();
         stopLoading();
         orderUpdate();
+        setCourierViewValue("");
       });
-    }
-    if (provider === "office") {
+    } else if (event.target.value === "office") {
       SuperFetch.post(
         "/client/orders/status/update",
         {
@@ -656,7 +671,10 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
         handleFetch();
         stopLoading();
         orderUpdate();
+        setCourierViewValue("")
       });
+    } else if (event.target.value === "redriect-courier") {
+      router.push("/courier");
     }
   };
 
@@ -834,8 +852,6 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     }
   };
 
-  // console.log('selectCourier', selectCourier)
-
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
   // const steadfast = [
@@ -885,10 +901,6 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
         jsonObject.push({ item: courier, value: courier });
       }
     }
-
-    console.log("====================SJON Object==============");
-    console.log(jsonObject);
-
     return jsonObject;
   }
 
@@ -925,11 +937,31 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     router.push("/courier");
   };
 
-  const [followUpdate, setFollowUpDate] = useState();
-  console.log("selectedOrders", selectedOrders);
-
   const href =
     selectedOrders.length > 0 ? `/invoice-one/${selectedOrders.join("/")}` : "";
+
+  const [selectedStatus, setSelectedStatus] = useState("Select Status");
+
+  const handleTableAction = (type, id) => {
+    if (type === "view") {
+      handleOrderDetails(id);
+    }
+  };
+
+  const orderType = (value) => {
+    if (value === "landing") {
+      return "#894bca";
+    }
+    if (value === "website") {
+      return "#f5b849";
+    }
+    if (value === "social") {
+      return "#23b7e5"
+    }
+    if (value === "phone") {
+      return "#26bf94"
+    }
+  }
   return (
     <div>
       <section className="DashboardSetting Order">
@@ -942,11 +974,11 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
         {/* header */}
         <HeaderDescription
           setSearch={setSearch}
-          headerIcon={"flaticon-order-delivery"}
+          headerIcon={"flaticon-sent"}
           title={"Orders"}
           subTitle={"Order List"}
           search={true}
-        ></HeaderDescription>
+        />
 
         <Container maxWidth="sm">
           <div className="OrderTabs">
@@ -1185,7 +1217,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                       aria-expanded={anchorEls[0] ? "true" : undefined}
                       onClick={(event) => handleClick1(event, 0)}
                     >
-                      Select Courier <i className="flaticon-down-arrow"></i>
+                      Select Courier <i className="flaticon-arrow-down-sign-to-navigate"></i>
                     </Button>
                     <Menu
                       id="fade-menu-0"
@@ -1250,7 +1282,9 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                       margin: "5px", // Adjust the margin value as desired
                     }}
                   />
-                  Steadfast <h6>{orders.length > 0 ? orders.length : "0"}</h6>
+                  Steadfast <h6>{pendingOrderCount?.steadfast > 0
+                    ? pendingOrderCount?.steadfast
+                    : "0"}</h6>
                 </BootstrapButton>
               )}
               {selectCourier === "pathao" && (
@@ -1265,7 +1299,9 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                     }}
                   />
                   Pathao
-                  <h6>{orders.length > 0 ? orders.length : "0"}</h6>
+                  <h6>{pendingOrderCount?.pathao > 0
+                    ? pendingOrderCount?.pathao
+                    : "0"}</h6>
                 </BootstrapButton>
               )}
             </Box>
@@ -1274,47 +1310,44 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
           <div className=" OrderTabs CommonTab">
             <Box sx={{ width: "100%", typography: "body1" }}>
               {selectCourier === "steadfast" &&
-                createUniqueCityArray(orders)?.map((item, index) => {
+                Object.entries(pendingOrderCount?.steadfast_status).map(([field, value]) => {
                   return (
                     <BootstrapButton
-                      key={index}
+                      key={field}
                       onClick={() => {
-                        setSelectCourierStatus(courierText(item.item));
-                        handleFilterStatusCOurier(item.item);
+                        setSelectCourierStatus(courierText(field));
+                        handleFilterStatusCOurier(field);
                       }}
                       className={
-                        courierStatus === item.item ? "filterActive" : ""
+                        "filterActive"
                       }
                     >
-                      {console.log("=============Order Click===============")}
-                      {console.log(item)}
-                      {item.value}
+                      {field}
                       <h6>
-                        {courierStatusOrderCount(item.item) > 0
-                          ? courierStatusOrderCount(item.item)
-                          : "0"}
+                        {value}
                       </h6>
                     </BootstrapButton>
                   );
                 })}
               {selectCourier === "pathao" &&
-                createUniqueCityArray(orders).map((item, index) => {
+                Object.entries(pendingOrderCount?.pathao_status).map(([field, value]) => {
                   return (
                     <BootstrapButton
-                      key={index}
-                      onClick={() => {
-                        setSelectCourierStatus(item.item);
-                        handleFilterStatusCOurier(item.item);
-                      }}
+                      key={field}
+                      // onClick={() => {
+                      //   setSelectCourierStatus(item.item);
+                      //   handleFilterStatusCOurier(item.item);
+                      // }}
                       className={
-                        courierStatus === item.item ? "filterActive" : ""
+                        "filterActive"
                       }
                     >
-                      {item.value}
+                      {field}
                       <h6>
-                        {courierStatusOrderCount(item.item) > 0
+                        {/* {courierStatusOrderCount(item.item) > 0
                           ? courierStatusOrderCount(item.item)
-                          : "0"}
+                          : "0"} */}
+                        {value}
                       </h6>
                     </BootstrapButton>
                   );
@@ -1356,6 +1389,9 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                 <div className="DataTableColum">
                   <h3>Product Info</h3>
                 </div>
+                <div className="DataTableColum">
+                  <h3>Order Source</h3>
+                </div>
 
                 <div className="DataTableColum">
                   <h3>Discount</h3>
@@ -1379,7 +1415,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                     <div className="DataTableColum">
                       <h3>Invoice</h3>
                     </div>
-                    <div className="DataTableColum">
+                    <div className="DataTableColum Address">
                       <h3>Select Courier</h3>
                     </div>
 
@@ -1403,11 +1439,11 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                 )}
                 {(active === "pending" ||
                   active === "follow_up" ||
-                  active === "hold_on") && (
-                  <div className="DataTableColum">
-                    <h3>Status</h3>
-                  </div>
-                )}
+                  active === "hold_on" || active === 'cancelled') && (
+                    <div className="DataTableColum Address">
+                      <h3>Status</h3>
+                    </div>
+                  )}
                 {active === "delivered" && (
                   <div className="DataTableColum">
                     <h3>Delivery Providers</h3>
@@ -1424,10 +1460,10 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                   active === "confirmed" ||
                   active === "hold_on" ||
                   active === "delivered") && (
-                  <div className="DataTableColum">
-                    <h3>Action</h3>
-                  </div>
-                )}
+                    <div className="DataTableColum">
+                      <h3>Action</h3>
+                    </div>
+                  )}
               </div>
 
               {/* DataTableRow */}
@@ -1571,6 +1607,12 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                           </span>
                         </div>
                       </div>
+                      <div className="DataTableColum">
+                        <div className="TotalPrice" style={{ color: orderType(order?.order_type) }}>
+
+                          {order?.order_type}
+                        </div>
+                      </div>
 
                       {/* {active === 'pending' ?
                             <input key={order.id} type="text" defaultValue={order?.discount}
@@ -1671,17 +1713,100 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                               </Button>
                             </div>
                           </div>
-                          <div className="DataTableColum" key={order.id}>
+                          <div className="DataTableColum Address" key={order.id}>
                             <div className="Status">
                               <div className="commonDropdown">
-                                <Button
+                                <FormControl sx={{ m: 1, width: 150 }} key={order.id}>
+                                  <Select
+                                    value={courierViewValue}
+                                    displayEmpty
+                                    defaultValue={selectedStatus}
+                                    onChange={(event) =>
+                                      courierSubmit(event, order?.id)
+                                    }
+                                    input={<OutlinedInput />}
+                                    inputProps={{
+                                      "aria-label": "Without label",
+                                    }}
+                                  >
+                                    <MenuItem value="">
+                                      <em>Select  Status</em>
+                                    </MenuItem>
+                                    <MenuItem key={"office"} value={"office"}>
+                                      <i
+                                        style={{
+                                          width: "20px",
+                                          height: "auto",
+                                          margin: "5px",
+                                        }}
+                                        className="flaticon-people"
+                                      ></i>{" "}
+                                      Office Delivery
+                                    </MenuItem>
+                                    {courierList.length > 0 ? (
+                                      courierList.map((item) => {
+                                        return (
+                                          <MenuItem
+                                            key={item?.provider}
+                                            value={item?.provider}
+                                          >
+                                            {item?.provider === "steadfast" ? (
+                                              <>
+                                                <img
+                                                  src="https://funnelliner.s3.ap-southeast-1.amazonaws.com/media/steadfast.svg"
+                                                  alt=""
+                                                  style={{
+                                                    width: "20px",
+                                                    height: "auto",
+                                                    margin: "5px",
+                                                  }}
+                                                />{" "}
+                                                SteadFast
+                                              </>
+                                            ) : (
+                                              <>
+                                                <img
+                                                  src="https://funnelliner.s3.ap-southeast-1.amazonaws.com/media/pathao.svg"
+                                                  alt=""
+                                                  style={{
+                                                    width: "20px",
+                                                    height: "auto",
+                                                    margin: "5px",
+                                                  }}
+                                                />
+                                                {item?.provider}
+                                              </>
+                                            )}
+                                          </MenuItem>
+                                        );
+                                      })
+                                    ) : (
+                                      <MenuItem
+                                        key={"redriect-courier"}
+                                        value={"redriect-courier"}
+                                      >
+                                        <i
+                                          style={{
+                                            width: "20px",
+                                            height: "auto",
+                                            margin: "5px",
+                                          }}
+                                          className="flaticon-courier"
+                                        ></i>
+                                        Add Courier
+                                      </MenuItem>
+                                    )}
+
+                                  </Select>
+                                </FormControl>
+                                {/* <Button
                                   id="fade-button"
                                   aria-controls={open ? "fade-menu" : undefined}
                                   aria-haspopup="true"
                                   aria-expanded={open ? "true" : undefined}
                                   onClick={handleClick}
                                 >
-                                  Status <i className="flaticon-down-arrow"></i>
+                                  Status <i className="flaticon-arrow-down-sign-to-navigate"></i>
                                 </Button>
 
                                 <Menu
@@ -1697,7 +1822,9 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                                 >
                                   <MenuItem
                                     onClick={(e) => {
+                                  
                                       courierSubmit(order?.id, "office");
+                                      setSelectedSingleCourier("Office Delivery");
                                       handleClose();
                                     }}
                                   >
@@ -1764,7 +1891,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                                       Add Courier
                                     </MenuItem>
                                   )}
-                                </Menu>
+                                </Menu> */}
                               </div>
                             </div>
                           </div>
@@ -1789,35 +1916,16 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                             /> */}
                             <MobileDatePicker
                               defaultValue={dayjs(order?.follow_up_date)}
-                              className="followUpDate"
+                              sx={{
+                                "& .MuiInputBase-input": {
+                                  fontSize: "11px",
+                                  padding: "0",
+                                },
+                              }}
                               key={order?.id}
-                              onChange={(e) => onChangeDate(order?.id, e)}
+                              onChange={(e) => setFollowUpDate(dayjs(e))}
+                              onAccept={() => onChangeDate(order?.id)}
                             />
-
-                            {/* <DatePicker
-                                                        date={followUpdate}
-                                                        onDateChange={(newDate) => {
-                                                            setFollowUpdate(newDate);
-                                                            nChangeDate(order?.id, newDate);
-                                                        }}
-                                                        locale={enGB}
-                                                    >
-                                                        {({ inputProps, focused }) => (
-                                                            <input
-                                                                className={'input' + (focused ? ' -focused' : '')}
-                                                                // style={{
-                                                                //     border: '1px solid #ccc',
-                                                                //     borderRadius: '4px',
-                                                                //     padding: '8px',
-                                                                //     fontSize: '16px',
-                                                                //     backgroundColor: focused ? '#f0f0f0' : '#fff',
-                                                                //     // Add more inline CSS properties as needed
-                                                                // }}
-                                                                {...inputProps}
-                                                            />
-                                                        )}
-                                                    </DatePicker> */}
-                            {/* </Button> */}
                           </div>
                         </div>
                       )}
@@ -1866,10 +1974,10 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
 
                       {(active === "pending" ||
                         active === "follow_up" ||
-                        active === "hold_on") && (
-                        <div className="DataTableColum">
-                          <div className="Status">
-                            {/* <div className="commonDropdown">
+                        active === "hold_on" || active === 'cancelled') && (
+                          <div className="DataTableColum Address">
+                            <div className="Status ">
+                              {/* <div className="commonDropdown">
                                 <select displayEmpty
                                     value={order?.order_status}
                                     onChange={(event) => handleStatusChange(event, order?.id)}
@@ -1920,61 +2028,73 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
 
                             </div> */}
 
-                            <FormControl sx={{ m: 1, width: 150 }}>
-                              <Select
-                                displayEmpty
-                                value={order?.order_status}
-                                onChange={(event) =>
-                                  handleStatusChange(event, order?.id)
-                                }
-                                input={<OutlinedInput />}
-                                inputProps={{ "aria-label": "Without label" }}
-                              >
-                                <MenuItem disabled value="">
-                                  <em>Select Status</em>
-                                </MenuItem>
-                                {active === "pending" &&
-                                  pendingStatus.map((item, index) => (
-                                    <MenuItem
-                                      key={index}
-                                      value={item.value}
-                                      selected={
-                                        item.value === order?.order_status
-                                      }
-                                    >
-                                      {item.item}
-                                    </MenuItem>
-                                  ))}
+                              <FormControl sx={{ m: 1, width: 150 }}>
+                                <Select
+                                  displayEmpty
+                                  value={order?.order_status}
+                                  onChange={(event) =>
+                                    handleStatusChange(event, order?.id)
+                                  }
+                                  input={<OutlinedInput />}
+                                  inputProps={{ "aria-label": "Without label" }}
+                                >
+                                  <MenuItem disabled value="">
+                                    <em>Select Status</em>
+                                  </MenuItem>
+                                  {active === "pending" &&
+                                    pendingStatus.map((item, index) => (
+                                      <MenuItem
+                                        key={index}
+                                        value={item.value}
+                                        selected={
+                                          item.value === order?.order_status
+                                        }
+                                      >
+                                        {item.item}
+                                      </MenuItem>
+                                    ))}
 
-                                {active === "follow_up" &&
-                                  followUpStatus.map((status, index) => (
-                                    <MenuItem
-                                      key={index}
-                                      value={status.value}
-                                      selected={
-                                        status.value === order?.order_status
-                                      }
-                                    >
-                                      {status.item}
-                                    </MenuItem>
-                                  ))}
+                                  {active === "follow_up" &&
+                                    followUpStatus.map((status, index) => (
+                                      <MenuItem
+                                        key={index}
+                                        value={status.value}
+                                        selected={
+                                          status.value === order?.order_status
+                                        }
+                                      >
+                                        {status.item}
+                                      </MenuItem>
+                                    ))}
 
-                                {active === "hold_on" &&
-                                  holdOnStatus.map((status, index) => (
-                                    <MenuItem
-                                      key={index}
-                                      value={status.value}
-                                      selected={
-                                        status.value === order?.order_status
-                                      }
-                                    >
-                                      {status.item}
-                                    </MenuItem>
-                                  ))}
-                              </Select>
-                            </FormControl>
+                                  {active === "hold_on" &&
+                                    holdOnStatus.map((status, index) => (
+                                      <MenuItem
+                                        key={index}
+                                        value={status.value}
+                                        selected={
+                                          status.value === order?.order_status
+                                        }
+                                      >
+                                        {status.item}
+                                      </MenuItem>
+                                    ))}
+                                  {active === 'cancelled' &&
+                                    cancelledOnStatus.map((status, index) => (
+                                      <MenuItem
+                                        key={index}
+                                        value={status.value}
+                                        selected={
+                                          status.value === order?.order_status
+                                        }
+                                      >
+                                        {status.item}
+                                      </MenuItem>
+                                    ))}
+                                </Select>
+                              </FormControl>
 
-                            {/* <div className="commonDropdown">
+                              {/* <div className="commonDropdown">
                                                         <Button
                                                             id="fade-button-1"
                                                             aria-controls={anchorEls[1] ? 'fade-menu-1' : undefined}
@@ -1982,7 +2102,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                                                             aria-expanded={anchorEls[1] ? 'true' : undefined}
                                                             onClick={(event) => handleClick1(event, 1)}
                                                         >
-                                                            Another Menu <i className="flaticon-down-arrow"></i>
+                                                            Another Menu <i className="flaticon-arrow-down-sign-to-navigate"></i>
                                                         </Button>
                                                         <Menu
                                                             id="fade-menu-1"
@@ -2000,7 +2120,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                                                         </Menu>
                                                     </div> */}
 
-                            {/* <div className="commonDropdown">
+                              {/* <div className="commonDropdown">
 
 
                                                         <Button
@@ -2010,7 +2130,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                                                             aria-expanded={open ? 'true' : undefined}
                                                             onClick={handleClick}
                                                         >
-                                                            Status <i className="flaticon-down-arrow"></i>
+                                                            Status <i className="flaticon-arrow-down-sign-to-navigate"></i>
                                                         </Button>
 
                                                         <Menu
@@ -2068,63 +2188,10 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
 
                                                     </div> */}
 
-                            {/* <div className="commonDropdown">
 
-                                <Button
-                                    id="fade-button"
-                                    aria-controls={open ? 'fade-menu' : undefined}
-                                    aria-haspopup="true"
-                                    aria-expanded={open ? 'true' : undefined}
-                                    onClick={handleClick}
-                                >
-                                    Status <i className="flaticon-down-arrow"></i>
-                                </Button>
-
-                                <Menu
-                                    id="fade-menu"
-                                    className='commonDropdownUl'
-                                    MenuListProps={{
-                                        'aria-labelledby': 'fade-button',
-                                    }}
-                                    anchorEl={anchorEl}
-                                    open={open}
-                                    onClose={handleClose}
-                                    TransitionComponent={Fade}
-                                >
-
-                                    {active === 'pending' &&
-                                        pendingStatus.map((item, index) => (
-                                            <MenuItem key={index} onClick={(e) => { handleStatusChange(order?.id, item?.value); handleClose() }}>
-                                                {item?.item}
-                                            </MenuItem>
-                                        ))
-                                    }
-
-                                    {active === 'follow_up' &&
-                                        followUpStatus.map((status, index) => (
-                                            <MenuItem key={index} onClick={(e) => { handleStatusChange(order?.id, status?.value); handleClose() }}>
-                                                {status.item}
-                                            </MenuItem>
-                                        ))
-                                    }
-                                    {
-                                        active === 'hold_on' &&
-                                        holdOnStatus.map((status, index) => (
-                                            <MenuItem key={index} onClick={(e) => { handleStatusChange(order?.id, status?.value); handleClose() }}>
-                                                {status?.item}
-                                            </MenuItem>
-                                        ))
-                                    }
-
-
-
-                                </Menu>
-
-
-                            </div> */}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                       {active === "delivered" && (
                         <div className="DataTableColum">
                           <div className="TotalPrice">
@@ -2161,14 +2228,14 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                               order?.invoice_note,
                               order?.courier_note
                             ) > 0 && (
-                              <h6>
-                                {countNonNullFields(
-                                  order?.invoice_note,
-                                  order?.courier_note
-                                )}{" "}
-                                <i class="flaticon-plus"></i>
-                              </h6>
-                            )}
+                                <h6>
+                                  {countNonNullFields(
+                                    order?.invoice_note,
+                                    order?.courier_note
+                                  )}{" "}
+                                  <i class="flaticon-plus"></i>
+                                </h6>
+                              )}
                           </Button>
                           <Note
                             orderNote={order}
@@ -2190,61 +2257,63 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                       <div className="DataTableColum">
                         <div className="Action">
                           <div className="commonDropdown">
-                            <PopupState
-                              variant="popover"
-                              popupId="demo-popup-menu"
+                            {/* <Select
+                              labelId="demo-simple-select-label"
+                              id="demo-simple-select"
+                              label="Age"
+                              onChange={(e) => console.log(e.target.value)}
                             >
+                              <MenuItem
+                                value="view"
+                                onClick={() => handleOrderDetails(order?.id)}
+                              >
+                                View
+                              </MenuItem>
+                              <MenuItem
+                                value="edit"
+                                onClick={(e) => {
+                                  {
+                                    handleOrderUpdate(order?.id),
+                                      setOrderId(order?.id);
+                                    setOrderStatus(order?.status);
+                                  }
+                                }}
+                              >
+                                Edit
+                              </MenuItem>
+                            </Select> */}
+                            <PopupState variant="popover" popupId="demo-popup-menu">
                               {(popupState) => (
                                 <>
                                   <Button {...bindTrigger(popupState)}>
                                     <BsThreeDotsVertical />
                                   </Button>
-
-                                  <Menu
-                                    id="fade-menu"
-                                    className="commonDropdownUl ActionMenu"
+                                  <Menu id="fade-menu"
+                                    className='commonDropdownUl'
                                     MenuListProps={{
-                                      "aria-labelledby": "fade-button",
+                                      'aria-labelledby': 'fade-button',
                                     }}
                                     anchorEl={anchorEl}
                                     open={open}
-                                    onClose={handleClose}
-                                    {...bindMenu(popupState)}
-                                  >
-                                    <MenuItem onClick={popupState.close}>
-                                      <Button
-                                        onClick={(e) =>
-                                          handleOrderDetails(e, order?.id)
-                                        }
-                                        className="viewActionBtn"
-                                      >
-                                        <i className="flaticon-view" />
-                                        View
-                                      </Button>
+                                    onClose={handleClose} {...bindMenu(popupState)}>
+                                    <MenuItem className='viewActionBtn' onClick={() => { handleOrderDetails(order?.id); popupState.close }}>
+                                      <i className="flaticon-view" style={{
+                                        width: '20px',
+                                        height: 'auto',
+                                        margin: '5px'
+                                      }} />View
                                     </MenuItem>
-
-                                    <MenuItem onClick={popupState.close}>
-                                      <Button
-                                        className="updateActionBtn"
-                                        onClick={(e) => {
-                                          {
-                                            handleOrderUpdate(e, order?.id),
-                                              setOrderId(order?.id);
-                                            setOrderStatus(order?.status);
-                                          }
-                                        }}
-                                      >
-                                        {/* <OrderUpdate products={products} id={order.id} handleFetch={handleFetch}  /> */}
-                                        <i className="flaticon-edit" /> Edit
-                                      </Button>
+                                    <MenuItem onClick={() => {
+                                      handleOrderUpdate(order?.id),
+                                        setOrderId(order?.id);
+                                      setOrderStatus(order?.status);
+                                    }}>
+                                      <i className="flaticon-edit" style={{
+                                        width: '20px',
+                                        height: 'auto',
+                                        margin: '5px'
+                                      }} /> Edit
                                     </MenuItem>
-
-                                    {/* <MenuItem onClick={popupState.close}>
-                                                <Button className='deleteActionBtn'
-                                                    onClick={() => deleteProduct(order.id)}>
-                                                    <i className="flaticon-trash" />  Delete
-                                                </Button>
-                                            </MenuItem> */}
                                   </Menu>
                                 </>
                               )}
@@ -2323,5 +2392,5 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
 };
 // export default index;
 export default withAuth(OrderPage, {
-    isProtectedRoute: true,
+  isProtectedRoute: true,
 });

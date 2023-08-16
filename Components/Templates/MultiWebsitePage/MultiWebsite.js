@@ -74,7 +74,7 @@ const MultiWebsite = () => {
                                         <Grid item key={index} xs={12} sm={6} md={4}>
                                             <div className='LandingWebsiteItem boxShadow'>
                                                 <div className='img'>
-                                                    <img src={item?.media?.name} alt='' />
+                                                    <img src={item?.media} alt='' />
                                                     <h4>Multi Page</h4>
                                                 </div>
 
@@ -94,7 +94,7 @@ const MultiWebsite = () => {
                                                         >
                                                             <Box>
                                                                 <div className='InvoiceModal'>
-                                                                    <img src={item?.media?.name} alt='' />
+                                                                    <img src={item?.media} alt='' />
                                                                 </div>
                                                             </Box>
                                                         </Modal>

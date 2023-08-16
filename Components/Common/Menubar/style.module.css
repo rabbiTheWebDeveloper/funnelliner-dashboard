@@ -78,6 +78,15 @@ Menubar
   cursor: pointer;
 }
 
+.MenubarContent .Profile .profileButton{
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.MenubarContent .Profile .profileButton:hover{
+  background: none;
+}
+
 .MenubarContent .Profile i{
   font-size: 30px;
   color: var(--main-color);

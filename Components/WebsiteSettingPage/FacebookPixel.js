@@ -5,46 +5,35 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Swal from 'sweetalert2';
 import { headers, shopId } from '../../pages/api';
+import { useToast } from '../../hook/useToast';
 
 const FacebookPixel = ({ shopName }) => {
-    // const [checkStatus, setCheckStatus] = useState("")
+    const showToast = useToast()
     const [websiteSettingsData, setWebsiteSettingData] = useState({});
-
     const label = { inputProps: { "aria-label": "Switch demo" } };
-
-    // const [checked, setChecked] = useState("");
     const [advanceStatus, setAdvanceStatus] = useState(websiteSettingsData?.c_status)
-    const switchHandlerAdvance = (event) => {
-
-    };
-
-
     const { register, handleSubmit, formState: { errors } } = useForm();
     const onSubmit = data => {
+        const matches = data.fb_pixel.match(/'(\d+)'/);
+        const pixelId = matches[0];
+        if (pixelId === !true) {
+            showToast("Invalid Pixel Code")
+            return
+        }
         data.c_status = advanceStatus
         data.shop_name = shopName
         data.shop_id = shopId
+        data.fb_pixel = pixelId
         axios.post(`${process.env.API_URL}/client/settings/pixel/update`, data, {
             headers: headers,
         })
             .then(function (response) {
-                Swal.fire(
-                    "Facebook Pixel Information Updated",
-                )
+                showToast(response?.data?.msg)
             })
             .catch(function (error) {
-
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: error.msg,
-                    footer: '<a href="">Why do I have this issue?</a>',
-                });
+                showToast("Something went wrong!, Please provide valid data",)
             });
-
-
     }
-
 
 
     useEffect(() => {
@@ -56,6 +45,27 @@ const FacebookPixel = ({ shopName }) => {
 
             });
     }, [advanceStatus]);
+    const facebookPixelCode = (pixelID) => {
+        if (pixelID) {
+            return `<script>
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init','${pixelID}');
+            fbq('track', 'PageView');
+          </script>
+          <noscript>
+            <img height="1" width="1" style="display:none" 
+                 src="https://www.facebook.com/tr?id=${pixelID}&ev=PageView&noscript=1"/>
+          </noscript>`
+        }
+
+    }
 
     return (
         <div className='DashboardTabsItem FacebookPixel'>
@@ -74,8 +84,8 @@ const FacebookPixel = ({ shopName }) => {
                             <div className="customInput">
 
                                 <label>FB Pixel ID</label>
-                                <input id="fb_pixel_id" type="text" {...register("fb_pixel")}
-                                    defaultValue={websiteSettingsData.fb_pixel} placeholder='Example: 123456789000000' />
+                                <textarea rows={10} id="fb_pixel_id" type="text" {...register("fb_pixel", { required: true })}
+                                    defaultValue={facebookPixelCode(websiteSettingsData.fb_pixel)} placeholder='Example: 123456789000000' />
                                 {errors.fb_pixel && <p className='error'>This field is required</p>}
 
                                 <h6 className="padding">This code will load before head tag</h6>
