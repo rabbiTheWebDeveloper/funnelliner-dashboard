@@ -177,13 +177,13 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
             <section className="DashboardSetting BulkSms">
                 {/* header */}
                 <HeaderDescription
-                    headerIcon={"flaticon-sms"}
+                    headerIcon={"flaticon-mail"}
                     title={"Bulk SMS"}
                     subTitle={
                         "Get SMS report, send messages in large range to your clients"
                     }
                     search={false}
-                ></HeaderDescription>
+                />
 
                 <Container maxWidth="sm">
                     <Grid container spacing={3}>
@@ -322,7 +322,7 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
                     title={"Send SMS"}
                     subTitle={"Send SMS to the clients in large scale"}
                     search={false}
-                ></HeaderDescription>
+                />
                 <Container maxWidth="sm">
                     <Grid Container spacing={3}>
                         <Grid item xs={12}>
@@ -417,7 +417,7 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
                             </div>
 
                             <div className="right" onClick={handleCloseNote}>
-                                <i className="flaticon-cancel" />
+                                <i className="flaticon-close-1" />
                             </div>
                         </div>
 

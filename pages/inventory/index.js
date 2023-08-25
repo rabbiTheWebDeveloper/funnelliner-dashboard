@@ -10,10 +10,8 @@ const index = () => {
 
         <>
 
-            {/* <Sidebar active='stock'></Sidebar>
-            <Menubar active='stock'></Menubar>
-            <div className="TopGaps"></div> */}
-            <Inventory></Inventory>
+          
+            <Inventory/>
 
         </>
 

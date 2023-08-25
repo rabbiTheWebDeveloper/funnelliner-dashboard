@@ -132,7 +132,7 @@ const HomeSlider = ({ response, IsHeaderDescription }) => {
 
             <section className={style.HomeSlider}>
                 {
-                    IsHeaderDescription !== false && <HeaderDescription headerIcon={'flaticon-template'} title={'All Slider'} subTitle={'Update your shop info and other settings here'} search={false}></HeaderDescription>
+                    IsHeaderDescription !== false && <HeaderDescription headerIcon={'flaticon-page'} title={'All Slider'} subTitle={'Update your shop info and other settings here'} search={false} />
 
                 }
 

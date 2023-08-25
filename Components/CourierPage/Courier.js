@@ -148,7 +148,7 @@ const Courier = ({ busInfo }) => {
                 }
                
                 {/* header */}
-                <HeaderDescription headerIcon={'flaticon-courier'} title={'Courier'} subTitle={'Deliver your products with your preferred courier service'} search={false}></HeaderDescription>
+                <HeaderDescription headerIcon={'flaticon-express-delivery'} title={'Courier'} subTitle={'Deliver your products with your preferred courier service'} search={false}></HeaderDescription>
 
                 <Container maxWidth='sm'>
 
@@ -197,9 +197,9 @@ const Courier = ({ busInfo }) => {
                                                         {
                                                             showApi
                                                                 ?
-                                                                <i className="flaticon-view"></i>
+                                                                <i className="flaticon-eye"></i>
                                                                 :
-                                                                <i className="flaticon-hide"></i>
+                                                                <i className="flaticon-hidden"></i>
                                                         }
                                                     </div>
                                                     {errors.apiKey && (
@@ -219,9 +219,9 @@ const Courier = ({ busInfo }) => {
                                                         {
                                                             secretApi
                                                                 ?
-                                                                <i className="flaticon-view"></i>
+                                                                <i className="flaticon-eye"></i>
                                                                 :
-                                                                <i className="flaticon-hide"></i>
+                                                                <i className="flaticon-hidden"></i>
                                                         }
                                                     </div>
                                                     {errors.apiSecret && (
@@ -280,9 +280,9 @@ const Courier = ({ busInfo }) => {
                                         //                 {
                                         //                     showPathaoSicrets?.sicretKey
                                         //                         ?
-                                        //                         <i className="flaticon-view"></i>
+                                        //                         <i className="flaticon-eye"></i>
                                         //                         :
-                                        //                         <i className="flaticon-hide"></i>
+                                        //                         <i className="flaticon-hidden"></i>
                                         //                 }
                                         //             </div>
                                         //         </div>
@@ -297,9 +297,9 @@ const Courier = ({ busInfo }) => {
                                         //                 {
                                         //                     showPathaoSicrets?.password
                                         //                         ?
-                                        //                         <i className="flaticon-view"></i>
+                                        //                         <i className="flaticon-eye"></i>
                                         //                         :
-                                        //                         <i className="flaticon-hide"></i>
+                                        //                         <i className="flaticon-hidden"></i>
                                         //                 }
                                         //             </div>
                                         //         </div>

@@ -10,7 +10,7 @@ const index = () => {
 
 
         <>
-            <HomeSlider></HomeSlider>
+            <HomeSlider/>
 
         </>
 

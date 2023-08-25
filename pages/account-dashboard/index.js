@@ -4,58 +4,14 @@ import React, { useEffect, useState } from 'react';
 import AccountDashboard from '../../Components/AccountingModeul/AccountDashboard';
 import { headers } from '../api';
 
-const AccountDashboardPage = ({ myAddonsList ,isApiResponse }) => {
+const AccountDashboardPage = ({ myAddonsList, isApiResponse }) => {
     const [fetchApi, setFetch] = useState(false)
     const [payment, setPayment] = useState([]);
     const handleFetch = () => {
         setFetch(true);
     }
-    const handleFetchEditInfo = async () => {
 
-        try {
-            let data = await axios({
-                method: "get",
-                url: `${process.env.API_URL}/client/accounts/payment-list`,
-                headers: headers,
-            });
-            // setPayment(data?.data?.data);
-
-        } catch (err) {
-
-        }
-    };
-
-    useEffect(() => {
-        handleFetchEditInfo();
-        setFetch(false)
-    }, [fetchApi]);
-
-    // payment list 
-
-    const [paymentList, setPaymentList] = useState([])
-
-    const handleFetchPaymentList = async () => {
-        try {
-            let data = await axios({
-                method: "get",
-                url: `${process.env.API_URL}/client/accounts/payment-method-show`,
-                headers: headers,
-            });
-            setPaymentList(data?.data?.data)
-
-
-        } catch (err) {
-
-        }
-    };
-    useEffect(() => {
-        handleFetchPaymentList()
-    }, [])
-
-
-
-
-    if (  myAddonsList[0]?.addons_id === 16 && myAddonsList[0]?.status === 1) {
+    if (myAddonsList[0]?.addons_id === 16 && myAddonsList[0]?.status === 1) {
         return (
             <>
 
@@ -67,7 +23,7 @@ const AccountDashboardPage = ({ myAddonsList ,isApiResponse }) => {
 
                             <Grid item xs={12}>
 
-                                <AccountDashboard fetchApi={fetchApi} payment={payment} setPayment={setPayment} handleFetch={handleFetch}></AccountDashboard>
+                                <AccountDashboard fetchApi={fetchApi} payment={payment} setPayment={setPayment} handleFetch={handleFetch} />
 
                             </Grid>
 
@@ -80,7 +36,7 @@ const AccountDashboardPage = ({ myAddonsList ,isApiResponse }) => {
             </>
 
         )
-    } else if(isApiResponse ) {
+    } else if (isApiResponse) {
         return (
             <>
 

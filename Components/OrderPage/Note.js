@@ -89,7 +89,7 @@ const Note = ({ isOpenOrderNoteModal, handleCloseOrderNoteModal, handleFetch, id
                 <h4>View and update your note</h4>
               </div>
               <div className="right" onClick={handleCloseOrderNoteModal}>
-                <i className="flaticon-cancel"></i>
+                <i className="flaticon-close-1"></i>
               </div>
             </div>
             <form action="">

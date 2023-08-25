@@ -1361,7 +1361,7 @@ input#outlined-basic-bulk-sms {
 }
 
 .dropzone {
-  border: 2px dashed var(--border_color);
+  border: 2px dashed #894bca;
   padding: 30px 20px;
   border-radius: 10px;
   text-align: center;
@@ -1371,7 +1371,7 @@ input#outlined-basic-bulk-sms {
 
 .dropzone:hover {
   background: var(--border_color);
-  border: 2px solid var(--border_color);
+  border: 2px solid #894bca;
 }
 
 .dropzone p {
@@ -3666,4 +3666,20 @@ nav.MuiPagination-root ul.MuiPagination-ul.css-wjh20t-MuiPagination-ul {
   background: var(--main-color) !important;
   padding: 8px 20px;
   border-radius: 30px;
+}
+
+.product_sort_description, .product_long_description{
+  width: 100%;
+  margin-top: 20px;
+}
+.product_sort_description .ql-container{
+  height: 100px;
+  overflow: hidden;
+  border-radius: 0 !important;
+}
+
+.product_long_description .ql-container{
+  height: 200px;
+  overflow-y: scroll;
+  border-radius: 0 !important;
 }

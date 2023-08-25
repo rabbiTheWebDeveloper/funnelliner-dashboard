@@ -98,7 +98,7 @@ const UpdateCategory = ({ id, isOpen, closePopup, hanldeFetchCategories }) => {
               </div>
 
               <div className="right" onClick={closePopup}>
-                <i className="flaticon-cancel"></i>
+                <i className="flaticon-product"></i>
               </div>
             </div>
 

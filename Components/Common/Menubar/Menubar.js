@@ -6,7 +6,7 @@ import {
   MenuItem,
   Skeleton,
   Stack,
-  Tooltip
+  Tooltip,
 } from "@mui/material";
 import { Container } from "@mui/system";
 import axios from "axios";
@@ -22,8 +22,7 @@ import { setActiveTab } from "../../../redux/features/dropDownSlice/dropdownSlic
 import ShortNotification from "./ShortNotification";
 
 import { useRef } from "react";
-import style from './style.module.css';
-
+import style from "./style.module.css";
 
 const publicIp = require("react-public-ip");
 
@@ -32,7 +31,6 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
   const { id } = busInfo || {};
   const [token, setToken] = useState("");
   const router = useRouter();
-
 
   useEffect(() => {
     // Perform localStorage action
@@ -45,8 +43,8 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
   const logout = () => {
     Cookies.remove("token");
     Cookies.remove("Skip_status");
-    router.push("/login")
-    const ipAddress = (publicIp.v4()) || "";
+    router.push("/login");
+    const ipAddress = publicIp.v4() || "";
     const browserName =
       browser.name === "chrome" ? "Google Chrome" : browser.name;
     let logoutHeaders = {
@@ -57,7 +55,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
     window.location.href = "/login";
     axios
       .get(process.env.API_URL + "/client/logout", { headers: logoutHeaders })
-      .then((response) => {
+      .then(response => {
         if (response.status === 200) {
           Cookies.remove("token");
           Cookies.remove("Skip_status");
@@ -71,56 +69,50 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
     Cookies.remove("token");
   };
 
-  // set read 
-
-
-
-
+  // set read
 
   //dispatch call when dropdown change
   const handleDropdownChange = (value, popupState) => {
     popupState.close();
     dispatch(setActiveTab(value));
-    handelNotify()
+    handelNotify();
     // notificationRead()
-
   };
 
   const [notifyFac, setNotifyfac] = useState(false);
 
   const handelNotify = () => {
     setNotifyfac(true);
-  }
+  };
 
-
-
-  const [data, setData] = useState([])
+  const [data, setData] = useState([]);
   const notification = () => {
     const orderBody = {
       notify_id: id,
-      type: "order"
-    }
-    axios.post(process.env.API_URL + `/client/notifications-show`, orderBody, {
-      headers: headers,
-    })
-      .then(function (res) {
-        setData(res.data.data)
+      type: "order",
+    };
+    axios
+      .post(process.env.API_URL + `/client/notifications-show`, orderBody, {
+        headers: headers,
       })
-      .catch((error) => {
-
-      });
+      .then(function (res) {
+        setData(res.data.data);
+      })
+      .catch(error => { });
     // setNotifyfac(false)
-  }
+  };
   useEffect(() => {
     notification();
     // setNotifyfac(false)
   }, [id, notifyFac]);
 
   const unread = () => {
-    const newdata = data.length > 0 && Array.isArray(data) ? data.filter(data => data.read === null) : []
-    return newdata.length
-
-  }
+    const newdata =
+      data.length > 0 && Array.isArray(data)
+        ? data.filter(data => data.read === null)
+        : [];
+    return newdata.length;
+  };
   // Sidebar All work
   const [openSidebar, setOpenSidebar] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState({
@@ -129,35 +121,37 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
     template: false,
     myPage: false,
     account: false,
-  })
+  });
   const [isInsideLongSidebar, setIsInsideLongSidebar] = useState(false);
   const componentRef = useRef(null);
 
-  const handleClickOutside = (event) => {
-    if (!isInsideLongSidebar && componentRef.current && !componentRef.current.contains(event.target)) {
+  const handleClickOutside = event => {
+    if (
+      !isInsideLongSidebar &&
+      componentRef.current &&
+      !componentRef.current.contains(event.target)
+    ) {
       setOpenSidebar(false);
     }
-  }
+  };
   useEffect(() => {
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
   }, [isInsideLongSidebar]);
 
-
-
-  const handleClickSubmenu = (submenuName) => {
-    setOpenSubmenu((prevState) => ({
+  const handleClickSubmenu = submenuName => {
+    setOpenSubmenu(prevState => ({
       ...Object.keys(prevState).reduce((acc, key) => {
         acc[key] = key === submenuName ? !prevState[key] : false;
         return acc;
       }, {}),
     }));
     setOpenSidebar(true);
-  }
+  };
   const handleToggle = () => {
-    setOpenSidebar((prevState) => !prevState);
+    setOpenSidebar(prevState => !prevState);
   };
 
   const handleLongSidebarClick = () => {
@@ -167,277 +161,455 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
     }, 0);
   };
 
-
-  const notificationRead = (id) => {
+  const notificationRead = id => {
     const orderBody = {
       notify_id: id,
-      type: "order"
-    }
-    axios.post(process.env.API_URL + `/client/notifications-read`, orderBody, {
-      headers: headers,
-    })
+      type: "order",
+    };
+    axios
+      .post(process.env.API_URL + `/client/notifications-read`, orderBody, {
+        headers: headers,
+      })
       .then(function (res) {
-        handelNotify()
+        handelNotify();
         // setData(res.data.data)
       })
-      .catch((error) => {
-
-      });
+      .catch(error => { });
 
     // setNotifyfac(false)
-  }
-
+  };
 
   return (
-
     <>
-
-      <div onClick={handleLongSidebarClick} ref={componentRef} className={openSidebar ? 'LongSidebar Sidebar' : 'Sidebar'}>
-
+      <div
+        onClick={handleLongSidebarClick}
+        ref={componentRef}
+        className={openSidebar ? "LongSidebar Sidebar" : "Sidebar"}
+      >
         {/* logo */}
         <div className="Logo">
-          <Link href='/'>
-            {
-
-              busInfo?.shop_logo ? <img className="ShortLogo" src={busInfo?.shop_logo} alt='' /> : <i className="flaticon-home-3"></i>
-            }
+          <Link href="/">
+            {busInfo?.shop_logo ? (
+              <img className="ShortLogo" src={busInfo?.shop_logo} alt="" />
+            ) : (
+              <i className="flaticon-user"></i>
+            )}
           </Link>
           <h4 className="side_bar_shop_name">
-
-            {
-              busInfo?.name === undefined && <Skeleton variant="rounded" width={130} height={30} />
-            }
-            {
-              openSidebar && busInfo?.name !== undefined && busInfo?.name
-            }
-            {
-              openSidebar !== true && busInfo?.name !== undefined && busInfo?.name?.slice(0, 6) + "..."
-            }
-
+            {busInfo?.name === undefined && (
+              <Skeleton variant="rounded" width={130} height={30} />
+            )}
+            {openSidebar && busInfo?.name !== undefined && busInfo?.name}
+            {openSidebar !== true &&
+              busInfo?.name !== undefined &&
+              busInfo?.name?.slice(0, 6) + "..."}
           </h4>
 
           <p>
-            {
-              busInfo?.shop_id ? `ID ${busInfo?.shop_id}` : <Skeleton variant="rounded" width={130} height={30} />
-            }
+            {busInfo?.shop_id ? (
+              `ID ${busInfo?.shop_id}`
+            ) : (
+              <Skeleton variant="rounded" width={130} height={30} />
+            )}
           </p>
-
         </div>
 
         {/* SideMenu */}
         <div className="SidebarMenu">
-
           <ul>
-
             {/* Dashboard */}
             <li className={router.pathname === "/" ? "active" : ""}>
-
               <Tooltip title="Dashboard" placement="right">
-                <Link href='/'> <i className="flaticon-home-1"></i> <span> Dashboard </span> </Link>
+                <Link href="/">
+                  {" "}
+                  <i className="flaticon-home-2"></i> <span> Dashboard </span>{" "}
+                </Link>
               </Tooltip>
-
             </li>
 
             {/* Order */}
             <li className={router.pathname === "/order" ? "active" : ""}>
-
               <Tooltip title="Order" placement="right">
-                <Link href='/order'> <i className="flaticon-sent"></i> <span> Order </span> </Link>
+                <Link href="/order">
+                  {" "}
+                  <i className="flaticon-sent"></i> <span> Order </span>{" "}
+                </Link>
               </Tooltip>
-
             </li>
 
             {/* Products */}
-            <li className={openSubmenu.product && router.pathname === "/product" || openSubmenu.product && router.pathname === "/category-list" ? "active" : ""}>
-
-              <Tooltip title="Products" placement="right">
-                <h6 onClick={() => handleClickSubmenu('product')} > <i className="flaticon-product"></i> <span> Products </span> </h6>
-              </Tooltip>
-
-              {
-                openSubmenu.product &&
-                <ul className="Submenu">
-
-                  <li>
-                    <Link href='/product' className={router.pathname === "/product" ? "active" : ""}>Product</Link>
-                    <Link href='/category-list' className={router.pathname === "/category-list" ? "active" : ""}>Category</Link>
-                  </li>
-
-                </ul>
+            <li
+              className={
+                (openSubmenu.product && router.pathname === "/product") ||
+                  (openSubmenu.product && router.pathname === "/category-list")
+                  ? "active"
+                  : ""
               }
-
-            </li>
-
-            {/* Courier */}
-            <li className={router.pathname === "/courier" ? "active" : ""}>
-
-              <Tooltip title="Courier" placement="right">
-                <Link href='/courier'> <i className="flaticon-express-delivery"></i> <span> Courier </span> </Link>
+            >
+              <Tooltip title="Products" placement="right">
+                <h6 onClick={() => handleClickSubmenu("product")}>
+                  {" "}
+                  <i className="flaticon-product"></i> <span> Products </span>{" "}
+                </h6>
               </Tooltip>
 
+              {openSubmenu.product && (
+                <ul className="Submenu">
+                  <li>
+                    <Link
+                      href="/product"
+                      className={router.pathname === "/product" ? "active" : ""}
+                    >
+                      Product
+                    </Link>
+                    <Link
+                      href="/category-list"
+                      className={
+                        router.pathname === "/category-list" ? "active" : ""
+                      }
+                    >
+                      Category
+                    </Link>
+                  </li>
+                </ul>
+              )}
             </li>
+
+            {/* Templates */}
+            <li
+              className={
+                router.pathname === "/landing-page" ||
+                  router.pathname === "/multi-page"
+                  ? "active"
+                  : ""
+              }
+            >
+              <Tooltip title="Templates" placement="right">
+                <h6 onClick={() => handleClickSubmenu("template")}>
+                  {" "}
+                  <i className="flaticon-website-design"></i>{" "}
+                  <span> Templates </span>{" "}
+                </h6>
+              </Tooltip>
+
+              {openSubmenu.template && (
+                <ul className="Submenu">
+                  <li>
+                    <Link
+                      href="/landing-page"
+                      className={
+                        router.pathname === "/landing-page" ? "active" : ""
+                      }
+                    >
+                      Landing Page
+                    </Link>
+                    <Link
+                      href="/multi-page"
+                      className={
+                        router.pathname === "/multi-page" ? "active" : ""
+                      }
+                    >
+                      Multi Page
+                    </Link>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+
+            {/* My Page */}
+            <li
+              className={
+                router.pathname === "/myLandingPage" ||
+                  router.pathname === "/myMultiWebsite" ||
+                  router.pathname === "/web-pages" ||
+                  router.pathname === "/home-slider" ||
+                  router.pathname === "/about-us" ||
+                  router.pathname === "/terms-and-condition" ||
+                  router.pathname === "/privacy-policy"
+                  ? "active"
+                  : ""
+              }
+            >
+              <Tooltip title="My Page" placement="right">
+                <h6 onClick={() => handleClickSubmenu("myPage")}>
+                  {" "}
+                  <i className="flaticon-page"></i> <span> My Page </span>{" "}
+                </h6>
+              </Tooltip>
+
+              {openSubmenu.myPage && (
+                <ul className="Submenu">
+                  <li>
+                    <Link
+                      href="/myLandingPage"
+                      className={
+                        router.pathname === "/myLandingPage" ? "active" : ""
+                      }
+                    >
+                      Landing Page
+                    </Link>
+                    <Link
+                      href="/myMultiWebsite"
+                      className={
+                        router.pathname === "/myMultiWebsite" ? "active" : ""
+                      }
+                    >
+                      Multi Page
+                    </Link>
+                    <Link
+                      href="/web-pages"
+                      className={
+                        router.pathname === "/web-pages" ? "active" : ""
+                      }
+                    >
+                      Pages
+                    </Link>
+                    <Link
+                      href="/home-slider"
+                      className={
+                        router.pathname === "/multi-page" ? "active" : ""
+                      }
+                    >
+                      All Slider
+                    </Link>
+                    <Link
+                      href="/about-us"
+                      className={
+                        router.pathname === "/about-us" ? "active" : ""
+                      }
+                    >
+                      About us
+                    </Link>
+                    <Link
+                      href="/terms-and-condition"
+                      className={
+                        router.pathname === "/terms-and-condition"
+                          ? "active"
+                          : ""
+                      }
+                    >
+                      Terms & Condition
+                    </Link>
+                    <Link
+                      href="/privacy-policy"
+                      className={
+                        router.pathname === "/privacy-policy" ? "active" : ""
+                      }
+                    >
+                      Privacy & policy
+                    </Link>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            {/* Accounting Modules */}
+            {Array.isArray(myAddonsList)
+              ? myAddonsList?.map((addon, index) => {
+                return (
+                  addon?.addons_id === 16 &&
+                  addon?.status === 1 && (
+                    <li
+                      className={
+                        router.pathname === "/account-dashboard" ||
+                          router.pathname === "/account-report"
+                          ? "active"
+                          : ""
+                      }
+                    >
+                      <Tooltip title="Accounting Modules" placement="right">
+                        <h6 onClick={() => handleClickSubmenu("account")}>
+                          {" "}
+                          <i className="flaticon-cash-on-delivery"></i>{" "}
+                          <span> Accounting Modules </span>{" "}
+                        </h6>
+                      </Tooltip>
+
+                      {openSubmenu.account && (
+                        <ul className="Submenu">
+                          <li>
+                            <Link
+                              href="/account-dashboard"
+                              className={
+                                router.pathname === "/account-dashboard"
+                                  ? "active"
+                                  : ""
+                              }
+                            >
+                              Dashboard
+                            </Link>
+                            <Link
+                              href="/account-report"
+                              className={
+                                router.pathname === "/account-report"
+                                  ? "active"
+                                  : ""
+                              }
+                            >
+                              Report
+                            </Link>
+                          </li>
+                        </ul>
+                      )}
+                    </li>
+                  )
+                );
+              })
+              : null}
 
             {/* Stock */}
-            <li className={router.pathname === "/inventory" || router.pathname === "/stockin" || router.pathname === "/product-return" ? "active" : ""}>
-
+            <li
+              className={
+                router.pathname === "/inventory" ||
+                  router.pathname === "/stockin" ||
+                  router.pathname === "/product-return"
+                  ? "active"
+                  : ""
+              }
+            >
               <Tooltip title="Stock" placement="right">
-                <h6 onClick={() => handleClickSubmenu('stock')}> <i className="flaticon-warehouse"></i> <span> Stock </span> </h6>
+                <h6 onClick={() => handleClickSubmenu("stock")}>
+                  {" "}
+                  <i className="flaticon-in-stock-1"></i> <span> Stock </span>{" "}
+                </h6>
               </Tooltip>
 
-              {
-                openSubmenu.stock &&
+              {openSubmenu.stock && (
                 <ul className="Submenu">
-
                   <li>
-                    <Link href='/inventory' className={router.pathname === "/inventory" ? "active" : ""}>Inventory</Link>
-                    <Link href='/stockin' className={router.pathname === "/stockin" ? "active" : ""}>Stock In</Link>
-                    <Link href='/product-return' className={router.pathname === "/product-return" ? "active" : ""}>Product Return</Link>
+                    <Link
+                      href="/inventory"
+                      className={
+                        router.pathname === "/inventory" ? "active" : ""
+                      }
+                    >
+                      Inventory
+                    </Link>
+                    <Link
+                      href="/stockin"
+                      className={router.pathname === "/stockin" ? "active" : ""}
+                    >
+                      Stock In
+                    </Link>
+                    <Link
+                      href="/product-return"
+                      className={
+                        router.pathname === "/product-return" ? "active" : ""
+                      }
+                    >
+                      Product Return
+                    </Link>
                   </li>
-
                 </ul>
-              }
-
+              )}
             </li>
 
             {/* Bulk SMS */}
             <li className={router.pathname === "/bulk-sms" ? "active" : ""}>
-
               <Tooltip title="Bulk SMS" placement="right">
-                <Link href='/bulk-sms'> <i className="flaticon-mail"></i> <span> Bulk SMS </span> </Link>
+                <Link href="/bulk-sms">
+                  {" "}
+                  <i className="flaticon-mail"></i> <span> Bulk SMS </span>{" "}
+                </Link>
               </Tooltip>
-
-            </li>
-
-            {/* Support Ticket */}
-            <li className={router.pathname === "/support-ticket" ? "active" : ""}>
-
-              <Tooltip title="Support Ticket" placement="right">
-                <Link href='/support-ticket'> <i className="flaticon-customer-service"></i> <span> Support Ticket </span> </Link>
-              </Tooltip>
-
             </li>
 
             {/* Customers */}
-            <li className={router.pathname === "/customer-list" ? "active" : ""}>
-
+            <li
+              className={router.pathname === "/customer-list" ? "active" : ""}
+            >
               <Tooltip title="Customers" placement="right">
-                <Link href='/customer-list'> <i className="flaticon-people"></i> <span> Customers </span> </Link>
+                <Link href="/customer-list">
+                  {" "}
+                  <i className="flaticon-people"></i> <span> Customers </span>{" "}
+                </Link>
               </Tooltip>
-
             </li>
 
-            {/* Templates */}
-            <li className={router.pathname === "/landing-page" || router.pathname === "/multi-page" ? "active" : ""}>
 
-              <Tooltip title="Templates" placement="right">
-                <h6 onClick={() => handleClickSubmenu('template')}> <i className="flaticon-website-design"></i> <span> Templates </span> </h6>
+            {/* Courier */}
+            <li className={router.pathname === "/courier" ? "active" : ""}>
+              <Tooltip title="Courier" placement="right">
+                <Link href="/courier">
+                  {" "}
+                  <i className="flaticon-express-delivery"></i>{" "}
+                  <span> Courier </span>{" "}
+                </Link>
               </Tooltip>
-
-              {
-                openSubmenu.template &&
-                <ul className="Submenu">
-
-                  <li>
-                    <Link href='/landing-page' className={router.pathname === "/landing-page" ? "active" : ""}>Landing Page</Link>
-                    <Link href='/multi-page' className={router.pathname === "/multi-page" ? "active" : ""}>Multi Page</Link>
-                  </li>
-
-                </ul>
-              }
-
-            </li>
-
-            {/* My Page */}
-            <li className={router.pathname === "/myLandingPage" || router.pathname === "/myMultiWebsite" || router.pathname === "/web-pages" || router.pathname === "/home-slider" || router.pathname === "/about-us" || router.pathname === "/terms-and-condition" || router.pathname === "/privacy-policy" ? "active" : ""}>
-
-              <Tooltip title="My Page" placement="right">
-                <h6 onClick={() => handleClickSubmenu('myPage')}> <i className="flaticon-page"></i> <span> My Page </span> </h6>
-              </Tooltip>
-
-              {
-                openSubmenu.myPage &&
-                <ul className="Submenu">
-
-                  <li>
-                    <Link href='/myLandingPage' className={router.pathname === "/myLandingPage" ? "active" : ""}>Landing Page</Link>
-                    <Link href='/myMultiWebsite' className={router.pathname === "/myMultiWebsite" ? "active" : ""}>Multi Page</Link>
-                    <Link href='/web-pages' className={router.pathname === "/web-pages" ? "active" : ""}>Pages</Link>
-                    <Link href='/home-slider' className={router.pathname === "/multi-page" ? "active" : ""}>All Slider</Link>
-                    <Link href='/about-us' className={router.pathname === "/about-us" ? "active" : ""}>About us</Link>
-                    <Link href='/terms-and-condition' className={router.pathname === "/terms-and-condition" ? "active" : ""}>Terms & Condition</Link>
-                    <Link href='/privacy-policy' className={router.pathname === "/privacy-policy" ? "active" : ""}>Privacy & policy</Link>
-                  </li>
-
-                </ul>
-              }
-
             </li>
 
             {/* Website Setting */}
-            <li className={router.pathname === "/website-setting" ? "active" : ""}>
-
+            <li
+              className={router.pathname === "/website-setting" ? "active" : ""}
+            >
               <Tooltip title="Website Setting" placement="right">
-                <Link href='/website-setting'> <i className="flaticon-coding"></i> <span> Website Setting </span> </Link>
+                <Link href="/website-setting">
+                  {" "}
+                  <i className="flaticon-coding"></i>{" "}
+                  <span> Website Setting </span>{" "}
+                </Link>
               </Tooltip>
-
             </li>
 
             {/* Addons */}
             <li className={router.pathname === "/plug-in" ? "active" : ""}>
-
               <Tooltip title="Addons" placement="right">
-                <Link href='/plug-in'> <i className="flaticon-extension"></i> <span> Addons </span> </Link>
+                <Link href="/plug-in">
+                  {" "}
+                  <i className="flaticon-plugin"></i> <span> Addons </span>{" "}
+                </Link>
               </Tooltip>
-
             </li>
 
+
+
+            {/* Support Ticket */}
+            <li
+              className={router.pathname === "/support-ticket" ? "active" : ""}
+            >
+              <Tooltip title="Support Ticket" placement="right">
+                <Link href="/support-ticket">
+                  {" "}
+                  <i className="flaticon-customer-support"></i>{" "}
+                  <span> Support Ticket </span>{" "}
+                </Link>
+              </Tooltip>
+            </li>
+
+
+
+
+
+
+
+
             {/* Bkash Merchant */}
-            {Array.isArray(myAddonsList) ? myAddonsList?.map((addon, index) => {
-              return (
-                addon?.addons_details?.id === 17 && addon?.addons_details?.status === 1 &&
-
-                <li key={index} className={router.pathname === "/bkash-marcent" ? "active" : ""}>
-
-                  <Tooltip title="Bkash Merchant" placement="right">
-                    <Link href='/bkash-marcent'> <i className="flaticon-people"></i> <span> Bkash Merchant </span> </Link>
-                  </Tooltip>
-
-                </li>
-              )
-            })
-              :
-              null}
-
-            {/* Accounting Modules */}
-            {
-              Array.isArray(myAddonsList) ? myAddonsList?.map((addon, index) => {
+            {Array.isArray(myAddonsList)
+              ? myAddonsList?.map((addon, index) => {
                 return (
-                  addon?.addons_id === 16 && addon?.status === 1 &&
-                  <li className={router.pathname === "/account-dashboard" || router.pathname === "/account-report" ? "active" : ""}>
-
-                    <Tooltip title="Accounting Modules" placement="right">
-                      <h6 onClick={() => handleClickSubmenu('account')}> <i className="flaticon-cash-on-delivery"></i> <span> Accounting Modules </span> </h6>
-                    </Tooltip>
-
-                    {
-                      openSubmenu.account &&
-                      <ul className="Submenu">
-
-                        <li>
-                          <Link href='/account-dashboard' className={router.pathname === "/account-dashboard" ? "active" : ""}>Dashboard</Link>
-                          <Link href='/account-report' className={router.pathname === "/account-report" ? "active" : ""}>Report</Link>
-                        </li>
-
-                      </ul>
-                    }
-
-                  </li>
-
-                )
+                  addon?.addons_details?.id === 17 &&
+                  addon?.addons_details?.status === 1 && (
+                    <li
+                      key={index}
+                      className={
+                        router.pathname === "/bkash-marcent" ? "active" : ""
+                      }
+                    >
+                      <Tooltip title="Bkash Merchant" placement="right">
+                        <Link href="/bkash-marcent">
+                          {" "}
+                          <i className="flaticon-people"></i>{" "}
+                          <span> Bkash Merchant </span>{" "}
+                        </Link>
+                      </Tooltip>
+                    </li>
+                  )
+                );
               })
-                :
-                null
-            }
+              : null}
+
+
 
             {/* Subscription */}
             {/* <li className={router.pathname === "/subscription" ? "active" : ""}>
@@ -450,60 +622,65 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
 
             {/* Billing */}
             <li className={router.pathname === "/billing" ? "active" : ""}>
-
               <Tooltip title="Billing" placement="right">
-                <Link href='/billing'> <i className="flaticon-wallet"></i> <span> Billing </span> </Link>
+                <Link href="/billing">
+                  {" "}
+                  <i className="flaticon-wallet"></i> <span> Billing </span>{" "}
+                </Link>
               </Tooltip>
-
             </li>
-
-
           </ul>
-
         </div>
-
       </div>
 
-
       <section className={style.Menubar}>
-
         <Container>
-
           <Grid container spacing={2}>
-
             <Grid item xs={12}>
-
               <div className={style.MenubarContent}>
-
                 {/* Left */}
                 <div className={style.left}>
-
                   <div className={style.SideMenu}>
                     <h4>
-                      <img ref={componentRef} onClick={handleToggle} src="/images/sidebar.png" alt="" />
+                      <img
+                        ref={componentRef}
+                        onClick={handleToggle}
+                        src="/images/sidebar.png"
+                        alt=""
+                      />
                       Dashboard
                     </h4>
                   </div>
-
                 </div>
 
                 {/* Right */}
                 <div className={style.right}>
-
                   <div className={style.Notification}>
                     <PopupState variant="popover" popupId="Profile">
-                      {(popupState) => (
+                      {popupState => (
                         <>
-                          <Button {...bindTrigger(popupState)} >
-                            <i onClick={() => notificationRead(id)} className="flaticon-notification"></i>
-                            <h6 onClick={() => notificationRead(id)}>{unread()}</h6>
+                          <Button {...bindTrigger(popupState)}>
+                            <i
+                              onClick={() => notificationRead(id)}
+                              className="flaticon-notification"
+                            ></i>
+                            <h6 onClick={() => notificationRead(id)}>
+                              {unread()}
+                            </h6>
                           </Button>
                           <Menu
                             {...bindMenu(popupState)}
                             className={style.NotificationContent}
                           >
-                            <ShortNotification setNotifyfac={setNotifyfac} popupState={popupState} handleDropdownChange={handleDropdownChange} data={data} unread={unread} id={id} handelNotify={handelNotify}></ShortNotification>
-
+                            <ShortNotification
+                              setNotifyfac={setNotifyfac}
+                              popupState={popupState}
+                              handleDropdownChange={handleDropdownChange}
+                              data={data}
+                              unread={unread}
+                              id={id}
+                              handelNotify={handelNotify}
+                            ></ShortNotification>
                           </Menu>
                         </>
                       )}
@@ -518,24 +695,36 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
 
                   <div className={style.Profile}>
                     <PopupState variant="popover" popupId="Profile">
-                      {(popupState) => (
+                      {popupState => (
                         <>
-                          <Button {...bindTrigger(popupState)} className={style.profileButton}>
+                          <Button
+                            {...bindTrigger(popupState)}
+                            className={style.profileButton}
+                          >
                             <div className={style.img} id="resources-button">
-                              {
-
-                                busInfo?.shop_logo ? <img className="ShortLogo" src={busInfo?.shop_logo} alt='' /> : <i className="flaticon-home-3"></i>
-                              }                  
+                              {busInfo?.shop_logo ? (
+                                <img
+                                  className="ShortLogo"
+                                  src={busInfo?.shop_logo}
+                                  alt=""
+                                />
+                              ) : (
+                                <i className="flaticon-user"></i>
+                              )}
                             </div>
                           </Button>
-                          <Menu {...bindMenu(popupState)} className="ProfileMenu">
+                          <Menu
+                            {...bindMenu(popupState)}
+                            className="ProfileMenu"
+                          >
                             <MenuItem
                               onClick={() =>
                                 handleDropdownChange("1", popupState)
                               }
                             >
                               <Link href="/dashboard-setting">
-                                <i className="flaticon-home-2"></i> Dashboard Settings
+                                <i className="flaticon-home-2"></i> Dashboard
+                                Settings
                               </Link>
                             </MenuItem>
                             <MenuItem
@@ -543,7 +732,10 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
                                 handleDropdownChange("2", popupState)
                               }
                             >
-                              <Link href="/dashboard-setting"> <i className="flaticon-user-1"></i> Profile</Link>
+                              <Link href="/dashboard-setting">
+                                {" "}
+                                <i className="flaticon-user-1"></i> Profile
+                              </Link>
                             </MenuItem>
 
                             <MenuItem
@@ -552,7 +744,8 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
                               }
                             >
                               <Link href="/dashboard-setting">
-                                <i className="flaticon-padlock-1"></i> Change Password
+                                <i className="flaticon-padlock-1"></i> Change
+                                Password
                               </Link>
                             </MenuItem>
                             <MenuItem onClick={logout}>
@@ -565,53 +758,52 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
                       )}
                     </PopupState>
                   </div>
-
                 </div>
-
               </div>
-
             </Grid>
-
           </Grid>
-
         </Container>
-
       </section>
 
       <div className="MobileFooterMenu">
-
         <ul>
-
           <li className={router.pathname === "/" ? "active" : ""}>
-            <Link href='/'> <i className="flaticon-home-1"></i>  </Link>
+            <Link href="/">
+              {" "}
+              <i className="flaticon-home-2"></i>{" "}
+            </Link>
           </li>
 
           <li className={router.pathname === "/order" ? "active" : ""}>
-            <Link href='/order'> <i className="flaticon-express-delivery"></i></Link>
+            <Link href="/order">
+              {" "}
+              <i className="flaticon-express-delivery"></i>
+            </Link>
           </li>
 
           <li className={router.pathname === "/product" ? "active" : ""}>
-            <Link href='/product'> <i className="flaticon-sent"></i> </Link>
+            <Link href="/product">
+              {" "}
+              <i className="flaticon-sent"></i>{" "}
+            </Link>
           </li>
 
           <li className={router.pathname === "/myLandingPage" ? "active" : ""}>
-            <Link href='/myLandingPage'><i className="flaticon-browser-1"></i></Link>
+            <Link href="/myLandingPage">
+              <i className="flaticon-browser-1"></i>
+            </Link>
           </li>
 
           {/* <li className={router.pathname === "/support-ticket" ? "active" : ""}>
-            <Link href='/support-ticket'> <i className="flaticon-customer-service"></i> </Link>
+            <Link href='/support-ticket'> <i className="flaticon-customer-support"></i> </Link>
           </li>
 
           <li className={router.pathname === "/website-setting" ? "active" : ""}>
             <Link href='/website-setting'> <i className="flaticon-settings-4"></i>  </Link>
           </li> */}
-
         </ul>
-
       </div>
-
     </>
-
   );
 };
 

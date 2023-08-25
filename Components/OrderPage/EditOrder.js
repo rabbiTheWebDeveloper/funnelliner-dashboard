@@ -51,7 +51,7 @@ const EditOrderModal = ({
             </div>
 
             <div className="right" onClick={handleCloseViewModal}>
-              <i className="flaticon-cancel"></i>
+              <i className="flaticon-close-1"></i>
             </div>
           </div>
 

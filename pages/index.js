@@ -16,18 +16,6 @@ const HomePage = ({ busInfo }) => {
   const apiUrl = publicRuntimeConfig.API_URL;
   const skip1 = Cookies.get("Skip_status");
   const total_task = Cookies.get("total_task");
-
-  // const handleFetchSellsTarget = useCallback(async () => {
-  //   try {
-  //     let data = await axios({
-  //       method: "get",
-  //       url: `${apiUrl}/client/orders`,
-  //       headers: headers,
-  //     });
-  //     setAllProduct(data?.data?.data);
-  //   } catch (err) {}
-  // }, [apiUrl]);
-
   //   basic info
   const handleFetchBasicInfo = useCallback(async () => {
     try {
@@ -43,7 +31,6 @@ const HomePage = ({ busInfo }) => {
   }, [apiUrl]);
 
   useEffect(() => {
-
     handleFetchBasicInfo()
   }, [handleFetchBasicInfo]);
   //
@@ -54,43 +41,25 @@ const HomePage = ({ busInfo }) => {
   };
 
   return (
-    // <div className="HomePage">
-    //   <Fragment>
-    //     { total_task != 6 ? (
-    //       skip1 != "true" ? (
-    //         <FirstSetup skip={skip} busInfo={busInfo} />
-    //       ) : (
-    //         <>
-    //           <Dashboard busInfo={busInfo}></Dashboard>
-    //         </>
-    //       )
-    //     ) : (
-    //       <>
-    //         <Dashboard busInfo={busInfo}></Dashboard>
-    //       </>
-    //     )}
-    //   </Fragment>
-    // </div>
-
     <div className="HomePage">
-    {isApiResponse ? ( // Render only when the API response is received
-      total_task != 6 ? (
-        skip1 != "true" ? (
-          <FirstSetup skip={skip} busInfo={busInfo} />
+      {isApiResponse ? ( 
+        total_task != 6 ? (
+          skip1 != "true" ? (
+            <FirstSetup skip={skip} busInfo={busInfo} />
+          ) : (
+            <>
+              <Dashboard busInfo={busInfo} />
+            </>
+          )
         ) : (
           <>
-            <Dashboard busInfo={busInfo}></Dashboard>
+            <Dashboard busInfo={busInfo} />
           </>
         )
       ) : (
-        <>
-          <Dashboard busInfo={busInfo}></Dashboard>
-        </>
-      )
-    ) : (
-      <div></div> // Show a loading indication while waiting for the response
-    )}
-  </div>
+        null
+      )}
+    </div>
   );
 };
 export default withAuth(HomePage, {

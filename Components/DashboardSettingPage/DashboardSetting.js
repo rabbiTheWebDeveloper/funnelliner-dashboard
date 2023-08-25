@@ -13,7 +13,7 @@ import HeaderDescription from "../Common/HeaderDescription/HeaderDescription";
 import BussnessInfo from "./BussnessInfo";
 
 const DashboardSetting = ({ response }) => {
-  const activeTab = useSelector((state) => state.dropDown.activeTab);
+  const activeTab = useSelector(state => state.dropDown.activeTab);
   const router = useRouter();
   const redirectFrom = router.query.redirect_from;
   const showToast = useToast();
@@ -27,13 +27,10 @@ const DashboardSetting = ({ response }) => {
     formState: { errors },
   } = useForm();
 
-
-
-
   const handleChangeTab = (event, newValue) => {
     setValue(newValue);
   };
-  
+
   useEffect(() => {
     const userList = Cookies.get("user");
     setUser(JSON.parse(userList));
@@ -41,26 +38,23 @@ const DashboardSetting = ({ response }) => {
 
   useEffect(() => {
     if (router?.query?.pass !== undefined) {
-     
       handleChangeTab(0, router?.query?.pass);
     }
   }, []);
 
- 
-  const ownInfoSubmit = (data) => {
+  const ownInfoSubmit = data => {
     axios
       .post(process.env.API_URL + "/client/settings/owner-info/update", data, {
         headers: headers,
       })
       .then(function (response) {
         showToast("Owner information has been successfully updated");
-
       })
       .catch(function (error) {
         showToast("Something went wrong!", "error");
       });
   };
- 
+
   useEffect(() => {
     axios
       .get(process.env.API_URL + "/client/settings/owner-info", {
@@ -72,7 +66,7 @@ const DashboardSetting = ({ response }) => {
       });
   }, []);
 
-  const passwordSubmit = (data) => {
+  const passwordSubmit = data => {
     if (data.new_password !== data.password_confirmation) {
       showToast("The Confirm password confirmation does not match", "error");
     }
@@ -95,7 +89,7 @@ const DashboardSetting = ({ response }) => {
 
   //
   const dispatch = useDispatch();
-  const handleTabChnage = (value) => {
+  const handleTabChnage = value => {
     dispatch(setActiveTab(value));
   };
 
@@ -107,7 +101,7 @@ const DashboardSetting = ({ response }) => {
           title={"Settings"}
           subTitle={"Update your shop info and other settings here"}
           search={false}
-        ></HeaderDescription>
+        />
 
         <Container maxWidth="sm">
           {/* DashboardSettingTabs */}
@@ -138,7 +132,7 @@ const DashboardSetting = ({ response }) => {
                 </Box>
 
                 {activeTab == 1 && (
-                  <div className="DashboardSettingItem">                
+                  <div className="DashboardSettingItem">
                     <BussnessInfo
                       redirectFrom={redirectFrom}
                       response={response}

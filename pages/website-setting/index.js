@@ -3,11 +3,8 @@ import { useEffect, useState } from "react";
 import WebsiteSettingPage from '../../Components/WebsiteSettingPage/WebsiteSettingPage';
 import withAuth from '../../hook/PrivateRoute';
 import { headers } from "../api";
-
-
 const WebsiteSettingPage_2 = () => {
     const [response, setResponse] = useState({})
-
     const handleFetchWebsite = async () => {
         try {
             let data = await axios({
@@ -23,14 +20,13 @@ const WebsiteSettingPage_2 = () => {
 
     };
 
-
     useEffect(() => {
         handleFetchWebsite()
     }, []);
     return (
 
         <>
-            <WebsiteSettingPage response={response}></WebsiteSettingPage>
+            <WebsiteSettingPage response={response}/>
 
         </>
 

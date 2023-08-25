@@ -1,10 +1,10 @@
 
 import React, { useState } from 'react'
-import { Button, Container} from "@mui/material";
+import { Button, Container } from "@mui/material";
 import dynamic from 'next/dynamic'
 import 'react-quill/dist/quill.snow.css'
 import axios from 'axios';
-import {  headers } from "../../../pages/api";
+import { headers } from "../../../pages/api";
 import { useToast } from '../../../hook/useToast';
 const QuillNoSSRWrapper = dynamic(import('react-quill'), {
     ssr: false,
@@ -60,12 +60,12 @@ function PrivacyPolicy({ websiteSettingData }) {
                 headers: headers,
             })
             .then(function (response) {
-               if(response.status === 200){
-                showToast("Success", "success")
-               }
-               else{
-                showToast("Something went wrong", "error")
-               }
+                if (response.status === 200) {
+                    showToast("Privacy policy added successfully", "success")
+                }
+                else {
+                    showToast("Something went wrong", "error")
+                }
             })
             .catch(function (error) {
                 showToast("Something went wrong", "error")
@@ -75,7 +75,7 @@ function PrivacyPolicy({ websiteSettingData }) {
         <div className="WebsiteLink DashboardSetting">
             <Container maxWidth="sm">
                 <div className="text_edit_formater boxShadow">
-                    <QuillNoSSRWrapper  value={privacy_policy ?? websiteSettingData.privacy_policy} modules={modules} formats={formats} onChange={handleChangeEditor} placeholder="Privacy policy"  />
+                    <QuillNoSSRWrapper value={privacy_policy ?? websiteSettingData.privacy_policy} modules={modules} formats={formats} onChange={handleChangeEditor} placeholder="Privacy policy" />
                     <div className="submitButtonForPages">
                         <Button onClick={handleSubmitPrivacyPolicyData} variant="contained">Submit</Button>
                     </div>

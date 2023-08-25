@@ -13,7 +13,6 @@ import { headers } from "../api";
 import HeaderDescription from "../../Components/Common/HeaderDescription/HeaderDescription";
 import SuperFetch from "../../hook/Axios";
 
-
 const BillingPage = ({ orderUpdate }) => {
     const [billingList, setBillingList] = useState([]);
     const handleFetchBillingList = async () => {
@@ -35,9 +34,6 @@ const BillingPage = ({ orderUpdate }) => {
 
   
     const today = new Date().toISOString().slice(0, 10);
-
-
-
     const downloadInvoice = async (id) => {
         try {
           const response = await SuperFetch.get(`/client/transaction/pdf/download/${id}`, { headers: headers, responseType: 'blob' });
@@ -59,14 +55,9 @@ const BillingPage = ({ orderUpdate }) => {
             <section className="DashboardSetting Order">
 
                 {/* header */}
-                <HeaderDescription headerIcon={'flaticon-wallet'} title={'Billing'} subTitle={'Billing List'} search={false}></HeaderDescription>
+                <HeaderDescription headerIcon={'flaticon-wallet'} title={'Billing'} subTitle={'Billing List'} search={false} />
 
                 <Container maxWidth="sm">
-
-
-
-
-
                     <div className="Table">
 
                         <table>
@@ -115,7 +106,7 @@ const BillingPage = ({ orderUpdate }) => {
                                                 <Button onClick={() => downloadInvoice (order?.id)} >
                                               
                                                         Download Invoice
-                                                         {/* <i className="flaticon-printer-2" /> */}
+                                                         {/* <i className="flaticon-printer /> */}
                                                  
                                                 </Button>
                                             </td>

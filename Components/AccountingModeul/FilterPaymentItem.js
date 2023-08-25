@@ -1,61 +1,31 @@
 import { Autocomplete, Checkbox, TextField } from '@mui/material';
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { baseTest } from '../../constant/constant';
-import { headers } from '../../pages/api';
 
-const FilterPaymentItem = ({ selectPayment, setPayment  ,handleFetch , setBalance ,balanceFetch}) => {
+const FilterPaymentItem = ({ selectPayment, setSelectedItem , selectedItem}) => {
+    const [filterData, setFilterData] = useState([])
 
-    const [selectedItem, setSelectedItem] = useState([]);
     const handleItemSelected = (event, selectedItem) => {
         setSelectedItem(selectedItem);
     };
-    const searchCategoryWise = () => {
-        axios.post(baseTest + "/client/accounts/payment-search-payment-wise", {
-            "payment_list": [
-                ...selectedItem
-            ]
-        }, {
-            headers: headers
-        })
-            .then(function (res) {
-
-
-                setPayment(res?.data?.data?.payments)
-                setBalance(res?.data?.data)
-             
-
-
-            })
-            .catch(function (error) {
-                // Swal.fire({
-                //     icon: "error",
-                //     title: error?.response?.data?.msg,
-
-                // });
-            })
-    }
-
-
 
     useEffect(() => {
-        if (selectedItem.length > 0) searchCategoryWise()
-        if(selectedItem.length===0) handleFetch()
-        if (selectedItem.length === 0) balanceFetch()
-    }, [selectedItem])
+        const filterArr = selectPayment?.filter(item => item?.value !== 'add')
+        setFilterData(filterArr)
+    }, [selectPayment])
+    
     return (
         <Autocomplete
             multiple
-            options={selectPayment}
+            options={filterData}
             disableCloseOnSelect
-            getOptionLabel={(option) => option}
+            getOptionLabel={(option) => option.label}
             renderOption={(props, option, { selected }) => (
-                <li {...props}>
+                <li {...props} key={option?.value}>
                     <Checkbox
                         style={{ marginRight: 8 }}
                         checked={selected}
                     />
-                    {option}
+                    {option?.label}
                 </li>
             )}
             style={{ width: 500 }}

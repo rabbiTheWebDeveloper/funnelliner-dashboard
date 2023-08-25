@@ -80,7 +80,7 @@ const UpdateStock = ({ productId, open, onClosePopup, fetchStockProducts }) => {
             </div>
 
             <div className="right" onClick={onClosePopup}>
-              <i className="flaticon-cancel"></i>
+              <i className="flaticon-close-1"></i>
             </div>
           </div>
 

@@ -182,7 +182,7 @@ const LandingWebsite = ({ busInfo }) => {
         <>
             <section className="LandingWebsite">
                 {/* header */}
-                <HeaderDescription headerIcon={'flaticon-web-design'} title={'Landing Page Template'} setSearch={setSearch} subTitle={'choose your theme here and customize as you want'} search={true}></HeaderDescription>
+                <HeaderDescription headerIcon={'flaticon-website-design'} title={'Landing Page Template'} setSearch={setSearch} subTitle={'choose your theme here and customize as you want'} search={true} />
                 {isLoading && <SmallLoader />}
                 <Container maxWidth="sm">
                     <Grid Container spacing={3}>
@@ -250,7 +250,7 @@ const LandingWebsite = ({ busInfo }) => {
                                                                             </div>
 
                                                                             <div className='right' onClick={handleCloseSales}>
-                                                                                <i className="flaticon-cancel"></i>
+                                                                                <i className="flaticon-close-1"></i>
                                                                             </div>
 
                                                                         </div>

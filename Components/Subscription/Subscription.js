@@ -133,14 +133,14 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
             <section className='TopSellingProducts DashboardSetting Courier Subscription'>
 
                 {/* header */}
-                {/* <HeaderDescription headerIcon={'flaticon-wallet'} title={'Subscription'} subTitle={'Subscription for software'} search={false}></HeaderDescription> */}
+                {/* <HeaderDescription headerIcon={'flaticon-wallet'} title={'Subscription'} subTitle={'Subscription for software'} search={false} /> */}
 
                 <HeaderDescription
                     headerIcon={"flaticon-wallet"}
                     title={"Billing"}
                     subTitle={"Billing List"}
                     search={false}
-                ></HeaderDescription>
+                />
 
                 <Container maxWidth='sm'>
 
@@ -318,7 +318,7 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
                             </div>
 
                             <div className='right' onClick={handleUpdateModalClose}>
-                                <i className="flaticon-cancel" />
+                                <i className="flaticon-close-1" />
                             </div>
 
                         </div>

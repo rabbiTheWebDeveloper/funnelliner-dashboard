@@ -244,7 +244,7 @@ const WebsiteSettingPage = ({ response }) => {
             <section className="DashboardSetting WebsiteSetting">
 
                 {/* header */}
-                <HeaderDescription headerIcon={'flaticon-browser-1'} title={'Website Settings'} subTitle={'Update your shop info and other settings here'} search={false}></HeaderDescription>
+                <HeaderDescription headerIcon={'flaticon-coding'} title={'Website Settings'} subTitle={'Update your shop info and other settings here'} search={false} />
 
                 <Container maxWidth="sm">
                     {/* DashboardSettingTabs */}
@@ -363,7 +363,7 @@ const WebsiteSettingPage = ({ response }) => {
                                                                         </div>
 
                                                                         <div className='right' onClick={previewClose}>
-                                                                            <i className="flaticon-cancel"></i>
+                                                                            <i className="flaticon-close-1"></i>
                                                                         </div>
 
                                                                     </div>

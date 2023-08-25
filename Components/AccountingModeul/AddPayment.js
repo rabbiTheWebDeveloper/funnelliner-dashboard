@@ -3,31 +3,35 @@ import axios from 'axios';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import Swal from 'sweetalert2';
-import { baseTest } from '../../constant/constant';
 import { headers } from '../../pages/api';
+import { API_ENDPOINTS } from "../../config/ApiEndpoints";
 
-const AddPayment = ({ handleClosePaymentMethod, openSuggestNote1, handelFetchReciver ,handelFetchPaymentlist }) => {
+const AddPayment = ({ handleClosePaymentMethod, openSuggestNote1 ,fetchCaseOutPaymentMethodData , type, fetchCaseInPaymentMethodData, closeAllModal }) => {
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
-
-
-    const addPayable = (data) => {
-        axios.post(baseTest + "/client/accounts/payment-method-add", data, {
+    const addPaymentMethod = async (data) => {
+        data.type=type
+        
+        const addPaymentMethodRes = await axios.post(`${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ACCOUNTS.CREATE_PAYMENT_METHOD}` , data, {
             headers: headers
         })
-            .then(function (response) {
-                handelFetchPaymentlist()
 
-                handleClosePaymentMethod()
-
-            })
-            .catch(function (error) {
-                Swal.fire({
-                    icon: "error",
-                    title: error?.response?.data?.msg,
-                });
+        if(addPaymentMethodRes?.data?.success){
+            if(type === 'CashIn'){
+                fetchCaseInPaymentMethodData()
+            }else{
+                fetchCaseOutPaymentMethodData()
+            }
+            handleClosePaymentMethod()
+        }else{
+            Swal.fire({
+                icon: "error",
+                title: addPaymentMethodRes?.data?.msg,
             });
+            closeAllModal()
+        }
         reset()
+        
     };
 
     return (
@@ -40,7 +44,7 @@ const AddPayment = ({ handleClosePaymentMethod, openSuggestNote1, handelFetchRec
                 className="tableModal"
             >
                 <Box>
-                    <form onSubmit={handleSubmit(addPayable)}>
+                    <form onSubmit={handleSubmit(addPaymentMethod)}>
                         <div className="tableModalContent">
                             <div className="header">
                                 <div className="left">
@@ -48,7 +52,7 @@ const AddPayment = ({ handleClosePaymentMethod, openSuggestNote1, handelFetchRec
                                     <h4>Please Enter Your Payment Method </h4>
                                 </div>
                                 <div className="right" onClick={handleClosePaymentMethod}>
-                                    <i className="flaticon-cancel"></i>
+                                    <i className="flaticon-close-1"></i>
                                 </div>
                             </div>
                             <div className="tableModalForm">

@@ -12,7 +12,7 @@ const index = () => {
         <>
 
            
-            <AddNewPage></AddNewPage>
+            <AddNewPage />
 
         </>
 

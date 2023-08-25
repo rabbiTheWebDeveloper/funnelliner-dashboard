@@ -209,7 +209,7 @@ const SubProduct = () => {
                                   className="deleteActionBtn"
                                   onClick={() => deleteProduct(product.id)}
                                 >
-                                  <i className="flaticon-trash"></i>
+                                  <i className="flaticon-delete"></i>
                                 </Button>
                               </div>
                             </td>

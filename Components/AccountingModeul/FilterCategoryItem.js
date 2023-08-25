@@ -1,65 +1,31 @@
 import { Autocomplete, Checkbox, TextField } from '@mui/material';
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { baseTest } from '../../constant/constant';
-import { headers } from '../../pages/api';
+import { useEffect, useState } from 'react';
 
-const FilterCategoryItem = ({ selectCatgory ,setPayment  ,handleFetch , setBalance ,balanceFetch}) => {
-
-    const [selectedItem, setSelectedItem] = useState([]);
+const FilterCategoryItem = ({ selectCatgory ,setSelectedItem , selectedItem}) => {
+    const [filterData, setFilterData] = useState([])
     const handleItemSelected = (event, value) => {
-        const selectedIds = value.map((option) => option.id);
+        const selectedIds = value.map((option) => option.value);
         setSelectedItem(selectedIds);
-
     };
-  
-    const searchCategoryWise = () => {
-        axios.post(baseTest + "/client/accounts/payment-search-category-wise",{
-            "category_list"  : [
-                ...selectedItem
-            ]
-        }, {
-            headers: headers
-        })
-            .then(function (res) {
-            
-                setPayment(res?.data?.data?.ledgers)
-                setBalance(res?.data?.data)
-                
-              
-            })
-            .catch(function (error) {
-                // Swal.fire({
-                //     icon: "error",
-                //     title: error?.response?.data?.msg,
-
-                // });
-            })
-    }
-
-
 
     useEffect(() => {
-        if(selectedItem.length >0) searchCategoryWise()
-        if(selectedItem.length===0) handleFetch()
-        if (selectedItem.length === 0) balanceFetch()
-    }, [selectedItem])
-
-
+        const filterArr = selectCatgory?.filter(item => item?.value !== 'add')
+        setFilterData(filterArr)
+    }, [selectCatgory])
  
     return (
         <Autocomplete
             multiple
-            options={selectCatgory}
+            options={filterData }
             disableCloseOnSelect
-            getOptionLabel={(option) => option?.name}
+            getOptionLabel={(option) => option?.label}
             renderOption={(props, option, { selected }) => (
-                <li {...props}>
+                <li {...props} key={option?.value}>
                     <Checkbox
                         style={{ marginRight: 8 }}
                         checked={selected}
                     />
-                    {option?.name}
+                    {option?.label}
                 </li>
             )}
             style={{ width: 500 }}
@@ -70,7 +36,7 @@ const FilterCategoryItem = ({ selectCatgory ,setPayment  ,handleFetch , setBalan
                 // Perform your data filtering based on the input value
             }}
             onChange={handleItemSelected}
-            value={selectedItem.name}
+            value={selectedItem?.name}
         />
     );
 };

@@ -11,7 +11,7 @@ const index = () => {
 
 
         <>
-            <MultiWebsite></MultiWebsite>
+            <MultiWebsite/>
 
         </>
 

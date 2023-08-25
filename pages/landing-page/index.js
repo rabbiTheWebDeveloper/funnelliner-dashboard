@@ -4,7 +4,7 @@ import withAuth from "../../hook/PrivateRoute";
 const index = ({ busInfo }) => {
   return (
     <>
-      <LandingWebsite busInfo={busInfo}></LandingWebsite>
+      <LandingWebsite busInfo={busInfo}/>
     </>
   );
 };

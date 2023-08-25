@@ -28,7 +28,7 @@ const MyMultiWebsite = () => {
             <section className='TopSellingProducts DashboardSetting LandingWebsite'>
 
                 {/* header */}
-                <HeaderDescription headerIcon={'flaticon-web-design'} title={'My Multipage Template'} subTitle={'choose your theme here and customize as you want'} search={false}></HeaderDescription>
+                <HeaderDescription headerIcon={'flaticon-website-design'} title={'My Multipage Template'} subTitle={'choose your theme here and customize as you want'} search={false} />
 
                 <Container maxWidth='sm'>
                     <Grid Container spacing={3}>

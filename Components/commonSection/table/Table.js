@@ -49,7 +49,7 @@ const Table = () => {
                             </td>
                             <td>
                                 <Button className='invoice'>
-                                    Print <i className="flaticon-printer-2"></i>
+                                    Print <i className="flaticon-printer"></i>
                                 </Button>
                             </td>
                             <td>
@@ -79,7 +79,7 @@ const Table = () => {
                                     </Button>
 
                                     <Button className='deleteActionBtn'>
-                                        <i className="flaticon-trash"></i>
+                                        <i className="flaticon-delete"></i>
                                     </Button>
 
                                 </div>
@@ -105,7 +105,7 @@ const Table = () => {
                             </td>
                             <td>
                                 <Button className='invoice'>
-                                    Print <i className="flaticon-printer-2"></i>
+                                    Print <i className="flaticon-printer"></i>
                                 </Button>
                             </td>
                             <td>
@@ -135,7 +135,7 @@ const Table = () => {
                                     </Button>
 
                                     <Button className='deleteActionBtn'>
-                                        <i className="flaticon-trash"></i>
+                                        <i className="flaticon-delete"></i>
                                     </Button>
 
                                 </div>
@@ -161,7 +161,7 @@ const Table = () => {
                             </td>
                             <td>
                                 <Button className='invoice'>
-                                    Print <i className="flaticon-printer-2"></i>
+                                    Print <i className="flaticon-printer"></i>
                                 </Button>
                             </td>
                             <td>
@@ -191,7 +191,7 @@ const Table = () => {
                                     </Button>
 
                                     <Button className='deleteActionBtn'>
-                                        <i className="flaticon-trash"></i>
+                                        <i className="flaticon-delete"></i>
                                     </Button>
 
                                 </div>
@@ -217,7 +217,7 @@ const Table = () => {
                             </td>
                             <td>
                                 <Button className='invoice'>
-                                    Print <i className="flaticon-printer-2"></i>
+                                    Print <i className="flaticon-printer"></i>
                                 </Button>
                             </td>
                             <td>
@@ -247,7 +247,7 @@ const Table = () => {
                                     </Button>
 
                                     <Button className='deleteActionBtn'>
-                                        <i className="flaticon-trash"></i>
+                                        <i className="flaticon-delete"></i>
                                     </Button>
 
                                 </div>
@@ -273,7 +273,7 @@ const Table = () => {
                             </td>
                             <td>
                                 <Button className='invoice'>
-                                    Print <i className="flaticon-printer-2"></i>
+                                    Print <i className="flaticon-printer"></i>
                                 </Button>
                             </td>
                             <td>
@@ -303,7 +303,7 @@ const Table = () => {
                                     </Button>
 
                                     <Button className='deleteActionBtn'>
-                                        <i className="flaticon-trash"></i>
+                                        <i className="flaticon-delete"></i>
                                     </Button>
 
                                 </div>
@@ -329,7 +329,7 @@ const Table = () => {
                             </td>
                             <td>
                                 <Button className='invoice'>
-                                    Print <i className="flaticon-printer-2"></i>
+                                    Print <i className="flaticon-printer"></i>
                                 </Button>
                             </td>
                             <td>
@@ -359,7 +359,7 @@ const Table = () => {
                                     </Button>
 
                                     <Button className='deleteActionBtn'>
-                                        <i className="flaticon-trash"></i>
+                                        <i className="flaticon-delete"></i>
                                     </Button>
 
                                 </div>
@@ -391,7 +391,7 @@ const Table = () => {
                                 </div>
 
                                 <div className='right' onClick={handleTableModalClose}>
-                                    <i className="flaticon-cancel"></i>
+                                    <i className="flaticon-close-1"></i>
                                 </div>
 
                             </div>

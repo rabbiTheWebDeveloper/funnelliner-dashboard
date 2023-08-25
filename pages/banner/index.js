@@ -12,7 +12,7 @@ const index = () => {
         <>
 
         
-            <Banner></Banner>
+            <Banner/>
 
         </>
 

@@ -78,7 +78,7 @@ const HomeSlider = ({ response }) => {
             <section className={style.HomeSlider}>
 
                 {/* header */}
-                <HeaderDescription headerIcon={'flaticon-template'} title={'Banner Slider'} subTitle={'Update your shop info and other settings here'} search={false}></HeaderDescription>
+                <HeaderDescription headerIcon={'flaticon-template'} title={'Banner Slider'} subTitle={'Update your shop info and other settings here'} search={false} />
 
 
                 <Container maxWidth="sm">

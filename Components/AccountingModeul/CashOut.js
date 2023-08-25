@@ -1,6 +1,6 @@
 import { Box, Button, Modal } from "@mui/material";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Select from "react-select";
 import Swal from "sweetalert2";
@@ -9,31 +9,33 @@ import { headers } from "../../pages/api";
 import AddCategory from "./AddCategory";
 import AddPayable from "./AddPayable";
 import AddPayment from "./AddPayment";
+import { API_ENDPOINTS } from "../../config/ApiEndpoints";
+import { useToast } from "../../hook/useToast";
 
 const CashOut = ({
-  handleFetch,
-  balanceFetch,
-  payment,
-  categoryList,
-  paymentList,
-  reciverList,
-  handelFetchCategory,
-  handelFetchReciver,
-  handelFetchPaymentlist,
+  fetchCaseOutPayableData,
+  fetchCaseOutLedgerData,
+  caseOutPayableData,
+  caseOutLedgerData,
+  caseOutPaymentMethodData,
+  fetchCaseOutPaymentMethodData,
+  handleFetchMutiSearch,
+  closeCashOutModal,
+  openModal,
 }) => {
-  const [open, setOpen] = useState(false);
+  const showToast = useToast();
   const [openSuggestNote, setOpenSuggestNote] = useState(false);
   const [openSuggestNote1, setOpenSuggestNote1] = useState(false);
   const [openSuggestNote2, setOpenSuggestNote2] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
   const handleOpenSuggestNote = () => setOpenSuggestNote(true);
   const handleCloseSuggestNote = () => setOpenSuggestNote(false);
   const handleOpenSuggestNote1 = () => setOpenSuggestNote1(true);
   const handleCloseSuggestNote1 = () => setOpenSuggestNote1(false);
   const [inputValue, setInputValue] = useState("");
   const [inputValue1, setInputValue1] = useState("");
-  const [paymentType, setPaymentType] = useState(null);
+  const [paymentType, setPaymentType] = useState("");
+  const [paymentId, setPaymentId] = useState(null);
+
   const {
     register,
     handleSubmit,
@@ -41,31 +43,7 @@ const CashOut = ({
     formState: { errors },
   } = useForm();
 
-  let options =
-    categoryList?.length === 0
-      ? []
-      : categoryList?.map(function (item) {
-          return { value: item?.id, label: item?.name };
-        });
-  options.unshift({ value: "add", label: "+ Add New Category/Ledger" });
-
-  let options1 =
-    reciverList?.length === 0
-      ? []
-      : reciverList?.map(function (item) {
-          return { value: item?.id, label: item?.name };
-        });
-  options1.unshift({ value: "addPayable", label: "+ Add New Payable/Payor" });
-
-  let option3 =
-    paymentList.length === 0
-      ? []
-      : paymentList.map(function (item) {
-        return { value: item?.name, label: item?.name };
-      });
-  option3.unshift({ value: "addPayment", label: "+ Add New Payment Method" });
-
-  const handleSelectChange = (selectedOption) => {
+  const handleSelectChange = selectedOption => {
     setInputValue(selectedOption.value);
     if (selectedOption.value === "add") {
       setInputValue("");
@@ -74,7 +52,7 @@ const CashOut = ({
     }
   };
 
-  const handleSelectChange1 = (selectedOption) => {
+  const handleSelectChange1 = selectedOption => {
     setInputValue1(selectedOption.value);
 
     if (selectedOption.value === "addPayable") {
@@ -83,54 +61,60 @@ const CashOut = ({
     }
   };
 
-  const cashForm = (data) => {
-    data.payor_id = inputValue1;
-    data.ledger_id = inputValue;
-    data.payment_type =paymentType
+  const cashForm = async data => {
+    if (inputValue1 === "addPayable") {
+      showToast("Please select valid Payable option", "error");
+    } else if (inputValue === "add" || inputValue === '') {
+      showToast("Please select valid Ledger option", "error");
+    } else if (paymentId === "add") {
+      showToast("Please select valid Payment Method option", "error");
+    } else {
+      data.payor_id = inputValue1;
+      data.ledger_id = inputValue;
+      data.payment_type = paymentType;
+      data.payment_id = paymentId;
 
-    axios
-      .post(baseTest + "/client/accounts/cash-out", data, {
-        headers: headers,
-      })
-      .then(function (response) {
-        handleFetch();
-        balanceFetch();
-        Swal.fire("Cash Out Successfully!", response.data.msg, "success");
-
-        handleClose();
-      })
-      .catch(function (error) {
+      const cashOutRes = await axios.post(
+        `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ACCOUNTS.CREATE_CASE_OUT}`,
+        data,
+        {
+          headers: headers,
+        }
+      );
+      if (cashOutRes?.data?.success) {
+        handleFetchMutiSearch();
+        Swal.fire("Cash Out Successfully!", cashOutRes.data.msg, "success");
+        reset();
+        setInputValue1("");
+        setInputValue("");
+      } else {
         Swal.fire({
           icon: "error",
-          title: error?.response?.data?.msg,
+          title: error?.cashOutRes?.data?.msg,
         });
-      });
-    reset();
-    setInputValue1("");
-    setInputValue("");
+      }
+      closeCashOutModal();
+    }
   };
 
-  const handlePaymentTypeChange = (e) => {
+  const handlePaymentTypeChange = e => {
     const selectedValue = e.value;
-    setPaymentType(selectedValue);
-    if (selectedValue === "addPayment") {
+    setPaymentType(e?.label);
+    setPaymentId(selectedValue)
+    if (selectedValue === "add") {
       setOpenSuggestNote2(true);
     }
   };
   const handleClosePaymentMethod = () => {
     setOpenSuggestNote2(false);
   };
+
   return (
     <>
       <div className="AccountCashIn CashOut">
-        <Button onClick={handleOpen}>
-          {" "}
-          <span>Cash Out</span> <img src="/images/money-up.png" alt="" />{" "}
-        </Button>
-
         <Modal
-          open={open}
-          onClose={handleClose}
+          open={openModal}
+          onClose={closeCashOutModal}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
           className="CashInModal updateModal"
@@ -145,12 +129,10 @@ const CashOut = ({
                     Entry
                   </h3>
                 </div>
-
-                <div className="right" onClick={handleClose}>
-                  <i className="flaticon-cancel"></i>
+                <div className="right" onClick={closeCashOutModal}>
+                  <i className="flaticon-close-1"></i>
                 </div>
               </div>
-
               <form onSubmit={handleSubmit(cashForm)}>
                 <div className="updateModalForm">
                   <div className="customInput">
@@ -166,59 +148,31 @@ const CashOut = ({
                       <p className="error">This field is required</p>
                     )}
                   </div>
-
                   <div className="customInput">
                     <label>Payable/Payor </label>
-
-                    <Select options={options1} onChange={handleSelectChange1}    menuPosition="fixed" />
-                    {inputValue1 === "addPayable" && (
-                      <AddPayable
-                        handelFetchReciver={handelFetchReciver}
-                        openSuggestNote1={openSuggestNote1}
-                        handleCloseSuggestNote1={handleCloseSuggestNote1}
-                      />
-                    )}
+                    <Select
+                      options={caseOutPayableData}
+                      onChange={handleSelectChange1}
+                      menuPosition="fixed"
+                    />
                   </div>
 
                   <div className="customInput">
                     <label>Category/Ledger</label>
 
-                    <Select options={options} onChange={handleSelectChange}     menuPosition="fixed"/>
-                    <AddCategory
-                      handelFetchCategory={handelFetchCategory}
-                      openSuggestNote={openSuggestNote}
-                      handleCloseSuggestNote={handleCloseSuggestNote}
+                    <Select
+                      options={caseOutLedgerData}
+                      onChange={handleSelectChange}
+                      menuPosition="fixed"
                     />
                   </div>
 
                   <div className="customInput">
                     <label>Payment Method</label>
                     <Select
-                      options={option3}
+                      options={caseOutPaymentMethodData}
                       onChange={handlePaymentTypeChange}
                       menuPosition="fixed"
-                    />
-                    {/* <select
-                      name=""
-                      {...register("payment_type")}
-                      onChange={handlePaymentTypeChange}
-                    >
-                      <option value="">Select Payment Method</option>
-                      <option value="addPayment">
-                        + Add New Payment Method
-                      </option>
-                      {Array.isArray(paymentList)
-                        ? paymentList.map((payment, index) => (
-                            <option key={paymentList.id} value={payment.name}>
-                              {payment.name}
-                            </option>
-                          ))
-                        : null}
-                    </select> */}
-                    <AddPayment
-                      handelFetchPaymentlist={handelFetchPaymentlist}
-                      openSuggestNote1={openSuggestNote2}
-                      handleClosePaymentMethod={handleClosePaymentMethod}
                     />
 
                     {errors.payment_type && (
@@ -248,6 +202,33 @@ const CashOut = ({
           </Box>
         </Modal>
       </div>
+      {openSuggestNote2 ? (
+        <AddPayment
+          openSuggestNote1={openSuggestNote2}
+          handleClosePaymentMethod={handleClosePaymentMethod}
+          type={"CashOut"}
+          fetchCaseOutPaymentMethodData={fetchCaseOutPaymentMethodData}
+        />
+      ) : null}
+
+      {openSuggestNote ? (
+        <AddCategory
+          openSuggestNote={openSuggestNote}
+          handleCloseSuggestNote={handleCloseSuggestNote}
+          type={"CashOut"}
+          fetchLedgerData={fetchCaseOutLedgerData}
+        />
+      ) : null}
+
+      {openSuggestNote1 && inputValue1 === "addPayable" ? (
+        <AddPayable
+          openSuggestNote1={openSuggestNote1}
+          handleCloseSuggestNote1={handleCloseSuggestNote1}
+          type={"CashOut"}
+          fetchCaseOutPayableData={fetchCaseOutPayableData}
+          closeAllModal={closeCashOutModal}
+        />
+      ) : null}
     </>
   );
 };

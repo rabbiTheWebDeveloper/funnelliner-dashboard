@@ -91,7 +91,7 @@ const RecentOrder = () => {
                                     <div className="item">
                                         <div className="name">
                                             <div className="icon">
-                                                <i className="flaticon-user-1"></i>
+                                                <i className="flaticon-user"></i>
                                             </div>
                                             <Tooltip
                                                 title={order?.customer_name}

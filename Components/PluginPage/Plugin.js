@@ -290,11 +290,11 @@ const Plugin = ({ setFetch }) => {
       <section className="DashboardSetting Plugin">
         {/* header */}
         <HeaderDescription
-          headerIcon={"flaticon-prototype"}
+          headerIcon={"flaticon-plugin"}
           title={"Addons"}
           subTitle={"Add plugins for extra advantages"}
           search={false}
-        ></HeaderDescription>
+        />
 
         <Container maxWidth="sm">
           {/* CourierContent */}
@@ -485,7 +485,7 @@ const Plugin = ({ setFetch }) => {
                 </div>
 
                 <div className="right" onClick={handleCloseNote}>
-                  <i className="flaticon-cancel"></i>
+                  <i className="flaticon-close-1"></i>
                 </div>
               </div>
 

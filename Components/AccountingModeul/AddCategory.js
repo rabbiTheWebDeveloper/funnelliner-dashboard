@@ -3,36 +3,30 @@ import axios from 'axios';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import Swal from 'sweetalert2';
-import { baseTest } from '../../constant/constant';
 import { headers } from '../../pages/api';
+import { API_ENDPOINTS } from "../../config/ApiEndpoints";
 
-const AddCategory = ({ handleCloseSuggestNote, openSuggestNote ,handelFetchCategory}) => {
+const AddCategory = ({ handleCloseSuggestNote, openSuggestNote ,fetchLedgerData , type, closeAllModal}) => {
+    
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
-
-
-    const addCategory = (data) => {
-        // data.name = inputValue
-        // data.payment_recevier = inputValue1
-
-        axios.post(baseTest + "/client/accounts/ledger/add", data, {
+    
+    const addCategory = async (data) => {
+        data.type=type
+        const addRes = await axios.post(`${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ACCOUNTS.CREATE_LEDGER}`, data, {
             headers: headers
         })
-            .then(function (response) {
-                
-                handelFetchCategory()
-                handleCloseSuggestNote()
-            })
-            .catch(function (error) {
-                Swal.fire({
-                    icon: "error",
-                    title: error?.response?.data?.msg,
+        if(addRes?.data?.success){
+            fetchLedgerData()
+            handleCloseSuggestNote()
+        }else{
+            Swal.fire({
+                icon: "error",
+                title: error?.addRes?.data?.msg,
 
-                });
             });
+            closeAllModal()
+        }
         reset()
-
-
-
     }
 
 
@@ -54,7 +48,7 @@ const AddCategory = ({ handleCloseSuggestNote, openSuggestNote ,handelFetchCateg
                                     <h4>Please Enter Your Category/Ledger</h4>
                                 </div>
                                 <div className="right" onClick={handleCloseSuggestNote}>
-                                    <i className="flaticon-cancel"></i>
+                                    <i className="flaticon-close-1"></i>
                                 </div>
                             </div>
                             <div className="tableModalForm">

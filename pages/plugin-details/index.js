@@ -11,7 +11,7 @@ const index = () => {
         <>
 
 
-            <PluginDetails></PluginDetails>
+            <PluginDetails/>
 
         </>
 

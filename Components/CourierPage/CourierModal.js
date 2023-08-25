@@ -77,7 +77,7 @@ const CourierModal = ({handleCourierModalOpen, handleCourierModalClose, city, or
                         </div>
 
                         <div className='right' onClick={handleCourierModalClose}>
-                            <i className="flaticon-cancel"/>
+                            <i className="flaticon-close-1"/>
                         </div>
 
                     </div>

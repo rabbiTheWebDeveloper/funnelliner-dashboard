@@ -108,7 +108,7 @@ const SubProduct = () => {
             <section className="TopSellingProducts DashboardSetting Order">
 
                 {/* header */}
-                <HeaderDescription headerIcon={'flaticon-order-delivery'} title={'Category'} subTitle={'Shop Category List'} search={false}></HeaderDescription>
+                <HeaderDescription headerIcon={'flaticon-order-delivery'} title={'Category'} subTitle={'Shop Category List'} search={false} />
 
                 <Container maxWidth="sm">
 
@@ -191,7 +191,7 @@ const SubProduct = () => {
                                                                     </Button>
 
                                                                     <Button className='deleteActionBtn' onClick={() => deleteProduct(product.id)}>
-                                                                        <i class="flaticon-trash"></i>
+                                                                        <i class="flaticon-delete"></i>
                                                                     </Button>
 
                                                                 </div>

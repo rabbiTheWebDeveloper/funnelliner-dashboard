@@ -44,7 +44,7 @@ const PopupModal = () => {
                                 </div>
 
                                 <div className='right' onClick={handleViewModalClose}>
-                                    <i className="flaticon-cancel"></i>
+                                    <i className="flaticon-close-1"></i>
                                 </div>
 
                             </div>
@@ -129,7 +129,7 @@ const PopupModal = () => {
                                 </div>
 
                                 <div className='right' onClick={handleUpdateModalClose}>
-                                    <i className="flaticon-cancel"></i>
+                                    <i className="flaticon-close-1"></i>
                                 </div>
 
                             </div>

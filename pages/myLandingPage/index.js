@@ -9,7 +9,7 @@ const index = () => {
     return (
         <>
            
-            <MyLandingPage></MyLandingPage>
+            <MyLandingPage/>
 
         </>
     );

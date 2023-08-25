@@ -30,8 +30,7 @@ const DashboardSettingPage = () => {
     return (
         <>
    
-            <DashboardSetting response={response}></DashboardSetting>
-
+            <DashboardSetting response={response}/>
         </>
 
     )

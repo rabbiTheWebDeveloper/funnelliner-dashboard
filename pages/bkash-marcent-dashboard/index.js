@@ -72,7 +72,7 @@ const Plugin = () => {
                     <div className="AddonsContent">
                         <Grid container spacing={3}>
                             <Grid item md={12}>
-                                <BkashDashboard bkashBalance={bkashBalance} ></BkashDashboard>
+                                <BkashDashboard bkashBalance={bkashBalance}/> 
                             </Grid>
                         </Grid>
                     </div>

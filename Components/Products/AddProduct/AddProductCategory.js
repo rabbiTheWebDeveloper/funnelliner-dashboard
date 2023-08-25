@@ -10,7 +10,6 @@ import { API_ENDPOINTS } from "../../../config/ApiEndpoints";
 const AddProductCategory = ({
   handleCloseSuggestNote,
   openSuggestNote,
-  handelFetchCategory,
   HandelFetchCategory,
   setSelectedCategory,
   fetchCategoriesData,
@@ -129,7 +128,7 @@ const AddProductCategory = ({
                                 Upload Image
                               </Button>
                             </label>
-                            {seletectCategoryImgURL && selectedCategoryImage && (
+                            {seletectCategoryImgURL && selectedCategoryImage ? (
                               <Box mt={2} textAlign="center">
                                 <h6>Image Preview:</h6>
                                 <img
@@ -138,7 +137,7 @@ const AddProductCategory = ({
                                   Height="100px"
                                 />
                               </Box>
-                            )}
+                            ) :null}
                           </div>
                         </div>
                       </div>

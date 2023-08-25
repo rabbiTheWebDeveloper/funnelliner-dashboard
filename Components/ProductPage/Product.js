@@ -126,7 +126,7 @@ const Product = ({ category }) => {
             <section className="TopSellingProducts DashboardSetting Order">
 
                 {/* header */}
-                <HeaderDescription headerIcon={'flaticon-new-product'} title={'Product List'} subTitle={'Find Your Product'} search={false}></HeaderDescription>
+                <HeaderDescription headerIcon={'flaticon-product'} title={'Product List'} subTitle={'Find Your Product'} search={false} />
 
                 <Container maxWidth="sm">
 

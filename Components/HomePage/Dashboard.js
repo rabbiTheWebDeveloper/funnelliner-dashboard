@@ -178,7 +178,7 @@ const Dashboard = ({ busInfo }) => {
               increase="increase"
               filter={true}
               number="00"
-              cartIcon="flaticon-trend"
+              cartIcon="flaticon-trending"
               increaseTitle="+65% (30 days)"
               cartImg={cartImg1}
             />
@@ -202,8 +202,8 @@ const Dashboard = ({ busInfo }) => {
               number={reportData?.total}
               cartIcon={
                 ratioData?.total_order_ratio?.startsWith("-") === false
-                  ? "flaticon-trend"
-                  : "flaticon-down-arrow-2"
+                  ? "flaticon-trending"
+                  : "flaticon-down-arrow"
               }
               increaseTitle={`${
                 ratioData?.total_order_ratio !== null
@@ -237,8 +237,8 @@ const Dashboard = ({ busInfo }) => {
               }
               cartIcon={
                 ratioData?.confirmed_order_ratio?.startsWith("-") === false
-                  ? "flaticon-trend"
-                  : "flaticon-down-arrow-2"
+                  ? "flaticon-trending"
+                  : "flaticon-down-arrow"
               }
               increaseTitle={`${
                 ratioData?.confirmed_order_ratio !== null
@@ -281,8 +281,8 @@ const Dashboard = ({ busInfo }) => {
               }
               cartIcon={
                 ratioData?.cancel_order_ratio?.startsWith("-") === false
-                  ? "flaticon-trend"
-                  : "flaticon-down-arrow-2"
+                  ? "flaticon-trending"
+                  : "flaticon-down-arrow"
               }
               increaseTitle={`${
                 ratioData?.cancel_order_ratio !== null
@@ -315,8 +315,8 @@ const Dashboard = ({ busInfo }) => {
               }
               cartIcon={
                 ratioData?.sales_amount_ratio?.startsWith("-") === false
-                  ? "flaticon-trend"
-                  : "flaticon-down-arrow-2"
+                  ? "flaticon-trending"
+                  : "flaticon-down-arrow"
               }
               increaseTitle={`${
                 ratioData?.sales_amount_ratio !== null
@@ -350,8 +350,8 @@ const Dashboard = ({ busInfo }) => {
               }
               cartIcon={
                 ratioData?.discount_amount_ratio?.startsWith("-") === false
-                  ? "flaticon-trend"
-                  : "flaticon-down-arrow-2"
+                  ? "flaticon-trending"
+                  : "flaticon-down-arrow"
               }
               increaseTitle={`${
                 ratioData?.discount_amount_ratio !== null
@@ -415,8 +415,8 @@ const Dashboard = ({ busInfo }) => {
                 }
                 cartIcon={
                   ratioData?.advance_amount_ratio?.startsWith("-") === false
-                    ? "flaticon-trend"
-                    : "flaticon-down-arrow-2"
+                    ? "flaticon-trending"
+                    : "flaticon-down-arrow"
                 }
                 increaseTitle={`${
                   ratioData?.advance_amount_ratio !== null

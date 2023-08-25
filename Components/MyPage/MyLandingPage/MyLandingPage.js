@@ -68,11 +68,11 @@ const MyLandingPage = () => {
         {isLoading && <SmallLoader />}
         {/* header */}
         <HeaderDescription
-          headerIcon={"flaticon-web-design"}
+          headerIcon={"flaticon-website-design"}
           title={"Landing Page Template"}
           subTitle={"choose your theme here and customize as you want"}
           search={false}
-        ></HeaderDescription>
+        />
 
         <Container maxWidth="sm">
           <Grid Container spacing={3}>

@@ -156,7 +156,7 @@ const LandingWebsite = () => {
             <section className="TopSellingProducts DashboardSetting LandingWebsite">
 
                 {/* header */}
-                <HeaderDescription headerIcon={'flaticon-web-design'} title={'Landing Page Template'} subTitle={'choose your theme here and customize as you want'} search={false}></HeaderDescription>
+                <HeaderDescription headerIcon={'flaticon-website-design'} title={'Landing Page Template'} subTitle={'choose your theme here and customize as you want'} search={false} />
 
                 <Container maxWidth="sm">
 

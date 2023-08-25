@@ -1,3 +1,5 @@
+
+
 /* font-family: 'Montserrat', sans-serif; */
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap");
 
@@ -149,7 +151,7 @@ button.bg:hover {
   font-size: 14px;
 }
 
-.duelButton.Account button{
+.duelButton.Account button {
   width: 48%;
 }
 
@@ -330,8 +332,7 @@ Media
 
   .MuiContainer-root {
     padding-left: 20px !important;
-} 
-
+  }
 }
 
 .orderSection_preloader {

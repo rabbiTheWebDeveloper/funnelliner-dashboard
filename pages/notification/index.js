@@ -30,7 +30,7 @@ const NotificationPage = ({ busInfo }) => {
  
   return (
     <>
-      <AllNotification data={data}></AllNotification>
+      <AllNotification data={data}/>
     </>
   );
 };

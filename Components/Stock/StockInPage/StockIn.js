@@ -105,7 +105,7 @@ const StockIn = () => {
       <section className="TopSellingProducts DashboardSetting Order Stock">
         {/* header */}
         <HeaderDescription
-          headerIcon={"flaticon-checklists"}
+          headerIcon={"flaticon-in-stock-1"}
           title={"Stock In"}
           subTitle={"Update your inventory products stock"}
           search={false}

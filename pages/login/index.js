@@ -22,6 +22,8 @@ const Login_Part = () => {
   const [errorText, setErrorText] = useState("");
   const [ipAddress, setIpAddress] = useState("");
   const [browserName, setBrowserName] = useState("");
+  const [suggestText, setSuggestText] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const showToast = useToast();
 
   const validationSchema = yup.object().shape({
@@ -104,8 +106,7 @@ const Login_Part = () => {
     setErrorText("");
   }, 4000);
 
-  const [suggestText, setSuggestText] = useState("");
-  const [showSuggestions, setShowSuggestions] = useState(false);
+
 
   const handleInputChange = (event) => {
     setEmailValue(event.target.value);
@@ -160,7 +161,7 @@ const Login_Part = () => {
                   (isSubmitted || errors.email.type === "manual") && (
                     <p className="error">{errors.email.message}</p>
                   )}
-                {showSuggestions && (
+                {showSuggestions ? (
                   <div className={styles.suggestion}>
                     <ul>
                       <li onClick={() => handleSuggestionClick("@gmail.com")}>
@@ -177,7 +178,7 @@ const Login_Part = () => {
                       </li>
                     </ul>
                   </div>
-                )}
+                ) :null}
               </div>
 
               <div className="customInput">
@@ -190,22 +191,22 @@ const Login_Part = () => {
                 />
                 <div className="eye" onClick={handleShow}>
                   {showPass ? (
-                    <i className="flaticon-hide"></i>
+                    <i className="flaticon-hidden"></i>
                   ) : (
-                    <i className="flaticon-view"></i>
+                    <i className="flaticon-eye"></i>
                   )}
                 </div>
                 {errors.password &&
                   (errors.password.type === "required" ||
-                    errors.password.type === "manual") && (
+                    errors.password.type === "manual") ? (
                     <p className="error">{errors.password.message}</p>
-                  )}
+                  ) :null}
               </div>
 
               <div className="customInput">
                 {isLoading ? (
-                  <Button  key="login_submit_btn1" disabled type="submit" className="bg">
-                    <Spinner key="login_submit_btn1_Spinner"/>
+                  <Button key="login_submit_btn1" disabled type="submit" className="bg">
+                    <Spinner key="login_submit_btn1_Spinner" />
                     Login
                   </Button>
                 ) : (
@@ -214,8 +215,8 @@ const Login_Part = () => {
                   </Button>
                 )}
               </div>
-              
-            
+
+
               <div className={styles.forgetPassword}>
                 <Link href="/forgot-password">Forgot Password?</Link>
               </div>

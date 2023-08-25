@@ -44,15 +44,7 @@ const CustomDomain = ({ shopName, data }) => {
 
                                     <Box>
 
-                                        {/* <TabList
-                                            onChange={handleChangeTab2}
-                                            aria-label='lab API tabs example'
-                                        >
-                                            <Tab label='Connect Your Domain' value='one' />
-                                            <Tab label='Order New Domain' value='two' />
-                                            <Tab label='Domain Verification' value='three' />
-
-                                        </TabList> */}
+                        
 
                                         <TabList onChange={handleTabChange} aria-label="lab API tabs example">
 

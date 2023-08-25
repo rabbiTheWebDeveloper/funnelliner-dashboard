@@ -1,32 +1,52 @@
-import { Box, Button, Modal } from '@mui/material';
-import axios from 'axios';
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import Swal from 'sweetalert2';
-import { baseTest } from '../../constant/constant';
-import { headers } from '../../pages/api';
+import { Box, Button, Modal } from "@mui/material";
+import axios from "axios";
+import React from "react";
+import { useForm } from "react-hook-form";
+import Swal from "sweetalert2";
+import { baseTest } from "../../constant/constant";
+import { headers } from "../../pages/api";
+import { API_ENDPOINTS } from "../../config/ApiEndpoints";
 
-const AddPayable = ({ handleCloseSuggestNote1, openSuggestNote1, handelFetchReciver }) => {
-  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+const AddPayable = ({
+  handleCloseSuggestNote1,
+  openSuggestNote1,
+  fetchCaseInPayableData,
+  type,
+  fetchCaseOutPayableData,
+  closeAllModal,
+}) => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
 
+  const addPayable = async data => {
+    data.type = type;
+    const addPayableRes = await axios.post(
+      `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ACCOUNTS.CREATE_PAYOR_METHOD}`,
+      data,
+      {
+        headers: headers,
+      }
+    );
 
-  const addPayable = (data) => {
-    axios.post(baseTest + "/client/accounts/payor/add", data, {
-      headers: headers
-    })
-      .then(function (response) {
-    
-        handelFetchReciver()
-        handleCloseSuggestNote1()
-
-      })
-      .catch(function (error) {
-        Swal.fire({
-          icon: "error",
-          title: error?.response?.data?.msg,
-        });
+    if (addPayableRes?.data?.success) {
+      if (type === "CashIn") {
+        fetchCaseInPayableData();
+      } else {
+        fetchCaseOutPayableData();
+      }
+      handleCloseSuggestNote1();
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: addPayableRes?.data?.msg,
       });
-      reset()
+      closeAllModal();
+    }
+    reset();
   };
 
   return (
@@ -47,18 +67,22 @@ const AddPayable = ({ handleCloseSuggestNote1, openSuggestNote1, handelFetchReci
                   <h4>Please Enter Your Payable/Payor</h4>
                 </div>
                 <div className="right" onClick={handleCloseSuggestNote1}>
-                  <i className="flaticon-cancel"></i>
+                  <i className="flaticon-close-1"></i>
                 </div>
               </div>
               <div className="tableModalForm">
                 <div className="customInput">
                   <label>Payable/Payor</label>
-                  <input type="text" placeholder='Enter Your Category/Ledger' {...register("name", { required: true, maxLength: 20 })} />
+                  <input
+                    type="text"
+                    placeholder="Enter Your Category/Ledger"
+                    {...register("name", { required: true, maxLength: 20 })}
+                  />
                   {errors.name && <span>This field is required</span>}
                 </div>
               </div>
               <div className="duelButton">
-                <Button type='submit'>Add Payable/Payor</Button>
+                <Button type="submit">Add Payable/Payor</Button>
                 {/* <Button className="red">Reset</Button> */}
               </div>
             </div>

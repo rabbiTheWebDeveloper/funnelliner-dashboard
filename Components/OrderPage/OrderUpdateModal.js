@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 import { useToast } from "../../hook/useToast";
 import { headers } from "../../pages/api";
 
-const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOpenUpdate, products, handleFetch }) => {
+const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOpenUpdate, products, handleFetch ,orderUpdate }) => {
     const showToast = useToast();
     const { register, handleSubmit, formState: { errors } } = useForm();
 
@@ -30,11 +30,11 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
         formData.append("order_type", order?.order_type);
         formData.append("customer_phone", data.phone);
         formData.append("shipping_cost", data.shipping_cost);
-        if(data.order_status === "confirmed" || data.order_status === "shipped"){
+        if(order?.order_status === "confirmed" || order?.order_status === "shipped"){
             formData.append("order_status", data.order_status);
         }
         else{
-            formData.append("order_status", order.order_status);
+            formData.append("order_status", order?.order_status);
 
         }
       
@@ -46,6 +46,7 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
             .then(function (response) {
                 showToast('Order Update   Successfully !', 'success');
                 handleFetch()
+                orderUpdate()
 
 
             })
@@ -80,7 +81,7 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
                         </div>
 
                         <div className='right' onClick={handleCloseOrderUpdateModal}>
-                            <i className="flaticon-cancel"></i>
+                            <i className="flaticon-close-1"></i>
                         </div>
 
                     </div>

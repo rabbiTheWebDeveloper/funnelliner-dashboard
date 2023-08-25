@@ -255,9 +255,6 @@ const CustomerListPage = () => {
     }
   };
 
-//   const newCustomer = Array.isArray(orders)
-//     ? orders?.filter((obj) => obj.order !== 0)
-//     : [];
 
   return (
     <div>

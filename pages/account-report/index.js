@@ -3,7 +3,6 @@ import React from 'react'
 import AccountReport from '../../Components/AccountingModeul/AccountReport'
 
 const index = ({ myAddonsList, isApiResponse }) => {
-
     if (myAddonsList[0]?.addons_id === 16 && myAddonsList[0]?.status === 1) {
 
         return (

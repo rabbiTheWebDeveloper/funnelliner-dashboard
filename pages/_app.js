@@ -10,7 +10,7 @@ import { Provider } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
 import Layout from "../Components/Common/layout";
 import Loader from "../Components/Loader/Loader";
-import "../public/fonts/flaticon_mycollection.css";
+// import "../public/fonts/flaticon_mycollection.css";
 import "../public/fonts2/flaticon_mycollection.css";
 import { store } from "../redux/app/store";
 
@@ -34,7 +34,7 @@ function MyApp({ Component, pageProps, router }) {
   const [fetchApi, setFetch] = useState(false);
   // addons show and hode
   const [myAddonsList, setMyAddonsList] = useState([]);
- 
+
   const style = {
     style: {
       border: "1px solid #894bca",
@@ -49,21 +49,20 @@ function MyApp({ Component, pageProps, router }) {
   };
 
   useEffect(() => {
-    Router.events.on("routeChangeStart", (url) => {
+    Router.events.on("routeChangeStart", url => {
       setIsLoading(true);
       setIsStatus(isStatus + 1);
     });
 
-    Router.events.on("routeChangeComplete", (url) => {
+    Router.events.on("routeChangeComplete", url => {
       setIsLoading(false);
     });
 
-    Router.events.on("routeChangeError", (url) => {
+    Router.events.on("routeChangeError", url => {
       setIsLoading(false);
     });
   }, [Router]);
 
- 
   const handleFetchBusInfo = async () => {
     try {
       let data = await axios({
@@ -103,7 +102,7 @@ function MyApp({ Component, pageProps, router }) {
         headers: headers,
       });
       setPendingOrderCount(data.data.data);
-    } catch (err) { }
+    } catch (err) {}
     setFetchOrder(false);
   };
 
@@ -126,7 +125,7 @@ function MyApp({ Component, pageProps, router }) {
       setMyAddonsList(data?.data?.data);
       setFetch(false);
       setIsApiResponse(true);
-    } catch (err) { }
+    } catch (err) {}
   };
 
   useEffect(() => {

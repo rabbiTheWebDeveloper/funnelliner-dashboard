@@ -13,16 +13,14 @@ const SupportTicket = () => {
     const showToast = useToast()
     const [isLoading, startLoading, stopLoading] = useLoading();
     // Filter
-
     const [update, setUpdate] = useState({});
     const [selectedImage, setSelectedImage] = useState(null);
     const [imageUrl, setImageUrl] = useState(null);
-
-
-
-    // Dropdown
-
     const [merchant, setMerchant] = useState({});
+    const [previewPicture, setPreviewPicture] = useState('');
+    const [attachFile, setAttachFile] = useState();
+    const [ticketList, setTicketList] = useState([]);
+    // Dropdown
     useEffect(() => {
         const parseData = JSON.parse(localStorage.getItem("user"));
         setMerchant(parseData);
@@ -33,10 +31,6 @@ const SupportTicket = () => {
         reset,
         formState: { errors },
     } = useForm();
-
-
-    const [previewPicture, setPreviewPicture] = useState('');
-    const [attachFile, setAttachFile] = useState();
     const onChangePicture = e => {
         setAttachFile(e.target.files[0])
         setPreviewPicture(URL.createObjectURL(e.target.files[0]));
@@ -50,7 +44,6 @@ const SupportTicket = () => {
         if (attachFile) {
             formData.append("attachment", selectedImage);
         }
-       
         axios
             .post(`${process.env.API_URL}/client/support-ticket/store`, formData, {
                 headers: headers,
@@ -75,7 +68,7 @@ const SupportTicket = () => {
 
 
     //all supports ticket
-    const [ticketList, setTicketList] = useState([]);
+
     const hanldeGetData = () => {
         handleGetSupportTicketList(userId).then((result) => {
             setTicketList(result?.data?.data);
@@ -98,7 +91,7 @@ const SupportTicket = () => {
             <section className='SupportTicket'>
 
                 {/* header */}
-                <HeaderDescription headerIcon={'flaticon-customer-service'} title={'Support Ticket'} subTitle={'Support tickets for instant help'} search={false}></HeaderDescription>
+                <HeaderDescription headerIcon={'flaticon-customer-support'} title={'Support Ticket'} subTitle={'Support tickets for instant help'} search={false} />
 
                 <Container maxWidth='sm'>
                     <Grid Container spacing={3}>
@@ -147,7 +140,7 @@ const SupportTicket = () => {
                                                 </Button>
                                             </label>
                                             {imageUrl && selectedImage && (
-                                                <Box mt={2} textAlign="center"> 
+                                                <Box mt={2} textAlign="center">
                                                     <img src={imageUrl} alt={selectedImage.name} height="100px" />
                                                 </Box>
                                             )}
@@ -156,7 +149,7 @@ const SupportTicket = () => {
                                     </div>
 
                                     <div className="duelButton">
-                                    <Button disabled={isLoading} type="submit">Submit</Button>
+                                        <Button disabled={isLoading} type="submit">Submit</Button>
                                         <Button type="reset" className="red">Reset</Button>
                                     </div>
                                 </div>
@@ -166,11 +159,11 @@ const SupportTicket = () => {
                 </Container>
             </section>
 
-         
+
             <section className='TopSellingProducts DashboardSetting Order SupportTicketSection'>
 
                 {/* header */}
-                <HeaderDescription headerIcon={'flaticon-customer-service'} title={'Your All Support Tickets'} subTitle={'List of tickets opened by you'} search={false}></HeaderDescription>
+                <HeaderDescription headerIcon={'flaticon-customer-service'} title={'Your All Support Tickets'} subTitle={'List of tickets opened by you'} search={false} />
 
                 <Container maxWidth='sm'>
 
@@ -198,7 +191,7 @@ const SupportTicket = () => {
                                                     <td>{index + 1}</td>
                                                     <td>{item?.ticket_id}</td>
                                                     <td
-                                                                                                           
+
                                                         style={{ cursor: "pointer" }}
                                                     >
                                                         <Link

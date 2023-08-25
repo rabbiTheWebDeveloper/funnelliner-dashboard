@@ -19,10 +19,9 @@ import SmallLoader from "../../SmallLoader/SmallLoader";
 
 const Product = ({ category }) => {
     const showToast = useToast();
-
     const [isLoading, setIsLoading] = useState(true);
-
-
+    const [productSearchValue, setProductSearchValue] = useState("")
+    const [filterProducts, setFilterProducts] = useState([])
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
@@ -32,35 +31,30 @@ const Product = ({ category }) => {
         "Are you sure you want to delete?",
         "Yes, delete"
     )
-
-
     const fetchProduct = () => {
         axios
-        .get(process.env.API_URL + "/client/products", { headers: headers })
-        .then(function (response) {
-            // handle success
-            setProducts(response.data.data);
-            setIsLoading(false);
-        })
-        .catch(function (error) {
-            if (error.response.data.api_status === "401") {
-                window.location.href = "/login"
-                Cookies.remove("token");
-                localStorage.clear("token");
-                Cookies.remove("user");
-                localStorage.clear("user");
+            .get(process.env.API_URL + "/client/products", { headers: headers })
+            .then(function (response) {
+                // handle success
+                setProducts(response.data.data);
+                setIsLoading(false);
+            })
+            .catch(function (error) {
+                if (error.response.data.api_status === "401") {
+                    window.location.href = "/login"
+                    Cookies.remove("token");
+                    localStorage.clear("token");
+                    Cookies.remove("user");
+                    localStorage.clear("user");
 
-                window.location.href = "/login"
-            }
-        });
+                    window.location.href = "/login"
+                }
+            });
 
     }
     useEffect(() => {
-        fetchProduct()  
+        fetchProduct()
     }, []);
-
-
-
 
     const deleteProduct = async (id) => {
         const confirmed = await handleConfirmationDialog();
@@ -104,16 +98,11 @@ const Product = ({ category }) => {
     }
 
     const paginate = (pageNumber, value) => setCurrentPage(value);
-    const [productSearchValue, setProductSearchValue] = useState("")
-    const [filterProducts, setFilterProducts] = useState([])
     const handleChangeSearchBox = (e) => {
         setProductSearchValue(e.target.value)
         const filtered = products.filter(item => item?.id?.toString().includes(e.target.value) || item?.product_name?.toLowerCase().includes(e.target.value.toLowerCase()) || item?.product_code?.toLowerCase().includes(e.target.value.toLowerCase()));
         setFilterProducts(filtered)
     }
-
-
-
 
     const [viewModalOpen, setViewModalOpen] = useState(false);
     const [editModalOpen, setEditModalOpen] = useState(false);
@@ -140,9 +129,9 @@ const Product = ({ category }) => {
                 {
                     isLoading && <div className="orderSection_preloader"> <SmallLoader /> </div>
                 }
-                {/* <SmallLoader /> */}
+
                 {/* header */}
-                <HeaderDescription headerIcon={'flaticon-new-product'} title={'Product List'} subTitle={'Find Your Product'} search={false}></HeaderDescription>
+                <HeaderDescription headerIcon={'flaticon-product'} title={'Product List'} subTitle={'Find Your Product'} search={false} />
 
                 <Container maxWidth="sm">
 
@@ -180,18 +169,10 @@ const Product = ({ category }) => {
                                         <tr>
                                             <td colSpan={13}>
                                                 <Box sx={{ width: 40 }}>
-                                                    <Skeleton width="100%" height={28} />
-                                                    <Skeleton width="100%" height={28} />
-                                                    <Skeleton width="100%" height={28} />
-                                                    <Skeleton width="100%" height={28} />
-                                                    <Skeleton width="100%" height={28} />
-                                                    <Skeleton width="100%" height={28} />
-                                                    <Skeleton width="100%" height={28} />
-                                                    <Skeleton width="100%" height={28} />
-                                                    <Skeleton width="100%" height={28} />
-                                                    <Skeleton width="100%" height={28} />
-                                                    <Skeleton width="100%" height={28} />
-                                                    <Skeleton width="100%" height={28} />
+                                                    {[...Array(15)].map((_, index) => (
+
+                                                        <Skeleton width="100%" key={index} height={28} />
+                                                    ))}
                                                 </Box>
                                             </td>
                                         </tr>
@@ -246,16 +227,16 @@ const Product = ({ category }) => {
 
                                                                         <Button className='viewActionBtn' onClick={() => handleOpenModal(product.id, "view")}><i className="flaticon-view" ></i></Button>
                                                                         {
-                                                                            product.id === productModalViewId && <ShowProduct id={product.id} modalOpen={viewModalOpen} handleCloseModal={handleCloseModal} product={product}></ShowProduct>
+                                                                            product.id === productModalViewId && <ShowProduct id={product.id} modalOpen={viewModalOpen} handleCloseModal={handleCloseModal} product={product} />
                                                                         }
 
                                                                         <Button className='updateActionBtn' onClick={() => handleOpenModal(product.id, "edit")}><i className="flaticon-edit"></i></Button>
                                                                         {
-                                                                            product.id === ProductEditModalID && <ProductUpdate id={product.id} category={category} modalOpen={editModalOpen} handleCloseModal={handleCloseModal} product={product} fetchProduct={fetchProduct}/>
+                                                                            product.id === ProductEditModalID && <ProductUpdate id={product.id} category={category} modalOpen={editModalOpen} handleCloseModal={handleCloseModal} product={product} fetchProduct={fetchProduct} />
                                                                         }
 
                                                                         <Button className='deleteActionBtn' onClick={() => deleteProduct(product.id)}>
-                                                                            <i className="flaticon-trash"></i>
+                                                                            <i className="flaticon-delete"></i>
                                                                         </Button>
 
                                                                     </div>
@@ -311,10 +292,10 @@ const Product = ({ category }) => {
                                                                 <td className="EditViewDelete">
                                                                     <Button className="ButtonEdit" href="">
 
-                                                                        <ShowProduct id={product.id}></ShowProduct>
+                                                                        <ShowProduct id={product.id} />
                                                                     </Button>
                                                                     <Button className="ButtonEdit">
-                                                                        <ProductUpdate id={product.id} category={category} fetchProduct={fetchProduct}></ProductUpdate>
+                                                                        <ProductUpdate id={product.id} category={category} fetchProduct={fetchProduct} />
                                                                     </Button>
                                                                     <Link
                                                                         href=""

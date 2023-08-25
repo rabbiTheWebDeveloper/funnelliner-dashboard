@@ -370,7 +370,7 @@ const TotalOrder = ({ allProduct, busInfo }) => {
                                                     </div>
 
                                                     <div className='right' onClick={handleCloseSales}>
-                                                        <i className="flaticon-cancel"></i>
+                                                        <i className="flaticon-close-1"></i>
                                                     </div>
 
                                                 </div>

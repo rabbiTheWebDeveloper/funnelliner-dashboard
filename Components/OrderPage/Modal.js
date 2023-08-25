@@ -1,13 +1,33 @@
-import { Box, Button, Modal } from "@mui/material";
-import { useRef, useState } from "react";
+import { Box, Button, Grid, Modal } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import SuperFetch from "../../hook/Axios";
 import useLoading from "../../hook/useLoading";
 import { useToast } from "../../hook/useToast";
 import { headers, shopId } from "../../pages/api";
 import Spinner from "../commonSection/Spinner/Spinner";
-import Select from "react-select"
+import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
+const validationSchema = Yup.object({
+  customer_name: Yup.string().required("Customer Name is required"),
+  customer_phone: Yup.string().required("Customer Contact No. is required"),
+  customer_address: Yup.string().required("Customer Address is required"),
+  products: Yup.array().of(
+    Yup.object().shape({
+      product_id: Yup.string().required('Product is required'),
+      product_qty: Yup.number()
+        .typeError('Product quantity must be a number')
+        .required('Product quantity is required')
+        .min(1, 'Product quantity must be at least 1'),
+      shipping_cost: Yup.number()
+        .typeError('Shipping cost must be a number')
+        .required('Product quantity is required')
+        .min(1, 'Shipping cost cannot be negative'),
+    })
+  ),
+  order_type: Yup.string().required("Order Source is required"),
+});
 const OrderModal = ({
   modalOpen,
   handleCloseModal,
@@ -16,63 +36,42 @@ const OrderModal = ({
   orderUpdate,
 }) => {
   const showToast = useToast();
+  const [availableProducts, setAvailableProducts] = useState([]);
   const [isLoading, startLoading, stopLoading] = useLoading();
-  const {
-    control,
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm();
-  const ref = useRef();
-  const [charge, setCharge] = useState(null);
-  const [selectedDeliveryLocation, setSelectedDeliveryLocation] =
-    useState("inside_dhaka");
-  const handleChangeDeliveryLocation = (event) => {
-    setSelectedDeliveryLocation(event.target.value);
+  const createOrder = async (inputData) => {
+    try {
+      const productIds = inputData.products.map(product => product.product_id);
+      const productQtys = inputData.products.map(product => product.product_qty);
+      const shippingCosts = inputData.products.map(product => product.shipping_cost);
+
+      const data = {
+        customer_name: inputData.customer_name,
+        customer_phone: inputData.customer_phone,
+        customer_address: inputData.customer_address,
+        order_type: inputData.order_type,
+        product_id: productIds,
+        product_qty: productQtys,
+        shipping_cost: shippingCosts,
+        shop_id: shopId
+      };
+
+      startLoading();
+      const response = await SuperFetch.post("/client/orders", data, { headers: headers });
+
+      showToast("Order created successfully", "success");
+      handleCloseModal();
+      handleFetch();
+      orderUpdate();
+    } catch (error) {
+      console.error("Error creating order:", error);
+      showToast("Something went wrong!", "error");
+    } finally {
+      stopLoading();
+    }
   };
-
-  // const options = [
-  //     { value: 'inside_dhaka', label: 'Inside Dhaka' },
-  //     { value: 'outside_dhaka', label: 'Outside Dhaka' },
-  // ]
-
-  const createOrder = (data) => {
-    if (data?.product_qty === "0") {
-      showToast("Quantity must be more than 0", "error");
-      return;
-    }
-    if (data.product_id === "product_id") {
-      showToast("Select product!", "error");
-      return;
-    }
-
-    data.shop_id = shopId;
-    data.product_id = [data.product_id];
-    data.product_qty = [data.product_qty];
-    if (charge === "paid") {
-      if (selectedDeliveryLocation === "") {
-        return;
-      }
-      data.delivery_location = selectedDeliveryLocation;
-    }
-    startLoading();
-
-   	
-    SuperFetch.post("/client/orders", data, { headers: headers })
-      .then(function (response) {
-        showToast("Order create success", "success");
-        handleCloseModal();
-        reset();
-        handleFetch();
-        orderUpdate();
-        stopLoading();
-      })
-      .catch(function (error) {
-        stopLoading();
-        showToast("Something went wrong!", "error");
-      });
-  };
+  useEffect(() => {
+    setAvailableProducts(products); // Initialize availableProducts
+  }, [products]);
   return (
     <Modal
       open={modalOpen}
@@ -85,201 +84,233 @@ const OrderModal = ({
         <div className="modalContent">
           <div className="header">
             <div className="left">
-              <i className="flaticon-choices"></i>
+              <i className="flaticon-plus"></i>
               <h4>Add New Order</h4>
             </div>
 
             <div className="right" onClick={handleCloseModal}>
-              <i className="flaticon-cancel"></i>
+              <i className="flaticon-close-1"></i>
             </div>
           </div>
+          <Formik
+            initialValues={{
+              customer_name: "",
+              customer_phone: "",
+              customer_address: "",
+              order_type: "",
+              products: [
+                { product_id: "", product_qty: 1, shipping_cost: '' }
+              ]
+            }}
+            validationSchema={validationSchema}
+            onSubmit={(values) => {
+              createOrder(values);
+            }}
+          >
+            {({ values }) => (
+              <Form>
+                <div className="updateModalForm OrderModal">
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <div className="customInput">
+                        <label>
+                          Enter Customer Name <span>*</span>
+                        </label>
+                        <Field
+                          type="text"
+                          name="customer_name"
+                        />
 
-          <form onSubmit={handleSubmit(createOrder)} ref={ref}>
-            <div className="updateModalForm">
-              <div className="customInput">
-                <label>
-                  Enter Customer Name <span>*</span>
-                </label>
-                <input
-                  type="text"
-                  {...register("customer_name", { required: true })}
-                  placeholder="Customer Name"
-                />
+                        <ErrorMessage name="customer_name" component="div"
+                          className="error" />
+                      </div>
+                    </Grid>
 
-                {errors.customer_name && (
-                  <p className="error">Customer Name required</p>
-                )}
-              </div>
+                    <Grid item xs={6}>
+                      <div className="customInput">
+                        <label>
+                          Enter Customer Contact No. <span>*</span>
+                        </label>
+                        <Field
+                          type="text"
+                          name="customer_phone"
 
-              <div className="customInput">
-                <label>
-                  Enter Customer Contact No. <span>*</span>
-                </label>
-                <input
-                  type="text"
-                  {...register("customer_phone", {
-                    required: true,
-                    pattern: /^(?:\+8801|01)[3-9]\d{8}$/,
-                  })}
-                  defaultValue="+88"
-                  placeholder="Enter Customer Contact No"
-                />
+                          defaultValue="+88"
+                          placeholder="Enter Customer Contact No"
+                        // defa
+                        />
+                        <ErrorMessage name="customer_phone" component="div"
+                          className="error" />
+                      </div>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <div className="customInput">
+                        <label>
+                          Enter Customer Address <span>*</span>
+                        </label>
+                        <Field
+                          type="text"
+                          name="customer_address"
+                          placeholder="Enter Customer Address"
+                        />
+                        <ErrorMessage name="customer_address" component="div"
+                          className="error" />
+                      </div>
+                    </Grid>
+                  </Grid>
 
-                {errors.customer_phone && (
-                  <p className="error">Valid phone number required</p>
-                )}
-              </div>
+                  <div
+                    className=""
+                    style={{ width: "100%", marginTop: "10px" }}
+                  >
+                    <FieldArray name="products">
+                      {(arrayHelpers) => (
+                        <div>
+                          {values?.products?.map((product, index) => (
+                            <div key={index}>
+                              <Grid container spacing={2}>
+                                <Grid item xs={12} sm={5}>
+                                  <div className="customInput">
+                                    <label>
+                                      Product Name <span>*</span>
+                                    </label>
+                                    <Field
+                                      component="select"
+                                      name={`products.${index}.product_id`}
+                                    >
+                                      <option value="">Select Product</option>
+                                      {Array.isArray(products)
+                                        ? products?.map((data) => (
+                                          <option
+                                            key={data?.id}
+                                            value={data?.id}
+                                            disabled={values.products.some(
+                                              (p, i) =>
+                                                p.product_id === data.id && i !== index
+                                            )}
+                                          >
+                                            {data?.product_name}
+                                          </option>
+                                        ))
+                                        : null}
+                                    </Field>
+                                    <ErrorMessage
+                                      name={`products.${index}.product_id`}
+                                      component="div"
+                                      className="error"
+                                    />
+                                  </div>
+                                </Grid>
 
-              <div className="customInput">
-                <label>
-                  Enter Customer Address <span>*</span>
-                </label>
-                <input
-                  type="text"
-                  {...register("customer_address", { required: true })}
-                  placeholder="Enter Customer Address"
-                />
+                                <Grid item xs={12} sm={3}>
+                                  <div className="customInput">
+                                    <label>
+                                      Product Quantity<span>*</span>
+                                    </label>
+                                    <Field
+                                      type="number"
+                                      variant="outlined"
+                                      name={`products.${index}.product_qty`}
+                                      placeholder="Enter Product Quantity"
+                                    // defa
+                                    />       <ErrorMessage
+                                      name={`products.${index}.product_qty`}
+                                      component="div"
+                                      className="error"
+                                    />
+                                    {/* Display error for product_quantity if needed */}
+                                  </div>
+                                </Grid>
+                                <Grid item xs={12} sm={3}>
+                                  <div className="customInput">
+                                    <label>Shipping Cost</label>
+                                    <Field
+                                      type="number"
+                                      variant="outlined"
+                                      name={`products.${index}.shipping_cost`}
+                                      placeholder="Shipping Cost"
+                                      defa
+                                    />
+                                    <ErrorMessage
+                                      name={`products.${index}.shipping_cost`}
+                                      component="div"
+                                      className="error"
+                                    />
+                                  </div>
+                                </Grid>
+                                <Grid item xs={1}>
+                                  <button
+                                    type="button"
+                                    onClick={() => arrayHelpers.remove(index)}
+                                    className="red"
+                                  >
+                                    <img src="/images/close.png" alt="" />
+                                  </button>
+                                </Grid>
+                              </Grid>
+                            </div>
+                          ))}
+                          <button
+                            type="button"
+                            className="bg OrderBg"
+                            onClick={() =>
+                              arrayHelpers.push({
+                                product_id: "",
+                                product_qty: 0,
+                                shipping_cost: 0,
+                              })
+                            }
+                          >
+                            Add Product
+                          </button>
+                        </div>
+                      )}
+                    </FieldArray>
+                  </div>
 
-                {errors.customer_address && (
-                  <p className="error">Address required</p>
-                )}
-              </div>
+                  <div className="customInput">
+                    <label>
+                      Order Source<span>*</span>
+                    </label>
 
-              <div className="customInput">
-                <label>
-                  Product Name <span>*</span>
-                </label>
+                    <Field
+                      component="select"
+                      name="order_type"
+                    >
+                      <option value="">Select Order Source</option>
 
-                <select
-                  name=""
-                  {...register("product_id", { required: true })}
-                  native={true}
-                  onChange={(e) => {
-                    setCharge(
-                      e?.target?.selectedOptions[0]?.attributes?.delivery_charge
-                        ?.value
-                    );
-                  }}
-                >
-                  <option value="">
-                    {products.length === 0
-                      ? "Please Add Product"
-                      : "Select Product"}
-                  </option>
-                  {Array.isArray(products)
-                    ? products?.map((data) => {
-                      return (
-                        <option
-                          key={data?.id}
-                          value={data.id}
-                          delivery_charge={data.delivery_charge}
-                        >
-                          {data?.product_name}
-                        </option>
-                      );
-                    })
-                    : null}
-                </select>
-              </div>
-
-              <div className="customInput">
-                <label>
-                  {" "}
-                  Enter Product Quantity<span>*</span>
-                </label>
-                <input
-                  type="text"
-                  defaultValue="1"
-                  variant="outlined"
-                  {...register("product_qty", { required: true })}
-                  placeholder="Enter Product Quantity"
-                />
-
-                {errors.product_qty && (
-                  <p className="error">Product Quantity Required</p>
-                )}
-              </div>
-
-              <div className="customInput">
-                <label>
-                  Order Source<span>*</span>
-                </label>
+                      <option key={"social"} value={"social"}>
+                        Social Media
+                      </option>
+                      <option key={"phone"} value={"phone"}>
+                        Phone Call
+                      </option>
+                    </Field>
+                    <ErrorMessage name="order_type" component="div"
+                      className="error" />
+                  </div>
 
 
+                </div>
 
-{/* 
-                <Controller
-                  name="order_type"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      options={[
-                        { value: "social", label: "Social Media" },
-                        { value: "phone", label: "Phone Call" },
-                      
-                      ]}
-                    />
+                <div className="duelButton">
+                  {isLoading ? (
+                    <>
+                      <Button type="submit" className="One">
+                        {" "}
+                        <Spinner /> Add
+                      </Button>
+                    </>
+                  ) : (
+                    <Button type="submit" className="One">
+                      {" "}
+                      Add Order
+                    </Button>
                   )}
-                /> */}
-
-                <select
-                  name=""
-                  {...register("order_type", { required: true })}
-                  native={true}
-                >
-                  <option value="">Select Order Source</option>
-
-                  <option key={"social"} value={"social"}>
-                    Social Media
-                  </option>
-                  <option key={"phone"} value={"phone"}>
-                    Phone Call
-                  </option>
-                </select>
-              </div>
-
-              {charge === "paid" && (
-                <div className="customInput">
-                  <label>
-                    Delivery location <span>*</span>
-                  </label>
-
-                  <select name="" onChange={handleChangeDeliveryLocation}>
-                    <option value="inside_dhaka">Inside Dhaka</option>
-                    <option value="outside_dhaka">Outside Dhaka</option>
-                    {selectedDeliveryLocation === "" && (
-                      <p className="error">Please Select Delivery location</p>
-                    )}
-                  </select>
                 </div>
-              )}
-
-              {charge === "free" && (
-                <div className="customInput">
-                  <label>Shipping Cost</label>
-
-                  <input type="text" disabled value="Free" />
-                </div>
-              )}
-            </div>
-
-            <div className="duelButton">
-              {isLoading ? (
-                <>
-                  <Button type="submit" className="One">
-                    {" "}
-                    <Spinner /> Add
-                  </Button>
-                </>
-              ) : (
-                <Button type="submit" className="One">
-                  {" "}
-                  Add Order
-                </Button>
-              )}
-            </div>
-          </form>
+              </Form>
+            )}
+          </Formik>
         </div>
       </Box>
     </Modal>

@@ -39,7 +39,7 @@ const Billing = ({ orderUpdate , billingList }) => {
           title={"Billing"}
           subTitle={"Billing List"}
           search={false}
-        ></HeaderDescription> */}
+        /> */}
 
         <Container maxWidth="sm">
           <div className="Table">
@@ -81,7 +81,7 @@ const Billing = ({ orderUpdate , billingList }) => {
                         <td>
                           <Button onClick={() => downloadInvoice(order?.id)}>
                             Download Invoice
-                            {/* <i className="flaticon-printer-2" /> */}
+                            {/* <i className="flaticon-printer /> */}
                           </Button>
                         </td>
                       </tr>

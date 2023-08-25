@@ -63,11 +63,12 @@ SidebarMenu
 /* SideMenu */
 
 .Sidebar .SidebarMenu {
-  height: 80%;
+  height: 75%;
   overflow-y: auto;
   position: relative;
   margin-top: 12px;
 }
+
 
 .Sidebar .SidebarMenu ul li {
   text-align: center;
@@ -353,6 +354,26 @@ updateModal
 .updateModalForm .customInput {
   width: 48%;
   margin-top: 30px;
+}
+
+.updateModalForm.OrderModal .customInput {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.updateModalForm.OrderModal button.red {
+  margin-top: 60px;
+  margin-left: 20px;
+  cursor: pointer;
+}
+
+.updateModalForm.OrderModal button.red img {
+  height: 30px;
+}
+
+.updateModalForm.OrderModal .bg.OrderBg {
+  margin-top: 20px;
+  cursor: pointer;
 }
 
 .updateModalForm .customInput.fullWidth {
@@ -660,12 +681,13 @@ Table
   background: #b27aee;
 }
 
-.Table td .action button.updateActionBtn, .Table td .action a.updateActionBtn {
+.Table td .action button.updateActionBtn,
+.Table td .action a.updateActionBtn {
   background: var(--main-color);
   padding: 6px 15px;
 }
 
-.Table td button.updateActionBtn{
+.Table td button.updateActionBtn {
   padding: 0;
 }
 
@@ -1514,6 +1536,41 @@ dataTable
   color: var(--text-color);
   font-weight: 600;
   word-break: break-word;
+  font-size: 13px;
+}
+
+.DataTable .PaymentInfo .TotalPrice {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.DataTable .PaymentInfo .TotalPrice span{
+  width: 35px;
+  font-weight: 700;
+}
+
+.DataTable .TotalPrice .TrackingId {
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 18px;
+  padding: 5px 8px;
+  color: var(--main-color);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.DataTable .TotalPrice .TrackingId span{
+width: 90%;
+}
+
+.DataTable .TotalPrice .TrackingId button{
+  min-width: auto;
+  width: 10px;
 }
 
 .DataTable .TotalPrice input {
@@ -1925,6 +1982,14 @@ Media
     height: 74%;
   }
 
+  :where(.viewModal, .updateModal) .modalBox {
+    width: 80%;
+  }
+
+  .updateModalForm.OrderModal button.red {
+    margin-top: 55px;
+  }
+
 }
 
 /* ---------------------------------------------------  --------------------------------------------------- 
@@ -2108,6 +2173,15 @@ Media
     overflow-x: auto;
   }
 
+  .updateModalForm.OrderModal button.red {
+    margin-top: 55px;
+    margin-left: 10px;
+  }
+
+  .updateModalForm.OrderModal button.red img {
+    height: 30px;
+  }
+
 }
 
 @media (max-width: 600px) {
@@ -2182,6 +2256,11 @@ Media
     padding: 15px;
     background: var(--white-color);
     box-shadow: 0px 22px 113.46px rgba(0, 0, 0, 0.03);
+  }
+
+  .updateModalForm.OrderModal button.red {
+    margin-top: 0;
+    margin-left: 0px;
   }
 
 }

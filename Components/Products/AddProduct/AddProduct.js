@@ -13,15 +13,10 @@ import HeaderDescription from "../../Common/HeaderDescription/HeaderDescription"
 import Spinner from "../../commonSection/Spinner/Spinner";
 import AddProductCategory from "./AddProductCategory";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import dynamic from "next/dynamic";
 import style from "./addProduct.module.css";
 import 'react-quill/dist/quill.snow.css';
 import ProductImage from "../../edit-theme/ProductImage";
-
-const QuillNoSSRWrapper = dynamic(import('react-quill'), {
-  ssr: false,
-  loading: () => <p>Loading ...</p>,
-})
+import QuillEditor from "../Description/Description";
 
 const AddProduct = () => {
   const router = useRouter();
@@ -29,7 +24,6 @@ const AddProduct = () => {
   const [isLoading, startLoading, stopLoading] = useLoading();
   const [value, setValue] = useState("1");
   const [category, setCategory] = useState([]);
-  const [mainImg, setMainImg] = useState();
   const [delivery, setDelivery] = useState("default");
   const [insideDhaka, setInsideDhaka] = useState();
   const [outDhaka, setOutDhaka] = useState();
@@ -37,20 +31,14 @@ const AddProduct = () => {
   const [productImage, setProductImage] = useState([])
   const [productDescription, setProductDescription] = useState('')
   const [productSummary, setProductSummary] = useState('')
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit, formState: { errors } } = useForm();
   const [categoryID, setCategoryID] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
   const [update, setUpdate] = useState(false);
-
   const [openSuggestNote, setOpenSuggestNote] = useState(false);
   const handleOpenSuggestNote = () => setOpenSuggestNote(true);
   const handleCloseSuggestNote = () => setOpenSuggestNote(false);
   const [selectedCategory, setSelectedCategory] = useState({});
-
   const handleChangeTab = (event, newValue) => {
     setValue(newValue);
   };
@@ -65,7 +53,6 @@ const AddProduct = () => {
   };
   //  add product form
   const onSubmit = (data) => {
-    //while open category create modal unfortunnatly called prodduct create fucntion
     if (openSuggestNote) {
       return;
     }
@@ -79,8 +66,6 @@ const AddProduct = () => {
       showToast("Product Image required", "error");
       return;
     }
-    data.short_description = "IT was good and I like it";
-    data.long_description = "IT was good and I like it";
     data.discount = "0";
     data.price = data.price.replace(/,/g, "");
     if (delivery === "default") {
@@ -103,12 +88,12 @@ const AddProduct = () => {
     startLoading();
     const formData = new FormData();
     formData.append("main_image", selectedImage);
-    if (productImage.length > 0) {
+    if (productImage.length) {
       for (let i = 0; i < productImage.length; i++) {
         formData.append('gallery_image[]', productImage[i]);
       }
     }
-    if (category.length > 0) {
+    if (category.length) {
       formData.append("category_id", categoryID);
     } else {
       formData.append("category_name", data.category_name);
@@ -166,7 +151,6 @@ const AddProduct = () => {
           setCategory([
             { value: "add", label: "+ Add New Category" },
             ...filterData,
-
           ]);
         }
       })
@@ -196,68 +180,18 @@ const AddProduct = () => {
     fetchCategoriesData();
   }, [fetchCategoriesData]);
 
-
-
-  
-  const modules = {
-    toolbar: [
-      [{ header: '1' }, { header: '2' }, { font: [] }],
-      [{ size: [] }],
-      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-      [
-        { list: 'ordered' },
-        { list: 'bullet' },
-        { indent: '-1' },
-        { indent: '+1' },
-      ],
-      ['link', 'image', 'video'],
-      ['clean'],
-    ],
-    clipboard: {
-      matchVisual: false,
-    },
-  }
-
-  const formats = [
-    'header',
-    'font',
-    'size',
-    'bold',
-    'italic',
-    'underline',
-    'strike',
-    'blockquote',
-    'list',
-    'bullet',
-    'indent',
-    'link',
-    'image',
-    'video',
-  ]
-
   const handleChangeProductDescription = (editor) => {
     setProductDescription(editor)
   }
-
   const handleChangeProductSummary = (editor) => {
     setProductSummary(editor)
   }
-
-  const inlineStyles = {
-    height: "25vh",
-    marginBottom: "50px !important",
-  };
-
-
-  console.log("productDescription", productDescription.length)
-  console.log("productSummary", productSummary.length)
-
   return (
     <>
       <section className="DashboardSetting">
         {/* header */}
         <HeaderDescription
-          headerIcon={"flaticon-order-delivery"}
+          headerIcon={"flaticon-product"}
           title={"Add New Products"}
           subTitle={"Add new products in your shop"}
           search={false}
@@ -313,9 +247,9 @@ const AddProduct = () => {
                             placeholder="Enter product name here"
                             {...register("product_name", { required: true })}
                           />
-                          {errors.product_name && (
+                          {errors.product_name ? (
                             <p className="error">This Product Name required</p>
-                          )}
+                          ) :null}
                         </div>
 
                         <div className={style.customInput}>
@@ -330,9 +264,9 @@ const AddProduct = () => {
                               pattern: /^(?!0)[1-9][0-9]*$/,
                             })}
                           />
-                          {errors.price && (
+                          {errors.price ? (
                             <p className="error">Invalid Price</p>
-                          )}
+                          ) :null}
                         </div>
 
                         <div className={style.customInput}>
@@ -346,9 +280,9 @@ const AddProduct = () => {
                               required: true,
                             })}
                           />
-                          {errors.product_code && (
+                          {errors.product_code ? (
                             <p className="error">Product Code required</p>
-                          )}
+                          ) :null}
                         </div>
 
                         <div className={style.customInput}>
@@ -375,7 +309,6 @@ const AddProduct = () => {
                           <Select
                             options={category}
                             onChange={handleChangeItem}
-                            // value={selectedCategory}
                             menuPosition="fixed"
                           />
                           <AddProductCategory
@@ -463,7 +396,7 @@ const AddProduct = () => {
                                 Upload Image
                               </Button>
                             </label>
-                            {imageUrl && selectedImage && (
+                            {imageUrl && selectedImage ? (
                               <Box mt={2} textAlign="center">
                                 <img
                                   src={imageUrl}
@@ -471,61 +404,42 @@ const AddProduct = () => {
                                   height="100px"
                                 />
                               </Box>
-                            )}
+                            ) :null}
                           </div>
                         </div>
                         <div className={style.customInput}>
-                          <div className=" EditTheme  CustomeInput">
-                            <label> Product Gallery Image (Minimum 3) </label>
-                            <ProductImage productImage={productImage} setProductImage={setProductImage} ></ProductImage>
-                            {/* <p>Image must be a file of type: <span>png, jpg, jpeg</span></p>
-                            <p>Image Size: <span>(Width: 500px, Height: 500px)</span></p> */}
+                          <div className="EditTheme  CustomeInput">
+                            <label> Product Gallery Image (Maximum 5) </label>
+                            <ProductImage productImage={productImage} setProductImage={setProductImage} other_images={[]} />
                           </div>
                         </div>
-                        <div className={style.customInput}>
+                        <div className="product_sort_description">
                           <label>
                             Product Short Description
                           </label>
-                          <div style={{ width: "100%", heigh: "300px" }}>
-                            <QuillNoSSRWrapper style={inlineStyles} value={productSummary} modules={modules} formats={formats} onChange={handleChangeProductSummary} placeholder="Please Describe  Your Product Short Description "></QuillNoSSRWrapper>
+                          <div>
+                            <QuillEditor value={productSummary} onChange={handleChangeProductSummary} placeholder="Please Describe  Your Product Short Description " />
 
                           </div>
 
 
-                          {/* {errors.product_code && (
-                          <p className="error">Product Code required</p>
-                        )} */}
+
                         </div>
 
 
-                        <div className={style.customInput}>
+                        <div className="product_long_description" >
                           <label>
-                            Product Description 
+                            Product Description
                           </label>
-                          <div style={{ width: "100%", heigh: "300px" }}>
-                            <QuillNoSSRWrapper style={inlineStyles} value={productDescription} modules={modules} formats={formats} onChange={handleChangeProductDescription} placeholder="Please Describe  Your Product Description "></QuillNoSSRWrapper>
-
+                          <div>
+                            <QuillEditor value={productDescription} onChange={handleChangeProductDescription} placeholder="Please Describe  Your Product Description " />
                           </div>
 
-
-                          {/* {errors.product_code && (
-                          <p className="error">Product Code required</p>
-                        )} */}
                         </div>
-
-                        {/* /// product Summary */}
-
-                     
 
 
                       </div>
 
-                      {/* <div className="d_flex d_justify">
-                     
-
-
-                     
-                      </div> */}
 
                       {/* Submit */}
                       <div className={style.Submit}>

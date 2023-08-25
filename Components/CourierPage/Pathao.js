@@ -71,9 +71,9 @@ const Pathao = ({
             onClick={() => hanldeInputTypeChange("sicretKey")}
           >
             {showPathaoSicrets?.sicretKey ? (
-              <i className="flaticon-view"></i>
+              <i className="flaticon-eye"></i>
             ) : (
-              <i className="flaticon-hide"></i>
+              <i className="flaticon-hidden"></i>
             )}
           </div>
         </div>
@@ -97,9 +97,9 @@ const Pathao = ({
             onClick={() => hanldeInputTypeChange("password")}
           >
             {showPathaoSicrets?.password ? (
-              <i className="flaticon-view"></i>
+              <i className="flaticon-eye"></i>
             ) : (
-              <i className="flaticon-hide"></i>
+              <i className="flaticon-hidden"></i>
             )}
           </div>
         </div>

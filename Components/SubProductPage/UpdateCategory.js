@@ -103,7 +103,7 @@ const UpdateCategory = ({ id }) => {
                             </div>
 
                             <div className='right' onClick={handleCloseSales}>
-                                <i class="flaticon-cancel"></i>
+                                <i class="flaticon-close-1"></i>
                             </div>
 
                         </div>

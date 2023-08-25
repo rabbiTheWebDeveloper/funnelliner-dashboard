@@ -1,10 +1,10 @@
 @font-face {
     font-family: "flaticon_mycollection";
-    src: url("./flaticon_mycollection.ttf?685ab2985ef6d21b6adca0c4ff9d297e") format("truetype"),
-url("./flaticon_mycollection.woff?685ab2985ef6d21b6adca0c4ff9d297e") format("woff"),
-url("./flaticon_mycollection.woff2?685ab2985ef6d21b6adca0c4ff9d297e") format("woff2"),
-url("./flaticon_mycollection.eot?685ab2985ef6d21b6adca0c4ff9d297e#iefix") format("embedded-opentype"),
-url("./flaticon_mycollection.svg?685ab2985ef6d21b6adca0c4ff9d297e#flaticon_mycollection") format("svg");
+    src: url("./flaticon_mycollection.ttf?d127b4e3e83e552de6d6ab766065c203") format("truetype"),
+url("./flaticon_mycollection.woff?d127b4e3e83e552de6d6ab766065c203") format("woff"),
+url("./flaticon_mycollection.woff2?d127b4e3e83e552de6d6ab766065c203") format("woff2"),
+url("./flaticon_mycollection.eot?d127b4e3e83e552de6d6ab766065c203#iefix") format("embedded-opentype"),
+url("./flaticon_mycollection.svg?d127b4e3e83e552de6d6ab766065c203#flaticon_mycollection") format("svg");
 }
 
 i[class^="flaticon-"]:before, i[class*=" flaticon-"]:before {
@@ -146,4 +146,181 @@ i[class^="flaticon-"]:before, i[class*=" flaticon-"]:before {
 }
 .flaticon-checked:before {
     content: "\f12b";
+}
+.flaticon-instagram:before {
+    content: "\f12c";
+}
+.flaticon-telegram:before {
+    content: "\f12d";
+}
+.flaticon-whatsapp:before {
+    content: "\f12e";
+}
+.flaticon-telegram-1:before {
+    content: "\f12f";
+}
+.flaticon-github:before {
+    content: "\f130";
+}
+.flaticon-linkedin:before {
+    content: "\f131";
+}
+.flaticon-spotify:before {
+    content: "\f132";
+}
+.flaticon-youtube:before {
+    content: "\f133";
+}
+.flaticon-viber:before {
+    content: "\f134";
+}
+.flaticon-vk:before {
+    content: "\f135";
+}
+.flaticon-facebook:before {
+    content: "\f136";
+}
+.flaticon-twitter:before {
+    content: "\f137";
+}
+.flaticon-line:before {
+    content: "\f138";
+}
+.flaticon-snapchat:before {
+    content: "\f139";
+}
+.flaticon-google-plus:before {
+    content: "\f13a";
+}
+.flaticon-facebook-1:before {
+    content: "\f13b";
+}
+.flaticon-google-plus-1:before {
+    content: "\f13c";
+}
+.flaticon-pinterest:before {
+    content: "\f13d";
+}
+.flaticon-airbnb:before {
+    content: "\f13e";
+}
+.flaticon-kakao-talk:before {
+    content: "\f13f";
+}
+.flaticon-google-play:before {
+    content: "\f140";
+}
+.flaticon-odnoklassniki:before {
+    content: "\f141";
+}
+.flaticon-slack:before {
+    content: "\f142";
+}
+.flaticon-git:before {
+    content: "\f143";
+}
+.flaticon-reddit:before {
+    content: "\f144";
+}
+.flaticon-vimeo:before {
+    content: "\f145";
+}
+.flaticon-wordpress:before {
+    content: "\f146";
+}
+.flaticon-waze:before {
+    content: "\f147";
+}
+.flaticon-tumblr:before {
+    content: "\f148";
+}
+.flaticon-wechat:before {
+    content: "\f149";
+}
+.flaticon-medium:before {
+    content: "\f14a";
+}
+.flaticon-sina-weibo:before {
+    content: "\f14b";
+}
+.flaticon-google-hangouts:before {
+    content: "\f14c";
+}
+.flaticon-google-drive:before {
+    content: "\f14d";
+}
+.flaticon-messenger:before {
+    content: "\f14e";
+}
+.flaticon-codepen:before {
+    content: "\f14f";
+}
+.flaticon-dropbox:before {
+    content: "\f150";
+}
+.flaticon-github-1:before {
+    content: "\f151";
+}
+.flaticon-soundcloud:before {
+    content: "\f152";
+}
+.flaticon-home-2:before {
+    content: "\f153";
+}
+.flaticon-calendar:before {
+    content: "\f154";
+}
+.flaticon-phone-call:before {
+    content: "\f155";
+}
+.flaticon-location:before {
+    content: "\f156";
+}
+.flaticon-maps-and-flags:before {
+    content: "\f157";
+}
+.flaticon-stock-market:before {
+    content: "\f158";
+}
+.flaticon-in-stock-1:before {
+    content: "\f159";
+}
+.flaticon-money-graph-with-up-arrow:before {
+    content: "\f15a";
+}
+.flaticon-user:before {
+    content: "\f15b";
+}
+.flaticon-trend:before {
+    content: "\f15c";
+}
+.flaticon-down-arrow:before {
+    content: "\f15d";
+}
+.flaticon-cash-on-delivery:before {
+    content: "\f15e";
+}
+.flaticon-trending:before {
+    content: "\f15f";
+}
+.flaticon-printer:before {
+    content: "\f160";
+}
+.flaticon-close-1:before {
+    content: "\f161";
+}
+.flaticon-eye:before {
+    content: "\f162";
+}
+.flaticon-hidden:before {
+    content: "\f163";
+}
+.flaticon-downloads:before {
+    content: "\f164";
+}
+.flaticon-info:before {
+    content: "\f165";
+}
+.flaticon-info-button:before {
+    content: "\f166";
 }

@@ -13,7 +13,7 @@ const index = () => {
         <>
 
           
-            <SubCategory></SubCategory>
+            <SubCategory/>
 
         </>
 

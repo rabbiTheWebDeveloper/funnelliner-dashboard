@@ -8,7 +8,7 @@ import withAuth from "../../hook/PrivateRoute";
 const index = () => {
     return (
         <>
-            <MyMultiWebsite></MyMultiWebsite>
+            <MyMultiWebsite/>
 
         </>
     );

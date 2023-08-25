@@ -9,7 +9,7 @@ const Plugin = () => {
 
             <section className=''>
 
-                <FirstOpen></FirstOpen>
+                <FirstOpen/>
 
             </section>
 

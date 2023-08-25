@@ -1,7 +1,5 @@
 import { Box, Modal } from "@mui/material";
 const ShowProduct = ({ id, product, modalOpen, handleCloseModal}) => {
-
-
     return (
         <div>
            
@@ -23,7 +21,7 @@ const ShowProduct = ({ id, product, modalOpen, handleCloseModal}) => {
                             </div>
 
                             <div className='right' onClick={handleCloseModal}>
-                                <i className="flaticon-cancel"></i>
+                                <i className="flaticon-close-1"></i>
                             </div>
 
                         </div>
@@ -54,12 +52,10 @@ const ShowProduct = ({ id, product, modalOpen, handleCloseModal}) => {
                                     </td>
 
                                 </tr>
-
                                 <tr>
 
                                     <th>Product Image</th>
                                     <td><img src={product?.main_image} alt="" /></td>
-
                                     <th></th>
                                     <td></td>
 

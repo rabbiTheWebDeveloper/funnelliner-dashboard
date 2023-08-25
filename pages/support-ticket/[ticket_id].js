@@ -15,7 +15,7 @@ const Ticket_id = () => {
     const showToast = useToast()
     const ticket_ID = router?.query?.ticket_id;
     const [ticket_details, setTicketDetails] = useState({})
-  
+
     const {
         register,
         handleSubmit,
@@ -65,7 +65,7 @@ const Ticket_id = () => {
             <section className='SupportTicket'>
 
                 {/* header */}
-                <HeaderDescription headerIcon={'flaticon-customer-service'} title={'Ticket Conversation'} subTitle={'Conversation of ticket opended by clients'} search={false}></HeaderDescription>
+                <HeaderDescription headerIcon={'flaticon-customer-service'} title={'Ticket Conversation'} subTitle={'Conversation of ticket opended by clients'} search={false} />
 
                 <Container maxWidth='sm'>
                     <Grid Container spacing={3}>

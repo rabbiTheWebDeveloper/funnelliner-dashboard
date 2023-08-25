@@ -1,573 +1,640 @@
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import { Button, TextField, Tooltip } from '@mui/material';
-import axios from 'axios';
-import { enGB } from 'date-fns/locale';
-import moment from 'moment';
-import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
-import { AiOutlineSearch } from 'react-icons/ai';
-import { TbCurrencyTaka } from 'react-icons/tb';
-import { DateRangePicker } from 'react-nice-dates';
-import 'react-nice-dates/build/style.css';
-import styled from 'styled-components';
-import Swal from 'sweetalert2';
-import { baseTest } from '../../constant/constant';
-import { headers } from '../../pages/api';
-import AccountEdit from './AccountEdit';
-import CashIn from './CashIn';
-import CashOut from './CashOut';
-import FilterCategoryItem from './FilterCategoryItem';
-import FilterPaymentItem from './FilterPaymentItem';
-import FilterReceverItem from './FilterReceverItem';
+import { Button, Tooltip } from "@mui/material";
+import axios from "axios";
+import moment from "moment";
+import React, { useEffect, useState, useCallback } from "react";
+import { AiOutlineSearch, AiOutlineCloseCircle } from "react-icons/ai";
+import "react-nice-dates/build/style.css";
+import Swal from "sweetalert2";
+import { headers } from "../../pages/api";
+import AccountEdit from "./AccountEdit";
+import CashIn from "./CashIn";
+import CashOut from "./CashOut";
+import FilterCategoryItem from "./FilterCategoryItem";
+import FilterPaymentItem from "./FilterPaymentItem";
+import FilterReceverItem from "./FilterReceverItem";
+import { API_ENDPOINTS } from "../../config/ApiEndpoints";
+import DateWiseFilter from "./DateWiseFilter";
+import AccountBalance from "./AccountBalance";
 
-const AccountDashboard = ({ payment, setPayment, handleFetch, fetchApi }) => {
+const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
+  const [search, setSearch] = useState("");
+  const [dateWiseFilterOption, setDateWiseFilterOption] = useState("today");
+  const [caseInPayableData, setCaseInPayableData] = useState([]);
+  const [caseInLedgerData, setCaseInLedgerData] = useState([]);
+  const [caseInPaymentMethodData, setCaseInPaymentMethodData] = useState([]);
+  const [caseOutPayableData, setCaseOutPayableData] = useState([]);
+  const [caseOutLedgerData, setCaseOutLedgerData] = useState([]);
+  const [caseOutPaymentMethodData, setCaseOutPaymentMethodData] = useState([]);
+  const [filterStartDate, setFilterStartDate] = useState();
+  const [filterEndDate, setFilterEndDate] = useState();
+  const [cashInAndCashOutPayableData, setCashInAndCashOutPayableData] =
+    useState([]);
+  const [cashInAndCashOutLedgerData, setCashInAndCashOutLedgerData] = useState(
+    []
+  );
+  const [
+    cashInAndCashOutPaymentMethodData,
+    setCashInAndCashOutPaymentMethodData,
+  ] = useState([]);
+  const [payable, setPayable] = useState([]);
+  const [ledger, setLedger] = useState([]);
+  const [paymentItem, setPaymentItem] = useState([]);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [selectedData, setSelectedData] = useState({});
+  const [openCaseInModal, setOpenCaseInModal] = useState(false);
+  const [openCashOutModal, setOpenCashOutModal] = useState(false);
+  const [balance, setBalance] = useState({});
 
-    const [search, setSearch] = useState(null)
-
-
-    // Custom Date
-    const [startDate, setStartDate] = useState();
-    const [endDate, setEndDate] = useState();
-    const formatDate = (date) => {
-        if (!date) return "";
-        return date.toLocaleDateString();
-    }
-    const dateValue = startDate && endDate ? `${formatDate(startDate)} - ${formatDate(endDate)}` : "";
-    const [update, setUpdate] = useState(false)
-    // balance 
-    const [balance, setBalance] = useState({});
-
-
-    const balanceFetch = () => {
-        setUpdate(true);
-    }
-
-
-
-
-    //   delete 
-    const deletePayment = (id) => {
-        Swal.fire({
-            title: "Are you sure?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                axios.get(baseTest + `/client/accounts/payment-delete/${id}`, {
-                    headers: headers,
-                })
-                    .then(function (result) {
-                        if (result) {
-                            setPayment((pd) => {
-                                const filter = payment.filter((prod) => {
-                                    return prod.id !== id;
-                                });
-                                return [...filter];
-                            });
-                            setUpdate(true)
-                            Swal.fire("Deleted!", "Your file has been deleted.", "success");
-                        }
-                    }).catch((errr) => {
-                        alert("Some thing went wrong")
-                    })
-
+  //   delete
+  const deletePayment = id => {
+    Swal.fire({
+      title: "Are you sure?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes",
+    }).then(result => {
+      if (result.isConfirmed) {
+        const fetchDeleteApi = async () => {
+          const deleteRes = await axios.get(
+            `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ACCOUNTS.DELETE_ACCOUNT}${id}`,
+            {
+              headers: headers,
             }
+          );
+          if (deleteRes?.data?.success) {
+            setPayment(pd => {
+              const filter = payment.filter(prod => {
+                return prod.id !== id;
+              });
+              return [...filter];
+            });
+            Swal.fire("Deleted!", "Your file has been deleted.", "success");
+          } else {
+            Swal.fire("Deleted!", "Not Deleted", "error");
+          }
+        };
+        fetchDeleteApi();
+      }
+    });
+  };
+
+  const handleFetchSearch = useCallback(async () => {
+    try {
+      let data = await axios({
+        method: "get",
+        url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ACCOUNTS.SEARCH_ACCOUNT}${search}`,
+        headers: headers,
+      });
+      setPayment(data?.data?.data);
+    } catch (err) {}
+  }, [search]);
+
+  const handleFetchMutiSearch = useCallback(async () => {
+    const params = {
+      date: dateWiseFilterOption,
+      payor: payable,
+      ledger: ledger,
+      payment: paymentItem,
+      start_date: filterStartDate,
+      end_date: filterEndDate,
+    };
+
+    if (
+      dateWiseFilterOption === "custom" &&
+      filterStartDate !== undefined &&
+      filterEndDate !== undefined
+    ) {
+      try {
+        let dataRes = await axios({
+          method: "get",
+          url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ACCOUNTS.GET_MULTI_SEARCH}`,
+          headers: headers,
+          params,
         });
-    };
 
-    const handleFetchEditInfo = async () => {
-        try {
-            let data = await axios({
-                method: "get",
-                url: `${process.env.API_URL}/client/accounts/payment-calculation`,
-                headers: headers,
-            });
-            setBalance(data?.data?.data);
-        } catch (err) {
-
+        if (dataRes?.data?.success) {
+          setPayment(dataRes?.data?.data?.payments);
+          setBalance(dataRes?.data?.data);
+          handleFetch();
         }
-    };
+      } catch (err) {
+        // Handle the error here
+      }
+    } else if (
+      dateWiseFilterOption === "today" ||
+      dateWiseFilterOption == "yesterday" ||
+      dateWiseFilterOption === "weekly" ||
+      dateWiseFilterOption === "monthly"
+    ) {
+      try {
+        let dataRes = await axios({
+          method: "get",
+          url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ACCOUNTS.GET_MULTI_SEARCH}`,
+          headers: headers,
+          params,
+        });
 
-    useEffect(() => {
-        handleFetchEditInfo();
-        setUpdate(false)
-    }, [update]);
-
-    //filter data by date
-    const [filterOption, setOptionFilter] = useState("today")
-    const handleFetchFilterdDataByDate = async () => {
-        try {
-            let data = await axios({
-                method: "get",
-                url: `${process.env.API_URL}/client/accounts/payment-search-datewise/${filterOption}`,
-                headers: headers,
-            });
-            setPayment(data?.data?.data.search)
-            setTodayData(data?.data?.data)
-            setBalance(data?.data?.data);
-
-
-
-        } catch (err) {
-
+        if (dataRes?.data?.success) {
+          setPayment(dataRes?.data?.data?.payments);
+          setBalance(dataRes?.data?.data);
+          handleFetch();
         }
-    };
-    useEffect(() => {
-        if (filterOption !== "") {
-            handleFetchFilterdDataByDate()
-        }
-    }, [filterOption, fetchApi])
-    const handleFetchSearch = async () => {
-        try {
-            let data = await axios({
-                method: "get",
-                url: `${process.env.API_URL}/client/accounts/payment-search/${search}`,
-                headers: headers,
-            });
-            setPayment(data?.data?.data)
+      } catch (err) {
+        // Handle the error here
+      }
+    }
+  }, [
+    dateWiseFilterOption,
+    payable,
+    ledger,
+    paymentItem,
+    filterStartDate,
+    filterEndDate,
+  ]);
 
+  const fetchCaseInPayableData = useCallback(async () => {
+    const payableRes = await axios.get(
+      `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ACCOUNTS.GET_PAYOR_LIST}?type=CashIn`,
+      {
+        headers: headers,
+      }
+    );
 
-
-        } catch (err) {
-
-        }
-    };
-    useEffect(() => {
-        if (search?.length > 0) {
-            handleFetchSearch()
-
-        }
-    }, [search])
-
-
-    const newStartDate = moment(startDate).format("DD-MM-YYYY")
-    const newEndDate = moment(endDate).format("DD-MM-YYYY")
-
-
-    const handleFetchCustomDateSearch = async () => {
-        try {
-            let data = await axios({
-                method: "get",
-                url: `${process.env.API_URL}/client/accounts/payment-search-custom-datewise?start_date=${newStartDate}&end_date=${newEndDate}`,
-                headers: headers,
-            });
-            setPayment(data?.data?.data.search)
-            setBalance(data?.data?.data);
-
-
-        } catch (err) {
-
-        }
-    };
-    useEffect(() => {
-        if (startDate != undefined && endDate != undefined) handleFetchCustomDateSearch()
-    }, [startDate, endDate])
-
-
-    //    reciver list 
-
-    const [reciverList, setReciverList] = useState([])
-    const [fetchReciverList, setFetchReciverList] = useState(false)
-
-    const handleFetchReciverList = async () => {
-        try {
-            let data = await axios({
-                method: "get",
-                url: `${process.env.API_URL}/client/accounts/payor/list`,
-                headers: headers,
-            });
-            setReciverList(data?.data?.data)
-
-
-        } catch (err) {
-
-        }
-        setFetchReciverList(false)
-    };
-    useEffect(() => {
-        handleFetchReciverList()
-    }, [fetchReciverList])
-
-    const handelFetchReciver = () => {
-        setFetchReciverList(true)
+    if (payableRes?.data?.success === true && payableRes?.data?.data?.length) {
+      const newPayableArr = [];
+      payableRes?.data?.data?.forEach(item => {
+        newPayableArr.push({ value: item?.id, label: item?.name });
+      });
+      newPayableArr.unshift({
+        value: "addPayable",
+        label: "+ Add New Payable/Payor",
+      });
+      const allArr = [...newPayableArr, ...cashInAndCashOutPayableData];
+      setCaseInPayableData(newPayableArr);
+      setCashInAndCashOutPayableData(allArr);
     }
 
-    // cetogory list 
-    const [categoryList, setCategoryList] = useState([])
-    const [fetchCategoryList, setFetchCategoryList] = useState(false)
-    const handleFetchCategoryList = async () => {
-        try {
-            let data = await axios({
-                method: "get",
-                url: `${process.env.API_URL}/client/accounts/ledger/list`,
-                headers: headers,
-            });
-            setCategoryList(data?.data?.data)
+    if (payableRes?.data?.success === true && !payableRes?.data?.data?.length) {
+      setCaseInPayableData([
+        { value: "addPayable", label: "+ Add New Payable/Payor" },
+      ]);
+    }
+  }, []);
 
+  const fetchCaseInLedgerData = useCallback(async () => {
+    const payableRes = await axios.get(
+      `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ACCOUNTS.GET_LEDGER_LIST}?type=CashIn`,
+      {
+        headers: headers,
+      }
+    );
 
-        } catch (err) {
-
-        }
-
-        setFetchCategoryList(false)
-    };
-    useEffect(() => {
-        handleFetchCategoryList()
-    }, [fetchCategoryList])
-
-    const handelFetchCategory = () => {
-        setFetchCategoryList(true)
-
+    if (payableRes?.data?.success === true && payableRes?.data?.data?.length) {
+      const newPayableArr = [];
+      payableRes?.data?.data?.forEach(item => {
+        newPayableArr.push({ value: item?.id, label: item?.name });
+      });
+      newPayableArr.unshift({
+        value: "add",
+        label: "+ Add New Category/Ledger",
+      });
+      const allArr = [...newPayableArr, ...cashInAndCashOutLedgerData];
+      setCaseInLedgerData(newPayableArr);
+      setCashInAndCashOutLedgerData(allArr);
     }
 
+    if (payableRes?.data?.success === true && !payableRes?.data?.data?.length) {
+      setCaseInLedgerData([
+        { value: "add", label: "+ Add New Category/Ledger" },
+      ]);
+    }
+  }, []);
 
+  const fetchCaseInPaymentMethodData = useCallback(async () => {
+    const payableRes = await axios.get(
+      `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ACCOUNTS.GET_PAYMENT_METHOD_LIST}?type=CashIn`,
+      {
+        headers: headers,
+      }
+    );
 
-
-    // payment list 
-    const [todayData, setTodayData] = useState([])
-    const [paymentList, setPaymentList] = useState(todayData)
-    const [fetchPaymentList, setFetchPaymentList] = useState(false)
-
-    const handleFetchPaymentList = async () => {
-        try {
-            let data = await axios({
-                method: "get",
-                url: `${process.env.API_URL}/client/accounts/payment-method-show`,
-                headers: headers,
-            });
-            setPaymentList(data?.data?.data)
-
-
-        } catch (err) {
-
-        }
-    };
-    useEffect(() => {
-        handleFetchPaymentList()
-    }, [fetchPaymentList])
-
-    const handelFetchPaymentlist = () => {
-        setFetchPaymentList(true)
-
+    if (payableRes?.data?.success === true && payableRes?.data?.data?.length) {
+      const newPayableArr = [];
+      payableRes?.data?.data?.forEach(item => {
+        newPayableArr.push({ value: item?.id, label: item?.name });
+      });
+      newPayableArr.unshift({
+        value: "add",
+        label: "+ Add New Payment Method",
+      });
+      const allArr = [...newPayableArr, ...cashInAndCashOutPaymentMethodData];
+      setCaseInPaymentMethodData(newPayableArr);
+      setCashInAndCashOutPaymentMethodData(allArr);
     }
 
-    let selectReciver = reciverList?.length === 0 ? [] : reciverList?.map(function (item) {
-        return item;
-    })
+    if (payableRes?.data?.success === true && !payableRes?.data?.data?.length) {
+      setCaseInPaymentMethodData([
+        { value: "add", label: "+ Add New Payment Method" },
+      ]);
+    }
+  }, []);
 
-    let selectCatgory = categoryList?.length === 0 ? [] : categoryList?.map(function (item) {
-        return item;
-    })
-    let selectPayment = paymentList?.length === 0 ? [] : paymentList?.map(function (item) {
-        return item.name;
-    })
+  const fetchCaseOutPayableData = useCallback(async () => {
+    const payableRes = await axios.get(
+      `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ACCOUNTS.GET_PAYOR_LIST}?type=CashOut`,
+      {
+        headers: headers,
+      }
+    );
 
+    if (payableRes?.data?.success === true && payableRes?.data?.data?.length) {
+      const newPayableArr = [];
+      payableRes?.data?.data?.forEach(item => {
+        newPayableArr.push({ value: item?.id, label: item?.name });
+      });
+      newPayableArr.unshift({
+        value: "addPayable",
+        label: "+ Add New Payable/Payor",
+      });
+      const allArr = [...newPayableArr, ...cashInAndCashOutPayableData];
+      setCaseOutPayableData(newPayableArr);
+      setCashInAndCashOutPayableData(allArr);
+    }
 
+    if (payableRes?.data?.success === true && !payableRes?.data?.data?.length) {
+      setCaseOutPayableData([
+        { value: "addPayable", label: "+ Add New Payable/Payor" },
+      ]);
+    }
+  }, []);
 
-    return (
+  const fetchCaseOutLedgerData = useCallback(async () => {
+    const payableRes = await axios.get(
+      `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ACCOUNTS.GET_LEDGER_LIST}?type=CashOut`,
+      {
+        headers: headers,
+      }
+    );
 
-        <>
+    if (payableRes?.data?.success === true && payableRes?.data?.data?.length) {
+      const newPayableArr = [];
+      payableRes?.data?.data?.forEach(item => {
+        newPayableArr.push({ value: item?.id, label: item?.name });
+      });
+      newPayableArr.unshift({
+        value: "add",
+        label: "+ Add New Category/Ledger",
+      });
+      const allArr = [...newPayableArr, ...cashInAndCashOutLedgerData];
+      setCaseOutLedgerData(newPayableArr);
+      setCashInAndCashOutLedgerData(allArr);
+    }
 
-            <section className='AccountDashboard boxShadow'>
+    if (payableRes?.data?.success === true && !payableRes?.data?.data?.length) {
+      setCaseOutLedgerData([
+        { value: "add", label: "+ Add New Category/Ledger" },
+      ]);
+    }
+  }, []);
 
-                <div className="Selector d_flex">
+  const fetchCaseOutPaymentMethodData = useCallback(async () => {
+    const payableRes = await axios.get(
+      `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ACCOUNTS.GET_PAYMENT_METHOD_LIST}?type=CashOut`,
+      {
+        headers: headers,
+      }
+    );
 
-                    <Button className={filterOption === 'today' && 'active'} onClick={() => setOptionFilter("today")}>Today</Button>
-                    <Button className={filterOption === 'yesterday' && 'active'} onClick={() => setOptionFilter("yesterday")}>Yesterday</Button>
-                    <Button className={filterOption === 'week' && 'active'} onClick={() => setOptionFilter("week")}>This Week</Button>
-                    <Button className={filterOption === 'month' && 'active'} onClick={() => setOptionFilter("month")}>This Month</Button>
+    if (payableRes?.data?.success === true && payableRes?.data?.data?.length) {
+      const newPayableArr = [];
+      payableRes?.data?.data?.forEach(item => {
+        newPayableArr.push({ value: item?.id, label: item?.name });
+      });
+      newPayableArr.unshift({
+        value: "add",
+        label: "+ Add New Payment Method",
+      });
+      const allArr = [...newPayableArr, ...cashInAndCashOutPaymentMethodData];
+      setCaseOutPaymentMethodData(newPayableArr);
+      setCashInAndCashOutPaymentMethodData(allArr);
+    }
 
+    if (payableRes?.data?.success === true && !payableRes?.data?.data?.length) {
+      setCaseOutPaymentMethodData([
+        { value: "add", label: "+ Add New Payment Method" },
+      ]);
+    }
+  }, []);
 
+  useEffect(() => {
+    fetchCaseInLedgerData();
+  }, [fetchCaseInLedgerData]);
 
-                    <div className='AccountDashboard accounting_modules_custom_date_range' >
+  useEffect(() => {
+    fetchCaseInPayableData();
+  }, [fetchCaseInPayableData]);
 
-                        <div className="FilterItem CustomDate dateRangePicker" >
-                            <DateRangePicker
-                                startDate={startDate}
-                                endDate={endDate}
-                                focus={focus}
-                                onStartDateChange={setStartDate}
-                                onEndDateChange={setEndDate}
-                                locale={enGB}
-                                modifiersClassNames={{ open: '-open' }}
+  useEffect(() => {
+    fetchCaseInPaymentMethodData();
+  }, [fetchCaseInPaymentMethodData]);
+
+  useEffect(() => {
+    fetchCaseOutLedgerData();
+  }, [fetchCaseOutLedgerData]);
+
+  useEffect(() => {
+    fetchCaseOutPayableData();
+  }, [fetchCaseInPayableData]);
+
+  useEffect(() => {
+    fetchCaseOutPaymentMethodData();
+  }, [fetchCaseInPaymentMethodData]);
+
+  useEffect(() => {
+    handleFetchMutiSearch();
+  }, [handleFetchMutiSearch]);
+
+  useEffect(() => {
+    if (search?.length > 0) {
+      handleFetchSearch();
+    }
+  }, [search]);
+
+  return (
+    <>
+      <section className="AccountDashboard boxShadow">
+        <div className="Selector d_flex">
+          <DateWiseFilter
+            setDateWiseFilterOption={setDateWiseFilterOption}
+            dateWiseFilterOption={dateWiseFilterOption}
+            filterStartDate={filterStartDate}
+            setFilterStartDate={setFilterStartDate}
+            filterEndDate={filterEndDate}
+            setFilterEndDate={setFilterEndDate}
+          />
+        </div>
+
+        <div className="Header">
+          <AccountBalance balance={balance} />
+
+          <div className="HeaderItemContent AccountCashIn">
+            <Button onClick={() => setOpenCaseInModal(true)}>
+              <span>Cash In</span> <img src="/images/money-down.png" alt="" />
+            </Button>
+          </div>
+
+          <div className="HeaderItemContent AccountCashIn CashOut">
+            <Button onClick={() => setOpenCashOutModal(true)}>
+              {" "}
+              <span>Cash Out</span> <img src="/images/money-up.png" alt="" />{" "}
+            </Button>
+          </div>
+        </div>
+
+        {/* AccountTable */}
+        <div className="AccountTable Table">
+          <div className="Filter d_flex d_justify">
+            <div className="FilterItem">
+              <select
+                onChange={e => setDateWiseFilterOption(e.target.value)}
+                name=""
+              >
+                <option value="">Select</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+              </select>
+            </div>
+
+            <div className="FilterItem">
+              <FilterReceverItem
+                selectedItem={payable}
+                setSelectedItem={setPayable}
+                setBalance={setBalance}
+                selectReciver={cashInAndCashOutPayableData}
+                setPayment={setPayment}
+                handleFetch={handleFetch}
+              />
+            </div>
+
+            <div className="FilterItem">
+              <FilterCategoryItem
+                selectedItem={ledger}
+                setSelectedItem={setLedger}
+                setBalance={setBalance}
+                selectCatgory={cashInAndCashOutLedgerData}
+                setPayment={setPayment}
+                handleFetch={handleFetch}
+              />
+            </div>
+
+            <div className="FilterItem">
+              <FilterPaymentItem
+                selectedItem={paymentItem}
+                setSelectedItem={setPaymentItem}
+                setBalance={setBalance}
+                selectPayment={cashInAndCashOutPaymentMethodData}
+                setPayment={setPayment}
+                handleFetch={handleFetch}
+              />
+            </div>
+
+            <div className="FilterItem">
+              <div className="Search">
+                <input
+                  type="text"
+                  placeholder="Search Here..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                />
+                {search?.length ? (
+                  <div
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      setSearch("");
+                      handleFetchMutiSearch();
+                    }}
+                  >
+                    <AiOutlineCloseCircle />
+                  </div>
+                ) : (
+                  <AiOutlineSearch />
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Bill No</th>
+                  <th>Date & Time</th>
+                  <th>Description</th>
+                  <th>Payable/Payor</th>
+                  <th>Category/Ledger</th>
+                  <th>Payment Method</th>
+                  <th>Amount</th>
+                  <th>Balance</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {payment.length > 0 ? (
+                  payment.map((item, index) => {
+                    return (
+                      <tr key={index}>
+                        <td>#{item?.bill_no}</td>
+                        <td>
+                          {moment(item?.created_at).format("MMMM DD, YYYY")}
+                        </td>
+
+                        <Tooltip
+                          title={item?.description}
+                          placement="top-start"
+                        >
+                          <td>
+                            {item?.description?.length < 15 ? (
+                              <>{item?.description}</>
+                            ) : (
+                              <>
+                                {item?.description?.slice(0, 13)}
+                                ...
+                              </>
+                            )}
+                          </td>
+                        </Tooltip>
+                        {/* <td>{item?.description}</td> */}
+                        <td>{item?.payorName}</td>
+                        <td>{item?.ledgerName}</td>
+                        <td>
+                          {item?.payment_type !== null
+                            ? item?.payment_type
+                            : null}
+                        </td>
+                        <td
+                          style={
+                            item.status !== "CashIn"
+                              ? { color: "red" }
+                              : { color: "green", fontWeight: 600 }
+                          }
+                        >
+                          {item.status === "CashIn" ? "+" : "-"}
+                          {item?.amount
+                            .toFixed(0)
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                        </td>
+
+                        <td>
+                          {item?.balance
+                            ?.toFixed(0)
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                        </td>
+                        <td>
+                          <div className="action">
+                            <Button
+                              className="updateActionBtn"
+                              onClick={() => {
+                                setOpenEditModal(true);
+                                setSelectedData(item);
+                              }}
                             >
-                                {({ startDateInputProps, endDateInputProps }) => (
-                                    <div className='date-range' style={{ left: '495px' }}>
-                                        <span className='date-range_arrow' />
-                                        <input
-                                            className={'input'}
-                                            {...endDateInputProps}
-                                            {...startDateInputProps}
-                                            placeholder='Custom Date Range'
-                                            value={dateValue}
-                                        />
-                                    </div>
-                                )}
-                            </DateRangePicker>
+                              <i className="flaticon-edit"></i>
+                            </Button>
 
+                            <Button
+                              onClick={() => deletePayment(item.id)}
+                              className="deleteActionBtn"
+                            >
+                              <i className="flaticon-delete"></i>
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan={20}>
+                      <section className="MiddleSection">
+                        <div className="MiddleSectionContent">
+                          <div className="img">
+                            <img src="/images/empty.png" alt="" />
+                          </div>
 
+                          <div className="text">
+                            <p>Not Found</p>
+                          </div>
                         </div>
-
-                    </div>
-                    {/* <Button style={{ margin: "0 18px" }} onClick={() => router.push('/account-report')}> Reports </Button> */}
-
-                </div>
-
-                <div className="Header">
-
-                    {/* Item */}
-                    <div className="HeaderItemContent">
-
-                        <div className="HeaderItem d_flex">
-
-                            <div className="img">
-                                <img src="/images/account-plus.png" alt="" />
-                            </div>
-
-                            <div className="text">
-                                <h5>Cash In</h5>
-                                <h3><TbCurrencyTaka />
-                                    {balance?.cashIn ? balance?.cashIn?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "00"}
-                                </h3>
-                            </div>
-
-                            <div className="overlay">
-                                <img src="/images/account-plus-overlay.png" alt="" />
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    {/* Item */}
-                    <div className="HeaderItemContent">
-
-                        <div className="HeaderItem Minus d_flex">
-
-                            <div className="img">
-                                <img src="/images/account-minus.png" alt="" />
-                            </div>
-
-                            <div className="text">
-                                <h5>Cash Out</h5>
-                                <h3><TbCurrencyTaka />
-                                    {balance?.cashOut ? balance?.cashOut?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "00"}
-                                </h3>
-                            </div>
-
-                            <div className="overlay">
-                                <img src="/images/account-minus-overlay.png" alt="" />
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    {/* Item */}
-                    <div className="HeaderItemContent">
-
-                        <div className="HeaderItem Equal d_flex">
-
-                            <div className="img">
-                                <img src="/images/account-equal.png" alt="" />
-                            </div>
-
-                            <div className="text">
-                                <h5>Balance</h5>
-                                <h3><TbCurrencyTaka />
-
-                                    {balance?.balance ? balance?.balance?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "00"}
-                                </h3>
-                            </div>
-
-                            <div className="overlay">
-                                <img src="/images/account-equal-overlay.png" alt="" />
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    {/* Item */}
-                    <div className="HeaderItemContent">
-                        <CashIn handelFetchPaymentlist={handelFetchPaymentlist} handleFetch={handleFetch} balanceFetch={balanceFetch} payment={payment} paymentList={paymentList} categoryList={categoryList} reciverList={reciverList} handelFetchCategory={handelFetchCategory} handelFetchReciver={handelFetchReciver} />
-                    </div>
-
-                    {/* Item */}
-                    <div className="HeaderItemContent">
-                        <CashOut handelFetchPaymentlist={handelFetchPaymentlist} handleFetch={handleFetch} balanceFetch={balanceFetch} payment={payment} paymentList={paymentList} categoryList={categoryList} reciverList={reciverList} handelFetchCategory={handelFetchCategory} handelFetchReciver={handelFetchReciver} />
-                    </div>
-
-                </div>
-
-                {/* AccountTable */}
-                <div className="AccountTable Table">
-
-                    <div className="Filter d_flex d_justify">
-
-                        <div className="FilterItem">
-                            <select onChange={(e) => setOptionFilter(e.target.value)} name="">
-                                <option value="">Select</option>
-                                <option value="today">Today</option>
-                                <option value="yesterday">Yesterday</option>
-                                <option value="week">This Week</option>
-                                <option value="month">This Month</option>
-                            </select>
-                        </div>
-
-                        <div className="FilterItem">
-                            <FilterReceverItem balanceFetch={balanceFetch} setBalance={setBalance} selectReciver={selectReciver} setPayment={setPayment} handleFetch={handleFetch} ></FilterReceverItem>
-                        </div>
-
-                        <div className="FilterItem">
-                            <FilterCategoryItem balanceFetch={balanceFetch} setBalance={setBalance} selectCatgory={selectCatgory} setPayment={setPayment} handleFetch={handleFetch}></FilterCategoryItem>
-                        </div>
-
-                        <div className="FilterItem">
-                            <FilterPaymentItem balanceFetch={balanceFetch} setBalance={setBalance} selectPayment={selectPayment} setPayment={setPayment} handleFetch={handleFetch}></FilterPaymentItem>
-                        </div>
-
-                        <div className="FilterItem">
-
-                            <div className="Search">
-                                <input type="text" placeholder='Search Here...' onKeyUp={e => setSearch(e.target.value)} />
-                                <AiOutlineSearch />
-                            </div>
-
-                        </div>
-
-
-                        {/* <div className="FilterItem">
-
-                            <div className="Dropdown">
-                                <Button> <Link href='/account-report'>Reports</Link> </Button>
-                            </div>
-
-                        </div> */}
-
-
-                    </div>
-
-                    <div className="Table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Bill No</th>
-                                    <th>Date & Time</th>
-                                    <th>Description</th>
-                                    <th>Payable/Payor</th>
-                                    <th>Category/Ledger</th>
-                                    <th>Payment  Method</th>
-                                    <th>Amount</th>
-                                    <th>Balance</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-
-                                {
-                                    payment.length > 0 ? payment.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
-                                                <td>#{item?.bill_no}</td>
-                                                <td>
-                                                     {/* {moment(item?.date).format("h:mm a")} */}
-                                                   
-                                                        {moment(item?.created_at).format("MMMM DD, YYYY")}
-                                                   
-
-
-                                                    {/* {moment(item?.created_at).calendar()} */}
-                                                    </td>
-
-                                                <Tooltip
-                                                    title={item?.description}
-                                                    placement="top-start"
-                                                >
-                                                    <td>
-                                                        {item?.description?.length < 15 ? (
-                                                            <>{item?.description}</>
-                                                        ) : (
-                                                            <>
-                                                                {item?.description?.slice(
-                                                                    0,
-                                                                    13
-                                                                )}
-                                                                ...
-                                                            </>
-                                                        )}
-                                                    </td>
-                                                </Tooltip>
-                                                {/* <td>{item?.description}</td> */}
-                                                <td>{item?.payorName}</td>
-                                                <td>{item?.ledgerName}</td>
-                                                <td>{item?.payment_type}</td>
-                                                <td style={item.status !== 'CashIn' ? { color: 'red' } : { color: 'green', fontWeight: 600 }}>
-                                                    {item.status === 'CashIn' ? '+' : '-'}
-                                                    {item?.amount.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                                                </td>
-
-                                                <td>{item?.balance?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
-                                                <td>
-
-                                                    <div className="action">
-
-                                                        <Button className='updateActionBtn'>
-                                                            <AccountEdit id={item.id} payment={payment} handleFetch={handleFetch} balanceFetch={balanceFetch} paymentList={paymentList} categoryList={categoryList} reciverList={reciverList} />
-                                                        </Button>
-
-                                                        <Button onClick={() => deletePayment(item.id)} className='deleteActionBtn'>
-                                                            <i className="flaticon-trash"></i>
-                                                        </Button>
-
-                                                    </div>
-
-                                                </td>
-
-
-                                            </tr>
-                                        )
-                                    })
-                                        :
-
-                                        (
-                                            <tr>
-                                                <td colSpan={20}>
-                                                    <section className="MiddleSection">
-                                                        <div className="MiddleSectionContent">
-                                                            <div className="img">
-                                                                <img src="/images/empty.png" alt="" />
-                                                            </div>
-
-                                                            <div className="text">
-                                                                <p>Not Found</p>
-                                                            </div>
-                                                        </div>
-                                                    </section>
-                                                </td>
-                                            </tr>
-                                        )
-                                }
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-        </>
-
-    )
-
-}
-
-export default AccountDashboard
+                      </section>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {openEditModal ? (
+          <AccountEdit
+            data={selectedData}
+            handleFetch={handleFetch}
+            paymentMethodList={
+              selectedData?.status === "CashIn"
+                ? caseInPaymentMethodData
+                : caseOutPaymentMethodData
+            }
+            payableList={
+              selectedData?.status === "CashIn"
+                ? caseInPayableData
+                : caseOutPayableData
+            }
+            LedgerList={
+              selectedData?.status === "CashIn"
+                ? caseInLedgerData
+                : caseOutLedgerData
+            }
+            handleFetchMutiSearch={handleFetchMutiSearch}
+            openEditModal={openEditModal}
+            closeEditModal={() => setOpenEditModal(false)}
+            editData={selectedData}
+          />
+        ) : null}
+
+        {openCaseInModal ? (
+          <CashIn
+            caseInPaymentMethodData={caseInPaymentMethodData}
+            caseInPayableData={caseInPayableData}
+            caseInLedgerData={caseInLedgerData}
+            fetchCaseInPayableData={fetchCaseInPayableData}
+            fetchCaseInLedgerData={fetchCaseInLedgerData}
+            fetchCaseInPaymentMethodData={fetchCaseInPaymentMethodData}
+            closeCaseInModal={() => setOpenCaseInModal(false)}
+            openModal={openCaseInModal}
+            handleFetchMutiSearch={handleFetchMutiSearch}
+          />
+        ) : null}
+
+        {openCashOutModal ? (
+          <CashOut
+            caseOutPayableData={caseOutPayableData}
+            caseOutLedgerData={caseOutLedgerData}
+            caseOutPaymentMethodData={caseOutPaymentMethodData}
+            fetchCaseOutPayableData={fetchCaseOutPayableData}
+            fetchCaseOutLedgerData={fetchCaseOutLedgerData}
+            fetchCaseOutPaymentMethodData={fetchCaseOutPaymentMethodData}
+            closeCashOutModal={() => setOpenCashOutModal(false)}
+            openModal={openCashOutModal}
+            handleFetchMutiSearch={handleFetchMutiSearch}
+          />
+        ) : null}
+      </section>
+    </>
+  );
+};
+
+export default AccountDashboard;

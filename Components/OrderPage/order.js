@@ -522,7 +522,7 @@ const Order = ({ orderUpdate }) => {
                     isLoading && <div className="orderSection_preloader"> <SmallLoader /> </div>
                 }
                 {/* header */}
-                <HeaderDescription setSearch={setSearch} headerIcon={'flaticon-order-delivery'} title={'Orders'} subTitle={'Order List'} search={true}></HeaderDescription>
+                <HeaderDescription setSearch={setSearch} headerIcon={'flaticon-order-delivery'} title={'Orders'} subTitle={'Order List'} search={true} />
 
                 <Container maxWidth="sm">
                     <Grid>
@@ -930,7 +930,7 @@ const Order = ({ orderUpdate }) => {
                                                             <Link target="_blank"
                                                                 href={"/invoice-one/" + order?.id}
                                                                 rel="noopener noreferrer">
-                                                                Print <i className="flaticon-printer-2" />
+                                                                Print <i className="flaticon-printer" />
                                                             </Link>
                                                         </Button>
                                                     </td>
@@ -1077,7 +1077,7 @@ const Order = ({ orderUpdate }) => {
 
                                                         <Button className='deleteActionBtn'
                                                             onClick={() => deleteProduct(order.id)}>
-                                                            <i className="flaticon-trash" />
+                                                            <i className="flaticon-delete" />
                                                         </Button>
 
                                                     </div>

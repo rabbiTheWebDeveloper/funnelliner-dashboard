@@ -33,7 +33,7 @@ const ShowCategory = ({ id, isOpen, closePopup }) => {
               </div>
 
               <div className="right" onClick={closePopup}>
-                <i className="flaticon-cancel"></i>
+                <i className="flaticon-close-1"></i>
               </div>
             </div>
 

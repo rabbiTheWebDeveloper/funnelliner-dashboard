@@ -24,7 +24,7 @@ const ProductPage = () => {
     }, []);
     return (
         <>
-            <Product category={category}></Product>
+            <Product category={category}/>
 
         </>
 
