@@ -238,7 +238,9 @@ const OrderModal = ({
                                     />
                                   </div>
                                 </Grid>
-                                <Grid item xs={1}>
+                                {
+                                  values?.products.length > 1 ?
+                                  <Grid item xs={1}>
                                   <button
                                     type="button"
                                     onClick={() => arrayHelpers.remove(index)}
@@ -246,7 +248,9 @@ const OrderModal = ({
                                   >
                                     <img src="/images/close.png" alt="" />
                                   </button>
-                                </Grid>
+                                </Grid>: null
+                                }
+                             
                               </Grid>
                             </div>
                           ))}
@@ -256,8 +260,8 @@ const OrderModal = ({
                             onClick={() =>
                               arrayHelpers.push({
                                 product_id: "",
-                                product_qty: 0,
-                                shipping_cost: 0,
+                                product_qty: 1,
+                                shipping_cost: "",
                               })
                             }
                           >
