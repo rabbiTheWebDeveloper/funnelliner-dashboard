@@ -23,7 +23,7 @@ const validationSchema = Yup.object({
       shipping_cost: Yup.number()
         .typeError('Shipping cost must be a number')
         .required('Product quantity is required')
-        .min(1, 'Shipping cost cannot be negative'),
+        .min(0, 'Shipping cost cannot be negative'),
     })
   ),
   order_type: Yup.string().required("Order Source is required"),
