@@ -1074,8 +1074,8 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                 >
                   Follow Up
                   <h6>
-                    {pendingOrderCount.followup > 0
-                      ? pendingOrderCount.followup
+                    {pendingOrderCount.follow_up > 0
+                      ? pendingOrderCount?.follow_up
                       : "0"}
                   </h6>
                 </BootstrapButton>
@@ -1088,8 +1088,8 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                     >
                       Hold On
                       <h6>
-                        {pendingOrderCount.holdon > 0
-                          ? pendingOrderCount.holdon
+                        {pendingOrderCount.hold_on > 0
+                          ? pendingOrderCount?.hold_on
                           : "0"}
                       </h6>
                     </BootstrapButton>
@@ -1418,9 +1418,9 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                 <div className="DataTableColum">
                   <h3>Product Info</h3>
                 </div>
-                <div className="DataTableColum">
+                {/* <div className="DataTableColum">
                   <h3>Order Source</h3>
-                </div>
+                </div> */}
                 {active !== "shipped" && (
                   <div className="DataTableColum">
                     <h3>Discount</h3>
@@ -1549,9 +1549,14 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                     }</p> */}
                         <p>{moment(order?.created_at).format("h:mm a")}</p>
                         <p>
-                          {moment(order?.created_at).format("MMMM DD, YYYY")}
+                          {moment(order?.created_at).format('DD.MM.YY')}
+                        </p>
+                        <p className="TotalPrice" style={{ color: orderType(order?.order_type) }}>
+                          {Capitalized(order?.order_type)}
                         </p>
                       </div>
+
+
 
                       <div className="DataTableColum Address">
                         <div className="Name">
@@ -1648,14 +1653,14 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                           </span>
                         </div>
                       </div>
-                      <div className="DataTableColum">
+                      {/* <div className="DataTableColum">
                         <div
                           className="TotalPrice"
                           style={{ color: orderType(order?.order_type) }}
                         >
                           {Capitalized(order?.order_type)}
                         </div>
-                      </div>
+                      </div> */}
 
                       {/* {active === 'pending' ?
                             <input key={order.id} type="text" defaultValue={order?.discount}
@@ -1742,31 +1747,33 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                       {active === "shipped" && (
                         <div className="DataTableColum Address PaymentInfo">
                           <div className="TotalPrice">
-                            <span>Price</span> :<i className="flaticon-taka" style={{marginRight: '-4px'}}></i>{order?.grand_total}
+                            <span>Price</span> :<i className="flaticon-taka" style={{ marginRight: '-4px' }}></i>{order?.grand_total}
                           </div>
 
                           <div className="TotalPrice">
-                            <span> Dis.</span> : <i className="flaticon-taka" style={{marginRight: '-4px'}}></i>{order?.discount}
+                            <span> Dis.</span> : <i className="flaticon-taka" style={{ marginRight: '-4px' }}></i>{order?.discount}
                           </div>
 
                           <div className="TotalPrice">
 
-                            <span>Adv.</span> :<i className="flaticon-taka" style={{marginRight: '-4px'}}></i> {order?.advanced}
+                            <span>Adv.</span> :<i className="flaticon-taka" style={{ marginRight: '-4px' }}></i> {order?.advanced}
                           </div>
                           <div className="TotalPrice">
 
-                            <span>Adv.</span> :<i className="flaticon-taka" style={{marginRight: '-4px'}}></i> {order?.due}
+                            <span>Adv.</span> :<i className="flaticon-taka" style={{ marginRight: '-4px' }}></i> {order?.due}
                           </div>
                         </div>
                       )}
                       {
                         active !== "shipped" ?
-                          <div className="DataTableColum">
-                            <div className="TotalPrice">
-                              <i className="flaticon-taka" style={{marginRight: '-4px'}}></i>
-                              {order?.due}
-                            </div>
-                          </div> : null
+
+                        <div className="DataTableColum">
+                          <div className="TotalPrice">
+                            <i className="flaticon-taka"></i>
+                            {order?.due}
+                          </div>
+                        </div>
+                        : null
                       }
 
                       {active === "confirmed" && (

@@ -119,8 +119,8 @@ const OrderModal = ({
                         <Field
                           type="text"
                           name="customer_name"
+                          placeholder="Enter Customer Name"
                         />
-
                         <ErrorMessage name="customer_name" component="div"
                           className="error" />
                       </div>
@@ -167,6 +167,7 @@ const OrderModal = ({
                       {(arrayHelpers) => (
                         <div>
                           {values?.products?.map((product, index) => (
+                            
                             <div key={index}>
                               <Grid container spacing={2}>
                                 <Grid item xs={12} sm={5}>
@@ -184,10 +185,7 @@ const OrderModal = ({
                                           <option
                                             key={data?.id}
                                             value={data?.id}
-                                            disabled={values.products.some(
-                                              (p, i) =>
-                                                p.product_id === data.id && i !== index
-                                            )}
+                                            disabled={values.products.some((p, i) => p.product_id === data.id && (i !== index || p.product_id === values.products[index].product_id))}
                                           >
                                             {data?.product_name}
                                           </option>
@@ -240,17 +238,17 @@ const OrderModal = ({
                                 </Grid>
                                 {
                                   values?.products.length > 1 ?
-                                  <Grid item xs={1}>
-                                  <button
-                                    type="button"
-                                    onClick={() => arrayHelpers.remove(index)}
-                                    className="red"
-                                  >
-                                    <img src="/images/close.png" alt="" />
-                                  </button>
-                                </Grid>: null
+                                    <Grid item xs={1}>
+                                      <button
+                                        type="button"
+                                        onClick={() => arrayHelpers.remove(index)}
+                                        className="red"
+                                      >
+                                        <img src="/images/close.png" alt="" />
+                                      </button>
+                                    </Grid> : null
                                 }
-                             
+
                               </Grid>
                             </div>
                           ))}
