@@ -19,7 +19,7 @@ const nextConfig = {
   reactStrictMode: !isProduction, // Enable Strict Mode in development, disable in production
   env: {
     API_URL: isProduction
-      ? "https://web.funnelliner.com/api/v1"
+      ? "http://staging.funnelliner.com/api/v1"
       : "http://staging.funnelliner.com/api/v1",
     Bkash_URL: isProduction
       ? "https://bkash.dev.funnelliner.com/api/bks/trx_list"
@@ -27,7 +27,7 @@ const nextConfig = {
   },
   publicRuntimeConfig: {
     API_URL: isProduction
-      ? "https://web.funnelliner.com/api/v1"
+      ? "http://staging.funnelliner.com/api/v1"
       : "http://staging.funnelliner.com/api/v1",
   },
   output: isProduction ? 'standalone' : undefined, // Set to 'standalone' in production, undefined in development
