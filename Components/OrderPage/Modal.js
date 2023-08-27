@@ -196,20 +196,6 @@ const OrderModal = ({
                         <FieldArray name="products">
                           {arrayHelpers => (
                             <>
-                              <div className="HeaderButton">
-                                <Button
-                                  className="bg"
-                                  onClick={() =>
-                                    arrayHelpers.push({
-                                      product_id: "",
-                                      product_qty: 1,
-                                      shipping_cost: 0,
-                                    })
-                                  }
-                                >
-                                  Add Product <i className="flaticon-plus"></i>
-                                </Button>
-                              </div>
                               <div>
                                 {values?.products?.map((product, index) => (
                                   <div key={index}>
@@ -311,6 +297,20 @@ const OrderModal = ({
                                     </Grid>
                                   </div>
                                 ))}
+                              </div>
+                              <div className="HeaderButton">
+                                <Button
+                                  className="bg"
+                                  onClick={() =>
+                                    arrayHelpers.push({
+                                      product_id: "",
+                                      product_qty: 1,
+                                      shipping_cost: 0,
+                                    })
+                                  }
+                                >
+                                  Add Product <i className="flaticon-plus"></i>
+                                </Button>
                               </div>
                             </>
                           )}
