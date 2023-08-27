@@ -195,23 +195,21 @@ const OrderModal = ({
                       <div className="OrderAddProductModal">
                         <FieldArray name="products">
                           {arrayHelpers => (
-                            <> {
-                              values?.products.length > 1 ?
-                                <div className="HeaderButton">
-                                  <Button
-                                    className="bg"
-                                    onClick={() =>
-                                      arrayHelpers.push({
-                                        product_id: "",
-                                        product_qty: 1,
-                                        shipping_cost: 0,
-                                      })
-                                    }
-                                  >
-                                    Add Product <i className="flaticon-plus"></i>
-                                  </Button>
-                                </div> : null}
-
+                            <>
+                              <div className="HeaderButton">
+                                <Button
+                                  className="bg"
+                                  onClick={() =>
+                                    arrayHelpers.push({
+                                      product_id: "",
+                                      product_qty: 1,
+                                      shipping_cost: 0,
+                                    })
+                                  }
+                                >
+                                  Add Product <i className="flaticon-plus"></i>
+                                </Button>
+                              </div>
                               <div>
                                 {values?.products?.map((product, index) => (
                                   <div key={index}>
@@ -294,18 +292,22 @@ const OrderModal = ({
                                           />
                                         </div>
                                       </Grid>
+                                      {
+                                        values?.products.length > 1 ?
+                                          <Grid item xs={12} sm={1}>
+                                            <Button
+                                              className="DeleteModalButton"
+                                              type="button"
+                                              onClick={() =>
+                                                arrayHelpers.remove(index)
+                                              }
+                                            >
+                                              <i className="flaticon-delete"></i>
+                                            </Button>
+                                          </Grid> : null
+                                      }
 
-                                      <Grid item xs={12} sm={1}>
-                                        <Button
-                                          className="DeleteModalButton"
-                                          type="button"
-                                          onClick={() =>
-                                            arrayHelpers.remove(index)
-                                          }
-                                        >
-                                          <i className="flaticon-delete"></i>
-                                        </Button>
-                                      </Grid>
+
                                     </Grid>
                                   </div>
                                 ))}
