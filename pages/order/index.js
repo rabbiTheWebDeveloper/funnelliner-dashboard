@@ -21,7 +21,7 @@ import moment from "moment";
 import getConfig from "next/config";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { DateRangePicker } from "react-nice-dates";
 
@@ -49,6 +49,7 @@ import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Capitalized, { courierStatusFormate } from "../../constant/capitalized";
 import CopyIcon from "../../Components/UI/CopyIcon/CopyIcon";
+import { API_ENDPOINTS } from "../../config/ApiEndpoints";
 
 const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
   const showToast = useToast();
@@ -279,7 +280,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     date: selectedValue,
     provider: selectCourier,
     courier_status: selectCourierStatus,
-    search: search,
+    // search: search,
     start_date: startDate,
     end_date: endDate,
     filter_date: selectedValue,
@@ -497,6 +498,33 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
         });
       });
   };
+
+  const searchParams = {
+    search: search,
+  }
+
+  const handleFetchOrderGlobalSearch = useCallback(async () => {
+    setApiResponse(false);
+    try {
+      const response = await axios.get(`${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ORDERS.ORDER_GLOBAL_SEARCH}`, {
+        headers: headers,
+        params: searchParams
+      });
+      setOrders(response.data?.data);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    } finally {
+      setApiResponse(true);
+    }
+  }, [search]);
+
+  useEffect(() => {
+    if (search?.length > 0) {
+      handleFetchOrderGlobalSearch();
+    } else {
+      setFetch(true);
+    }
+  }, [search, handleFetchOrderGlobalSearch]);
   useEffect(() => {
     SuperFetch.get("/client/orders", { params: params, headers: headers })
       .then(res => {
@@ -540,7 +568,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     selectCourier,
     selectCourierStatus,
     update,
-    search,
+
     startDate,
     endDate,
   ]);
@@ -981,7 +1009,6 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
           subTitle={"Order List"}
           search={true}
         />
-
         <Container maxWidth="sm">
           <div className="OrderTabs">
             <div className="CommonTab">
@@ -1056,7 +1083,6 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                       : "0"}
                   </h6>
                 </BootstrapButton>
-
                 <BootstrapButton
                   className={active === "returned" ? "filterActive" : ""}
                   onClick={e => handleFilterStatusChange("returned")}
@@ -1079,7 +1105,6 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                       : "0"}
                   </h6>
                 </BootstrapButton>
-
                 {holdOnConfig ? (
                   <>
                     <BootstrapButton
@@ -1615,14 +1640,32 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                       </div>
 
                       <div className="DataTableColum">
-                        <div className="Name">
+                        <div className="Name" >
                           <Tooltip
-                            title={order?.order_details[0]?.product}
+                            title={order?.order_details[0]?.product ? order?.order_details?.map((item, index) => {
+                              return (
+                                <ul>
+                                  <li>
+                                    {" "}
+                                    {index + 1} .{item?.product}{" "}
+                                  </li>
+                                </ul>
+                              );
+                            }) : "N/A"}
                             placement="top-start"
+
                           >
-                            <span>
+                            <span style={{
+                              display: "flex",
+                              alignItem: "center",
+                              justifyContent: "center",
+                            }}>
                               {order?.order_details[0]?.product?.length < 15 ? (
-                                <span>{order?.order_details[0]?.product}</span>
+                                <span>
+                                  {order?.order_details[0]?.product}
+
+
+                                </span>
                               ) : (
                                 <span>
                                   {order?.order_details[0]?.product?.slice(
@@ -1630,6 +1673,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                                     13
                                   )}
                                   ...
+
                                 </span>
                               )}
                             </span>
@@ -1760,20 +1804,20 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                           </div>
                           <div className="TotalPrice">
 
-                            <span>Adv.</span> :<i className="flaticon-taka" style={{ marginRight: '-4px' }}></i> {order?.due}
+                            <span>Due.</span> :<i className="flaticon-taka" style={{ marginRight: '-4px' }}></i> {order?.due}
                           </div>
                         </div>
                       )}
                       {
                         active !== "shipped" ?
 
-                        <div className="DataTableColum">
-                          <div className="TotalPrice">
-                            <i className="flaticon-taka"></i>
-                            {order?.due}
+                          <div className="DataTableColum">
+                            <div className="TotalPrice">
+                              <i className="flaticon-taka"></i>
+                              {order?.due}
+                            </div>
                           </div>
-                        </div>
-                        : null
+                          : null
                       }
 
                       {active === "confirmed" && (
@@ -1980,7 +2024,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                                     }
 
 
-                                  </div> : null
+                                  </div> : <div className="TrackingId" style={{ textAlign: 'center' }}>N/A</div>
                               }
 
 
@@ -2296,3 +2340,4 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
 export default withAuth(OrderPage, {
   isProtectedRoute: true,
 });
+

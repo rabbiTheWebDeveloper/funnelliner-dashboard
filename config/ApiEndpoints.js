@@ -35,7 +35,10 @@ const API_ENDPOINTS = {
     GET_MULTI_SEARCH: `/client/accounts/multi-search`,
     DELETE_ACCOUNT: `/client/accounts/payment-delete/`,
     SEARCH_ACCOUNT: `/client/accounts/payment-search/`
+  },
+  ORDERS: {
+    ORDER_GLOBAL_SEARCH: `/client/order/search`
   }
 }
 
-export {API_ENDPOINTS}
+export { API_ENDPOINTS }

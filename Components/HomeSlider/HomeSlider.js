@@ -40,7 +40,6 @@ const HomeSlider = ({ response }) => {
         // router.push(`/dashboard-setting?pass=${newValue}`)
     };
     const token = Cookies.get("token");
-
     const editForm = (data) => {
         const formData = new FormData();
         if (reviewImage.length > 0) {
@@ -66,7 +65,6 @@ const HomeSlider = ({ response }) => {
                 // setIsLoading(false)
                 showToast(error?.response?.data?.msg ? error?.response?.data?.msg : "Something went wrong", "error")
             });
-
 
     }
 

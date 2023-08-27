@@ -249,7 +249,7 @@ const AddProduct = () => {
                           />
                           {errors.product_name ? (
                             <p className="error">This Product Name required</p>
-                          ) :null}
+                          ) : null}
                         </div>
 
                         <div className={style.customInput}>
@@ -266,7 +266,7 @@ const AddProduct = () => {
                           />
                           {errors.price ? (
                             <p className="error">Invalid Price</p>
-                          ) :null}
+                          ) : null}
                         </div>
 
                         <div className={style.customInput}>
@@ -282,7 +282,7 @@ const AddProduct = () => {
                           />
                           {errors.product_code ? (
                             <p className="error">Product Code required</p>
-                          ) :null}
+                          ) : null}
                         </div>
 
                         <div className={style.customInput}>
@@ -368,6 +368,7 @@ const AddProduct = () => {
 
 
                         <div className={style.customInput}>
+                          <label> Product Main Image</label> <br></br>
                           <label>
                             Image  <span className={style.mustBe}>Must be:</span>{" "}
                             (png, jpg, jpeg) ;{" "}
@@ -404,7 +405,7 @@ const AddProduct = () => {
                                   height="100px"
                                 />
                               </Box>
-                            ) :null}
+                            ) : null}
                           </div>
                         </div>
                         <div className={style.customInput}>

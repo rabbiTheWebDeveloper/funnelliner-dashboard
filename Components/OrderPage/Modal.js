@@ -1,6 +1,5 @@
 import { Box, Button, Grid, Modal } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
 import SuperFetch from "../../hook/Axios";
 import useLoading from "../../hook/useLoading";
 import { useToast } from "../../hook/useToast";
@@ -57,7 +56,6 @@ const OrderModal = ({
 
       startLoading();
       const response = await SuperFetch.post("/client/orders", data, { headers: headers });
-
       showToast("Order created successfully", "success");
       handleCloseModal();
       handleFetch();
@@ -99,7 +97,7 @@ const OrderModal = ({
               customer_address: "",
               order_type: "",
               products: [
-                { product_id: "", product_qty: 1, shipping_cost: '' }
+                { product_id: "", product_qty: 1, shipping_cost: 0 }
               ]
             }}
             validationSchema={validationSchema}
@@ -259,11 +257,11 @@ const OrderModal = ({
                               arrayHelpers.push({
                                 product_id: "",
                                 product_qty: 1,
-                                shipping_cost: "",
+                                shipping_cost: 0,
                               })
                             }
                           >
-                            Add Product
+                            <i className="flaticon-plus"></i> Add Product
                           </button>
                         </div>
                       )}
@@ -319,3 +317,5 @@ const OrderModal = ({
   );
 };
 export default OrderModal;
+
+

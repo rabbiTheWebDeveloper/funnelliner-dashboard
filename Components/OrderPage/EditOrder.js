@@ -20,8 +20,8 @@ const EditOrderModal = ({
         type: status,
       };
       axios.post(process.env.API_URL + `/client/order/note/${id}/update`, data, {
-          headers: headers,
-        })
+        headers: headers,
+      })
         .then(function (res) {
           handleFetch();
           showToast(res.data?.message);
@@ -32,7 +32,7 @@ const EditOrderModal = ({
         });
     }
   };
-  
+
   return (
     <Modal
       key={order?.id}
@@ -104,9 +104,16 @@ const EditOrderModal = ({
                 <th>Quantity</th>
 
                 <td>
-                  {order?.order_details?.length
+                  {/* {order?.order_details?.length
                     ? order?.order_details[0]?.quantity
-                    : null}
+                    : null} */}
+
+                  {order?.order_details?.reduce(
+                    (prevVal, currentVal) => {
+                      return prevVal + currentVal?.quantity;
+                    },
+                    0
+                  )}
                 </td>
 
                 <th>Discount</th>
