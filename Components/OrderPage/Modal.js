@@ -10,7 +10,7 @@ import * as Yup from "yup";
 
 const validationSchema = Yup.object({
   customer_name: Yup.string().required("Customer Name is required"),
-  customer_phone: Yup.string().required("Customer Contact No. is required"),
+  customer_phone: Yup.string().required("Customer Contact No. is required").matches(/^(?:\+8801|01)[3-9]\d{8}$/, "Customer Contact No. must be a valid "),
   customer_address: Yup.string().required("Customer Address is required"),
   products: Yup.array().of(
     Yup.object().shape({
@@ -35,13 +35,16 @@ const OrderModal = ({
   orderUpdate,
 }) => {
   const showToast = useToast();
-  const [availableProducts, setAvailableProducts] = useState([]);
   const [isLoading, startLoading, stopLoading] = useLoading();
-  const createOrder = async (inputData) => {
+  const createOrder = async inputData => {
     try {
       const productIds = inputData.products.map(product => product.product_id);
-      const productQtys = inputData.products.map(product => product.product_qty);
-      const shippingCosts = inputData.products.map(product => product.shipping_cost);
+      const productQtys = inputData.products.map(
+        product => product.product_qty
+      );
+      const shippingCosts = inputData.products.map(
+        product => product.shipping_cost
+      );
 
       const data = {
         customer_name: inputData.customer_name,
@@ -51,25 +54,28 @@ const OrderModal = ({
         product_id: productIds,
         product_qty: productQtys,
         shipping_cost: shippingCosts,
-        shop_id: shopId
+        shop_id: shopId,
       };
 
       startLoading();
-      const response = await SuperFetch.post("/client/orders", data, { headers: headers });
+      const response = await SuperFetch.post("/client/orders", data, {
+        headers: headers,
+      });
       showToast("Order created successfully", "success");
       handleCloseModal();
       handleFetch();
       orderUpdate();
     } catch (error) {
-      console.error("Error creating order:", error);
-      showToast("Something went wrong!", "error");
+      if (error.response) {
+        Object.keys(error?.response?.data?.msg).forEach((key) => {
+          const errorMessage = error?.response?.data?.msg[key][0];
+          showToast(errorMessage, "error");
+        })
+      }
     } finally {
       stopLoading();
     }
   };
-  useEffect(() => {
-    setAvailableProducts(products); // Initialize availableProducts
-  }, [products]);
   return (
     <Modal
       open={modalOpen}
@@ -96,12 +102,10 @@ const OrderModal = ({
               customer_phone: "",
               customer_address: "",
               order_type: "",
-              products: [
-                { product_id: "", product_qty: 1, shipping_cost: 0 }
-              ]
+              products: [{ product_id: "", product_qty: 1, shipping_cost: 0 }],
             }}
             validationSchema={validationSchema}
-            onSubmit={(values) => {
+            onSubmit={values => {
               createOrder(values);
             }}
           >
@@ -109,7 +113,7 @@ const OrderModal = ({
               <Form>
                 <div className="updateModalForm OrderModal">
                   <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} sm={7}>
                       <div className="customInput">
                         <label>
                           Enter Customer Name <span>*</span>
@@ -119,12 +123,15 @@ const OrderModal = ({
                           name="customer_name"
                           placeholder="Enter Customer Name"
                         />
-                        <ErrorMessage name="customer_name" component="div"
-                          className="error" />
+                        <ErrorMessage
+                          name="customer_name"
+                          component="div"
+                          className="error"
+                        />
                       </div>
                     </Grid>
 
-                    <Grid item xs={6}>
+                    <Grid item xs={12} sm={5}>
                       <div className="customInput">
                         <label>
                           Enter Customer Contact No. <span>*</span>
@@ -132,16 +139,18 @@ const OrderModal = ({
                         <Field
                           type="text"
                           name="customer_phone"
-
                           defaultValue="+88"
                           placeholder="Enter Customer Contact No"
                         // defa
                         />
-                        <ErrorMessage name="customer_phone" component="div"
-                          className="error" />
+                        <ErrorMessage
+                          name="customer_phone"
+                          component="div"
+                          className="error"
+                        />
                       </div>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={12} sm={7}>
                       <div className="customInput">
                         <label>
                           Enter Customer Address <span>*</span>
@@ -151,21 +160,169 @@ const OrderModal = ({
                           name="customer_address"
                           placeholder="Enter Customer Address"
                         />
-                        <ErrorMessage name="customer_address" component="div"
-                          className="error" />
+                        <ErrorMessage
+                          name="customer_address"
+                          component="div"
+                          className="error"
+                        />
+                      </div>
+                    </Grid>
+                    <Grid item xs={12} sm={5}>
+                      <div className="customInput">
+                        <label>
+                          Order Source<span>*</span>
+                        </label>
+
+                        <Field component="select" name="order_type">
+                          <option value="">Select Order Source</option>
+
+                          <option key={"social"} value={"social"}>
+                            Social Media
+                          </option>
+                          <option key={"phone"} value={"phone"}>
+                            Phone Call
+                          </option>
+                        </Field>
+                        <ErrorMessage
+                          name="order_type"
+                          component="div"
+                          className="error"
+                        />
+                      </div>
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <div className="OrderAddProductModal">
+                        <FieldArray name="products">
+                          {arrayHelpers => (
+                            <>
+                              <div className="HeaderButton">
+                                <Button
+                                  className="bg"
+                                  onClick={() =>
+                                    arrayHelpers.push({
+                                      product_id: "",
+                                      product_qty: 1,
+                                      shipping_cost: 0,
+                                    })
+                                  }
+                                >
+                                  Add Product <i className="flaticon-plus"></i>
+                                </Button>
+                              </div>
+                              <div>
+                                {values?.products?.map((product, index) => (
+                                  <div key={index}>
+                                    <Grid container spacing={2}>
+                                      <Grid item xs={12} sm={5}>
+                                        <div className="customInput">
+                                          <label>
+                                            Product Name <span>*</span>
+                                          </label>
+                                          <Field
+                                            component="select"
+                                            name={`products.${index}.product_id`}
+                                          >
+                                            <option value="">
+                                              Select Product
+                                            </option>
+                                            {Array.isArray(products)
+                                              ? products?.map(data => (
+                                                <option
+                                                  key={data?.id}
+                                                  value={data?.id}
+                                                  disabled={values.products.some(
+                                                    (p, i) =>
+                                                      p.product_id ===
+                                                      data.id &&
+                                                      (i !== index ||
+                                                        p.product_id ===
+                                                        values.products[
+                                                          index
+                                                        ].product_id)
+                                                  )}
+                                                >
+                                                  {data?.product_name}
+                                                </option>
+                                              ))
+                                              : null}
+                                          </Field>
+                                          <ErrorMessage
+                                            name={`products.${index}.product_id`}
+                                            component="div"
+                                            className="error"
+                                          />
+                                        </div>
+                                      </Grid>
+
+                                      <Grid item xs={12} sm={3}>
+                                        <div className="customInput">
+                                          <label>
+                                            Product Quantity<span>*</span>
+                                          </label>
+                                          <Field
+                                            type="number"
+                                            variant="outlined"
+                                            name={`products.${index}.product_qty`}
+                                            placeholder="Enter Product Quantity"
+                                          // defa
+                                          />{" "}
+                                          <ErrorMessage
+                                            name={`products.${index}.product_qty`}
+                                            component="div"
+                                            className="error"
+                                          />
+                                          {/* Display error for product_quantity if needed */}
+                                        </div>
+                                      </Grid>
+                                      <Grid item xs={12} sm={3}>
+                                        <div className="customInput">
+                                          <label>Shipping Cost</label>
+                                          <Field
+                                            type="number"
+                                            variant="outlined"
+                                            name={`products.${index}.shipping_cost`}
+                                            placeholder="Shipping Cost"
+                                            defa
+                                          />
+                                          <ErrorMessage
+                                            name={`products.${index}.shipping_cost`}
+                                            component="div"
+                                            className="error"
+                                          />
+                                        </div>
+                                      </Grid>
+
+                                      <Grid item xs={12} sm={1}>
+                                        <Button
+                                          className="DeleteModalButton"
+                                          type="button"
+                                          onClick={() =>
+                                            arrayHelpers.remove(index)
+                                          }
+                                        >
+                                          <i className="flaticon-delete"></i>
+                                        </Button>
+                                      </Grid>
+                                    </Grid>
+                                  </div>
+                                ))}
+                              </div>
+                            </>
+                          )}
+                        </FieldArray>
                       </div>
                     </Grid>
                   </Grid>
 
-                  <div
+                  {/* <div
                     className=""
                     style={{ width: "100%", marginTop: "10px" }}
                   >
                     <FieldArray name="products">
-                      {(arrayHelpers) => (
+                      {arrayHelpers => (
                         <div>
                           {values?.products?.map((product, index) => (
-                            
                             <div key={index}>
                               <Grid container spacing={2}>
                                 <Grid item xs={12} sm={5}>
@@ -179,11 +336,18 @@ const OrderModal = ({
                                     >
                                       <option value="">Select Product</option>
                                       {Array.isArray(products)
-                                        ? products?.map((data) => (
+                                        ? products?.map(data => (
                                           <option
                                             key={data?.id}
                                             value={data?.id}
-                                            disabled={values.products.some((p, i) => p.product_id === data.id && (i !== index || p.product_id === values.products[index].product_id))}
+                                            disabled={values.products.some(
+                                              (p, i) =>
+                                                p.product_id === data.id &&
+                                                (i !== index ||
+                                                  p.product_id ===
+                                                  values.products[index]
+                                                    .product_id)
+                                            )}
                                           >
                                             {data?.product_name}
                                           </option>
@@ -209,12 +373,13 @@ const OrderModal = ({
                                       name={`products.${index}.product_qty`}
                                       placeholder="Enter Product Quantity"
                                     // defa
-                                    />       <ErrorMessage
+                                    />{" "}
+                                    <ErrorMessage
                                       name={`products.${index}.product_qty`}
                                       component="div"
                                       className="error"
                                     />
-                                    {/* Display error for product_quantity if needed */}
+                               
                                   </div>
                                 </Grid>
                                 <Grid item xs={12} sm={3}>
@@ -234,19 +399,17 @@ const OrderModal = ({
                                     />
                                   </div>
                                 </Grid>
-                                {
-                                  values?.products.length > 1 ?
-                                    <Grid item xs={1}>
-                                      <button
-                                        type="button"
-                                        onClick={() => arrayHelpers.remove(index)}
-                                        className="red"
-                                      >
-                                        <img src="/images/close.png" alt="" />
-                                      </button>
-                                    </Grid> : null
-                                }
-
+                                {values?.products.length > 1 ? (
+                                  <Grid item xs={1}>
+                                    <button
+                                      type="button"
+                                      onClick={() => arrayHelpers.remove(index)}
+                                      className="red"
+                                    >
+                                      <img src="/images/close.png" alt="" />
+                                    </button>
+                                  </Grid>
+                                ) : null}
                               </Grid>
                             </div>
                           ))}
@@ -266,31 +429,7 @@ const OrderModal = ({
                         </div>
                       )}
                     </FieldArray>
-                  </div>
-
-                  <div className="customInput">
-                    <label>
-                      Order Source<span>*</span>
-                    </label>
-
-                    <Field
-                      component="select"
-                      name="order_type"
-                    >
-                      <option value="">Select Order Source</option>
-
-                      <option key={"social"} value={"social"}>
-                        Social Media
-                      </option>
-                      <option key={"phone"} value={"phone"}>
-                        Phone Call
-                      </option>
-                    </Field>
-                    <ErrorMessage name="order_type" component="div"
-                      className="error" />
-                  </div>
-
-
+                  </div> */}
                 </div>
 
                 <div className="duelButton">
@@ -317,5 +456,3 @@ const OrderModal = ({
   );
 };
 export default OrderModal;
-
-

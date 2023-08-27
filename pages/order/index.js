@@ -1341,9 +1341,9 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
           </div>
 
           <div className=" OrderTabs CommonTab">
-            {/* <Box sx={{ width: "100%", typography: "body1" }}>
+            <Box sx={{ width: "100%", typography: "body1" }}>
               {selectCourier === "steadfast" &&
-                Object.entries(pendingOrderCount?.steadfast_status).map(
+                Object?.entries(pendingOrderCount?.steadfast_status || {}).map(
                   ([field, value]) => {
                     return (
                       <BootstrapButton
@@ -1354,38 +1354,33 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                         }}
                         className={"filterActive"}
                       >
-                        {field}
+                        {courierStatusFormate(field)}
                         <h6>{value}</h6>
                       </BootstrapButton>
                     );
                   }
                 )}
               {selectCourier === "pathao" &&
-                Object.entries(pendingOrderCount?.pathao_status).map(
+                Object?.entries(pendingOrderCount?.pathao_status || {}).map(
                   ([field, value]) => {
                     return (
                       <BootstrapButton
                         key={field}
                         onClick={() => {
-                          setSelectCourierStatus(item.item);
-                          handleFilterStatusCOurier(item.item);
+                          setSelectCourierStatus(field);
+                          handleFilterStatusCOurier(field);
                         }}
                         className={"filterActive"}
                       >
-                        {field}
-                        <h6>
-                          {courierStatusOrderCount(item.item) > 0
-                          ? courierStatusOrderCount(item.item)
-                          : "0"}
-                          {value}
-                        </h6>
+                        {courierStatusFormate(field)}
+                        <h6>{value}</h6>
                       </BootstrapButton>
                     );
                   }
                 )}
-            </Box> */}
+            </Box>
 
-            <Box sx={{ width: "100%", typography: "body1" }}>
+            {/* <Box sx={{ width: "100%", typography: "body1" }}>
               {selectCourier === "pathao" &&
                 ["Pickup_Requested", "Pending"].map(
                   (item) => {
@@ -1406,7 +1401,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                     );
                   }
                 )}
-            </Box>
+            </Box> */}
           </div>
 
           <div className="DataTableContent">
@@ -2139,8 +2134,34 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                         <div className="DataTableColum">
                           <div className="TotalPrice">
                             {/* <i className='flaticon-taka'></i> */}
-                            {order?.courier_entry
-                              ? order.courier_provider
+                            {order.courier_provider !== null
+                              ? order.courier_provider === "steadfast" ? (
+                                <>
+                                  <img
+                                    src="https://funnelliner.s3.ap-southeast-1.amazonaws.com/media/steadfast.svg"
+                                    alt=""
+                                    style={{
+                                      width: "20px",
+                                      height: "auto",
+                                      margin: "5px",
+                                    }}
+                                  />
+                                  SteadFast
+                                </>
+                              ) : (
+                                <>
+                                  <img
+                                    src="https://funnelliner.s3.ap-southeast-1.amazonaws.com/media/pathao.svg"
+                                    alt=""
+                                    style={{
+                                      width: "20px",
+                                      height: "auto",
+                                      margin: "5px",
+                                    }}
+                                  />
+                                  Pathao
+                                </>
+                              )
                               : "Office Delivery"}
                           </div>
                         </div>

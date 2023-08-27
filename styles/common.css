@@ -69,7 +69,6 @@ SidebarMenu
   margin-top: 12px;
 }
 
-
 .Sidebar .SidebarMenu ul li {
   text-align: center;
   position: relative;
@@ -202,7 +201,6 @@ SidebarMenu
   display: block;
 }
 
-
 /* MobileFooterMenu */
 .MobileFooterMenu {
   display: none;
@@ -231,7 +229,7 @@ editModal
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* margin-bottom: 20px; */
+  margin-bottom: 20px;
 }
 
 :where(.viewModal, .updateModal) .header .left {
@@ -356,26 +354,6 @@ updateModal
   margin-top: 30px;
 }
 
-.updateModalForm.OrderModal .customInput {
-  width: 100%;
-  margin-top: 20px;
-}
-
-.updateModalForm.OrderModal button.red {
-  margin-top: 60px;
-  margin-left: 20px;
-  cursor: pointer;
-}
-
-.updateModalForm.OrderModal button.red img {
-  height: 30px;
-}
-
-.updateModalForm.OrderModal .bg.OrderBg {
-  margin-top: 20px;
-  cursor: pointer;
-}
-
 .updateModalForm .customInput.fullWidth {
   width: 100%;
 }
@@ -435,6 +413,62 @@ updateModal
 
 .websiteSettingImg img {
   height: 500px;
+}
+
+.OrderModal .customInput {
+  width: 100%;
+  margin-top: 0;
+}
+
+/* OrderAddProductModal */
+.OrderAddProductModal {
+  margin: 0 10px;
+  margin-top: 20px;
+  background: var(--white-color);
+  box-shadow: 0px 10px 49px 0px rgba(0, 0, 0, 0.13);
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.OrderAddProductModal .HeaderButton {
+  text-align: right;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+}
+
+.OrderAddProductModal .customInput {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.OrderAddProductModal .HeaderButton button {
+  background: var(--main-bg-color);
+  color: var(--main-color);
+  gap: 10px;
+}
+
+.OrderAddProductModal .HeaderButton button i {
+  line-height: 0;
+}
+
+.OrderAddProductModal .HeaderButton button:hover {
+  color: var(--white-color);
+}
+
+.OrderAddProductModal .DeleteModalButton {
+  border-radius: 8px;
+  background: #fdeced;
+  padding: 12px 20px;
+  margin-top: 50px;
+  min-width: auto;
+}
+
+.OrderAddProductModal .DeleteModalButton i {
+  font-size: 20px;
+  color: var(--red-color);
+  line-height: 0;
 }
 
 /* ---------------------------------------------------  --------------------------------------------------- --------------------------------------------------- 
@@ -1545,7 +1579,7 @@ dataTable
   gap: 6px;
 }
 
-.DataTable .PaymentInfo .TotalPrice span{
+.DataTable .PaymentInfo .TotalPrice span {
   width: 35px;
   font-weight: 700;
 }
@@ -1564,11 +1598,11 @@ dataTable
   gap: 8px;
 }
 
-.DataTable .TotalPrice .TrackingId span{
-width: 90%;
+.DataTable .TotalPrice .TrackingId span {
+  width: 90%;
 }
 
-.DataTable .TotalPrice .TrackingId button{
+.DataTable .TotalPrice .TrackingId button {
   min-width: auto;
   width: 10px;
 }
@@ -1981,15 +2015,13 @@ Media
   .Sidebar .SidebarMenu {
     height: 74%;
   }
-
   :where(.viewModal, .updateModal) .modalBox {
     width: 80%;
   }
-
-  .updateModalForm.OrderModal button.red {
-    margin-top: 55px;
+  .OrderAddProductModal .DeleteModalButton {
+    margin-top: 48px;
+    padding: 10px 15px;
   }
-
 }
 
 /* ---------------------------------------------------  --------------------------------------------------- 
@@ -2173,15 +2205,13 @@ Media
     overflow-x: auto;
   }
 
-  .updateModalForm.OrderModal button.red {
-    margin-top: 55px;
-    margin-left: 10px;
+  .OrderAddProductModal {
+    padding: 15px;
   }
-
-  .updateModalForm.OrderModal button.red img {
-    height: 30px;
+  .OrderAddProductModal .DeleteModalButton {
+    margin-top: 50px;
+    padding: 8px 10px;
   }
-
 }
 
 @media (max-width: 600px) {
@@ -2258,11 +2288,18 @@ Media
     box-shadow: 0px 22px 113.46px rgba(0, 0, 0, 0.03);
   }
 
-  .updateModalForm.OrderModal button.red {
+  .OrderAddProductModal .DeleteModalButton {
     margin-top: 0;
-    margin-left: 0px;
   }
-
+  .updateModalForm .customInput {
+    margin-top: 0;
+  }
+  .OrderAddProductModal .HeaderButton button {
+    font-size: 14px;
+  }
+  .updateModalForm .customInput {
+    margin-top: 10px;
+}
 }
 
 /* ---------------------------------------------------  --------------------------------------------------- 
