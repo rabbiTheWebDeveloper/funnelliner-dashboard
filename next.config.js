@@ -1,7 +1,7 @@
 const isProduction = process.env.NODE_ENV === 'production';
 const apiUrl = isProduction
-  ? "http://staging.funnelliner.com/api/v1"
-  : "http://staging.funnelliner.com/api/v1";
+  ? "https://staging.funnelliner.com/api/v1"
+  : "https://staging.funnelliner.com/api/v1";
 
 const bkashUrl = isProduction
   ? "http://bkash.dev.funnelliner.com/api/bks/trx_list"
