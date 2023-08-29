@@ -71,6 +71,7 @@ const Login_Part = () => {
         headers: {
           ipAddress: ipAddress,
           browserName: browserName,
+          'Access-Control-Allow-Origin': '*'
         },
       }
     )

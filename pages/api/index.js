@@ -30,6 +30,7 @@ export const headers = {
     "id": userId,
     'Content-Type': 'application/multipart/form-data',
     'X-Requested-With': 'XMLHttpRequest',
+    'Access-Control-Allow-Origin': '*'
 };
 
 
