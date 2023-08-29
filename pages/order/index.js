@@ -88,6 +88,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
   const [tabValue, setTabValue] = useState("1");
   const [cities, setCities] = useState();
   const [followUpDate, setFollowUpDate] = useState();
+  const [shippingDate, setShippingDate] = useState();
   const [selectedSingleCourier, setSelectedSingleCourier] = useState("");
   const [selectedOrder, setSelectedOrder] = useState();
 
@@ -258,12 +259,14 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
   const handleFilterStatusChange = value => {
     setSelectCourier(null);
     setSelectCourierStatus(null);
+    setFollowUpInputChange(null);
+    setSelectedValue(null)
     setDefault(value);
   };
 
   const handleFilterStatusCOurier = value => {
-    // setSelectCourier(null)
-    // setSelectCourierStatus(null)
+
+
     setCourierStatus(value);
   };
 
@@ -506,11 +509,11 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
   const handleFetchOrderGlobalSearch = useCallback(async () => {
     setApiResponse(false);
     try {
-      const response = await axios.get(`${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ORDERS.ORDER_GLOBAL_SEARCH}`, {
+      const OrderGlobalSearchResponse = await axios.get(`${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ORDERS.ORDER_GLOBAL_SEARCH}`, {
         headers: headers,
         params: searchParams
       });
-      setOrders(response.data?.data);
+      setOrders(OrderGlobalSearchResponse?.data?.data);
     } catch (error) {
       console.error("Error fetching orders:", error);
     } finally {
@@ -595,6 +598,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
       })
       .then(function (response) {
         if (response.status === 200) {
+          handleFetch()
           toast.success(response.data.message, {
             autoClose: 2000,
             hideProgressBar: true,
@@ -603,6 +607,35 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
           });
         }
       });
+  };
+
+  const onChangeShippingDate = orderId => {
+    if (shippingDate === undefined) {
+      showToast("Please select valid Date", "error");
+      return;
+    }
+    const postBody = {
+      date: `${shippingDate.$y}-${shippingDate.$M + 1}-${shippingDate.$D}`,
+      type: "confirmed",
+    };
+    axios
+      .post(API_ENDPOINTS.BASE_URL + `/client/order/date/${orderId}/update`, postBody, {
+        headers: headers,
+      })
+      .then(function (response) {
+        if (response.status === 200) {
+          handleFetch()
+          toast.success(response.data.message, {
+            autoClose: 2000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+          });
+        }
+      }).catch(function (error) {
+        showToast("An error occurred while updating the shipping date", "error");
+        console.error(error);
+      })
   };
 
   // delete order
@@ -1019,8 +1052,8 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                 >
                   Pending
                   <h6>
-                    {pendingOrderCount.pending > 0
-                      ? pendingOrderCount.pending
+                    {pendingOrderCount?.pending > 0
+                      ? pendingOrderCount?.pending
                       : "0"}
                   </h6>
                 </BootstrapButton>
@@ -1032,8 +1065,8 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                     >
                       Unverified
                       <h6>
-                        {pendingOrderCount.unverified > 0
-                          ? pendingOrderCount.unverified
+                        {pendingOrderCount?.unverified > 0
+                          ? pendingOrderCount?.unverified
                           : "0"}
                       </h6>
                     </BootstrapButton>
@@ -1045,8 +1078,8 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                 >
                   Confirmed
                   <h6>
-                    {pendingOrderCount.confirmed > 0
-                      ? pendingOrderCount.confirmed
+                    {pendingOrderCount?.confirmed > 0
+                      ? pendingOrderCount?.confirmed
                       : "0"}
                   </h6>
                 </BootstrapButton>
@@ -1056,8 +1089,8 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                 >
                   Shipped
                   <h6>
-                    {pendingOrderCount.shipped > 0
-                      ? pendingOrderCount.shipped
+                    {pendingOrderCount?.shipped > 0
+                      ? pendingOrderCount?.shipped
                       : "0"}
                   </h6>
                 </BootstrapButton>
@@ -1067,8 +1100,8 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                 >
                   Delivered
                   <h6>
-                    {pendingOrderCount.delivered > 0
-                      ? pendingOrderCount.delivered
+                    {pendingOrderCount?.delivered > 0
+                      ? pendingOrderCount?.delivered
                       : "0"}
                   </h6>
                 </BootstrapButton>
@@ -1078,8 +1111,8 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                 >
                   Cancelled
                   <h6>
-                    {pendingOrderCount.cancelled > 0
-                      ? pendingOrderCount.cancelled
+                    {pendingOrderCount?.cancelled > 0
+                      ? pendingOrderCount?.cancelled
                       : "0"}
                   </h6>
                 </BootstrapButton>
@@ -1089,8 +1122,8 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                 >
                   Returned
                   <h6>
-                    {pendingOrderCount.returned > 0
-                      ? pendingOrderCount.returned
+                    {pendingOrderCount?.returned > 0
+                      ? pendingOrderCount?.returned
                       : "0"}
                   </h6>
                 </BootstrapButton>
@@ -1100,25 +1133,23 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                 >
                   Follow Up
                   <h6>
-                    {pendingOrderCount.follow_up > 0
+                    {pendingOrderCount?.follow_up > 0
                       ? pendingOrderCount?.follow_up
                       : "0"}
                   </h6>
                 </BootstrapButton>
                 {holdOnConfig ? (
-                  <>
-                    <BootstrapButton
-                      className={active === "hold_on" ? "filterActive" : ""}
-                      onClick={e => handleFilterStatusChange("hold_on")}
-                    >
-                      Hold On
-                      <h6>
-                        {pendingOrderCount.hold_on > 0
-                          ? pendingOrderCount?.hold_on
-                          : "0"}
-                      </h6>
-                    </BootstrapButton>
-                  </>
+                  <BootstrapButton
+                    className={active === "hold_on" ? "filterActive" : ""}
+                    onClick={e => handleFilterStatusChange("hold_on")}
+                  >
+                    Hold On
+                    <h6>
+                      {pendingOrderCount?.hold_on > 0
+                        ? pendingOrderCount?.hold_on
+                        : "0"}
+                    </h6>
+                  </BootstrapButton>
                 ) : undefined}
               </Box>
             </div>
@@ -1145,43 +1176,48 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                   <option value="steadfast"> Steadfast Courier</option>
                   <option value="pathao">Pathao Courier</option>
                 </select>
-
-                {/* old Design */}
-
-                {/* new Design */}
-                {/* <select
-                  name=""
-                  defaultValue=""
-                  displayEmpty
-                  onChange={handleCourierStatus}
-                >
-                  <option value="" disabled>
-                    Select Courier Status
-                  </option>
-                  {selectCourier === "steadfast" &&
-                    steadfast.map((item, index) => (
-                      <option
-                        key={index}
-                        value={item.item}
-                        sx={menuItemHoverStyle}
-                      >
-                        {item.value}
-                      </option>
-                    ))}
-
-                  {selectCourier === "pathao" &&
-                    pathao.map((item, index) => (
-                      <option
-                        key={index}
-                        value={item.item}
-                        sx={menuItemHoverStyle}
-                      >
-                        {item.value}
-                      </option>
-                    ))}
-                </select> */}
               </div>
             )}
+            {active === "confirmed" && (
+              <div className="duelSelect d_flex">
+                <div>
+                  {showPicker && (
+                    <DateRangePicker
+                      startDate={startDate}
+                      endDate={endDate}
+                      focus={focus}
+                      onStartDateChange={setStartDate}
+                      onEndDateChange={setEndDate}
+                      locale={enGB}
+                      modifiersClassNames={{ open: "-open" }}
+                    >
+                      {({ startDateInputProps, endDateInputProps }) => (
+                        <div className="date-range">
+                          <FilterDateInput
+                            className="input"
+                            {...endDateInputProps}
+                            {...startDateInputProps}
+                            value={dateValue}
+                            placeholder="Select date range"
+                          />
+                        </div>
+                      )}
+                    </DateRangePicker>
+                  )}
+                </div>
+
+                <select onChange={(event) => handleSelected(event.target.value)}>
+                  <option disabled value="">
+                    Find Your Follow Up Order
+                  </option>
+                  <option value="today">Today</option>
+                  <option value="tomorrow">Tomorrow</option>
+                  <option value="next_seven_days">Next Seven Days</option>
+                  <option value="custom">Custom</option>
+                </select>
+              </div>
+            )}
+
             {active === "follow_up" && (
               <div className="duelSelect d_flex">
                 <div>
@@ -1210,7 +1246,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                   )}
                 </div>
 
-                <select onChange={() => handleSelected(event.target.value)}>
+                <select onChange={(event) => handleSelected(event.target.value)}>
                   <option disabled value="">
                     Find Your Follow Up Order
                   </option>
@@ -1349,8 +1385,8 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                       <BootstrapButton
                         key={field}
                         onClick={() => {
-                          setSelectCourierStatus(courierText(field));
-                          handleFilterStatusCOurier(field);
+                          setSelectCourierStatus(field);
+                          // handleFilterStatusCOurier(field);
                         }}
                         className={"filterActive"}
                       >
@@ -1368,7 +1404,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                         key={field}
                         onClick={() => {
                           setSelectCourierStatus(field);
-                          handleFilterStatusCOurier(field);
+                          // handleFilterStatusCOurier(field);
                         }}
                         className={"filterActive"}
                       >
@@ -1470,6 +1506,9 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                 }
                 {active === "confirmed" && (
                   <>
+                    <div className="DataTableColum">
+                      <h3>Shipping Date</h3>
+                    </div>
                     <div className="DataTableColum">
                       <h3>Invoice</h3>
                     </div>
@@ -1817,6 +1856,22 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
 
                       {active === "confirmed" && (
                         <>
+                          <div className="DataTableColum">
+                            <div className="TotalPrice">
+                              <MobileDatePicker
+                                defaultValue={dayjs(order?.confirmed_date)}
+                                sx={{
+                                  "& .MuiInputBase-input": {
+                                    fontSize: "11px",
+                                    padding: "0",
+                                  },
+                                }}
+                                key={order?.id}
+                                onChange={e => setShippingDate(dayjs(e))}
+                                onAccept={() => onChangeShippingDate(order?.id)}
+                              />
+                            </div>
+                          </div>
                           <div className="DataTableColum">
                             <div className="TotalPrice">
                               <Button className="invoice">
@@ -2340,6 +2395,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
       <OrderUpdateModal
         key={order.id}
         order={order}
+        products={products}
         orderId={orderId}
         orderUpdate={orderUpdate}
         modalOpenUpdate={modalOpenUpdate}

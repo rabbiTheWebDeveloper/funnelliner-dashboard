@@ -2,11 +2,11 @@ $flaticon_mycollection-font: "flaticon_mycollection";
 
 @font-face {
     font-family: $flaticon_mycollection-font;
-    src: url("./flaticon_mycollection.ttf?d127b4e3e83e552de6d6ab766065c203") format("truetype"),
-url("./flaticon_mycollection.woff?d127b4e3e83e552de6d6ab766065c203") format("woff"),
-url("./flaticon_mycollection.woff2?d127b4e3e83e552de6d6ab766065c203") format("woff2"),
-url("./flaticon_mycollection.eot?d127b4e3e83e552de6d6ab766065c203#iefix") format("embedded-opentype"),
-url("./flaticon_mycollection.svg?d127b4e3e83e552de6d6ab766065c203#flaticon_mycollection") format("svg");
+    src: url("./flaticon_mycollection.ttf?e4c2033c627bca2179eff6b02bfc7185") format("truetype"),
+url("./flaticon_mycollection.woff?e4c2033c627bca2179eff6b02bfc7185") format("woff"),
+url("./flaticon_mycollection.woff2?e4c2033c627bca2179eff6b02bfc7185") format("woff2"),
+url("./flaticon_mycollection.eot?e4c2033c627bca2179eff6b02bfc7185#iefix") format("embedded-opentype"),
+url("./flaticon_mycollection.svg?e4c2033c627bca2179eff6b02bfc7185#flaticon_mycollection") format("svg");
 }
 
 i[class^="flaticon-"]:before, i[class*=" flaticon-"]:before {
@@ -123,6 +123,7 @@ $flaticon_mycollection-map: (
     "downloads": "\f164",
     "info": "\f165",
     "info-button": "\f166",
+    "payment-method": "\f167",
 );
 
 .flaticon-sent:before {
@@ -430,4 +431,7 @@ $flaticon_mycollection-map: (
 }
 .flaticon-info-button:before {
     content: map-get($flaticon_mycollection-map, "info-button");
+}
+.flaticon-payment-method:before {
+    content: map-get($flaticon_mycollection-map, "payment-method");
 }

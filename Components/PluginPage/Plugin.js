@@ -358,9 +358,8 @@ const Plugin = ({ setFetch }) => {
                                     </h5>
                                   </div>
                                   <div className="img">
-                                 
                                     <img
-                                      src={Addons.addons_image}
+                                      src={Addons.addons_image_details}
                                       alt={Addons?.addons_details?.name}
                                     />
                                   </div>
@@ -431,7 +430,7 @@ const Plugin = ({ setFetch }) => {
                                   >
                                     <h5>{addon?.payment_type}</h5>
                                   </div>
-                                  <div className="img">                                                    
+                                  <div className="img">             
                                     <img
                                       src={addon?.addons_image}
                                       alt=""

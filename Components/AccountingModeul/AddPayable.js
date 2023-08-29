@@ -14,6 +14,8 @@ const AddPayable = ({
   type,
   fetchCaseOutPayableData,
   closeAllModal,
+  setSelectedPayableCategory,
+  addValue
 }) => {
   const {
     register,
@@ -24,6 +26,7 @@ const AddPayable = ({
 
   const addPayable = async data => {
     data.type = type;
+    
     const addPayableRes = await axios.post(
       `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ACCOUNTS.CREATE_PAYOR_METHOD}`,
       data,
@@ -33,6 +36,8 @@ const AddPayable = ({
     );
 
     if (addPayableRes?.data?.success) {
+      addValue([{ value: addPayableRes?.data?.data?.id, label: addPayableRes?.data?.data?.name }])
+    // addValue(addPayableRes?.data?.data?.id)
       if (type === "CashIn") {
         fetchCaseInPayableData();
       } else {

@@ -1,24 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Button } from "@mui/material";
 import { DateRangePicker } from "react-nice-dates";
 import { enGB } from "date-fns/locale";
 
 const DateWiseFilter = ({ setDateWiseFilterOption, dateWiseFilterOption, setFilterEndDate, filterEndDate, setFilterStartDate, filterStartDate }) => {
-  const [customDateFilter, setCustomDateFilter] = useState('');
+  const [valueStartDate, setValueStartDate] = useState();
+  const [valueEndDate, setValueEndDate] = useState();
 
   const formatDate = date => {
     if (!date) return "";
     return date.toLocaleDateString();
   };
   
-  const getFormattedDateRange = () => {
+  const getFormattedDateRange = useCallback(() => {
     const dateValue =
     filterStartDate && filterEndDate
       ? `${formatDate(filterStartDate)} - ${formatDate(filterEndDate)}`
       : "";
-      
     return dateValue;
-  }
+  }, [filterStartDate, filterEndDate])
 
   return (
     <React.Fragment>
@@ -62,8 +62,12 @@ const DateWiseFilter = ({ setDateWiseFilterOption, dateWiseFilterOption, setFilt
               startDate={filterStartDate}
               endDate={filterEndDate}
               focus={focus}
-              onStartDateChange={setFilterStartDate}
-              onEndDateChange={setFilterEndDate}
+              onStartDateChange={(selectedDate) => {
+                setFilterStartDate(selectedDate)
+              }}
+              onEndDateChange={(selectedDate) => {
+                setFilterEndDate(selectedDate)
+              }}
               locale={enGB}
               modifiersClassNames={{ open: "-open" }}
             >
@@ -74,8 +78,8 @@ const DateWiseFilter = ({ setDateWiseFilterOption, dateWiseFilterOption, setFilt
                     className={"input"}
                     {...endDateInputProps}
                     {...startDateInputProps}
-                    placeholder="Custom Date Range"
                     value={getFormattedDateRange()}
+                    placeholder="Custom Date Range"
                   />
                 </div>
               )}

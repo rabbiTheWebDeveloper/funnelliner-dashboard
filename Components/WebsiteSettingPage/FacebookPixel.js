@@ -12,25 +12,28 @@ const FacebookPixel = ({ shopName }) => {
   const showToast = useToast();
   const [websiteSettingsData, setWebsiteSettingData] = useState({});
   const label = { inputProps: { "aria-label": "Switch demo" } };
-  const [advanceStatus, setAdvanceStatus] = useState(
-    websiteSettingsData?.c_status
-  );
+  const [advanceStatus, setAdvanceStatus] = useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
   const onSubmit = data => {
-    const matches = data.fb_pixel.match(/'(\d+)'/);
-    const pixelId = matches[0];
-    if (pixelId === !true) {
-      showToast("Invalid Pixel Code");
+    const matches = data?.fb_pixel?.match(/'(\d+)'/);
+    let pixelId
+    if (matches && matches.length > 0) {
+      pixelId = matches[0];
+    }
+    if (data?.fb_pixel.length>0 &&  pixelId === undefined || pixelId ==="undefined") {
+      showToast("Invalid Pixel Code", "error");
       return;
     }
     data.c_status = advanceStatus;
     data.shop_name = shopName;
     data.shop_id = shopId;
-    data.fb_pixel = pixelId;
+    if(data.fb_pixel){
+      data.fb_pixel = pixelId;
+    }
     axios
       .post(`${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PIXEL.UPDATE_PIXEL}`, data, {
         headers: headers,
@@ -49,10 +52,14 @@ const FacebookPixel = ({ shopName }) => {
         headers: headers,
       })
       .then(function (response) {
-        // handle success
-        setWebsiteSettingData(response?.data?.data);
+        if (response.status === 200) {
+          setWebsiteSettingData(response?.data?.data);
+          if (response?.data?.data?.c_status === true || response?.data?.data?.c_status === "true") {
+            setAdvanceStatus(true)
+          }
+        }
       });
-  }, [advanceStatus]);
+  }, []);
   const facebookPixelCode = pixelID => {
     if (pixelID) {
       return `<script>
@@ -100,8 +107,8 @@ const FacebookPixel = ({ shopName }) => {
                   rows={10}
                   id="fb_pixel_id"
                   type="text"
-                  {...register("fb_pixel", { required: true })}
-                  defaultValue={facebookPixelCode(websiteSettingsData.fb_pixel)}
+                  {...register("fb_pixel")}
+                  defaultValue={facebookPixelCode(websiteSettingsData?.fb_pixel)}
                   placeholder={`<script>.......</script>`}
                 />
                 {errors.fb_pixel && (
@@ -117,7 +124,7 @@ const FacebookPixel = ({ shopName }) => {
                   // checked={advanceStatus}
                   onChange={event => setAdvanceStatus(event.target.checked)}
                   {...label}
-                  defaultChecked={advanceStatus}
+                  checked={advanceStatus}
                 />
               </div>
               {advanceStatus === true && (

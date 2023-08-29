@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 import moment from "moment";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Swal from "sweetalert2";
 import HeaderDescription from "../../Components/Common/HeaderDescription/HeaderDescription";
 import { themeUrl } from "../../constant/constant";
@@ -16,8 +16,9 @@ import useLoading from "../../hook/useLoading";
 import TableSkeletor from "../commonSection/TableSkeletor/TableSkeletor";
 import SmallLoader from "../SmallLoader/SmallLoader";
 import { useToast } from "../../hook/useToast";
+import LandingPageDuplicateModal from "./DuplicateModal";
 
-const WebPages = () => {
+const WebPages = ({ busInfo }) => {
   const [isLoading, startLoading, stopLoading] = useLoading();
   const showToast = useToast();
   const [status, setStatus] = useState(false);
@@ -27,12 +28,12 @@ const WebPages = () => {
     "Are you sure you want to delete?",
     "Yes, delete"
   );
-  // UpdateStockModal
   const [openStock, setOpenStock] = useState(false);
   const handleOpenStock = () => setOpenStock(true);
   const handleStockClose = () => setOpenStock(false);
-  // Tabs
   const [value, setValue] = useState("1");
+  const [openDuplicatePopup, setOpenDuplicatePopup] = useState(false);
+  const [duplicateId, setDuplicateId] = useState(null);
 
   const handleChangeTab = (event, newValue) => {
     setValue(newValue);
@@ -60,7 +61,8 @@ const WebPages = () => {
   const [perPage, setPerPage] = useState(6);
   const [page, setPage] = useState(1);
   const router = useRouter();
-  useEffect(() => {
+
+  const fetchPages = useCallback(() => {
     startLoading();
     axios
       .get(process.env.API_URL + "/client/pages", { headers: headers })
@@ -75,7 +77,11 @@ const WebPages = () => {
       });
 
     setStatus(false);
-  }, [status]);
+  }, [])
+
+  useEffect(() => {
+    fetchPages()
+  }, [fetchPages]);
   //   status create
   const data = Cookies.get();
   const mainData = data?.user;
@@ -270,9 +276,10 @@ const WebPages = () => {
                                           Customize
                                         </Link>
                                         <Button
-                                          onClick={() =>
-                                            duplicatePage(product.id)
-                                          }
+                                          onClick={() =>{
+                                            setDuplicateId(product?.id)
+                                            setOpenDuplicatePopup(true)
+                                          }}
                                           className="updateActionBtn"
                                         >
                                           <i className="flaticon-copy"></i>
@@ -344,6 +351,15 @@ const WebPages = () => {
           </div>
         </Container>
       </section>
+      {openDuplicatePopup ? (
+        <LandingPageDuplicateModal
+          openModal={openDuplicatePopup}
+          closeModal={() => setOpenDuplicatePopup(false)}
+          busInfo={busInfo}
+          id={duplicateId}
+          fetchPages={fetchPages}
+        />
+      ) : null}
     </>
   );
 };

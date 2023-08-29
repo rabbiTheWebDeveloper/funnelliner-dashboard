@@ -34,10 +34,18 @@ const API_ENDPOINTS = {
     UPDATE_PAYMENT: `/client/accounts/payment-update/`,
     GET_MULTI_SEARCH: `/client/accounts/multi-search`,
     DELETE_ACCOUNT: `/client/accounts/payment-delete/`,
-    SEARCH_ACCOUNT: `/client/accounts/payment-search/`
+    SEARCH_ACCOUNT: `/client/accounts/payment-search/`,
+    DELETE_PAYOR_CATEGORY: `/client/accounts/payor/delete/`,
+    DELETE_LEDGER_CATEGORY: `/client/accounts/ledger/delete/`,
+    DELETE_PAYMENT_TYPE_CATEGORY: `/client/accounts/payment-method-delete/`,
+  },
+  PRODUCTS: {
+    GET_PRODUCTS: `/client/products`
   },
   ORDERS: {
-    ORDER_GLOBAL_SEARCH: `/client/order/search`
+    ORDER_GLOBAL_SEARCH: `/client/order/search`,
+    CREATE_Order_RES: `/client/orders`,
+    ORDER_EDIT: `/client/orders/`
   }
 }
 

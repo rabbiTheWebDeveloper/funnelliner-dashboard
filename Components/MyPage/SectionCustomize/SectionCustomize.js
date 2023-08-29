@@ -285,8 +285,7 @@ const SectionCustomize = () => {
                       <input
                         {...register("title")}
                         type="text"
-                        placeholder="Enter Title  name here"
-                        disabled
+                        placeholder="Enter Title  name here"              
                       />
                     </div>
 

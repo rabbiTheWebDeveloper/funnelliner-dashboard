@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import { headers } from '../../pages/api';
 import { API_ENDPOINTS } from "../../config/ApiEndpoints";
 
-const AddPayment = ({ handleClosePaymentMethod, openSuggestNote1 ,fetchCaseOutPaymentMethodData , type, fetchCaseInPaymentMethodData, closeAllModal }) => {
+const AddPayment = ({ handleClosePaymentMethod, openSuggestNote1 ,fetchCaseOutPaymentMethodData , type, fetchCaseInPaymentMethodData, closeAllModal, setSelectedPaymentCategory, addValue }) => {
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
     const addPaymentMethod = async (data) => {
@@ -17,6 +17,8 @@ const AddPayment = ({ handleClosePaymentMethod, openSuggestNote1 ,fetchCaseOutPa
         })
 
         if(addPaymentMethodRes?.data?.success){
+            addValue([{ value: addPaymentMethodRes?.data?.data?.id, label: addPaymentMethodRes?.data?.data?.name }])
+            // addValue(addPaymentMethodRes?.data?.data?.id)
             if(type === 'CashIn'){
                 fetchCaseInPaymentMethodData()
             }else{

@@ -16,6 +16,16 @@ import { API_ENDPOINTS } from "../../config/ApiEndpoints";
 import DateWiseFilter from "./DateWiseFilter";
 import AccountBalance from "./AccountBalance";
 
+const addPlusOneWithDate = value => {
+  if(value){
+    const dateJsonStr = JSON.stringify(value)
+    const str1 = dateJsonStr?.split("-");
+    const dateStr = str1[2]?.split("T");
+    const plusOne = parseInt(dateStr[0]) + 1;
+    return eval(`${str1[0]}-${str1[1]}-${plusOne <= 9 ? '0' + plusOne : plusOne}T${dateStr[1]}`)
+  }
+}
+
 const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
   const [search, setSearch] = useState("");
   const [dateWiseFilterOption, setDateWiseFilterOption] = useState("today");
@@ -92,13 +102,16 @@ const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
   }, [search]);
 
   const handleFetchMutiSearch = useCallback(async () => {
+    const startDateWithOneDayAdded = addPlusOneWithDate(filterStartDate); 
+    const endDateWithOneDayAdded = addPlusOneWithDate(filterEndDate);
+    
     const params = {
       date: dateWiseFilterOption,
       payor: payable,
       ledger: ledger,
       payment: paymentItem,
-      start_date: filterStartDate,
-      end_date: filterEndDate,
+      start_date: startDateWithOneDayAdded,
+      end_date: endDateWithOneDayAdded,
     };
 
     if (
@@ -129,6 +142,12 @@ const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
       dateWiseFilterOption === "monthly"
     ) {
       try {
+        const params = {
+          date: dateWiseFilterOption,
+          payor: payable,
+          ledger: ledger,
+          payment: paymentItem,
+        };
         let dataRes = await axios({
           method: "get",
           url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ACCOUNTS.GET_MULTI_SEARCH}`,
@@ -362,6 +381,7 @@ const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
     }
   }, [search]);
 
+
   return (
     <>
       <section className="AccountDashboard boxShadow">
@@ -514,7 +534,7 @@ const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
                         <td>
                           {item?.payment_type !== null
                             ? item?.payment_type
-                            : null}
+                            : "N/A"}
                         </td>
                         <td
                           style={

@@ -2,14 +2,14 @@ import WebPages from '../../Components/WebPages/WebPages';
 import withAuth from '../../hook/PrivateRoute';
 
 
-const index = () => {
+const index = ({ busInfo }) => {
 
 
     return (
 
 
         <>
-            <WebPages></WebPages>
+            <WebPages busInfo={busInfo} />
 
         </>
 

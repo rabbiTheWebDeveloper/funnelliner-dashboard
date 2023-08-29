@@ -27,6 +27,8 @@ const AccountEdit = ({
   const [update, setUpdate] = useState(false);
   const [inputValue, setInputValue] = useState(editData?.ledger_id || "");
   const [inputValue1, setInputValue1] = useState(editData?.payor_id || "");
+  const [paymentMethodValue, setPaymentMethodValue] = useState(editData?.payment_id || "");
+  const [paymentMethodName, setPaymentMethodName] = useState(editData?.payment_type || "");
 
   const {
     register,
@@ -42,9 +44,16 @@ const AccountEdit = ({
     setInputValue1(selectedOption.value);
   };
 
+  const handlePaymentMethodType = selectedOption => {
+    setPaymentMethodValue(selectedOption.value)
+    setPaymentMethodName(selectedOption.label)
+  }
+
   const cashForm = async data => {
     data.payor_id = inputValue1 === "" ? editData?.payor_id : inputValue1;
-    data.ledger_id = inputValue === "" ? editData?.payor_id : inputValue;
+    data.ledger_id = inputValue === "" ? editData?.ledger_id : inputValue;
+    data.payment_id = paymentMethodValue === "" ? editData?.payment_id : paymentMethodValue;
+    data.payment_type = paymentMethodName === "" ? editData?.payment_id : paymentMethodName;;
     data.status = editData?.status;
 
     const editRes = await axios.post(
@@ -131,6 +140,18 @@ const AccountEdit = ({
                 </div>
 
                 <div className="customInput">
+                <label>Payment Method </label>
+                  <AsyncSelect
+                    defaultValue={paymentMethodList.find(
+                      item => item.value == editData?.payment_id
+                    )}
+                    placeholder="Select an option..."
+                    options={paymentMethodList}
+                    onChange={handlePaymentMethodType}
+                  />
+                </div>
+
+                {/* <div className="customInput">
                   <label>Payment Method </label>
                   <select
                     name=""
@@ -148,7 +169,7 @@ const AccountEdit = ({
                       : null}
                   </select>
                   {errors.payment_type && <span>This field is required</span>}
-                </div>
+                </div> */}
 
                 <div className="customInput">
                   <label>Description</label>

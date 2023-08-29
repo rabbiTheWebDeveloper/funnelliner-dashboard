@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import { headers } from '../../pages/api';
 import { API_ENDPOINTS } from "../../config/ApiEndpoints";
 
-const AddCategory = ({ handleCloseSuggestNote, openSuggestNote ,fetchLedgerData , type, closeAllModal}) => {
+const AddCategory = ({ handleCloseSuggestNote, openSuggestNote ,fetchLedgerData , type, closeAllModal, setSelectedLedgerCategory, addValue}) => {
     
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
     
@@ -16,6 +16,8 @@ const AddCategory = ({ handleCloseSuggestNote, openSuggestNote ,fetchLedgerData 
             headers: headers
         })
         if(addRes?.data?.success){
+            addValue([{ value: addRes?.data?.data?.id, label: addRes?.data?.data?.name }])
+            // addValue(addRes?.data?.data?.id)
             fetchLedgerData()
             handleCloseSuggestNote()
         }else{

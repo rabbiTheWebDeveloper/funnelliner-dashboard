@@ -7,6 +7,8 @@ import { headers, shopId } from "../../pages/api";
 import Spinner from "../commonSection/Spinner/Spinner";
 import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { API_ENDPOINTS } from "../../config/ApiEndpoints";
+import { Fragment } from "react";
 
 const validationSchema = Yup.object({
   customer_name: Yup.string().required("Customer Name is required"),
@@ -39,7 +41,7 @@ const OrderModal = ({
   const createOrder = async inputData => {
     try {
       const productIds = inputData.products.map(product => product.product_id);
-      const productQtys = inputData.products.map(
+      const productQuantities = inputData.products.map(
         product => product.product_qty
       );
       const shippingCosts = inputData.products.map(
@@ -52,19 +54,22 @@ const OrderModal = ({
         customer_address: inputData.customer_address,
         order_type: inputData.order_type,
         product_id: productIds,
-        product_qty: productQtys,
+        product_qty: productQuantities,
         shipping_cost: shippingCosts,
         shop_id: shopId,
       };
-
       startLoading();
-      const response = await SuperFetch.post("/client/orders", data, {
+      const response = await SuperFetch.post(API_ENDPOINTS.ORDERS.CREATE_Order_RES, data, {
         headers: headers,
       });
-      showToast("Order created successfully", "success");
-      handleCloseModal();
-      handleFetch();
-      orderUpdate();
+
+      if (response.data.success) {
+        showToast("Order created successfully", "success");
+        handleCloseModal();
+        handleFetch();
+        orderUpdate();
+      }
+
     } catch (error) {
       if (error.response) {
         Object.keys(error?.response?.data?.msg).forEach((key) => {
@@ -190,12 +195,11 @@ const OrderModal = ({
                         />
                       </div>
                     </Grid>
-
                     <Grid item xs={12}>
                       <div className="OrderAddProductModal">
                         <FieldArray name="products">
                           {arrayHelpers => (
-                            <>
+                            <Fragment>
                               <div>
                                 {values?.products?.map((product, index) => (
                                   <div key={index}>
@@ -240,7 +244,6 @@ const OrderModal = ({
                                           />
                                         </div>
                                       </Grid>
-
                                       <Grid item xs={12} sm={3}>
                                         <div className="customInput">
                                           <label>
@@ -292,8 +295,6 @@ const OrderModal = ({
                                             </Button>
                                           </Grid> : null
                                       }
-
-
                                     </Grid>
                                   </div>
                                 ))}
@@ -312,138 +313,19 @@ const OrderModal = ({
                                   Add Product <i className="flaticon-plus"></i>
                                 </Button>
                               </div>
-                            </>
+                            </Fragment>
                           )}
                         </FieldArray>
                       </div>
                     </Grid>
                   </Grid>
-
-                  {/* <div
-                    className=""
-                    style={{ width: "100%", marginTop: "10px" }}
-                  >
-                    <FieldArray name="products">
-                      {arrayHelpers => (
-                        <div>
-                          {values?.products?.map((product, index) => (
-                            <div key={index}>
-                              <Grid container spacing={2}>
-                                <Grid item xs={12} sm={5}>
-                                  <div className="customInput">
-                                    <label>
-                                      Product Name <span>*</span>
-                                    </label>
-                                    <Field
-                                      component="select"
-                                      name={`products.${index}.product_id`}
-                                    >
-                                      <option value="">Select Product</option>
-                                      {Array.isArray(products)
-                                        ? products?.map(data => (
-                                          <option
-                                            key={data?.id}
-                                            value={data?.id}
-                                            disabled={values.products.some(
-                                              (p, i) =>
-                                                p.product_id === data.id &&
-                                                (i !== index ||
-                                                  p.product_id ===
-                                                  values.products[index]
-                                                    .product_id)
-                                            )}
-                                          >
-                                            {data?.product_name}
-                                          </option>
-                                        ))
-                                        : null}
-                                    </Field>
-                                    <ErrorMessage
-                                      name={`products.${index}.product_id`}
-                                      component="div"
-                                      className="error"
-                                    />
-                                  </div>
-                                </Grid>
-
-                                <Grid item xs={12} sm={3}>
-                                  <div className="customInput">
-                                    <label>
-                                      Product Quantity<span>*</span>
-                                    </label>
-                                    <Field
-                                      type="number"
-                                      variant="outlined"
-                                      name={`products.${index}.product_qty`}
-                                      placeholder="Enter Product Quantity"
-                                    // defa
-                                    />{" "}
-                                    <ErrorMessage
-                                      name={`products.${index}.product_qty`}
-                                      component="div"
-                                      className="error"
-                                    />
-                               
-                                  </div>
-                                </Grid>
-                                <Grid item xs={12} sm={3}>
-                                  <div className="customInput">
-                                    <label>Shipping Cost</label>
-                                    <Field
-                                      type="number"
-                                      variant="outlined"
-                                      name={`products.${index}.shipping_cost`}
-                                      placeholder="Shipping Cost"
-                                      defa
-                                    />
-                                    <ErrorMessage
-                                      name={`products.${index}.shipping_cost`}
-                                      component="div"
-                                      className="error"
-                                    />
-                                  </div>
-                                </Grid>
-                                {values?.products.length > 1 ? (
-                                  <Grid item xs={1}>
-                                    <button
-                                      type="button"
-                                      onClick={() => arrayHelpers.remove(index)}
-                                      className="red"
-                                    >
-                                      <img src="/images/close.png" alt="" />
-                                    </button>
-                                  </Grid>
-                                ) : null}
-                              </Grid>
-                            </div>
-                          ))}
-                          <button
-                            type="button"
-                            className="bg OrderBg"
-                            onClick={() =>
-                              arrayHelpers.push({
-                                product_id: "",
-                                product_qty: 1,
-                                shipping_cost: 0,
-                              })
-                            }
-                          >
-                            <i className="flaticon-plus"></i> Add Product
-                          </button>
-                        </div>
-                      )}
-                    </FieldArray>
-                  </div> */}
                 </div>
-
                 <div className="duelButton">
                   {isLoading ? (
-                    <>
-                      <Button type="submit" className="One">
-                        {" "}
-                        <Spinner /> Add
-                      </Button>
-                    </>
+                    <Button type="submit" className="One">
+                      {" "}
+                      <Spinner /> Add
+                    </Button>
                   ) : (
                     <Button type="submit" className="One">
                       {" "}
