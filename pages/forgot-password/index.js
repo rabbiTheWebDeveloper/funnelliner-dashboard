@@ -14,8 +14,7 @@ const ReactCodeInput = dynamic(import("react-code-input"));
 const axios = require("axios");
 const steps = ["Select campaign settings", "Create an ad group", "Password Input"];
 const ForgetPasswordPage = () => {
-    const { publicRuntimeConfig } = getConfig();
-    const apiUrl = publicRuntimeConfig.API_URL;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter();
     const [click, setClick] = useState(false);
     const [disable, setDisable] = useState(false);

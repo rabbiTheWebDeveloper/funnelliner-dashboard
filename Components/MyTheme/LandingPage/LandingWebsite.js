@@ -118,7 +118,7 @@ const LandingWebsite = () => {
     //product fetching and add with theme
     useEffect(() => {
         axios
-            .get(process.env.API_URL + "/client/products", { headers: headers })
+            .get(process.env.NEXT_PUBLIC_API_URL + "/client/products", { headers: headers })
             .then(function (response) {
                 if (response?.status === 200) {
                     setProducts(response.data.data);

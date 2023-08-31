@@ -124,7 +124,7 @@ const AddProduct = () => {
     }
     setIsLoading(true)
     axios
-      .post(process.env.API_URL + "/client/products", formData, { headers: headers })
+      .post(process.env.NEXT_PUBLIC_API_URL + "/client/products", formData, { headers: headers })
       .then(function (response) {
 
         setIsLoading(false)
@@ -152,7 +152,7 @@ const AddProduct = () => {
 
   useEffect(() => {
     axios
-      .get(process.env.API_URL + "/client/categories", { headers: headers })
+      .get(process.env.NEXT_PUBLIC_API_URL + "/client/categories", { headers: headers })
       .then(function (response) {
         // handle success
         setCategory(response.data.data);

@@ -28,7 +28,7 @@ const ProductReturn = () => {
 
   useEffect(() => {
     axios
-      .get(process.env.API_URL + "/client/stocks/product-return/list", {
+      .get(process.env.NEXT_PUBLIC_API_URL + "/client/stocks/product-return/list", {
         headers: headers,
       })
       .then(function (response) {
@@ -49,7 +49,7 @@ const ProductReturn = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(process.env.API_URL + "/client/products/" + id, {
+          .delete(process.env.NEXT_PUBLIC_API_URL + "/client/products/" + id, {
             headers: headers,
           })
           .then(function (result) {

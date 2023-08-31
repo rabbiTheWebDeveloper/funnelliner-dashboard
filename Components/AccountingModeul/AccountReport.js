@@ -174,7 +174,7 @@ const AccountExcelReport = () => {
     try {
       let data = await axios({
         method: "get",
-        url: `${process.env.API_URL}/client/accounts/payor/list`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/accounts/payor/list`,
         headers: headers,
       });
       setReciverList(data?.data?.data);
@@ -190,7 +190,7 @@ const AccountExcelReport = () => {
     try {
       let data = await axios({
         method: "get",
-        url: `${process.env.API_URL}/client/accounts/ledger/list`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/accounts/ledger/list`,
         headers: headers,
       });
       setCategoryList(data?.data?.data);
@@ -206,7 +206,7 @@ const AccountExcelReport = () => {
     try {
       let data = await axios({
         method: "get",
-        url: `${process.env.API_URL}/client/accounts/payment-method-show`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/accounts/payment-method-show`,
         headers: headers,
       });
       setPaymentList(data?.data?.data);

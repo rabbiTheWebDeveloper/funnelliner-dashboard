@@ -118,7 +118,7 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
         try {
             let data = await axios({
                 method: "get",
-                url: `${process.env.API_URL}/client/transaction/list`,
+                url: `${process.env.NEXT_PUBLIC_API_URL}/client/transaction/list`,
                 headers: headers,
             });
             setBillingList(data?.data?.data);

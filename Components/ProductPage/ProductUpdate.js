@@ -30,7 +30,7 @@ const ProductUpdate = ({ id, category }) => {
     };
 
     useEffect(() => {
-        axios.get(process.env.API_URL + "/client/products/" + id, { headers: headers })
+        axios.get(process.env.NEXT_PUBLIC_API_URL + "/client/products/" + id, { headers: headers })
             .then(function (response) {
                 // handle success
                 setProducts(response.data.data);
@@ -86,7 +86,7 @@ const ProductUpdate = ({ id, category }) => {
             formData.append("outside_dhaka", outDhaka);
         }
 
-        axios.post(process.env.API_URL + "/client/products/" + id, formData, { headers: headers })
+        axios.post(process.env.NEXT_PUBLIC_API_URL + "/client/products/" + id, formData, { headers: headers })
             .then(function (response) {
                 if (response?.data?.success) {
                     showToast('Product update successfully!', 'success');

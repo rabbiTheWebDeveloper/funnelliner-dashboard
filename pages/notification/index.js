@@ -12,7 +12,7 @@ const NotificationPage = ({ busInfo }) => {
       notify_id: id,
       type: "order"
     }
-    axios.post(process.env.API_URL + `/client/notifications-show`, orderBody, {
+    axios.post(process.env.NEXT_PUBLIC_API_URL + `/client/notifications-show`, orderBody, {
       headers: headers,
 
     })

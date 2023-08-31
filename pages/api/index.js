@@ -36,7 +36,7 @@ export const headers = {
 
 
 export const getWebsiteSettings = async () => {
-    let EndPoint = `${process.env.API_URL}/client/settings/business-info`;
+    let EndPoint = `${process.env.NEXT_PUBLIC_API_URL}/client/settings/business-info`;
     return axios
         .get(EndPoint, {headers: headers})
         .then((res) => {
@@ -54,7 +54,7 @@ export const getWebsiteSettings = async () => {
 
 
 export const getMerchantList = () => {
-    let EndPoint = `${process.env.API_URL}/client/customers/3`;
+    let EndPoint = `${process.env.NEXT_PUBLIC_API_URL}/client/customers/3`;
     return axios
         .get(EndPoint, {headers: headers})
         .then((res) => {
@@ -70,7 +70,7 @@ export const getMerchantList = () => {
 };
 
 export const topSellingProducts = () => {
-    let EndPoint = `${process.env.API_URL}/client/top-selling-product`;
+    let EndPoint = `${process.env.NEXT_PUBLIC_API_URL}/client/top-selling-product`;
     return axios
         .get(EndPoint, {headers: headers})
         .then((res) => {
@@ -82,7 +82,7 @@ export const topSellingProducts = () => {
 };
 
 export const handleGetSupportTicketList = (merchant_id) => {
-    let EndPoint = `${process.env.API_URL}/client/support-ticket/list`;
+    let EndPoint = `${process.env.NEXT_PUBLIC_API_URL}/client/support-ticket/list`;
     return axios
         .post(EndPoint, {merchant_id: merchant_id}, {headers: headers})
         .then((res) => {
@@ -94,7 +94,7 @@ export const handleGetSupportTicketList = (merchant_id) => {
 };
 
 export const activateCourier = (merchant_id, provider, status, config) => {
-    let EndPoint = `${process.env.API_URL}/client/courier/provider`;
+    let EndPoint = `${process.env.NEXT_PUBLIC_API_URL}/client/courier/provider`;
     const postBody = {
         provider: provider,
         status: status,
@@ -127,7 +127,7 @@ export const activeMultipleTemplate = (id) => {
     const postBody = {
         multiple_theme_id: id,
     };
-    let EndPoint = `${process.env.API_URL}/client/themes/multiple/active`;
+    let EndPoint = `${process.env.NEXT_PUBLIC_API_URL}/client/themes/multiple/active`;
     return axios
         .post(EndPoint, postBody, {headers: headers})
         .then((res) => {
@@ -154,7 +154,7 @@ export const activeLandingPageTemplate = (id) => {
     const postBody = {
         landing_theme_id: id,
     };
-    let EndPoint = `${process.env.API_URL}/client/themes/landing/active`;
+    let EndPoint = `${process.env.NEXT_PUBLIC_API_URL}/client/themes/landing/active`;
     return axios
         .post(EndPoint, postBody, {headers: headers})
         .then((res) => {
@@ -173,7 +173,7 @@ export const allThemeList = (type) => {
         shop_id: 970795,
         type: type,
     };
-    let EndPoint = `${process.env.API_URL}/client/themes/list`;
+    let EndPoint = `${process.env.NEXT_PUBLIC_API_URL}/client/themes/list`;
     return axios
         .post(EndPoint, postBody, {headers: headers})
         .then((res) => {
@@ -197,7 +197,7 @@ export const importLandingPage = (title, theme, status, product_id, videoLink) =
        
     };
     
-    let EndPoint = `${process.env.API_URL}/client/pages`;
+    let EndPoint = `${process.env.NEXT_PUBLIC_API_URL}/client/pages`;
     return axios.post(EndPoint, postBody, {headers: headers})
         .then((res) => {
             return res;
@@ -213,7 +213,7 @@ export const importTheme = (type, theme_id) => {
         theme_id: theme_id
     };
    
-    let EndPoint = `${process.env.API_URL}/client/themes/import-theme`;
+    let EndPoint = `${process.env.NEXT_PUBLIC_API_URL}/client/themes/import-theme`;
     return axios
         .post(EndPoint, postBody, {headers: headers})
         .then((res) => {
@@ -231,7 +231,7 @@ export const merchantThemeList = (type) => {
         shop_id: shopId,
         type: type,
     };
-    let EndPoint = `${process.env.API_URL}/client/themes/merchant/themes`;
+    let EndPoint = `${process.env.NEXT_PUBLIC_API_URL}/client/themes/merchant/themes`;
     return axios
         .post(EndPoint, postBody, {headers: headers})
         .then((res) => {
@@ -247,7 +247,7 @@ export const merchantLandingThemeList = (type) => {
     const postBody = {
         type: type,
     };
-    let EndPoint = `${process.env.API_URL}/client/themes/merchant/themes`;
+    let EndPoint = `${process.env.NEXT_PUBLIC_API_URL}/client/themes/merchant/themes`;
     return axios
         .post(EndPoint, postBody, {headers: headers})
         .then((res) => {

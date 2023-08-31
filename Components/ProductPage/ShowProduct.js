@@ -9,7 +9,7 @@ const ShowProduct = ({ id }) => {
     const handleOpenSales = () => setOpenSales(true);
     const handleCloseSales = () => setOpenSales(false);
     useEffect(() => {
-        axios.get(process.env.API_URL + "/client/products/" + id, { headers: headers })
+        axios.get(process.env.NEXT_PUBLIC_API_URL + "/client/products/" + id, { headers: headers })
             .then(function (response) {
                 setProducts(response.data.data);
             });

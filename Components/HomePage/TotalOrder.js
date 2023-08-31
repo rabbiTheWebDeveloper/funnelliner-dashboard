@@ -34,7 +34,7 @@ const TotalOrder = ({ allProduct, busInfo }) => {
 
     const onSubmit = (data) => {
         axios
-            .post(process.env.API_URL + "/client/sales-target/update", data, {
+            .post(process.env.NEXT_PUBLIC_API_URL + "/client/sales-target/update", data, {
                 headers: headers,
             })
             .then(function (response) {
@@ -61,7 +61,7 @@ const TotalOrder = ({ allProduct, busInfo }) => {
         try {
             let data = await axios({
                 method: "get",
-                url: `${process.env.API_URL}/client/sales-target`,
+                url: `${process.env.NEXT_PUBLIC_API_URL}/client/sales-target`,
                 headers: headers,
             });
 

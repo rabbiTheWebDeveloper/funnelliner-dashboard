@@ -50,6 +50,13 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import Capitalized, { courierStatusFormate } from "../../constant/capitalized";
 import CopyIcon from "../../Components/UI/CopyIcon/CopyIcon";
 import { API_ENDPOINTS } from "../../config/ApiEndpoints";
+import ReactSelect from 'react-select';
+
+const followUpOrderFilterOption = [
+  { value: 'today', label: 'Today' },
+  { value: 'next_seven_days', label: 'Next Seven Days' },
+  { value: 'custom', label: 'Custom' }
+]
 
 const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
   const showToast = useToast();
@@ -583,14 +590,14 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
   const [openStock, setOpenStock] = useState(false);
   const handleOpenStock = () => setOpenStock(true);
 
-  const onChangeDate = orderId => {
+  const onChangeDate = (orderId, type) => {
     if (followUpDate === undefined) {
       showToast("Please select valid Date", "error");
       return;
     }
     const postBody = {
       date: `${followUpDate.$y}-${followUpDate.$M + 1}-${followUpDate.$D}`,
-      type: "follow_up",
+      type: type,
     };
     axios
       .post(baseUrl + `/client/order/date/${orderId}/update`, postBody, {
@@ -639,8 +646,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
   };
 
   // delete order
-  const { publicRuntimeConfig } = getConfig();
-  const apiUrl = publicRuntimeConfig.API_URL;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL
 
   const deleteProduct = id => {
     Swal.fire({
@@ -659,7 +665,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
       if (result.isConfirmed) {
         axios
           .post(
-            apiUrl + `/client/order/${id}/delete`,
+            `${process.env.NEXT_PUBLIC_API_URL}/client/order/${id}/delete`,
             {},
             {
               headers: headers,
@@ -815,8 +821,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     }).then(result => {
       if (result.isConfirmed) {
         axios
-          .post(
-            apiUrl + `/client/bulkdelete`,
+          .post(`${process.env.NEXT_PUBLIC_API_URL}/client/bulkdelete`,
             {
               orders: [...selectedOrders],
             },
@@ -1207,9 +1212,10 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                 </div>
 
                 <select onChange={(event) => handleSelected(event.target.value)}>
-                  <option disabled value="">
+                  <option  value="">
                     Find Your Follow Up Order
                   </option>
+                  <option value="previous">Previous</option>
                   <option value="today">Today</option>
                   <option value="tomorrow">Tomorrow</option>
                   <option value="next_seven_days">Next Seven Days</option>
@@ -1220,6 +1226,13 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
 
             {active === "follow_up" && (
               <div className="duelSelect d_flex">
+                <div className="react_Select_custom_date_select">
+                  <ReactSelect
+                    options={followUpOrderFilterOption}
+                    onChange={(event) => handleSelected(event.value)}
+                    placeholder="Find Your Follow Up Order"
+                  />
+                </div>
                 <div>
                   {showPicker && (
                     <DateRangePicker
@@ -1519,11 +1532,15 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                     {/* <th width={20}>Select Courier</th> */}
                   </>
                 )}
-                {active === "follow_up" && (
+                {active === "follow_up" || active === "confirmed" ? (
                   <div className="DataTableColum">
-                    <h3>Follow Up Date</h3>
+                    <h3>
+                      {
+                        active === "confirmed" ? "Confirmed Date" : "Follow Up Date"
+                      }
+                    </h3>
                   </div>
-                )}
+                ) : null}
                 {active === "shipped" && (
                   <>
                     <div className="DataTableColum">
@@ -1995,7 +2012,26 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                               }}
                               key={order?.id}
                               onChange={e => setFollowUpDate(dayjs(e))}
-                              onAccept={() => onChangeDate(order?.id)}
+                              onAccept={() => onChangeDate(order?.id, "follow_up")}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {active === "confirmed" && (
+                        <div className="DataTableColum">
+                          <div className="TotalPrice">
+                            <MobileDatePicker
+                              defaultValue={dayjs(order?.confirmed_date)}
+                              sx={{
+                                "& .MuiInputBase-input": {
+                                  fontSize: "11px",
+                                  padding: "0",
+                                },
+                              }}
+                              key={order?.id}
+                              onChange={e => setFollowUpDate(dayjs(e))}
+                              onAccept={() => onChangeDate(order?.id, "confirmed")}
                             />
                           </div>
                         </div>

@@ -33,7 +33,7 @@ const SubProduct = () => {
     };
 
     const hanldeFetchCategories = () => {
-        axios.get(process.env.API_URL + "/client/categories", { headers: headers })
+        axios.get(process.env.NEXT_PUBLIC_API_URL + "/client/categories", { headers: headers })
             .then(function (response) {
                 let allProduct = response.data.data;
                 setProducts(allProduct);
@@ -69,7 +69,7 @@ const SubProduct = () => {
         }).then((result) => {
             if (result.isConfirmed) {
                 axios
-                    .delete(process.env.API_URL + "/client/categories/" + id, { headers: headers })
+                    .delete(process.env.NEXT_PUBLIC_API_URL + "/client/categories/" + id, { headers: headers })
                     .then(function (result) {
                         // handle success
                         if (result) {

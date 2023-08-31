@@ -36,7 +36,7 @@ const UpdateCategory = ({ id }) => {
         formData.append('_method', 'patch');
 
 
-        axios.post(process.env.API_URL + "/client/categories/" + id, formData, { headers: headers }
+        axios.post(process.env.NEXT_PUBLIC_API_URL + "/client/categories/" + id, formData, { headers: headers }
         )
 
             .then(function (response) {
@@ -61,7 +61,7 @@ const UpdateCategory = ({ id }) => {
 
 
     useEffect(() => {
-        axios.get(process.env.API_URL + "/client/categories/" + id, { headers: headers })
+        axios.get(process.env.NEXT_PUBLIC_API_URL + "/client/categories/" + id, { headers: headers })
             .then(function (response) {
                 let allProduct = response.data.data;
                 setProducts(allProduct);

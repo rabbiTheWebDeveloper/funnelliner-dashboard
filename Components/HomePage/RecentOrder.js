@@ -15,7 +15,7 @@ const RecentOrder = () => {
         try {
             let data = await axios({
                 method: "get",
-                url: `${process.env.API_URL}/client/recent-order/count`,
+                url: `${process.env.NEXT_PUBLIC_API_URL}/client/recent-order/count`,
                 headers: headers,
             });
             setRecentOrder(data?.data?.data);

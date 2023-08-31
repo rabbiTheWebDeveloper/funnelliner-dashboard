@@ -57,7 +57,7 @@ function PrivacyPolicy({ websiteSettingData }) {
     }
     const handleSubmitPrivacyPolicyData = () => {
         axios
-            .post(`${process.env.API_URL}/client/settings/business-info/update`, { privacy_policy: privacy_policy, shop_name: websiteSettingData?.domain }, {
+            .post(`${process.env.NEXT_PUBLIC_API_URL}/client/settings/business-info/update`, { privacy_policy: privacy_policy, shop_name: websiteSettingData?.domain }, {
                 headers: headers,
             })
             .then(function (response) {

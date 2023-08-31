@@ -117,7 +117,7 @@ const Dashboard = ({ busInfo }) => {
     try {
       let data = await axios({
         method: "get",
-        url: `${process.env.API_URL}/client/sales-target`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/sales-target`,
         headers: headers,
       });
 
@@ -138,7 +138,7 @@ const Dashboard = ({ busInfo }) => {
     try {
       let data = await axios({
         method: "get",
-        url: `${process.env.API_URL}/client/settings/advance-payment/status`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/settings/advance-payment/status`,
         headers: headers,
       });
       if (data.data.success === true) {

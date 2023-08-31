@@ -29,7 +29,7 @@ const Plugin = ({ setFetch }) => {
     try {
       let data = await axios({
         method: "get",
-        url: `${process.env.API_URL}/client/addons/addons-list`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/addons/addons-list`,
         headers: headers,
       });
       setAddonsList(data?.data?.data);
@@ -52,7 +52,7 @@ const Plugin = ({ setFetch }) => {
     try {
       let data = await axios({
         method: "get",
-        url: `${process.env.API_URL}/client/addons/myaddons`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/addons/myaddons`,
         headers: headers,
       });
 
@@ -80,7 +80,7 @@ const Plugin = ({ setFetch }) => {
     try {
       let data = await axios({
         method: "post",
-        url: `${process.env.API_URL}/client/addons/install`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/addons/install`,
         headers: headers,
         data: {
           addons_id: addonsID,
@@ -181,7 +181,7 @@ const Plugin = ({ setFetch }) => {
     try {
       let data = await axios({
         method: "get",
-        url: `${process.env.API_URL}/client/addons/status-active-inactive/${id}`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/addons/status-active-inactive/${id}`,
         headers: headers,
       });
       setAddonsUpdate(true);
@@ -199,7 +199,7 @@ const Plugin = ({ setFetch }) => {
     try {
       let data = await axios({
         method: "get",
-        url: `${process.env.API_URL}/client/addons/uninstall/${id}`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/addons/uninstall/${id}`,
         headers: headers,
       });
       setAddonsUpdate(true);

@@ -67,7 +67,7 @@ function MyApp({ Component, pageProps, router }) {
     try {
       let data = await axios({
         method: "get",
-        url: `${process.env.API_URL}/client/settings/business-info`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/settings/business-info`,
         headers: headers,
       });
       setBusInfo(data?.data?.data);
@@ -98,7 +98,7 @@ function MyApp({ Component, pageProps, router }) {
     try {
       let data = await axios({
         method: "get",
-        url: `${process.env.API_URL}/client/pending-order/count`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/pending-order/count`,
         headers: headers,
       });
       setPendingOrderCount(data.data.data);
@@ -119,7 +119,7 @@ function MyApp({ Component, pageProps, router }) {
     try {
       let data = await axios({
         method: "get",
-        url: `${process.env.API_URL}/client/addons/myaddons`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/addons/myaddons`,
         headers: headers,
       });
       setMyAddonsList(data?.data?.data);

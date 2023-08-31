@@ -26,7 +26,7 @@ const HomePageCart = ({ data, setFetchData, startDate, setStartDate, endDate, se
     const handleCloseSales = () => setOpenSales(false);
 
     const onSubmit = (data) => {
-        axios.post(process.env.API_URL + "/client/sales-target/update", data, {
+        axios.post(process.env.NEXT_PUBLIC_API_URL + "/client/sales-target/update", data, {
             headers: headers,
         })
             .then(function (response) {

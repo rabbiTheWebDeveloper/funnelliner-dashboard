@@ -12,7 +12,7 @@ const DashboardSettingPage = () => {
 
     useEffect(() => {
         axios
-            .get(process.env.API_URL+ "/client/settings/business-info", {headers: headers})
+            .get(process.env.NEXT_PUBLIC_API_URL+ "/client/settings/business-info", {headers: headers})
             .then(function (response) {
                 setResponse(response)
             

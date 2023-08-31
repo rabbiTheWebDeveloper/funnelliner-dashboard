@@ -27,7 +27,7 @@ const Note = ({ isOpenOrderNoteModal, handleCloseOrderNoteModal, handleFetch, id
         type: status,
       };
       axios
-        .post(process.env.API_URL + `/client/order/note/${id}/update`, data, {
+        .post(process.env.NEXT_PUBLIC_API_URL + `/client/order/note/${id}/update`, data, {
           headers: headers,
         })
         .then(function (res) {
@@ -50,7 +50,7 @@ const Note = ({ isOpenOrderNoteModal, handleCloseOrderNoteModal, handleFetch, id
       invoice_note: invoiceNote.length > 0 ? invoiceNote : "0",
 
     }
-    axios.post(process.env.API_URL + `/client/order/note/${orderNo}/update`, data, {
+    axios.post(process.env.NEXT_PUBLIC_API_URL + `/client/order/note/${orderNo}/update`, data, {
       headers: headers,
     })
       .then(function (res) {

@@ -65,7 +65,7 @@ const WebPages = ({ busInfo }) => {
   const fetchPages = useCallback(() => {
     startLoading();
     axios
-      .get(process.env.API_URL + "/client/pages", { headers: headers })
+      .get(process.env.NEXT_PUBLIC_API_URL + "/client/pages", { headers: headers })
       .then(function (response) {
         // handle success
         setProducts(response.data.data);
@@ -100,7 +100,7 @@ const WebPages = ({ busInfo }) => {
     data.status = "0";
     axios
       .post(
-        process.env.API_URL +
+        process.env.NEXT_PUBLIC_API_URL +
           `/client/pages?id=${merchantId}&status=0&title=${product.title}&theme=${id}&slug=hello2`,
         {
           headers: headers,
@@ -123,7 +123,7 @@ const WebPages = ({ busInfo }) => {
   const duplicatePage = id => {
     axios
       .post(
-        process.env.API_URL + `/client/pages/${id}/duplicate`,
+        process.env.NEXT_PUBLIC_API_URL + `/client/pages/${id}/duplicate`,
         {},
         {
           headers: headers,
@@ -147,7 +147,7 @@ const WebPages = ({ busInfo }) => {
     if (isConfirm) {
       startLoading();
       axios
-        .delete(process.env.API_URL + "/client/pages/" + id, {
+        .delete(process.env.NEXT_PUBLIC_API_URL + "/client/pages/" + id, {
           headers: headers,
         })
         .then(function (result) {

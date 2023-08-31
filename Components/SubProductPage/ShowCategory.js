@@ -8,7 +8,7 @@ const ShowCategory = ({ id }) => {
     const handleOpenSales = () => setOpenSales(true);
     const handleCloseSales = () => setOpenSales(false);
     useEffect(() => {
-        axios.get(process.env.API_URL + "/client/categories/" + id, { headers: headers })
+        axios.get(process.env.NEXT_PUBLIC_API_URL + "/client/categories/" + id, { headers: headers })
             .then(function (response) {
                 // handle success
                 setProducts(response.data.data);

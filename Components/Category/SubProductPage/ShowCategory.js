@@ -7,7 +7,7 @@ const ShowCategory = ({ id, isOpen, closePopup }) => {
     const [products, setProducts] = useState()
   useEffect(() => {
     axios
-      .get(process.env.API_URL + "/client/categories/" + id, {
+      .get(process.env.NEXT_PUBLIC_API_URL + "/client/categories/" + id, {
         headers: headers,
       })
       .then(function (response) {

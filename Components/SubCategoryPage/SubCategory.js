@@ -45,7 +45,7 @@ const SubCategory = () => {
 
 
         }
-        axios.post(process.env.API_URL + "/client/categories", cat, { headers: headers }
+        axios.post(process.env.NEXT_PUBLIC_API_URL + "/client/categories", cat, { headers: headers }
         )
             .then(function (response) {
                 if (response.status === 200) {
@@ -63,7 +63,7 @@ const SubCategory = () => {
 
     ///// get category
     useEffect(() => {
-        axios.get(process.env.API_URL + "/client/categories", { headers: headers })
+        axios.get(process.env.NEXT_PUBLIC_API_URL + "/client/categories", { headers: headers })
             .then(function (response) {
                 // handle success
                 setCategory(response?.data?.data);

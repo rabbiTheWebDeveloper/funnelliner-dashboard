@@ -10,7 +10,7 @@ const ProductPage = () => {
     const [category, setCategory] = useState([])
     const hanldeFetchCategories = () => {
         axios
-            .get(process.env.API_URL + "/client/categories", { headers: headers })
+            .get(process.env.NEXT_PUBLIC_API_URL + "/client/categories", { headers: headers })
             .then(function (response) {
                 let categories = response.data.data;
                 setCategory(categories);

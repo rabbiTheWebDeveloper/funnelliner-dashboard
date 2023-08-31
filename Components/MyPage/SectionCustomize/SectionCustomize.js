@@ -52,7 +52,7 @@ const SectionCustomize = () => {
     try {
       let data = await axios({
         method: "get",
-        url: `${process.env.API_URL}/client/footer-list`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/footer-list`,
         headers: headers,
       });
       setFooterList(data?.data?.data);
@@ -67,7 +67,7 @@ const SectionCustomize = () => {
     try {
       let data = await axios({
         method: "get",
-        url: `${process.env.API_URL}/client/checkout-design-list`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/checkout-design-list`,
         headers: headers,
       });
       setCheckoutList(data?.data?.data);
@@ -82,7 +82,7 @@ const SectionCustomize = () => {
     try {
       let data = await axios({
         method: "get",
-        url: `${process.env.API_URL}/client/products`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/products`,
         headers: headers,
       });
       setProductsList(data?.data?.data);
@@ -110,7 +110,7 @@ const SectionCustomize = () => {
     try {
       let data = await axios({
         method: "get",
-        url: `${process.env.API_URL}/client/pages/${id}/edit`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/pages/${id}/edit`,
         headers: headers,
       });
       setPageInfo(data?.data?.data);
@@ -218,7 +218,7 @@ const SectionCustomize = () => {
     }
     startLoading();
     axios
-      .post(process.env.API_URL + `/client/page/update/${id}`, formData, {
+      .post(process.env.NEXT_PUBLIC_API_URL + `/client/page/update/${id}`, formData, {
         headers: headers,
       })
       .then(function (response) {
@@ -249,7 +249,7 @@ const SectionCustomize = () => {
     try {
       let data = await axios({
         method: "post",
-        url: `${process.env.API_URL}/client/footer/color/reset/${id}`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/footer/color/reset/${id}`,
         headers: headers,
       });
       if (data.status === 200) {

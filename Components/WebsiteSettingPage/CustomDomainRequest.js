@@ -26,7 +26,7 @@ const CustomDomainRequest = ({ shopName }) => {
     data.shop_id = shopId;
     data.domain_status = "pending";
     axios
-      .post(`${process.env.API_URL}/client/settings/domain/update`, data, {
+      .post(`${process.env.NEXT_PUBLIC_API_URL}/client/settings/domain/update`, data, {
         headers: headers,
       })
       .then(function (response) {
@@ -49,7 +49,7 @@ const CustomDomainRequest = ({ shopName }) => {
 
   useEffect(() => {
     axios
-      .get(process.env.API_URL + "/client/settings/business-info", {
+      .get(process.env.NEXT_PUBLIC_API_URL + "/client/settings/business-info", {
         headers: headers,
       })
       .then(function (response) {

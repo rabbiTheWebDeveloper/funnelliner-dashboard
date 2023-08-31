@@ -87,7 +87,7 @@ const ThemeIdPage = () => {
         try {
             let data = await axios({
                 method: "get",
-                url: `${process.env.API_URL}/client/requests`,
+                url: `${process.env.NEXT_PUBLIC_API_URL}/client/requests`,
                 headers: headers,
             });
             setEditInfo(data?.data?.data[0]);

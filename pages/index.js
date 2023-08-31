@@ -11,9 +11,8 @@ import FirstSetup from "../Components/HomePage/FirstSetup/FirstSetup";
 const HomePage = ({ busInfo }) => {
   // const [allProduct, setAllProduct] = useState([]);
   const [isApiResponse, setIsApiResponse] = useState(false);
-  const { publicRuntimeConfig } = getConfig();
   const [info, setInfo] = useState({});
-  const apiUrl = publicRuntimeConfig.API_URL;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const skip1 = Cookies.get("Skip_status");
   const total_task = Cookies.get("total_task");
   //   basic info

@@ -16,7 +16,7 @@ const BulkSmsStatus = ({ handelFetchBusInfo }) => {
             ...state,
             [event.target.name]: event.target.checked ? '1' : '0',
         });
-        axios.post(process.env.API_URL + "/client/order-sms-status-update", {
+        axios.post(process.env.NEXT_PUBLIC_API_URL + "/client/order-sms-status-update", {
             sms_status: event.target.name
         }, {
             headers: headers
@@ -36,7 +36,7 @@ const BulkSmsStatus = ({ handelFetchBusInfo }) => {
 
     const handleFetchBusInfo = async () => {
         try {
-            let response = await axios.get(`${process.env.API_URL}/client/order-sms-status-show`, {
+            let response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/client/order-sms-status-show`, {
                 headers: headers,
             });
 

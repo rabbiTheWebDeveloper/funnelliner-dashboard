@@ -28,7 +28,7 @@ const Ticket_id = () => {
             content: data.replyContent,
         };
         axios
-            .post(`${process.env.API_URL}/client/support-ticket/${ticket_ID}/reply`, postBody, {
+            .post(`${process.env.NEXT_PUBLIC_API_URL}/client/support-ticket/${ticket_ID}/reply`, postBody, {
                 headers: headers,
             })
             .then(function (response) {
@@ -46,7 +46,7 @@ const Ticket_id = () => {
 
     const fetchTIcketDetails = () => {
         axios
-            .get(`${process.env.API_URL}/client/support-ticket/${userId}/details/${ticket_ID}`, {
+            .get(`${process.env.NEXT_PUBLIC_API_URL}/client/support-ticket/${userId}/details/${ticket_ID}`, {
                 headers: headers,
             })
             .then((res) => {

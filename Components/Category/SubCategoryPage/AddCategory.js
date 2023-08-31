@@ -41,7 +41,7 @@ const AddCategory = () => {
 
        
         startLoading()
-        axios.post(process.env.API_URL + "/client/categories", formData, { headers: headers })
+        axios.post(process.env.NEXT_PUBLIC_API_URL + "/client/categories", formData, { headers: headers })
             .then(function (response) {
 
                 if (response?.data?.success) {

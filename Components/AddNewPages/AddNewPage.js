@@ -16,7 +16,7 @@ const AddNewPage = () => {
         data.user_id = userId;
         data.shop_id = shopId;
         data.status = "1";
-        axios.post(process.env.API_URL + "/client/pages", data, {
+        axios.post(process.env.NEXT_PUBLIC_API_URL + "/client/pages", data, {
             headers: headers,
         })
             .then(function (response) {

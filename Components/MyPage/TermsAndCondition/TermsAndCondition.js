@@ -61,7 +61,7 @@ function TermsAndCondition({websiteSettingData}) {
     const handleSubmitTermsANdCOnditionData = () => {
         startLoading()
         axios
-            .post(`${process.env.API_URL}/client/settings/business-info/update`, { tos: termsContent, shop_name: websiteSettingData?.domain }, {
+            .post(`${process.env.NEXT_PUBLIC_API_URL}/client/settings/business-info/update`, { tos: termsContent, shop_name: websiteSettingData?.domain }, {
                 headers: headers,
             })
             .then(function (response) {

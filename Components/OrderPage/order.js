@@ -417,8 +417,7 @@ const Order = ({ orderUpdate }) => {
 
 
     // delete order 
-    const { publicRuntimeConfig } = getConfig();
-    const apiUrl = publicRuntimeConfig.API_URL;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     const deleteProduct = (id) => {
         Swal.fire({

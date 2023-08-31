@@ -36,7 +36,7 @@ const ChartJs = () => {
             let data = await axios({
                 method: "get",
                 params: params,
-                url: `${process.env.API_URL}/client/channel-statistics`,
+                url: `${process.env.NEXT_PUBLIC_API_URL}/client/channel-statistics`,
                 headers: headers,
             });
             if (data.data.success === true) {
@@ -60,7 +60,7 @@ const ChartJs = () => {
             let data = await axios({
                 method: "get",
                 params: ratioParams,
-                url: `${process.env.API_URL}/client/channel/ratio-statistics`,
+                url: `${process.env.NEXT_PUBLIC_API_URL}/client/channel/ratio-statistics`,
                 headers: headers,
             });
 

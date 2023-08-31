@@ -87,7 +87,7 @@ const WebsiteSettingPage = ({ response }) => {
         setInvoice(e.target.value);
         axios
             .post(
-                `${process.env.API_URL}/client/settings/website/update`,
+                `${process.env.NEXT_PUBLIC_API_URL}/client/settings/website/update`,
                 {
                     invoice_id: e.target.value,
                     custom_domain: "customDomain",
@@ -138,7 +138,7 @@ const WebsiteSettingPage = ({ response }) => {
         formData.append("phone", data.phone);
 
         axios
-            .post(`${process.env.API_URL}/client/settings/business-info/update`, formData, {
+            .post(`${process.env.NEXT_PUBLIC_API_URL}/client/settings/business-info/update`, formData, {
                 headers: headers,
             })
             .then(function (response) {
@@ -170,7 +170,7 @@ const WebsiteSettingPage = ({ response }) => {
 
     useEffect(() => {
         axios
-            .get(process.env.API_URL + "/client/settings/advance-payment/status", { headers: headers })
+            .get(process.env.NEXT_PUBLIC_API_URL + "/client/settings/advance-payment/status", { headers: headers })
             .then(function (response) {
                 if (response.status === 200) {
                     setAdvancePayment(response.data.data.advanced_payment);
@@ -182,7 +182,7 @@ const WebsiteSettingPage = ({ response }) => {
 
     useEffect(() => {
         axios
-            .get(process.env.API_URL + "/client/settings/hold-on/status", { headers: headers })
+            .get(process.env.NEXT_PUBLIC_API_URL + "/client/settings/hold-on/status", { headers: headers })
             .then(function (response) {
                 if (response.status === 200) {
                     setHoldOn(response.data.data.hold_on);
@@ -197,7 +197,7 @@ const WebsiteSettingPage = ({ response }) => {
         setAdvancePayment(event.target.checked);
         axios
             .post(
-                `${process.env.API_URL}/client/settings/advance-payment/status/update`,
+                `${process.env.NEXT_PUBLIC_API_URL}/client/settings/advance-payment/status/update`,
                 { status: event.target.checked ? "1" : "0" },
 
                 {
@@ -221,7 +221,7 @@ const WebsiteSettingPage = ({ response }) => {
         setHoldOn(event.target.checked);
         axios
             .post(
-                `${process.env.API_URL}/client/settings/hold-on/status/update`,
+                `${process.env.NEXT_PUBLIC_API_URL}/client/settings/hold-on/status/update`,
                 { status: event.target.checked ? "1" : "0" },
 
                 {

@@ -108,7 +108,7 @@ const LandingWebsite = ({ busInfo }) => {
     //product fetching and add with theme
     useEffect(() => {
         axios
-            .get(process.env.API_URL + "/client/products", { headers: headers })
+            .get(process.env.NEXT_PUBLIC_API_URL + "/client/products", { headers: headers })
             .then(function (response) {
                 if (response?.status === 200) {
                     setProducts(response.data.data);
@@ -148,7 +148,7 @@ const LandingWebsite = ({ busInfo }) => {
         try {
             let data = await axios({
                 method: "get",
-                url: `${process.env.API_URL}/client/themes/landing/page/search/${search}`,
+                url: `${process.env.NEXT_PUBLIC_API_URL}/client/themes/landing/page/search/${search}`,
                 headers: headers,
             });
             setLandingPageTemplate(data?.data?.data);

@@ -75,7 +75,7 @@ const Menubar2 = ({ busInfo }) => {
     };
     window.location.href = "/login";
     axios
-      .get(process.env.API_URL + "/client/logout", { headers: logoutHeaders })
+      .get(process.env.NEXT_PUBLIC_API_URL + "/client/logout", { headers: logoutHeaders })
       .then((response) => {
         if (response.status === 200) {
           Cookies.remove("token");
@@ -121,7 +121,7 @@ const Menubar2 = ({ busInfo }) => {
       notify_id: id,
       type: "order"
     }
-    axios.post(process.env.API_URL + `/client/notifications-show`, orderBody, {
+    axios.post(process.env.NEXT_PUBLIC_API_URL + `/client/notifications-show`, orderBody, {
       headers: headers,
     })
       .then(function (res) {

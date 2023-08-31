@@ -55,7 +55,7 @@ function AboutUs({ websiteSettingData }) {
     }
     const handleSubmitAboutUs = () => {
         axios
-            .post(`${process.env.API_URL}/client/settings/business-info/update`, { about_us: aboutUsContent, shop_name: websiteSettingData?.domain }, {
+            .post(`${process.env.NEXT_PUBLIC_API_URL}/client/settings/business-info/update`, { about_us: aboutUsContent, shop_name: websiteSettingData?.domain }, {
                 headers: headers,
             })
             .then(function (response) {

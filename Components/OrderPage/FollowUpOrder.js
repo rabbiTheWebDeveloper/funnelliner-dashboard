@@ -70,7 +70,7 @@ const FollowUpOrder = ({ searchQuery, allProducts, show, advanceStatus }) => {
         if (result.isConfirmed) {
           axios
             .post(
-              process.env.API_URL + "/client/orders/status/update",
+              process.env.NEXT_PUBLIC_API_URL + "/client/orders/status/update",
               statusUpdate,
               {
                 headers: headers,
@@ -102,7 +102,7 @@ const FollowUpOrder = ({ searchQuery, allProducts, show, advanceStatus }) => {
     } else {
       axios
         .post(
-          process.env.API_URL + "/client/orders/status/update",
+          process.env.NEXT_PUBLIC_API_URL + "/client/orders/status/update",
           statusUpdate,
           {
             headers: headers,
@@ -210,7 +210,7 @@ const FollowUpOrder = ({ searchQuery, allProducts, show, advanceStatus }) => {
       };
 
       axios
-        .post(process.env.API_URL + `/client/order/note/${id}/update`, data, {
+        .post(process.env.NEXT_PUBLIC_API_URL + `/client/order/note/${id}/update`, data, {
           headers: headers,
         })
         .then(function (response) {
@@ -243,7 +243,7 @@ const FollowUpOrder = ({ searchQuery, allProducts, show, advanceStatus }) => {
       if (tk?.length > 0) {
         axios
           .post(
-            process.env.API_URL + `/client/order/advance-payment/${id}/update`,
+            process.env.NEXT_PUBLIC_API_URL + `/client/order/advance-payment/${id}/update`,
             adv,
             {
               headers: headers,

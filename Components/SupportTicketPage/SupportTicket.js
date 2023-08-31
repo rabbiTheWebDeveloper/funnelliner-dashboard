@@ -45,7 +45,7 @@ const SupportTicket = () => {
             formData.append("attachment", selectedImage);
         }
         axios
-            .post(`${process.env.API_URL}/client/support-ticket/store`, formData, {
+            .post(`${process.env.NEXT_PUBLIC_API_URL}/client/support-ticket/store`, formData, {
                 headers: headers,
             })
             .then(function (response) {

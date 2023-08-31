@@ -16,7 +16,7 @@ const ShortNotification = ({ popupState, handleDropdownChange, id, notifyFac, ha
             notify_id: id,
             type: "order"
         }
-        axios.post(process.env.API_URL + `/client/notifications-read`, orderBody, {
+        axios.post(process.env.NEXT_PUBLIC_API_URL + `/client/notifications-read`, orderBody, {
             headers: headers,
         })
             .then(function (res) {

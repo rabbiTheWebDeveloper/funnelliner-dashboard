@@ -59,7 +59,7 @@ const ProductUpdate = ({ id, product, category, modalOpen, handleCloseModal, fet
             formData.append("inside_dhaka", insideDhaka);
             formData.append("outside_dhaka", outDhaka);
         }
-        axios.post(process.env.API_URL + "/client/products/" + id, formData, { headers: headers })
+        axios.post(process.env.NEXT_PUBLIC_API_URL + "/client/products/" + id, formData, { headers: headers })
             .then(function (response) {
 
                 if (response?.data?.success) {

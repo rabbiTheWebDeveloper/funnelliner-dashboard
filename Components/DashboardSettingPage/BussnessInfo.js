@@ -57,7 +57,7 @@ const BussnessInfo = ({ redirectFrom, response }) => {
         formData.append("youtube", youtube);
 
 
-        axios.post(process.env.API_URL + "/client/settings/business-info/update", formData, {
+        axios.post(process.env.NEXT_PUBLIC_API_URL + "/client/settings/business-info/update", formData, {
             headers: headers,
         })
             .then(function (response) {

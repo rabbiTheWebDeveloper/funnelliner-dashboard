@@ -54,7 +54,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
     };
     window.location.href = "/login";
     axios
-      .get(process.env.API_URL + "/client/logout", { headers: logoutHeaders })
+      .get(process.env.NEXT_PUBLIC_API_URL + "/client/logout", { headers: logoutHeaders })
       .then(response => {
         if (response.status === 200) {
           Cookies.remove("token");
@@ -92,7 +92,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
       type: "order",
     };
     axios
-      .post(process.env.API_URL + `/client/notifications-show`, orderBody, {
+      .post(process.env.NEXT_PUBLIC_API_URL + `/client/notifications-show`, orderBody, {
         headers: headers,
       })
       .then(function (res) {
@@ -167,7 +167,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
       type: "order",
     };
     axios
-      .post(process.env.API_URL + `/client/notifications-read`, orderBody, {
+      .post(process.env.NEXT_PUBLIC_API_URL + `/client/notifications-read`, orderBody, {
         headers: headers,
       })
       .then(function (res) {

@@ -33,45 +33,7 @@ const validationSchema = Yup.object({
 const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOpenUpdate, products, handleFetch, orderUpdate }) => {
     const showToast = useToast();
     const [isLoading, startLoading, stopLoading] = useLoading();
-    // const formData = new FormData()
-    // const onSubmit = (data) => {
-    //     formData.append("_method", "patch");
-    //     formData.append("customer_name", data.customerName);
-    //     formData.append("customer_address", data.address);
-    //     formData.append("order_type", order?.order_type);
-    //     formData.append("customer_phone", data.phone);
-    //     formData.append("shipping_cost", data.shipping_cost);
-    //     if (order?.order_status === "confirmed" || order?.order_status === "shipped") {
-    //         formData.append("order_status", data.order_status);
-    //     }
-    //     else {
-    //         formData.append("order_status", order?.order_status);
-
-    //     }
-    //     //    debugger
-    //     axios.post(process.env.API_URL + "/client/orders/" + orderId, formData, {
-    //         headers: headers,
-    //     })
-    //         .then(function (response) {
-    //             showToast('Order Update   Successfully !', 'success');
-    //             handleFetch()
-    //             orderUpdate()
-
-
-    //         })
-    //         .catch(function (error) {
-    //             Swal.fire({
-    //                 icon: "error",
-    //                 text: "Something went wrong",
-    //             });
-    //         });
-
-    //     handleCloseOrderUpdateModal()
-    //     handleFetch()
-
-    // }
-
-
+ 
     const OrderUpdate = async inputData => {
         try {
             const productIds = inputData.products.map(product => product.product_id);
@@ -133,8 +95,8 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
                 <div className="modalContent">
                     <div className="header">
                         <div className="left">
-                            <i className="flaticon-plus"></i>
-                            <h4>Add New Order</h4>
+                        <i className="flaticon-edit"></i>
+                            <h4>Update Order Details</h4>
                         </div>
 
                         <div className="right" onClick={handleCloseOrderUpdateModal}>

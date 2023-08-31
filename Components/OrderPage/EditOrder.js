@@ -19,7 +19,7 @@ const EditOrderModal = ({
         note: event.target.value,
         type: status,
       };
-      axios.post(process.env.API_URL + `/client/order/note/${id}/update`, data, {
+      axios.post(process.env.NEXT_PUBLIC_API_URL + `/client/order/note/${id}/update`, data, {
         headers: headers,
       })
         .then(function (res) {

@@ -19,7 +19,7 @@ const SalesTargetModal = ({salesTarget , openSales ,handleOpenSales ,handleClose
 
 
 
-        axios.post(process.env.API_URL + "/client/sales-target/update", data, {
+        axios.post(process.env.NEXT_PUBLIC_API_URL + "/client/sales-target/update", data, {
             headers: headers,
         })
             .then(function (response) {

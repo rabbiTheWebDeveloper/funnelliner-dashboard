@@ -33,7 +33,7 @@ const Product = ({ category }) => {
     )
     const fetchProduct = () => {
         axios
-            .get(process.env.API_URL + "/client/products", { headers: headers })
+            .get(process.env.NEXT_PUBLIC_API_URL + "/client/products", { headers: headers })
             .then(function (response) {
                 // handle success
                 setProducts(response.data.data);
@@ -61,7 +61,7 @@ const Product = ({ category }) => {
         if (confirmed) {
             setIsLoading(true)
             axios
-                .delete(process.env.API_URL + "/client/products/" + id, { headers: headers })
+                .delete(process.env.NEXT_PUBLIC_API_URL + "/client/products/" + id, { headers: headers })
                 .then(function (result) {
                     if (result.data.success) {
                         setProducts((pd) => {

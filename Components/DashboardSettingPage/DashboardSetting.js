@@ -44,7 +44,7 @@ const DashboardSetting = ({ response }) => {
 
   const ownInfoSubmit = data => {
     axios
-      .post(process.env.API_URL + "/client/settings/owner-info/update", data, {
+      .post(process.env.NEXT_PUBLIC_API_URL + "/client/settings/owner-info/update", data, {
         headers: headers,
       })
       .then(function (response) {
@@ -57,7 +57,7 @@ const DashboardSetting = ({ response }) => {
 
   useEffect(() => {
     axios
-      .get(process.env.API_URL + "/client/settings/owner-info", {
+      .get(process.env.NEXT_PUBLIC_API_URL + "/client/settings/owner-info", {
         headers: headers,
       })
       .then(function (response) {
@@ -73,7 +73,7 @@ const DashboardSetting = ({ response }) => {
     if (data.new_password === data.password_confirmation) {
       axios
         .post(
-          process.env.API_URL + "/client/settings/password-security/update",
+          process.env.NEXT_PUBLIC_API_URL + "/client/settings/password-security/update",
           data,
           { headers: headers }
         )

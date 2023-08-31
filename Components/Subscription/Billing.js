@@ -15,7 +15,7 @@ const Billing = ({ orderUpdate , billingList }) => {
   const downloadInvoice = async (id) => {
     try {
       const response = await axios.get(
-        `${process.env.API_URL}/client/transaction/pdf/download/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/client/transaction/pdf/download/${id}`,
         { headers: headers, responseType: "blob" }
       );
       const blob = response.data;

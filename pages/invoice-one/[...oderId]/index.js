@@ -9,8 +9,7 @@ import moment from "moment";
 import Head from "next/head";
 
 const InvoicePage = () => {
-  const { publicRuntimeConfig } = getConfig();
-  const apiUrl = publicRuntimeConfig.API_URL;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL
   const [isApiResponse, setIsApiResponse] = useState(false);
   const [invoices, setInvoices] = useState([]);
   const [busInfo, setBusInfo] = useState({});

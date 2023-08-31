@@ -29,7 +29,7 @@ const AddCategory = () => {
             showToast("Image size is too big !", 'error')
             return;
         }
-        axios.post(process.env.API_URL + "/client/categories", formData, { headers: headers })
+        axios.post(process.env.NEXT_PUBLIC_API_URL + "/client/categories", formData, { headers: headers })
             .then(function (response) {
               
                 if (response?.data?.success) {

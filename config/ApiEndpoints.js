@@ -1,4 +1,4 @@
-const MAIN_URL = process.env.API_URL;
+const MAIN_URL = process.env.NEXT_PUBLIC_API_URL;
 const BKASH = process.env.NEXT_BKASH_URL;
 
 const API_ENDPOINTS = {

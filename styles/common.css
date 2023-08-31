@@ -59,6 +59,9 @@ SidebarMenu
   border-radius: 50%;
   object-fit: cover;
 }
+.react_Select_custom_date_select{
+  margin-right: 15px;
+}
 
 /* SideMenu */
 

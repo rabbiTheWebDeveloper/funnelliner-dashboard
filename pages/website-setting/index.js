@@ -9,7 +9,7 @@ const WebsiteSettingPage_2 = () => {
         try {
             let data = await axios({
                 method: "get",
-                url: `${process.env.API_URL}/client/settings/business-info`,
+                url: `${process.env.NEXT_PUBLIC_API_URL}/client/settings/business-info`,
                 headers: headers,
             });
             setResponse(data?.data?.data);

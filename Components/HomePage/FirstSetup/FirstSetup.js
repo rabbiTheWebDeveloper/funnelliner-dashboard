@@ -33,7 +33,7 @@ const FirstSetup = ({ skip, busInfo = {} }) => {
     try {
       let data = await axios({
         method: "get",
-        url: `${process.env.API_URL}/client/shop-steps`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/shop-steps`,
         headers: headers,
       });
       setShopStep(data?.data?.data);

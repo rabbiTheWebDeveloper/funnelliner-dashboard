@@ -18,7 +18,7 @@ const Inventory = () => {
 
     useEffect(() => {
         axios
-            .get(process.env.API_URL + "/client/stocks/inventory/list", { headers: headers })
+            .get(process.env.NEXT_PUBLIC_API_URL + "/client/stocks/inventory/list", { headers: headers })
             .then(function (response) {
                 // handle success
                 setProducts(response.data?.data);

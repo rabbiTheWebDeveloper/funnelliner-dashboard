@@ -116,7 +116,7 @@ const AddProduct = () => {
     }
 
     axios
-      .post(process.env.API_URL + "/client/products", formData, {
+      .post(process.env.NEXT_PUBLIC_API_URL + "/client/products", formData, {
         headers: headers,
       })
       .then(function (response) {
@@ -142,7 +142,7 @@ const AddProduct = () => {
 
   const fetchCategoriesData = useCallback(async () => {
     await axios
-      .get(process.env.API_URL + "/client/categories", { headers: headers })
+      .get(process.env.NEXT_PUBLIC_API_URL + "/client/categories", { headers: headers })
       .then(function (response) {
         if (response.data.data?.length) {
           const filterData = response.data.data?.map((item) => {

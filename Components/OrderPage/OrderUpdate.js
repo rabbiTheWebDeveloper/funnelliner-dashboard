@@ -15,7 +15,7 @@ const OrderUpdate = ({ id, products, handleFetch }) => {
     const handleCloseSales = () => setOpenSales(false);
     const [update, setUpdate] = useState(false);
     useEffect(() => {
-        axios.get(process.env.API_URL + "/client/orders/" + id, { headers: headers })
+        axios.get(process.env.NEXT_PUBLIC_API_URL + "/client/orders/" + id, { headers: headers })
             .then(function (response) {
                 // handle success
                 setOrder(response.data.data);
@@ -40,7 +40,7 @@ const OrderUpdate = ({ id, products, handleFetch }) => {
         formData.append("shipping_cost", data.shipping_cost);
 
         //    debugger
-        axios.post(process.env.API_URL + "/client/orders/" + id, formData, {
+        axios.post(process.env.NEXT_PUBLIC_API_URL + "/client/orders/" + id, formData, {
             headers: headers,
         })
             .then(function (response) {
