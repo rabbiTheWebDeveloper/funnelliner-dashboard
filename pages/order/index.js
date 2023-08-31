@@ -58,6 +58,14 @@ const followUpOrderFilterOption = [
   { value: 'custom', label: 'Custom' }
 ]
 
+const confirmedOrderFilterOption = [
+  { value: 'today', label: 'Today' },
+  { value: 'tomorrow', label: 'Tomorrow' },
+  { value: 'previous', label: 'Previous' },
+  { value: 'next_seven_days', label: 'Next Seven Days' },
+  { value: 'custom', label: 'Custom' }
+]
+
 const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
   const showToast = useToast();
   const router = useRouter();
@@ -161,6 +169,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     { item: "Follow Up", value: "follow_up", color: "blue" },
     { item: "Confirmed", value: "confirmed", color: "green" },
     { item: "Cancelled", value: "cancelled", color: "red" },
+    { item: "Pending", value: "pending", color: "red" },
   ];
   const cancelledOnStatus = [
     { item: "Cancelled", value: "cancelled", color: "red" },
@@ -269,6 +278,9 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     setFollowUpInputChange(null);
     setSelectedValue(null)
     setDefault(value);
+    setShowPicker(false)
+    setStartDate()
+    setEndDate()
   };
 
   const handleFilterStatusCOurier = value => {
@@ -578,7 +590,6 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     selectCourier,
     selectCourierStatus,
     update,
-
     startDate,
     endDate,
   ]);
@@ -1099,6 +1110,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                       : "0"}
                   </h6>
                 </BootstrapButton>
+
                 <BootstrapButton
                   className={active === "delivered" ? "filterActive" : ""}
                   onClick={e => handleFilterStatusChange("delivered")}
@@ -1183,55 +1195,25 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                 </select>
               </div>
             )}
-            {active === "confirmed" && (
-              <div className="duelSelect d_flex">
-                <div>
-                  {showPicker && (
-                    <DateRangePicker
-                      startDate={startDate}
-                      endDate={endDate}
-                      focus={focus}
-                      onStartDateChange={setStartDate}
-                      onEndDateChange={setEndDate}
-                      locale={enGB}
-                      modifiersClassNames={{ open: "-open" }}
-                    >
-                      {({ startDateInputProps, endDateInputProps }) => (
-                        <div className="date-range">
-                          <FilterDateInput
-                            className="input"
-                            {...endDateInputProps}
-                            {...startDateInputProps}
-                            value={dateValue}
-                            placeholder="Select date range"
-                          />
-                        </div>
-                      )}
-                    </DateRangePicker>
-                  )}
-                </div>
 
-                <select onChange={(event) => handleSelected(event.target.value)}>
-                  <option  value="">
-                    Find Your Follow Up Order
-                  </option>
-                  <option value="previous">Previous</option>
-                  <option value="today">Today</option>
-                  <option value="tomorrow">Tomorrow</option>
-                  <option value="next_seven_days">Next Seven Days</option>
-                  <option value="custom">Custom</option>
-                </select>
-              </div>
-            )}
-
-            {active === "follow_up" && (
+            {active === "confirmed" || active === "follow_up" ? (
               <div className="duelSelect d_flex">
                 <div className="react_Select_custom_date_select">
-                  <ReactSelect
-                    options={followUpOrderFilterOption}
-                    onChange={(event) => handleSelected(event.value)}
-                    placeholder="Find Your Follow Up Order"
-                  />
+                  {
+                    active === "confirmed" && <ReactSelect
+                      options={confirmedOrderFilterOption}
+                      onChange={(event) => handleSelected(event.value)}
+                      placeholder="Find Your Confirm Order"
+                    />
+                  }
+
+                  {
+                    active === "follow_up" && <ReactSelect
+                      options={followUpOrderFilterOption}
+                      onChange={(event) => handleSelected(event.value)}
+                      placeholder="Find Your Follow Up Order"
+                    />
+                  }
                 </div>
                 <div>
                   {showPicker && (
@@ -1258,18 +1240,8 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                     </DateRangePicker>
                   )}
                 </div>
-
-                <select onChange={(event) => handleSelected(event.target.value)}>
-                  <option disabled value="">
-                    Find Your Follow Up Order
-                  </option>
-                  <option value="today">Today</option>
-                  <option value="tomorrow">Tomorrow</option>
-                  <option value="next_seven_days">Next Seven Days</option>
-                  <option value="custom">Custom</option>
-                </select>
               </div>
-            )}
+            ) : null}
           </div>
 
           <div className="d-flex ">
@@ -1354,9 +1326,9 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                     src="https://funnelliner.s3.ap-southeast-1.amazonaws.com/media/steadfast.svg"
                     alt=""
                     style={{
-                      width: "20px", // Adjust the width as desired
-                      height: "auto", // Set height to 'auto' to maintain aspect ratio
-                      margin: "5px", // Adjust the margin value as desired
+                      width: "20px",
+                      height: "auto",
+                      margin: "5px", 
                     }}
                   />
                   Steadfast
@@ -1428,29 +1400,6 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                   }
                 )}
             </Box>
-
-            {/* <Box sx={{ width: "100%", typography: "body1" }}>
-              {selectCourier === "pathao" &&
-                ["Pickup_Requested", "Pending"].map(
-                  (item) => {
-                    return (
-                      <BootstrapButton
-                        key={item}
-                        onClick={() => {
-                          setSelectCourierStatus(item);
-                          handleFilterStatusCOurier(item);
-                        }}
-                        className={"filterActive"}
-                      >
-
-
-                        {courierStatusFormate(item)}
-
-                      </BootstrapButton>
-                    );
-                  }
-                )}
-            </Box> */}
           </div>
 
           <div className="DataTableContent">
@@ -1519,9 +1468,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                 }
                 {active === "confirmed" && (
                   <>
-                    <div className="DataTableColum">
-                      <h3>Shipping Date</h3>
-                    </div>
+                
                     <div className="DataTableColum">
                       <h3>Invoice</h3>
                     </div>
@@ -1536,7 +1483,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                   <div className="DataTableColum">
                     <h3>
                       {
-                        active === "confirmed" ? "Confirmed Date" : "Follow Up Date"
+                        active === "confirmed" ? "Shipping Date" : "Follow Up Date"
                       }
                     </h3>
                   </div>
@@ -1873,7 +1820,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
 
                       {active === "confirmed" && (
                         <>
-                          <div className="DataTableColum">
+                          {/* <div className="DataTableColum">
                             <div className="TotalPrice">
                               <MobileDatePicker
                                 defaultValue={dayjs(order?.confirmed_date)}
@@ -1888,7 +1835,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                                 onAccept={() => onChangeShippingDate(order?.id)}
                               />
                             </div>
-                          </div>
+                          </div> */}
                           <div className="DataTableColum">
                             <div className="TotalPrice">
                               <Button className="invoice">

@@ -290,6 +290,13 @@ const CustomerListPage = () => {
                   >
                     Confirm Order{" "}
                   </BootstrapButton>
+
+                  <BootstrapButton
+                    className={active === "delivered" ? "filterActive" : ""}
+                    onClick={(e) => setDefault("delivered")}
+                  >
+                    Delivered  Order{" "}
+                  </BootstrapButton>
                   <BootstrapButton
                     className={active === "cancel" ? "filterActive" : ""}
                     onClick={(e) => setDefault("cancel")}

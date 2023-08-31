@@ -33,7 +33,7 @@ const validationSchema = Yup.object({
 const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOpenUpdate, products, handleFetch, orderUpdate }) => {
     const showToast = useToast();
     const [isLoading, startLoading, stopLoading] = useLoading();
- 
+
     const OrderUpdate = async inputData => {
         try {
             const productIds = inputData.products.map(product => product.product_id);
@@ -55,8 +55,6 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
                 order_status: inputData.order_status,
                 _method: "patch"
             };
-
-            console.log(data)
             startLoading();
             const response = await SuperFetch.post(API_ENDPOINTS.ORDERS.ORDER_EDIT + orderId, data, {
                 headers: headers,
@@ -95,7 +93,7 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
                 <div className="modalContent">
                     <div className="header">
                         <div className="left">
-                        <i className="flaticon-edit"></i>
+                            <i className="flaticon-edit"></i>
                             <h4>Update Order Details</h4>
                         </div>
 
@@ -350,6 +348,9 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
                                                             </option>
                                                             <option key={"cancelled"} value={"cancelled"}>
                                                                 Cancelled
+                                                            </option>
+                                                            <option key={"pending"} value={"pending"}>
+                                                                Pending
                                                             </option>
                                                         </Field>
                                                     </div>
