@@ -16,16 +16,9 @@ import { API_ENDPOINTS } from "../../config/ApiEndpoints";
 import DateWiseFilter from "./DateWiseFilter";
 import AccountBalance from "./AccountBalance";
 
-const addPlusOneWithDate = value => {
-  if(value){
-    const dateJsonStr = JSON.stringify(value)
-    const str1 = dateJsonStr?.split("-");
-    const dateStr = str1[2]?.split("T");
-    const plusOne = parseInt(dateStr[0]) + 1;
-    return eval(`${str1[0]}-${str1[1]}-${plusOne <= 9 ? '0' + plusOne : plusOne}T${dateStr[1]}`)
-  }
+function formatDateToBST(date) {
+  return date?.toLocaleString('en-US', { timeZone: 'Asia/Dhaka' });
 }
-
 const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
   const [search, setSearch] = useState("");
   const [dateWiseFilterOption, setDateWiseFilterOption] = useState("today");
@@ -102,8 +95,8 @@ const AccountDashboard = ({ payment, setPayment, handleFetch }) => {
   }, [search]);
 
   const handleFetchMutiSearch = useCallback(async () => {
-    const startDateWithOneDayAdded = addPlusOneWithDate(filterStartDate); 
-    const endDateWithOneDayAdded = addPlusOneWithDate(filterEndDate);
+    const startDateWithOneDayAdded = formatDateToBST(filterStartDate); 
+    const endDateWithOneDayAdded = formatDateToBST(filterEndDate);
     
     const params = {
       date: dateWiseFilterOption,

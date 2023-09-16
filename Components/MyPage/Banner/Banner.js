@@ -2,10 +2,8 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, Button, Container, Grid, Tab } from "@mui/material";
 import axios from "axios";
 import Cookies from "js-cookie";
-
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { baseTest } from "../../../constant/constant";
 import { useToast } from "../../../hook/useToast";
 import { shopId, userId } from "../../../pages/api";
 // Css
@@ -13,6 +11,7 @@ import UploderNew from "../../edit-theme/UploderNew";
 import style from './style.module.css';
 import useLoading from "../../../hook/useLoading";
 import Link from "next/link";
+import { API_ENDPOINTS } from "../../../config/ApiEndpoints";
 
 const Banner = ({ response }) => {
     const [isLoading, startLoading, stopLoading] = useLoading();
@@ -37,7 +36,7 @@ const Banner = ({ response }) => {
     // addons show and hode 
 
     const fetch_banners = () => {
-        axios.get(baseTest + "/client/banners/index", {
+        axios.get(API_ENDPOINTS.BASE_URL + "/client/banners/index", {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "shop-id": shopId,
@@ -74,7 +73,7 @@ const Banner = ({ response }) => {
             }
         }
         startLoading()
-        axios.post(baseTest + "/client/banners/store", formData, {
+        axios.post(API_ENDPOINTS.BASE_URL + "/client/banners/store", formData, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "shop-id": shopId,
@@ -102,7 +101,7 @@ const Banner = ({ response }) => {
     }
 
     const handleDeleteBanner = (banner_id) => {
-        axios.get(baseTest + "/client/banners/delete/" + banner_id, {
+        axios.get(API_ENDPOINTS.BASE_URL + "/client/banners/delete/" + banner_id, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "shop-id": shopId,

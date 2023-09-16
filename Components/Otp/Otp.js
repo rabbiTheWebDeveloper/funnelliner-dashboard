@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import axios from "axios";
 import {toast} from "react-toastify";
 import {useRouter} from "next/router";
-import {baseUrl} from "../../constant/constant";
+import { API_ENDPOINTS } from '../../config/ApiEndpoints';
 
 const Otp = ({phone}) => {
 
@@ -27,8 +27,8 @@ const Otp = ({phone}) => {
             otp: code.toString().replaceAll(',', ''),
             phone: phone
         }
-        axios.post(baseUrl + '/api/v1/auth/verify', data).then((response) => {
-            if (response.data.success === true) {
+        axios.post(API_ENDPOINTS.BASE_URL + API_ENDPOINTS.OTP.VERIFY_OTP, data).then((response) => {
+            if (response.data.success) {
                 toast.success(response.data.message, {
                     position: toast.POSITION.TOP_CENTER,
                 });
@@ -37,7 +37,7 @@ const Otp = ({phone}) => {
                 localStorage.setItem('user', JSON.stringify(response.data.data))
                 localStorage.setItem('token', response.data.data.api_token)
 
-                router.replace('http://dashboard.funnelliner.com').then(r =>)
+                router.replace('http://dashboard.funnelliner.com').then(r =>{})
             } else {
                 toast.error(response.data.message, {
                     position: toast.POSITION.TOP_RIGHT,
@@ -51,8 +51,8 @@ const Otp = ({phone}) => {
     }
 
     const resendOtp = () => {
-        axios.post(baseUrl + '/api/v1/resend/otp', {phone: phone}).then((response) => {
-            if (response.data.success === true) {
+        axios.post(API_ENDPOINTS.BASE_URL+ API_ENDPOINTS.OTP.RESEND_OTP, {phone: phone}).then((response) => {
+            if (response.data.success) {
                 toast.success(response.data.message, {
                     position: toast.POSITION.TOP_CENTER,
                 });

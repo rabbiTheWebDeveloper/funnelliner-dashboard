@@ -56,7 +56,7 @@ const Inventory = () => {
             <section className="TopSellingProducts DashboardSetting Order">
 
                 {/* header */}
-                <HeaderDescription setSearch={setProductSearchValue} headerIcon={'flaticon-in-stock-1'} title={'Inventory'} subTitle={'Shop Products List'} search={true} />
+                <HeaderDescription setSearch={setProductSearchValue} headerIcon={'flaticon-in-stock-1'} title={'Inventory'} subTitle={'Shop Products List'} search={true}  order={false} />
 
                 <Container maxWidth="sm">
 

@@ -2,144 +2,106 @@ import { Box, Container, Grid, Link } from "@mui/material";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import SuperFetch from "../../hook/Axios";
 import { useToast } from "../../hook/useToast";
 import { created, headers, nextDueDate, paymentStatus } from "../../pages/api";
-
 import style from './style.module.css';
-
-import Cookies from "js-cookie";
 import moment from "moment";
-import dynamic from 'next/dynamic';
-import useLoading from "../../hook/useLoading";
 import HeaderDescription from "../Common/HeaderDescription/HeaderDescription";
-import Spinner from "../commonSection/Spinner/Spinner";
-import Billing from "./Billing";
 import axios from "axios";
+import { API_ENDPOINTS } from "../../config/ApiEndpoints";
 
-
-const HtmlToPdf = dynamic(() => import('html2pdf.js'), { ssr: false });
+const today = new Date().toISOString().slice(0, 10);
 
 const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiResponse, ...props }) => {
-    const [isLoading, startLoading, stopLoading] = useLoading();
-    const [loadingInvoice, setLoadingInvoice] = useState(null);
-    const showToast = useToast()
-    const router = useRouter()
+    const showToast = useToast();
+    const router = useRouter();
+    const [invoiceNum, setInvoiceNum] = useState('');
+    const [isShowBillingPopup, setIsShowBillingPopup] = useState(false);
     const [selectedPayment, setSelectedPayment] = useState("");
-    const [openModal, setModalOpen] = useState(false);
-
-    const [updateModal, setUpdateModal] = useState(false);
-    const handleUpdateModal = () => setUpdateModal(true);
-    const handleUpdateModalClose = () => setUpdateModal(false);
-
-    const params = {
-        amount: 2999,
-        order_type: 'package'
-    }
-    const makePaymentSsl = () => {
-        SuperFetch.get('/client/sslcommerze/pay', { params: params, headers: headers }).then((res) => {
-            if (res.data?.success === false) {
-                showToast(res.data.message, "error")
-            }
-            router.push(res.data).then(r => {
-                handelFetchBusInfo()
-                Cookies.set('user', JSON.stringify(merchant));
-            })
-        })
-    }
-
-    const makePaymentBkash = () => {
-        SuperFetch.get('/client/bkash/pay', { params: params, headers: headers }).then((res) => {
-            if (res.status === 200) {
-                router.push(res.data).then(r => {
-                    //  r ,
-                    handelFetchBusInfo(),
-                        Cookies.set('user', JSON.stringify(merchant));
-                })
-            }
-        })
-    }
-    const makePaymentNagad = () => {
-        SuperFetch.get('/client/nagad/pay', { params: params, headers: headers }).then((res) => {
-            if (res.status === 200) {
-                router.push(res.data).then(r => r)
-            }
-        })
-    }
-    const handlePaymentMethod = async (e) => {
-        setModalOpen(false)
-        switch (e) {
-            case 'ssl':
-                makePaymentSsl();
-                break;
-            case 'bkash':
-                makePaymentBkash();
-                break;
-            case 'nagad':
-                makePaymentNagad()
-                break;
-            default:
-                setModalOpen(false)
-                makePaymentSsl();
-        }
-    }
-    const handlePaymentMethodChange = (event) => {
-        setSelectedPayment(event.target.value);
-    };
-    const lastPayment = subscriptions[0]?.api_response
-    const data1 = lastPayment !== undefined ? JSON?.parse(lastPayment) : "";
-    const [downLoading_invoce_index, setDownLoading_invoce_index] = useState(null)
-    const downloadInvoice = async (id, invoice, index) => {
-        try {
-            setDownLoading_invoce_index(index)
-            setLoadingInvoice(invoice); // Set the loading state for the current invoice
-            startLoading(); // Start the global loading state
-            const response = await SuperFetch.get(`/client/subscription/pdf/download/${id}`, { headers: headers, responseType: 'blob' });
-            const blob = response.data;
-            const objectURL = URL.createObjectURL(blob);
-            const downloadLink = document.createElement('a');
-            downloadLink.href = objectURL;
-            downloadLink.download = `invoice-${invoice}.pdf`;
-            downloadLink.click();
-            URL.revokeObjectURL(objectURL);
-        } catch (error) {
-            // Handle error
-        } finally {
-            setLoadingInvoice(null); // Reset the loading state for the current invoice
-            setDownLoading_invoce_index(null)
-            stopLoading(); // Stop the global loading state
-        }
-    };
-
-
+    const [subscriptionAmount, setSubscriptionAmount] = useState(0);
+    const [orderCount, setOrderCount] = useState('0');
+    const [unpaidBill, setUnpaidBill] = useState([]);
     const [billingList, setBillingList] = useState([]);
-    const handleFetchBillingList = async () => {
+
+    const makePayment = async paymentMethod => {
+        setSelectedPayment(paymentMethod);
+        const params = {
+            amount: subscriptionAmount,
+            order_type: "package",
+            invoice_num: invoiceNum
+        };
+
+        const paymentEndpoints = {
+            ssl: "/client/sslcommerze/pay",
+            bkash: "/client/bkash/pay",
+            nagad: "/client/nagad/pay",
+        };
+
+        try {
+            const response = await SuperFetch.get(paymentEndpoints[paymentMethod], {
+                params: params,
+                headers: headers,
+            });
+            if (response.status) {
+                router.push(response.data).then(r => r);
+            }
+        } catch (err) {
+            showToast(err?.message, "error");
+        }
+        setIsShowBillingPopup(false);
+    };
+
+
+    const handleFetchBillingList = useCallback(async () => {
         try {
             let data = await axios({
                 method: "get",
-                url: `${process.env.NEXT_PUBLIC_API_URL}/client/transaction/list`,
+                url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.BILLING.GET_BILLING_LIST}`,
                 headers: headers,
             });
-            setBillingList(data?.data?.data);
+            if (data?.data?.success) {
+                const unpaidList = data.data?.data?.filter((item) => item.status === 'unpaid');
+                setUnpaidBill(unpaidList)
+                setBillingList(data?.data?.data);
+                setOrderCount(data?.data?.orders)
+
+            }
+
         } catch (err) { }
+    }, []);
+
+    const downloadInvoice = async (id, invoice) => {
+        try {
+            const response = await axios.get(
+                `${process.env.NEXT_PUBLIC_API_URL}/client/transaction/pdf/download/${id}`,
+                { headers: headers, responseType: "blob" }
+            );
+            const blob = response.data;
+            const objectURL = URL.createObjectURL(blob);
+            const downloadLink = document.createElement("a");
+            downloadLink.href = objectURL;
+            downloadLink.download = `${invoice}_invoice.pdf`;
+            downloadLink.click();
+            URL.revokeObjectURL(objectURL);
+        } catch (error) {
+            console.error("Error downloading invoice:", error);
+        }
     };
 
     useEffect(() => {
         handleFetchBillingList();
-    }, []);
+    }, [handleFetchBillingList]);
     return (
         <>
             <section className='TopSellingProducts DashboardSetting Courier Subscription'>
-
-                {/* header */}
-                {/* <HeaderDescription headerIcon={'flaticon-wallet'} title={'Subscription'} subTitle={'Subscription for software'} search={false} /> */}
-
                 <HeaderDescription
                     headerIcon={"flaticon-wallet"}
                     title={"Billing"}
                     subTitle={"Billing List"}
                     search={false}
+                    order={false}
                 />
 
                 <Container maxWidth='sm'>
@@ -181,7 +143,7 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
                         {/* Total Order */}
 
                         {
-                            paymentStatus === "paid"
+                            paymentStatus === "paid" || "unpaid"
                             &&
                             <Grid item xs={12} sm={6} md={4}>
 
@@ -198,7 +160,8 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
                                                 {/* <i className="flaticon-taka"></i>
                                                 2999 */}
 
-                                                Depends on your order
+                                                Depends on your order.<br />
+                                                Now Your Order is : {orderCount}
                                             </h2>
                                         </div>
                                         <div className="list">
@@ -206,6 +169,18 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
                                                 <li>Your Registration Date: <span>{created}</span> </li>
                                                 <li>Your Last Payment Date: <span>{moment(billingList[0]?.created_at).format('Do MMMM YYYY')}</span> </li>
                                                 <li className="nextPayment">Next Due Date: <span>{moment(nextDueDate).format('Do MMMM YYYY')}</span> </li>
+                                                {
+                                                    unpaidBill.length > 0 && unpaidBill.map((item, index) => {
+                                                        return (
+                                                            <Button className="bg" onClick={() => {
+                                                                setIsShowBillingPopup(true);; setSubscriptionAmount(item?.amount);
+                                                                setInvoiceNum(item?.invoice_num);
+                                                            }} style={{ marginLeft: '10px' }}>Pay Now</Button>
+                                                        )
+                                                    })
+                                                }
+
+
                                             </ul>
 
 
@@ -220,165 +195,234 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
                                 </div>
 
                             </Grid>
-
                         }
-                        {/* <Grid item xs={12}>
-
-                            <div className="SubscriptionInvoice">
-                                <div className="Pending">
-                                    <div className="Table">
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <th>S/L</th>
-                                                    <th>Invoice</th>
-                                                    <th>Invoice Date</th>
-                                                    <th>Due Date</th>
-                                                    <th>Subscription</th>
-                                                    <th>Amount</th>
-                                                    <th>Transaction</th>
-                                                    <th>Status</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-
-                                                {subscriptions && subscriptions?.map((item, index) => {
-
-                                                    return (
-                                                        <tr key={index}>
-                                                            <td>{index + 1}</td>
-                                                            <td>#{item?.invoice_num}</td>
-                                                            <td>{item?.created_at}</td>
-
-                                                            <td style={{ color: 'red', fontWeight: 'bold' }}> {moment(item?.next_due_date).format('Do MMMM YYYY')}</td>
-                                                            <td style={{ fontWeight: 'bold' }}>Entrepreneur Plan</td>
-                                                            <td>     <i className="flaticon-taka"></i> {item?.amount}</td>
-                                                            <td> {item?.gateway_trxid}</td>
-                                                            <td style={{ color: JSON?.parse(item?.api_response).transactionStatus === 'Completed' ? 'green' : 'red', fontWeight: 'bold' }}>
-                                                                {JSON?.parse(item?.api_response).transactionStatus === 'Completed' ? 'paid' : 'fail'}
-                                                            </td>
-                                                            <td>
-
-                                                                <div className="DuelButton" style={{ marginTop: '-15px' }} >
-                                                                    <Button
-                                                                        key={item?.invoice_num}
-                                                                        onClick={() => downloadInvoice(item?.id, item?.invoice_num)}
-                                                                        disabled={loadingInvoice === item?.invoice_num}
-                                                                    >
-                                                                        {loadingInvoice === item?.invoice_num ? (
-                                                                            <>
-                                                                                <Spinner />
-                                                                                Downloading...
-                                                                            </>
-                                                                        ) : (
-                                                                            'Invoice'
-                                                                        )}
-                                                                    </Button>
-                                                                    <Button onClick={e => handleUpdateModal(true)} style={{ marginLeft: '10px' }}>Pay Now</Button>
-                                                                </div>
-                                                            </td>
-
-                                                        </tr>
-                                                    )
-                                                })}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-
-
-                            </div>
-
-                        </Grid> */}
 
                     </Grid>
-
-
                 </Container>
             </section>
+            {/* 
+            <Billing billingList={billingList}></Billing> */}
 
-            <Billing billingList={billingList}></Billing>
+            <div>
+                <section className="DashboardSetting Order">
+                    {/* header */}
+                    {/* <HeaderDescription
+          headerIcon={"flaticon-wallet"}
+          title={"Billing"}
+          subTitle={"Billing List"}
+          search={false}
+        /> */}
 
-            <Modal
-                keepMounted
-                open={updateModal}
-                aria-labelledby="keep-mounted-modal-title"
-                aria-describedby="keep-mounted-modal-description"
-                className='updateModal'
-            >
-                <Box className='modalBox'>
+                    <Container maxWidth="sm">
+                        <div className="Table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>SL</th>
+                                        <th>Invoice</th>
+                                        <th>Bill Date</th>
+                                        <th>Transaction No</th>
+                                        <th>Gateway</th>
+                                        <th>Sub Gateway</th>
+                                        <th>Type</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Download Invoice</th>
+                                    </tr>
+                                </thead>
 
-                    <div className='modalContent'>
+                                <tbody>
+                                    {billingList.length > 0 ? (
+                                        billingList.map((order, index) => {
+                                            return (
+                                                <tr key={index + 1}>
+                                                    <td>{index + 1}</td>
+                                                    <td>#{order?.invoice_num}</td>
 
-                        <div className='header'>
-                            <div className='left'>
-                                <i className="flaticon-wallet" />
-                                <h4>Select Payment Method</h4>
-                            </div>
+                                                    <td>
+                                                        {order?.created_at?.slice(0, 10) >= today
+                                                            ? moment(order?.created_at).fromNow()
+                                                            : moment(order?.created_at).format("DD-MM-YYYY")}
+                                                    </td>
 
-                            <div className='right' onClick={handleUpdateModalClose}>
-                                <i className="flaticon-close-1" />
-                            </div>
+                                                    <td>{order.trxid}</td>
 
+                                                    <td>{order?.gateway}</td>
+                                                    <td>{order?.sub_gateway}</td>
+                                                    <td>{order?.type}</td>
+                                                    <td>{order?.amount}</td>
+                                                    <td>{order?.status}</td>
+                                                    <td>
+                                                        <div
+                                                        // style={{
+                                                        //   display: "flex",
+                                                        //   alignItems: "center",
+                                                        //   width: '100%',
+
+                                                        // }}
+                                                        >
+                                                            {order?.status === "unpaid" ? (
+                                                                <Button
+                                                                    onClick={() => {
+                                                                        setIsShowBillingPopup(true);
+                                                                        setSubscriptionAmount(order?.amount);
+                                                                        setInvoiceNum(order?.invoice_num);
+                                                                    }}
+                                                                    style={{
+                                                                        marginRight: '10px'
+                                                                    }}
+                                                                >
+                                                                    Pay Now
+                                                                </Button>
+                                                            ) : null}
+
+
+                                                            <Button
+                                                                onClick={() =>
+                                                                    downloadInvoice(order?.id, order?.invoice_num)
+                                                                }
+                                                            >
+                                                                Download Invoice
+                                                                {/* <i className="flaticon-printer /> */}
+                                                            </Button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={14}>
+                                                <section className="MiddleSection">
+                                                    <div className="MiddleSectionContent">
+                                                        <div className="img">
+                                                            <img src="/images/empty.png" alt="" />
+                                                        </div>
+
+                                                        <div className="text">
+                                                            <p>Not Found</p>
+                                                        </div>
+                                                    </div>
+                                                </section>
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
+                        {/* <Paginator count={totalPage} page={currentPage} onChange={handleChange} showFirstButton
+                        showLastButton variant="outlined" /> */}
+                    </Container>
+                </section>
 
-                        <form action="">
-
-                            <div className='updateModalForm'>
-
-                                <div className="SubscriptionModal">
-
-                                    <div className="PaymentType">
-
-                                        <label className="card">
-                                            <input name="plan" className="radio" type="radio" checked={selectedPayment === "bkash"} value="bkash" onChange={handlePaymentMethodChange} />
-                                            <img src="/images/payment-img/bkash.png" alt="" />
-                                        </label>
-
-                                        <label className="card">
-                                            <input name="plan" className="radio" type="radio" checked={selectedPayment === "nagad"} value="nagad" onChange={handlePaymentMethodChange} />
-                                            <img src="/images/payment-img/nagod.png" alt="" />
-                                        </label>
-
-                                        <label className="card">
-                                            <input name="plan" className="radio" type="radio" checked={selectedPayment === "ssl"} value="ssl" onChange={handlePaymentMethodChange} />
-                                            <img src="/images/payment-img/visa.png" alt="" />
-                                        </label>
-
+                {isShowBillingPopup ? (
+                    <Modal
+                        open={isShowBillingPopup}
+                        onClose={() => setIsShowBillingPopup(false)}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                        className="updateModal"
+                    >
+                        <Box className="modalBox">
+                            <div className="modalContent">
+                                <div className="header">
+                                    <div className="left">
+                                        <i className="flaticon-wallet" />
+                                        <h4>Select Payment Method</h4>
                                     </div>
 
-                                    <div className="Review">
-
-                                        <h6>Review</h6>
-                                        <div className="SubscribeAmount">
-                                            <h4>Subscribe Amount</h4>
-                                            <h3><i className="flaticon-taka" /> 3000.00 </h3>
-                                        </div>
-
+                                    <div
+                                        className="right"
+                                        onClick={() => setIsShowBillingPopup(false)}
+                                    >
+                                        <i className="flaticon-close-1" />
                                     </div>
-
-                                    <div className="terms-condition">
-                                        <input type="checkbox" id="checkbox" checked />
-                                        {/* You accept the terms and conditions by clicking the "Pay Now" button */}
-                                        <label for="checkbox">By pressing “Pay Now” you agree to the <Link href="https://funnelliner.com/terms" target="/blank">Terms and Conditions</Link> </label>
-                                    </div>
-
-                                    <div className="duelButton">
-                                        <Button onClick={() => handlePaymentMethod(selectedPayment)}>Pay Now</Button>
-                                    </div>
-
                                 </div>
 
+                                <form action="">
+                                    <div className="updateModalForm">
+                                        <div className="SubscriptionModal">
+                                            <div className="PaymentType">
+                                                <label className="card">
+                                                    <input
+                                                        name="plan"
+                                                        className="radio"
+                                                        type="radio"
+                                                        checked={selectedPayment === "bkash"}
+                                                        value="bkash"
+                                                        onChange={event =>
+                                                            setSelectedPayment(event.target.value)
+                                                        }
+                                                    />
+                                                    <img src="/images/payment-img/bkash.png" alt="" />
+                                                </label>
+
+                                                <label className="card">
+                                                    <input
+                                                        name="plan"
+                                                        className="radio"
+                                                        type="radio"
+                                                        checked={selectedPayment === "nagad"}
+                                                        value="nagad"
+                                                        onChange={event =>
+                                                            setSelectedPayment(event.target.value)
+                                                        }
+                                                    />
+                                                    <img src="/images/payment-img/nagod.png" alt="" />
+                                                </label>
+
+                                                {/* <label className="card">
+                        <input
+                          name="plan"
+                          className="radio"
+                          type="radio"
+                          checked={selectedPayment === "ssl"}
+                          value="ssl"
+                          onChange={event =>
+                            setSelectedPayment(event.target.value)
+                          }
+                        />
+                        <img src={"/images/payment-img/visa.png"} alt="" />
+                      </label> */}
+                                            </div>
+
+                                            <div className="Review">
+                                                <h6>Review</h6>
+                                                <div className="SubscribeAmount">
+                                                    <h4>Package Amount</h4>
+                                                    <h3>
+                                                        <i className="flaticon-taka" />
+                                                        {subscriptionAmount}.00{" "}
+                                                    </h3>
+                                                </div>
+                                            </div>
+
+                                            <div className="terms-condition">
+                                                <input type="checkbox" id="checkbox" checked />
+                                                <label for="checkbox">
+                                                    By pressing “Continue” you agree to the{" "}
+                                                    <Link
+                                                        href="https://funnelliner.com/terms"
+                                                        target="/blank"
+                                                    >
+                                                        Terms and Conditions
+                                                    </Link>{" "}
+                                                </label>
+                                            </div>
+
+                                            <div className="duelButton">
+                                                <Button onClick={() => makePayment(selectedPayment)}>
+                                                    Pay Now
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-
-                        </form>
-
-                    </div>
-
-                </Box>
-
-            </Modal>
+                        </Box>
+                    </Modal>
+                ) : null}
+            </div>
         </>
     );
 };

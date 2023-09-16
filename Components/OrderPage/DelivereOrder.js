@@ -5,11 +5,9 @@ import axios from "axios";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { baseTest } from "../../constant/constant";
 import { headers } from "../../pages/api";
 import { useGetOrdersQuery } from "../../redux/features/order/orderApi";
-
-
+import { API_ENDPOINTS } from "../../config/ApiEndpoints";
 
 
 const handleClose = () => {
@@ -22,10 +20,6 @@ const DelivereOrder = ({ searchQuery, allProducts, advanceStatus }) => {
     const [filterProducts, setFilterProducts] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
     const [perPage, setPerPage] = useState(25);
-
-
-
-
 
 
     // Tabs
@@ -46,7 +40,7 @@ const DelivereOrder = ({ searchQuery, allProducts, advanceStatus }) => {
       
 
         axios
-            .post(baseTest + "/client/orders/status/update", statusUpdate, {
+            .post(API_ENDPOINTS.BASE_URL + "/client/orders/status/update", statusUpdate, {
                 headers: headers,
             })
             .then(function (response) {

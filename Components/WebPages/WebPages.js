@@ -179,6 +179,7 @@ const WebPages = ({ busInfo }) => {
           title={"Pages"}
           subTitle={"Pages List"}
           search={false}
+          order={false}
         />
         {isLoading && <SmallLoader />}
         <Container maxWidth="sm">

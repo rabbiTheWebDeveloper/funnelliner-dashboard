@@ -294,6 +294,7 @@ const Plugin = ({ setFetch }) => {
           title={"Addons"}
           subTitle={"Add plugins for extra advantages"}
           search={false}
+          order={false}
         />
 
         <Container maxWidth="sm">

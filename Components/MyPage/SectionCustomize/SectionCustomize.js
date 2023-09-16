@@ -45,7 +45,8 @@ const SectionCustomize = () => {
       footer_text_color: "",
       footer_heading_color: "",
       footer_b_color: "",
-      order_title: ""
+      order_title: "",
+      checkout_button_text: "",
     },
   });
   const handelFooterList = async () => {
@@ -134,7 +135,7 @@ const SectionCustomize = () => {
       setValue("instagram", page_data?.instagram);
       setValue("youtube", page_data?.youtube);
       setValue("order_title", page_data?.order_title);
-
+      setValue("checkout_button_text", page_data?.checkout_button_text)
       setIsDataFetchLoading(false)
     } catch (err) {
       setIsDataFetchLoading(false)
@@ -211,6 +212,9 @@ const SectionCustomize = () => {
     if (data.checkout_button_color) {
       formData.append("checkout_button_color", data.checkout_button_color);
     }
+    if (data?.checkout_button_text) {
+      formData.append("checkout_button_text", data.checkout_button_text);
+    }
 
     if (selectedImage?.size > 1024 * 1024) {
       showToast("Image size is too big !", "error");
@@ -285,7 +289,7 @@ const SectionCustomize = () => {
                       <input
                         {...register("title")}
                         type="text"
-                        placeholder="Enter Title  name here"              
+                        placeholder="Enter Title  name here"
                       />
                     </div>
 
@@ -333,10 +337,18 @@ const SectionCustomize = () => {
                     />
                     {errors.order_title && (
                       <span style={{ color: "red" }}>
-                        {/* {errors.order_title.message} */}
                         This Field is required
                       </span>
                     )}
+                  </div>
+                  <div className="customInput">
+                    <label>
+                      Checkout Form Submit Button Text
+                    </label>
+                    <input
+                      type="text"
+                      {...register("checkout_button_text")}             
+                    />
                   </div>
                   <br />
 

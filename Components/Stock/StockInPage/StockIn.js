@@ -109,6 +109,7 @@ const StockIn = () => {
           title={"Stock In"}
           subTitle={"Update your inventory products stock"}
           search={false}
+          order={false}
         />
 
         <Container maxWidth="sm">

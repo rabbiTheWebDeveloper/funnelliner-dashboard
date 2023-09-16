@@ -55,7 +55,7 @@ const BillingPage = ({ orderUpdate }) => {
             <section className="DashboardSetting Order">
 
                 {/* header */}
-                <HeaderDescription headerIcon={'flaticon-wallet'} title={'Billing'} subTitle={'Billing List'} search={false} />
+                <HeaderDescription headerIcon={'flaticon-wallet'} title={'Billing'} subTitle={'Billing List'} search={false}  order={false} />
 
                 <Container maxWidth="sm">
                     <div className="Table">

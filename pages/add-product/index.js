@@ -1,9 +1,9 @@
 import AddProduct from "../../Components/Products/AddProduct/AddProduct";
 import withAuth from "../../hook/PrivateRoute";
-const index = () => {
+const index = ({busInfo}) => {
   return (
     <>
-      <AddProduct />
+      <AddProduct busInfo={busInfo} />
     </>
   );
 };

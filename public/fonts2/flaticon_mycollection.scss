@@ -2,11 +2,11 @@ $flaticon_mycollection-font: "flaticon_mycollection";
 
 @font-face {
     font-family: $flaticon_mycollection-font;
-    src: url("./flaticon_mycollection.ttf?e4c2033c627bca2179eff6b02bfc7185") format("truetype"),
-url("./flaticon_mycollection.woff?e4c2033c627bca2179eff6b02bfc7185") format("woff"),
-url("./flaticon_mycollection.woff2?e4c2033c627bca2179eff6b02bfc7185") format("woff2"),
-url("./flaticon_mycollection.eot?e4c2033c627bca2179eff6b02bfc7185#iefix") format("embedded-opentype"),
-url("./flaticon_mycollection.svg?e4c2033c627bca2179eff6b02bfc7185#flaticon_mycollection") format("svg");
+    src: url("./flaticon_mycollection.ttf?91e0b04e0ebe15e51995f49b5445f11e") format("truetype"),
+url("./flaticon_mycollection.woff?91e0b04e0ebe15e51995f49b5445f11e") format("woff"),
+url("./flaticon_mycollection.woff2?91e0b04e0ebe15e51995f49b5445f11e") format("woff2"),
+url("./flaticon_mycollection.eot?91e0b04e0ebe15e51995f49b5445f11e#iefix") format("embedded-opentype"),
+url("./flaticon_mycollection.svg?91e0b04e0ebe15e51995f49b5445f11e#flaticon_mycollection") format("svg");
 }
 
 i[class^="flaticon-"]:before, i[class*=" flaticon-"]:before {
@@ -124,6 +124,11 @@ $flaticon_mycollection-map: (
     "info": "\f165",
     "info-button": "\f166",
     "payment-method": "\f167",
+    "fast-delivery": "\f168",
+    "privacy": "\f169",
+    "stop-sign": "\f16a",
+    "stop-violence": "\f16b",
+    "video-camera": "\f16c",
 );
 
 .flaticon-sent:before {
@@ -434,4 +439,19 @@ $flaticon_mycollection-map: (
 }
 .flaticon-payment-method:before {
     content: map-get($flaticon_mycollection-map, "payment-method");
+}
+.flaticon-fast-delivery:before {
+    content: map-get($flaticon_mycollection-map, "fast-delivery");
+}
+.flaticon-privacy:before {
+    content: map-get($flaticon_mycollection-map, "privacy");
+}
+.flaticon-stop-sign:before {
+    content: map-get($flaticon_mycollection-map, "stop-sign");
+}
+.flaticon-stop-violence:before {
+    content: map-get($flaticon_mycollection-map, "stop-violence");
+}
+.flaticon-video-camera:before {
+    content: map-get($flaticon_mycollection-map, "video-camera");
 }

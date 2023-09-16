@@ -20,14 +20,8 @@ import FilterPaymentItem from "./FilterPaymentItem";
 import FilterReceverItem from "./FilterReceverItem";
 import { API_ENDPOINTS } from "../../config/ApiEndpoints";
 
-const addPlusOneWithDate = value => {
-  if(value){
-    const dateJsonStr = JSON.stringify(value)
-    const str1 = dateJsonStr?.split("-");
-    const dateStr = str1[2]?.split("T");
-    const plusOne = parseInt(dateStr[0]) + 1;
-    return eval(`${str1[0]}-${str1[1]}-${plusOne <= 9 ? '0' + plusOne : plusOne}T${dateStr[1]}`)
-  }
+function formatDateToBST(date) {
+  return date?.toLocaleString('en-US', { timeZone: 'Asia/Dhaka' });
 }
 
 const AccountExcelReport = () => {
@@ -217,8 +211,8 @@ const AccountExcelReport = () => {
   }, []);
 
   const handleFetchMutiSearch = useCallback(async () => {
-    const startDateWithOneDayAdded = addPlusOneWithDate(startDate); 
-    const endDateWithOneDayAdded = addPlusOneWithDate(endDate);
+    const startDateWithOneDayAdded = formatDateToBST(startDate); 
+    const endDateWithOneDayAdded = formatDateToBST(endDate);
 
     const params = {
       date: filterOption,

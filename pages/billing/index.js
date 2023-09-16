@@ -8,7 +8,7 @@ import useLoading from "../../hook/useLoading";
 import Subscription from "../../Components/Subscription/Subscription.js";
 
 const Index = ({ busInfo, handelFetchBusInfo }) => {
-  const { merchant } = busInfo;
+  const { merchant } = busInfo || {};
   const [subscriptions, setSubscriptions] = useState([]);
   const [isApiResponse, setIsApiResponse] = useState(false);
   useEffect(() => {

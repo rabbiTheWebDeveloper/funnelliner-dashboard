@@ -79,11 +79,11 @@ const Subscribe = () => {
                         <li><span>{timerSeconds}</span> Secs</li>
                     </ul>
 
-                    <h5> left in your free trial ! Upgrade paid for additional benefits.</h5>
+                    <h5> left your due date ! Please pay your bill & enjoy the Powerful Automation Service.</h5>
 
                 </div>
 
-                <Link href="/subscription">Upgrade Now</Link>
+                <Link href="/billing">Pay Now</Link>
 
             </div>
 

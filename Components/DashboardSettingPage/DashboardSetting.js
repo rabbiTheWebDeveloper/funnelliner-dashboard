@@ -101,6 +101,7 @@ const DashboardSetting = ({ response }) => {
           title={"Settings"}
           subTitle={"Update your shop info and other settings here"}
           search={false}
+          order={false}
         />
 
         <Container maxWidth="sm">

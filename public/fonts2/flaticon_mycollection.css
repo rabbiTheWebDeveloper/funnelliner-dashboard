@@ -1,10 +1,10 @@
 @font-face {
     font-family: "flaticon_mycollection";
-    src: url("./flaticon_mycollection.ttf?e4c2033c627bca2179eff6b02bfc7185") format("truetype"),
-url("./flaticon_mycollection.woff?e4c2033c627bca2179eff6b02bfc7185") format("woff"),
-url("./flaticon_mycollection.woff2?e4c2033c627bca2179eff6b02bfc7185") format("woff2"),
-url("./flaticon_mycollection.eot?e4c2033c627bca2179eff6b02bfc7185#iefix") format("embedded-opentype"),
-url("./flaticon_mycollection.svg?e4c2033c627bca2179eff6b02bfc7185#flaticon_mycollection") format("svg");
+    src: url("./flaticon_mycollection.ttf?91e0b04e0ebe15e51995f49b5445f11e") format("truetype"),
+url("./flaticon_mycollection.woff?91e0b04e0ebe15e51995f49b5445f11e") format("woff"),
+url("./flaticon_mycollection.woff2?91e0b04e0ebe15e51995f49b5445f11e") format("woff2"),
+url("./flaticon_mycollection.eot?91e0b04e0ebe15e51995f49b5445f11e#iefix") format("embedded-opentype"),
+url("./flaticon_mycollection.svg?91e0b04e0ebe15e51995f49b5445f11e#flaticon_mycollection") format("svg");
 }
 
 i[class^="flaticon-"]:before, i[class*=" flaticon-"]:before {
@@ -326,4 +326,19 @@ i[class^="flaticon-"]:before, i[class*=" flaticon-"]:before {
 }
 .flaticon-payment-method:before {
     content: "\f167";
+}
+.flaticon-fast-delivery:before {
+    content: "\f168";
+}
+.flaticon-privacy:before {
+    content: "\f169";
+}
+.flaticon-stop-sign:before {
+    content: "\f16a";
+}
+.flaticon-stop-violence:before {
+    content: "\f16b";
+}
+.flaticon-video-camera:before {
+    content: "\f16c";
 }

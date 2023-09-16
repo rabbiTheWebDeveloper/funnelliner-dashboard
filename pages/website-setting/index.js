@@ -3,33 +3,10 @@ import { useEffect, useState } from "react";
 import WebsiteSettingPage from '../../Components/WebsiteSettingPage/WebsiteSettingPage';
 import withAuth from '../../hook/PrivateRoute';
 import { headers } from "../api";
-const WebsiteSettingPage_2 = () => {
-    const [response, setResponse] = useState({})
-    const handleFetchWebsite = async () => {
-        try {
-            let data = await axios({
-                method: "get",
-                url: `${process.env.NEXT_PUBLIC_API_URL}/client/settings/business-info`,
-                headers: headers,
-            });
-            setResponse(data?.data?.data);
-        } catch (err) {
-
-        }
-
-
-    };
-
-    useEffect(() => {
-        handleFetchWebsite()
-    }, []);
+import { API_ENDPOINTS } from "../../config/ApiEndpoints";
+const WebsiteSettingPage_2 = ({ busInfo }) => {
     return (
-
-        <>
-            <WebsiteSettingPage response={response}/>
-
-        </>
-
+        <WebsiteSettingPage response={busInfo} />
     )
 
 }

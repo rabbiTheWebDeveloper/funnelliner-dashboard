@@ -2,14 +2,13 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, Button, Container, Grid, Tab } from "@mui/material";
 import axios from "axios";
 import Cookies from "js-cookie";
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { BiSlider } from "react-icons/bi";
-import { baseTest } from "../../constant/constant";
 import { useToast } from "../../hook/useToast";
 import { shopId, userId } from "../../pages/api";
 import Uplode from "../edit-theme/Uplode";
+import { API_ENDPOINTS } from "../../../config/ApiEndpoints";
 
 const Banner = ({ response }) => {
 
@@ -22,7 +21,6 @@ const Banner = ({ response }) => {
 
     const handleChangeTab = (event, newValue) => {
         setValue(newValue);
-        // router.push(`/dashboard-setting?pass=${newValue}`)
     };
     const token = Cookies.get("token");
     const editForm = (data) => {
@@ -33,7 +31,7 @@ const Banner = ({ response }) => {
             }
         }
         // setIsLoading(true)
-        axios.post(baseTest + "/client/banner-store", formData, {
+        axios.post(API_ENDPOINTS.BASE_URL + "/client/banner-store", formData, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "shop-id": shopId,

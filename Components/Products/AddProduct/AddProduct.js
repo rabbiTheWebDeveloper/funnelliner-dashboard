@@ -18,7 +18,7 @@ import 'react-quill/dist/quill.snow.css';
 import ProductImage from "../../edit-theme/ProductImage";
 import QuillEditor from "../Description/Description";
 
-const AddProduct = () => {
+const AddProduct = ({busInfo}) => {
   const router = useRouter();
   const showToast = useToast();
   const [isLoading, startLoading, stopLoading] = useLoading();
@@ -27,6 +27,7 @@ const AddProduct = () => {
   const [delivery, setDelivery] = useState("default");
   const [insideDhaka, setInsideDhaka] = useState();
   const [outDhaka, setOutDhaka] = useState();
+  const [subArea, setSubArea] = useState(0);
   const [selectedImage, setSelectedImage] = useState(null);
   const [productImage, setProductImage] = useState([])
   const [productDescription, setProductDescription] = useState('')
@@ -66,7 +67,6 @@ const AddProduct = () => {
       showToast("Product Image required", "error");
       return;
     }
-    data.discount = "0";
     data.price = data.price.replace(/,/g, "");
     if (delivery === "default") {
       showToast("Select delivery Charge", "error");
@@ -82,6 +82,7 @@ const AddProduct = () => {
       data.delivery_charge = "paid";
       data.inside_dhaka = insideDhaka;
       data.outside_dhaka = outDhaka;
+      data.sub_area_charge = subArea;
     } else if (delivery === "Free Delivery Charge") {
       data.delivery_charge = "free";
     }
@@ -100,7 +101,7 @@ const AddProduct = () => {
     }
     formData.append("product_name", data.product_name);
     formData.append("price", data.price);
-    formData.append("discount", "0");
+    formData.append("discount", data.discount ? data.discount : "0");
     formData.append("product_code", data.product_code);
     formData.append("product_qty", data.product_qty);
     formData.append("short_description", productSummary);
@@ -113,6 +114,7 @@ const AddProduct = () => {
       formData.append("delivery_charge", "paid");
       formData.append("inside_dhaka", data.inside_dhaka);
       formData.append("outside_dhaka", data.outside_dhaka);
+      formData.append(" sub_area_charge", data.sub_area_charge);
     }
 
     axios
@@ -195,6 +197,8 @@ const AddProduct = () => {
           title={"Add New Products"}
           subTitle={"Add new products in your shop"}
           search={false}
+          order={false}
+          videoLink={"https://www.youtube.com/embed/u6C2KvB5Kzs?si=9zbRJe3-QANSMu"}
         />
 
         <Container maxWidth="sm">
@@ -251,6 +255,21 @@ const AddProduct = () => {
                             <p className="error">This Product Name required</p>
                           ) : null}
                         </div>
+                        <div className={style.customInput}>
+                          <label>
+                            Product Code <span>*</span>
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Example: A103"
+                            {...register("product_code", {
+                              required: true,
+                            })}
+                          />
+                          {errors.product_code ? (
+                            <p className="error">Product Code required</p>
+                          ) : null}
+                        </div>
 
                         <div className={style.customInput}>
                           <label>
@@ -271,19 +290,24 @@ const AddProduct = () => {
 
                         <div className={style.customInput}>
                           <label>
-                            Product Code <span>*</span>
+                            Discount Price
                           </label>
                           <input
+                            name="discount"
                             type="text"
-                            placeholder="Example: A103"
-                            {...register("product_code", {
-                              required: true,
+                            placeholder="Example: 599"
+                            {...register("discount", {
+
+                              // pattern: /^(?!0)[1-9][0-9]*$/,
                             })}
                           />
-                          {errors.product_code ? (
-                            <p className="error">Product Code required</p>
+                          {errors?.discount ? (
+                            <p className="error">Invalid discount Price</p>
                           ) : null}
                         </div>
+
+
+                   
 
                         <div className={style.customInput}>
                           <label>
@@ -344,7 +368,7 @@ const AddProduct = () => {
                           {delivery === "Paid Delivery Charge" && (
                             <div className={style.duelInput}>
                               <div className={style.customInput}>
-                                <label> Delivery charge in Dhaka </label>
+                                <label> Delivery charge in {busInfo?.default_delivery_location ? busInfo?.default_delivery_location: "Dhaka" } </label>
                                 <input
                                   type="text"
                                   onChange={(e) =>
@@ -355,11 +379,19 @@ const AddProduct = () => {
                               </div>
 
                               <div className={style.customInput}>
-                                <label>Delivery charge out of Dhaka</label>
+                                <label>Delivery charge out of {busInfo?.default_delivery_location ? busInfo?.default_delivery_location: "Dhaka" }</label>
                                 <input
                                   type="text"
                                   onChange={(e) => setOutDhaka(e.target.value)}
                                   placeholder="Delivery charge out of Dhaka"
+                                />
+                              </div>
+                              <div className={style.customInput}>
+                                <label>Sub Area Charge (Optional)</label>
+                                <input
+                                  type="text"
+                                  onChange={(e) => setSubArea(e.target.value)}
+                                  placeholder="Sub area (Optional)"
                                 />
                               </div>
                             </div>

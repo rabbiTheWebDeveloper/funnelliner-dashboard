@@ -93,6 +93,16 @@ Login
   border-radius: 20px;
 }
 
+.userPasswordSetupErrorMsg{
+  background-color: #ff000057;
+  border: 1px solid red;
+  color: #191919;
+  border-radius: 6px;
+  font-size: 16px;
+  padding: 5px 0;
+  margin-bottom: 10px;
+}
+
 .LoginContent .Logo img {
   height: 125px;
 }

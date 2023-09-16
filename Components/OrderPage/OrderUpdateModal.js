@@ -3,7 +3,6 @@ import { Box, Button, Grid, Modal } from "@mui/material";
 import axios from "axios";
 import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
 import * as Yup from "yup";
-
 import { useToast } from "../../hook/useToast";
 import { headers } from "../../pages/api";
 import useLoading from "../../hook/useLoading";
@@ -43,11 +42,10 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
             const shippingCosts = inputData.products.map(
                 product => product.shipping_cost
             );
-
             const data = {
                 customer_name: inputData.customer_name,
-                customer_phone: inputData.customer_phone,
-                customer_address: inputData.customer_address,
+                phone: inputData.customer_phone,
+                address: inputData.customer_address,
                 order_type: inputData.order_type,
                 product_id: productIds,
                 product_qty: productQuantities,
@@ -59,9 +57,7 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
             const response = await SuperFetch.post(API_ENDPOINTS.ORDERS.ORDER_EDIT + orderId, data, {
                 headers: headers,
             });
-
             if (response.data.success) {
-
                 showToast('Order Update   Successfully !', 'success');
                 handleFetch()
                 orderUpdate()
@@ -116,8 +112,6 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
                         }}
                         validationSchema={validationSchema}
                         onSubmit={values => {
-
-                            console.log("------value -------", values)
                             OrderUpdate(values);
                         }}
                     >
@@ -364,12 +358,12 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
                                     {isLoading ? (
                                         <Button type="submit" className="One">
                                             {" "}
-                                            <Spinner /> Add
+                                            <Spinner /> Updating Order
                                         </Button>
                                     ) : (
                                         <Button type="submit" className="One">
                                             {" "}
-                                            Add Order
+                                            Update Order
                                         </Button>
                                     )}
                                 </div>

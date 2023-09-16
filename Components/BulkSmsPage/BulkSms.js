@@ -177,12 +177,14 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
             <section className="DashboardSetting BulkSms">
                 {/* header */}
                 <HeaderDescription
+                videoLink={"https://www.youtube.com/embed/11ScSqlpuLM?si=ymipw9n4YKk8h9v3J"} 
                     headerIcon={"flaticon-mail"}
                     title={"Bulk SMS"}
                     subTitle={
                         "Get SMS report, send messages in large range to your clients"
                     }
                     search={false}
+                    order={false}
                 />
 
                 <Container maxWidth="sm">
@@ -322,6 +324,7 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
                     title={"Send SMS"}
                     subTitle={"Send SMS to the clients in large scale"}
                     search={false}
+                    order={false}
                 />
                 <Container maxWidth="sm">
                     <Grid Container spacing={3}>

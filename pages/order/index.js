@@ -18,39 +18,33 @@ import { styled } from "@mui/material/styles";
 import axios from "axios";
 import { enGB } from "date-fns/locale";
 import moment from "moment";
-import getConfig from "next/config";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { DateRangePicker } from "react-nice-dates";
-
 import "react-nice-dates/build/style.css";
 import Swal from "sweetalert2";
-import EditOrderModal from "../../Components/OrderPage/EditOrder";
 import OrderModal from "../../Components/OrderPage/Modal";
 import Note from "../../Components/OrderPage/Note";
 import OrderUpdateModal from "../../Components/OrderPage/OrderUpdateModal";
-import { baseUrl } from "../../constant/constant";
 import SuperFetch from "../../hook/Axios";
 import withAuth from "../../hook/PrivateRoute";
-
-import CourierModal from "../../Components/CourierPage/CourierModal";
-import { useToast } from "../../hook/useToast";
-import { headers } from "../api";
-
-import HeaderDescription from "../../Components/Common/HeaderDescription/HeaderDescription";
-import SmallLoader from "../../Components/SmallLoader/SmallLoader";
-import useLoading from "../../hook/useLoading";
-
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import Capitalized, { courierStatusFormate } from "../../constant/capitalized";
+import ReactSelect from 'react-select';
+import HeaderDescription from "../../Components/Common/HeaderDescription/HeaderDescription";
+import CourierModal from "../../Components/CourierPage/CourierModal";
+import SmallLoader from "../../Components/SmallLoader/SmallLoader";
 import CopyIcon from "../../Components/UI/CopyIcon/CopyIcon";
 import { API_ENDPOINTS } from "../../config/ApiEndpoints";
-import ReactSelect from 'react-select';
+import Capitalized, { courierStatusFormate } from "../../constant/capitalized";
+import useLoading from "../../hook/useLoading";
+import { useToast } from "../../hook/useToast";
+import { headers } from "../api";
+import ViewModal from "../../Components/OrderPage/ViewModal";
 
 const followUpOrderFilterOption = [
   { value: 'today', label: 'Today' },
@@ -65,11 +59,14 @@ const confirmedOrderFilterOption = [
   { value: 'next_seven_days', label: 'Next Seven Days' },
   { value: 'custom', label: 'Custom' }
 ]
-
+function formatDateToBST(date) {
+  return date?.toLocaleString('en-US', { timeZone: 'Asia/Dhaka' });
+}
 const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
   const showToast = useToast();
   const router = useRouter();
   const [isLoading, startLoading, stopLoading] = useLoading();
+  const [enableGlobalSearch, setEnableGlobalSearch] = useState(false);
   const [active, setDefault] = useState("pending");
   const [products, setProducts] = useState([]);
   const [startDate, setStartDate] = useState();
@@ -89,6 +86,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
   const [selectCourierStatus, setSelectCourierStatus] = useState(null);
   const [advancedPaymentConfig, setAdvancedPaymentConfig] = useState(false);
   const [holdOnConfig, setHoldOnConfig] = useState(false);
+  const [shippingDateConfig, setShippingDateConfig] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   const [fetchApi, setFetch] = useState(false);
   const [order, setOrder] = useState({});
@@ -106,6 +104,8 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
   const [shippingDate, setShippingDate] = useState();
   const [selectedSingleCourier, setSelectedSingleCourier] = useState("");
   const [selectedOrder, setSelectedOrder] = useState();
+
+
 
   const BootstrapButton = styled(Button)({
     backgroundColor: "#fff",
@@ -281,11 +281,11 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     setShowPicker(false)
     setStartDate()
     setEndDate()
+    setEnableGlobalSearch(false)
+    setTotalPage(0)
   };
 
   const handleFilterStatusCOurier = value => {
-
-
     setCourierStatus(value);
   };
 
@@ -301,10 +301,10 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     page: currentPage,
     date: selectedValue,
     provider: selectCourier,
-    courier_status: selectCourierStatus,
+    courier_status:selectCourierStatus,
     // search: search,
-    start_date: startDate,
-    end_date: endDate,
+    start_date:formatDateToBST(startDate),
+    end_date:formatDateToBST(endDate),
     filter_date: selectedValue,
   };
   const [statusChangeLoading, setStatusChangeLoading] = useState(false);
@@ -548,40 +548,56 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     }
   }, [search, handleFetchOrderGlobalSearch]);
   useEffect(() => {
-    SuperFetch.get("/client/orders", { params: params, headers: headers })
-      .then(res => {
-        if (res.data.success === true) {
-          setOrders(res.data?.data);
-          setTotalPage(res.data?.last_page);
-          setFetch(false);
-          setApiResponse(true)
-        }
-      })
-      .catch(e => { });
+    if (enableGlobalSearch === false && active !== "trashed") {
+      SuperFetch.get("/client/orders", { params: params, headers: headers })
+        .then(res => {
+          if (res.data.success) {
+            setOrders(res.data?.data);
+            setTotalPage(res.data?.last_page);
+            setFetch(false);
+            setApiResponse(true)
+          }
+        })
+        .catch(e => { });
 
-    if (callCount === 0) {
-      SuperFetch.get("/client/products", { headers: headers }).then(res => {
-        if (res.data.success === true) {
-          setProducts(res.data?.data);
+      if (callCount === 0) {
+        SuperFetch.get(API_ENDPOINTS.PRODUCTS.GET_PRODUCTS, { headers: headers }).then(res => {
+          if (res.data.success) {
+            setProducts(res.data?.data);
+          }
+        });
+        if (active === 'pending') {
+          SuperFetch.get(API_ENDPOINTS.ORDERS.ORDER_ADVANCE_PAYMENT_CONFIG, {
+            headers: headers,
+          }).then(res => {
+            if (res?.data?.success) {
+              setAdvancedPaymentConfig(res.data?.data?.advanced_payment);
+            }
+          });
+
         }
-      });
-      SuperFetch.get("/client/settings/advance-payment/status", {
-        headers: headers,
-      }).then(res => {
-        if (res.data.success === true) {
-          setAdvancedPaymentConfig(res.data?.data?.advanced_payment);
+
+        SuperFetch.get(API_ENDPOINTS.ORDERS.ORDER_HOLD_ON_CONFIG, {
+          headers: headers,
+        }).then(res => {
+          if (res?.data?.success) {
+            setHoldOnConfig(res.data?.data?.hold_on);
+          }
+        });
+        if (active === "confirmed") {
+          SuperFetch.get(`${API_ENDPOINTS.ORDERS.ORDER_SHIPPING_DATE_CONFIG}`, {
+            headers: headers,
+          }).then(res => {
+            if (res.data.success) {
+              setShippingDateConfig(res?.data?.data?.shipped_date_status);
+            }
+          });
         }
-      });
-      SuperFetch.get("/client/settings/hold-on/status", {
-        headers: headers,
-      }).then(res => {
-        if (res.data.success === true) {
-          setHoldOnConfig(res.data?.data?.hold_on);
-        }
-      });
+
+      }
+
+      setFetch(false);
     }
-
-    setFetch(false);
   }, [
     followUpChange,
     active,
@@ -611,7 +627,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
       type: type,
     };
     axios
-      .post(baseUrl + `/client/order/date/${orderId}/update`, postBody, {
+      .post(API_ENDPOINTS.BASE_URL + `/client/order/date/${orderId}/update`, postBody, {
         headers: headers,
       })
       .then(function (response) {
@@ -637,28 +653,20 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
       type: "confirmed",
     };
     axios
-      .post(API_ENDPOINTS.BASE_URL + `/client/order/date/${orderId}/update`, postBody, {
+      .post(API_ENDPOINTS.BASE_URL + `${API_ENDPOINTS.ORDERS.ORDER_SHIPPING_DATE}${orderId}/update`, postBody, {
         headers: headers,
       })
       .then(function (response) {
         if (response.status === 200) {
           handleFetch()
-          toast.success(response.data.message, {
-            autoClose: 2000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: false,
-          });
+          showToast(response?.data?.message, "success");
         }
       }).catch(function (error) {
         showToast("An error occurred while updating the shipping date", "error");
-        console.error(error);
       })
   };
 
   // delete order
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL
-
   const deleteProduct = id => {
     Swal.fire({
       iconHtml: '<img src="/images/delete.png">',
@@ -676,7 +684,8 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
       if (result.isConfirmed) {
         axios
           .post(
-            `${process.env.NEXT_PUBLIC_API_URL}/client/order/${id}/delete`,
+            `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ORDERS}/${id}/delete`,
+            // `${process.env.NEXT_PUBLIC_API_URL}/client/order/${id}/delete`,
             {},
             {
               headers: headers,
@@ -1006,7 +1015,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     const order = orders.filter(order => {
       return order.courier_status === value;
     });
-    return order.length;
+    return order?.length;
   };
   useEffect(() => {
     setSelectedOrders([]);
@@ -1042,6 +1051,68 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
       return "#26bf94";
     }
   };
+
+  const moveToTrash = (id) => {
+    Swal.fire({
+      iconHtml: '<img src="/images/delete.png">',
+      customClass: {
+        icon: "no-border",
+        border: "0",
+      },
+      text: "Are you sure you want to move this order to trash?",
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonColor: "#894BCA",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Delete",
+    }).then(result => {
+      if (result.isConfirmed) {
+        axios
+          .get(
+            `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ORDERS.MOVE_ORDER_TRASHED}/${id}`,
+            {
+              headers: headers,
+            }
+          )
+          .then(function (result) {
+            if (result) {
+              setOrders(pd => {
+                const filter = orders.filter(prod => {
+                  return prod.id !== id;
+                });
+                return [...filter];
+              });
+              showToast("Your order has been Moved to trash", "success");
+              orderUpdate();
+            } else {
+            }
+          })
+          .catch(errr => {
+            showToast("something went wrong", "error");
+          });
+      }
+    });
+
+  }
+  const handleFetchOrderTrash = useCallback(async () => {
+    if (active === "trashed") {
+      try {
+        let data = await axios({
+          method: "get",
+          url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ORDERS.GET_ORDER_TRASHED_LIST}`,
+          headers: headers,
+        });
+        if (data.status) {
+          setOrders(data?.data?.data);
+        }
+      } catch (err) { }
+
+    }
+  }, [active]);
+
+  useEffect(() => {
+      handleFetchOrderTrash();
+  }, [handleFetchOrderTrash])
   return (
     <div>
       <section className="DashboardSetting Order">
@@ -1052,12 +1123,19 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
         )}
         {/* header */}
         <HeaderDescription
+        videoLink={"https://www.youtube.com/embed/Z5bjNcweC8s?si=AYJvJWfJehFenQRO"} 
           setSearch={setSearch}
+          setOrders={setOrders}
+          handleFilterStatusChange={handleFilterStatusChange}
+          setEnableGlobalSearch={setEnableGlobalSearch}
           headerIcon={"flaticon-sent"}
           title={"Orders"}
           subTitle={"Order List"}
-          search={true}
+          search={false}
+          order={true}
         />
+
+
         <Container maxWidth="sm">
           <div className="OrderTabs">
             <div className="CommonTab">
@@ -1168,6 +1246,21 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                     </h6>
                   </BootstrapButton>
                 ) : undefined}
+                <BootstrapButton
+                  className={active === "trashed" ? "filterActive" : ""}
+                  onClick={e => handleFilterStatusChange("trashed")}
+                >
+                  Order Trash
+                  {/* <h6>
+                    {pendingOrderCount?.follow_up > 0
+                      ? pendingOrderCount?.follow_up
+                      : "0"}
+                  </h6> */}
+                </BootstrapButton>
+
+
+
+
               </Box>
             </div>
 
@@ -1196,27 +1289,28 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
               </div>
             )}
 
+            {/* active === "confirmed" || */}
             {active === "confirmed" || active === "follow_up" ? (
               <div className="duelSelect d_flex">
                 <div className="react_Select_custom_date_select">
-                  {
-                    active === "confirmed" && <ReactSelect
+                  {shippingDateConfig ?
+                    active === "confirmed" ? <ReactSelect
                       options={confirmedOrderFilterOption}
                       onChange={(event) => handleSelected(event.value)}
-                      placeholder="Find Your Confirm Order"
-                    />
+                      placeholder="Find Your Shipping Order"
+                    /> : null : null
                   }
 
                   {
-                    active === "follow_up" && <ReactSelect
+                    active === "follow_up" ? <ReactSelect
                       options={followUpOrderFilterOption}
                       onChange={(event) => handleSelected(event.value)}
                       placeholder="Find Your Follow Up Order"
-                    />
+                    /> : null
                   }
                 </div>
                 <div>
-                  {showPicker && (
+                  {showPicker ? (
                     <DateRangePicker
                       startDate={startDate}
                       endDate={endDate}
@@ -1238,7 +1332,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                         </div>
                       )}
                     </DateRangePicker>
-                  )}
+                  ) : null}
                 </div>
               </div>
             ) : null}
@@ -1328,7 +1422,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                     style={{
                       width: "20px",
                       height: "auto",
-                      margin: "5px", 
+                      margin: "5px",
                     }}
                   />
                   Steadfast
@@ -1468,7 +1562,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                 }
                 {active === "confirmed" && (
                   <>
-                
+
                     <div className="DataTableColum">
                       <h3>Invoice</h3>
                     </div>
@@ -1479,7 +1573,8 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                     {/* <th width={20}>Select Courier</th> */}
                   </>
                 )}
-                {active === "follow_up" || active === "confirmed" ? (
+                {/* || active === "confirmed" */}
+                {shippingDateConfig ? active === "confirmed" || active === "follow_up" ? (
                   <div className="DataTableColum">
                     <h3>
                       {
@@ -1487,7 +1582,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                       }
                     </h3>
                   </div>
-                ) : null}
+                ) : null : null}
                 {active === "shipped" && (
                   <>
                     <div className="DataTableColum">
@@ -1504,6 +1599,16 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                     </div>
                   </>
                 )}
+                {(active === "delivered" || active === "returned") ? (
+                  <React.Fragment>
+                    <div className="DataTableColum">
+                      <h3>Courier ID</h3>
+                    </div>
+                    <div className="DataTableColum">
+                      <h3>Tracking Link</h3>
+                    </div>
+                  </React.Fragment>
+                ) : null}
                 {(active === "pending" ||
                   active === "follow_up" ||
                   active === "hold_on" ||
@@ -1539,7 +1644,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
               {/* DataTableRow */}
               {/* item */}
 
-              {apiResponse ? orders.length > 0 ? (
+              {apiResponse ? orders?.length > 0 ? (
                 orders.map((order, index) => {
                   return (
                     <div className="DataTableRow" key={index}>
@@ -1965,11 +2070,11 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                         </div>
                       )}
 
-                      {active === "confirmed" && (
+                      {shippingDateConfig ? active === "confirmed" ? (
                         <div className="DataTableColum">
                           <div className="TotalPrice">
                             <MobileDatePicker
-                              defaultValue={dayjs(order?.confirmed_date)}
+                               defaultValue={order?.confirmed_date !== null ? dayjs(order?.confirmed_date) : dayjs(moment(order?.updated_at).format("YYYY-MM-DD"))}
                               sx={{
                                 "& .MuiInputBase-input": {
                                   fontSize: "11px",
@@ -1982,7 +2087,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                             />
                           </div>
                         </div>
-                      )}
+                      ) : null : null}
                       {active === "shipped" && (
                         <>
                           <div className="DataTableColum">
@@ -2091,6 +2196,69 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                           </div>
                         </>
                       )}
+                      {(active === "delivered" || active === "returned") ? (
+                        <React.Fragment>
+                          <div className="DataTableColum">
+                            <div className="TotalPrice ">
+                              {
+                                order?.consignment_id ?
+                                  <div className="TrackingId">
+                                    <Tooltip
+                                      title={order?.consignment_id}
+                                      placement="top-start"
+                                    >
+                                      <span>
+                                        {order?.consignment_id?.length < 30 ? (
+                                          <span>{order?.consignment_id}</span>
+                                        ) : (
+                                          <span>
+                                            {order?.consignment_id?.slice(
+                                              0,
+                                              30
+                                            )}
+                                            ..
+                                          </span>
+                                        )}
+                                      </span>
+                                    </Tooltip>
+                                    {
+                                      order?.consignment_id ?
+                                        <CopyIcon
+                                          url={
+                                            order?.consignment_id
+                                          } /> : null
+                                    }
+                                  </div> : <div className="TrackingId" style={{ textAlign: 'center' }}>N/A</div>
+                              }
+                            </div>
+                          </div>
+                          <div className="DataTableColum">
+                            <div className="TotalPrice">
+                              {
+                                order?.tracking_code ?
+                                  order?.courier_provider === "steadfast" ? (
+                                    <Link
+                                      href={`https://steadfast.com.bd/t/${order?.tracking_code}`}
+                                      className="TrackingId"
+                                      target="_blank"
+                                    >
+                                      {order?.tracking_code}
+                                    </Link>
+                                  ) : (
+                                    <Link
+                                      href={`https://merchant.pathao.com/tracking?consignment_id=${order?.tracking_code}&phone=${order?.phone}`}
+                                      className="TrackingId"
+                                      target="_blank"
+                                    >
+                                      {order?.tracking_code}
+                                    </Link>
+                                  ) : <div className="TrackingId" style={{ textAlign: 'center' }}>N/A</div>
+                              }
+
+                            </div>
+                          </div>
+                        </React.Fragment>
+                      ) : null}
 
                       {(active === "pending" ||
                         active === "follow_up" ||
@@ -2255,68 +2423,88 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                           />
                         </div>
                       </div>
-
-                      <div className="DataTableColum">
-                        <div className="Action">
-                          <div className="commonDropdown">
-                            <PopupState variant="popover" popupId="demo-popup-menu">
-                              {(popupState) => (
-                                <>
-                                  <Button {...bindTrigger(popupState)}>
-                                    <BsThreeDotsVertical />
-                                  </Button>
-                                  <Menu
-                                    id="fade-menu"
-                                    className="commonDropdownUl"
-                                    MenuListProps={{
-                                      "aria-labelledby": "fade-button",
-                                    }}
-                                    anchorEl={anchorEl}
-                                    open={open}
-                                    onClose={handleClose}
-                                    {...bindMenu(popupState)}
-                                  >
-                                    <MenuItem
-                                      className="viewActionBtn"
-                                      onClick={() => {
-                                        handleOrderDetails(order?.id);
-                                        popupState.close;
+                      {
+                          active !== "trashed" ?
+                          <div className="DataTableColum">
+                          <div className="Action">
+                            <div className="commonDropdown">
+                              <PopupState variant="popover" popupId="demo-popup-menu">
+                                {(popupState) => (
+                                  <>
+                                    <Button {...bindTrigger(popupState)}>
+                                      <BsThreeDotsVertical />
+                                    </Button>
+                                    <Menu
+                                      id="fade-menu"
+                                      className="commonDropdownUl"
+                                      MenuListProps={{
+                                        "aria-labelledby": "fade-button",
                                       }}
+                                      anchorEl={anchorEl}
+                                      open={open}
+                                      onClose={handleClose}
+                                      {...bindMenu(popupState)}
                                     >
-                                      <i
-                                        className="flaticon-view"
-                                        style={{
-                                          width: "20px",
-                                          height: "auto",
-                                          margin: "5px",
+                                      <MenuItem
+                                        className="viewActionBtn"
+                                        onClick={() => {
+                                          handleOrderDetails(order?.id);
+                                          popupState.close;
                                         }}
-                                      />
-                                      View
-                                    </MenuItem>
-                                    <MenuItem
-                                      onClick={() => {
-                                        handleOrderUpdate(order?.id),
-                                          setOrderId(order?.id);
-                                        setOrderStatus(order?.status);
-                                      }}
-                                    >
-                                      <i
-                                        className="flaticon-edit"
-                                        style={{
-                                          width: "20px",
-                                          height: "auto",
-                                          margin: "5px",
+                                      >
+                                        <i
+                                          className="flaticon-view"
+                                          style={{
+                                            width: "20px",
+                                            height: "auto",
+                                            margin: "5px",
+                                          }}
+                                        />
+                                        View
+                                      </MenuItem>
+                                      <MenuItem
+                                        onClick={() => {
+                                          handleOrderUpdate(order?.id),
+                                            setOrderId(order?.id);
+                                          setOrderStatus(order?.status);
                                         }}
-                                      />
-                                      Edit
-                                    </MenuItem>
-                                  </Menu>
-                                </>
-                              )}
-                            </PopupState>
+                                      >
+                                        <i
+                                          className="flaticon-edit"
+                                          style={{
+                                            width: "20px",
+                                            height: "auto",
+                                            margin: "5px",
+                                          }}
+                                        />
+                                        Edit
+                                      </MenuItem>
+                                          <MenuItem
+                                            onClick={() =>
+                                              {moveToTrash(order?.id) ;popupState.close()}
+                                            }
+                                          >
+                                            <i
+                                              className="flaticon-delete"
+                                              style={{
+                                                width: "20px",
+                                                height: "auto",
+                                                margin: "5px",
+                                              }}
+                                            />
+                                            Move to Trash
+                                          </MenuItem> 
+                                   
+                                    </Menu>
+                                  </>
+                                )}
+                              </PopupState>
+                            </div>
                           </div>
-                        </div>
-                      </div>
+                        </div> : null
+                      }
+
+                   
                     </div>
                   );
                 })
@@ -2367,7 +2555,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
         handleFetch={handleFetch}
         orderUpdate={orderUpdate}
       />
-      <EditOrderModal
+      <ViewModal
         key={order.id}
         order={order}
         handleCloseViewModal={handleCloseViewModal}

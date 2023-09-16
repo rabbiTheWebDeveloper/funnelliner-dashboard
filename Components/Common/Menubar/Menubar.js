@@ -20,7 +20,7 @@ import { useDispatch } from "react-redux";
 import { headers, shopId } from "../../../pages/api";
 import { setActiveTab } from "../../../redux/features/dropDownSlice/dropdownSlice";
 import ShortNotification from "./ShortNotification";
-
+import {  Modal } from "@mui/material";
 import { useRef } from "react";
 import style from "./style.module.css";
 
@@ -178,7 +178,9 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
 
     // setNotifyfac(false)
   };
-
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   return (
     <>
       <div
@@ -655,6 +657,15 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
 
                 {/* Right */}
                 <div className={style.right}>
+                  {
+                    router.pathname === "/" ?
+                    <div className={style.VideoIcon}>
+                    <Button onClick={handleOpen}>
+                      <i className="flaticon-video-camera"></i>
+                    </Button>
+                  </div> : null
+                  }
+              
                   <div className={style.Notification}>
                     <PopupState variant="popover" popupId="Profile">
                       {popupState => (
@@ -803,6 +814,39 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
           </li> */}
         </ul>
       </div>
+
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="parent-modal-title"
+        aria-describedby="parent-modal-description"
+        className="viewModal"
+      >
+        <Box className="modalBox">
+          <div className="modalContent">
+            <div className="header">
+              <div className="left">
+                <i className="flaticon-video-camera"></i>
+                <h4>Watch Video Tutorial</h4>
+              </div>
+
+              <div className="right" onClick={handleClose}>
+                <i className="flaticon-close-1"></i>
+              </div>
+            </div>
+            <div className={style.youTubeVideo}>
+              <iframe
+                src='https://www.youtube.com/embed/nAbLjOij8tw?si=j-mFXhum4kMNEAjN'
+                title="YouTube video player"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                autoplay
+              ></iframe>
+            </div>
+          </div>
+        </Box>
+      </Modal>
     </>
   );
 };

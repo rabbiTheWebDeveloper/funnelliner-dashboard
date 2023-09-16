@@ -71,6 +71,8 @@ const SubCategory = () => {
           title={"Categories / Sub Categories"}
           subTitle={"Your Product Categories"}
           search={false}
+          order={false}
+          videoLink={"https://www.youtube.com/embed/u6C2KvB5Kzs?si=rlVlTYwQGXcRQ4uC"} 
         />
 
         <Container maxWidth="sm">

@@ -6,10 +6,7 @@ import HomePageCart from "./HomePageCart/HomePageCart";
 import WebsiteLink from "./WebsiteLink";
 // Cart Img
 import axios from "axios";
-import SuperFetch from "../../hook/Axios";
 import { headers } from "../../pages/api";
-import cartImg1 from "../../public/images/homepage-icon/1.png";
-
 import cartImg11 from "../../public/images/homepage-icon/11.png";
 import cartImg2 from "../../public/images/homepage-icon/2.png";
 import cartImg3 from "../../public/images/homepage-icon/3.png";
@@ -23,6 +20,11 @@ import { filterOrder } from "./HomeUtlis";
 import RecentOrder from "./RecentOrder";
 import TopSellingProducts from "./TopSellingProducts";
 import SalesTarget from "./SalesTarget";
+import { useCallback } from "react";
+import { API_ENDPOINTS } from "../../config/ApiEndpoints";
+function formatDateToBST(date) {
+  return date?.toLocaleString('en-US', { timeZone: 'Asia/Dhaka' });
+}
 
 const Dashboard = ({ busInfo }) => {
   const [date, setTotalOrderDate] = useState("today");
@@ -39,53 +41,73 @@ const Dashboard = ({ busInfo }) => {
   const [advancedPaymentConfig, setAdvancedPaymentConfig] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-
+  const [dateReport, setDateReport] = useState("today");
+  const [report, setReport] = useState({});
   // , month, year
-  const params = {
-    date: date,
-    start_date: startDate,
-    end_date: endDate,
-    confirmed_date: confirmed_date,
-    sales_date: sales_date,
-    pending_date: pending_date,
-    cancel_date: cancel_date,
-    discount_payment: discount_date,
-    advance_payment: advance_date,
-  };
-  const ratioParams = {
-    total: date,
-    confirm: confirmed_date,
-    sales_amount: sales_date,
-    cancel: cancel_date,
-    discount_amount: discount_date,
-    advance_amount: advance_date,
-  };
-  const orderStatic = () => {
-    SuperFetch.get("/client/order-statistics", {
-      params: params,
-      headers: headers,
-    })
-      .then((res) => {
-        setReportData(res.data.data);
-      })
-      .catch((error) => {});
-  };
+  const orderStatic = useCallback(async () => {
+    const startDateWithOneDayAdded = formatDateToBST(startDate);
+    const endDateWithOneDayAdded = formatDateToBST(endDate);
+    const params = {
+      date: date,
+      start_date: startDateWithOneDayAdded,
+      end_date: endDateWithOneDayAdded,
+      confirmed_date: confirmed_date,
+      sales_date: sales_date,
+      pending_date: pending_date,
+      cancel_date: cancel_date,
+      discount_payment: discount_date,
+      advance_payment: advance_date,
+    };
+    if(
+      date !== "custom" && startDate !== null && endDate !== null  || 
+      confirmed_date === "custom" && startDate !== null && endDate !== null ||
+      sales_date === "custom" && startDate !== null && endDate !== null ||
+      pending_date === "custom" && startDate !== null && endDate !== null ||
+      cancel_date === "custom" && startDate !== null && endDate !== null ||
+      discount_date === "custom" && startDate !== null && endDate !== null ||
+      advance_date === "custom" && startDate !== null && endDate !== null
+    ){
+      try {
+        let dataRes = await axios({
+          method: "get",
+          url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.DASHBOARD.ORDERS_STATIC}`,
+          headers: headers,
+          params,
+        });
+        if (dataRes?.data?.success) {
+          setReportData(dataRes.data.data);
+        }
+      } catch (err) {
+        // Handle the error here
+      }
 
-  const handelFactchRatioStatic = () => {
-    SuperFetch.get("/client/ratio-statistics", {
-      params: ratioParams,
-      headers: headers,
-    })
-      .then((res) => {
-        setRatioData(res.data.data);
-      })
-      .catch((error) => {});
-  };
+    } 
+    else if (
+      date === "today" || "yesterday" || "weekly" || "monthly" || 
+      confirmed_date === "today" || "yesterday" || "weekly" || "monthly" ||
+      sales_date === "today" || "yesterday" || "weekly" || "monthly" ||
+      pending_date === "today" || "yesterday" || "weekly" || "monthly" ||
+      cancel_date === "today" || "yesterday" || "weekly" || "monthly" ||
+      discount_date === "today" || "yesterday" || "weekly" || "monthly" ||
+      advance_date === "today" || "yesterday" || "weekly" || "monthly"
+    ) {
+      try {
+        let dataRes = await axios({
+          method: "get",
+          url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.DASHBOARD.ORDERS_STATIC}`,
+          headers: headers,
+          params,
+        });
+        if (dataRes?.data?.success) {
+          setReportData(dataRes.data.data);
+        }
+      } catch (err) {
+        // Handle the error here
+      }
 
-  useEffect(() => {
-    orderStatic();
-
-    handelFactchRatioStatic();
+    }
+     
+  
   }, [
     date,
     confirmed_date,
@@ -98,62 +120,132 @@ const Dashboard = ({ busInfo }) => {
     endDate,
   ]);
 
-  // delivery report
-  const [dateReport, setDateReport] = useState("today");
-  const [report, setReport] = useState({});
-  const delivereyParams = {
-    date: dateReport,
-  };
-  useEffect(() => {
-    SuperFetch.get("/client/order-delivery-report", {
-      params: delivereyParams,
-      headers: headers,
-    }).then((res) => {
-      setReport(res.data?.data);
-    });
-  }, [dateReport]);
 
-  const handleFetchSellsTarget = async () => {
-    try {
-      let data = await axios({
-        method: "get",
-        url: `${process.env.NEXT_PUBLIC_API_URL}/client/sales-target`,
-        headers: headers,
-      });
+  const handelFactchRatioStatic = useCallback(async () => {
+    const params = {
+      total: date,
+      confirm: confirmed_date,
+      sales_amount: sales_date,
+      cancel: cancel_date,
+      discount_amount: discount_date,
+      advance_amount: advance_date,
+    }
+    if( 
+    date !== "custom"  || 
+    confirmed_date !== "custom"  ||
+    sales_date !== "custom"  ||
+    pending_date !== "custom" ||
+    cancel_date !== "custom" ||
+    discount_date !== "custom"  ||
+    advance_date !== "custom"){
+      try {
+        let dataRes = await axios({
+          method: "get",
+          url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.DASHBOARD.RATIO_STATISTICS}`,
+          headers: headers,
+          params,
+        });
+        if (dataRes?.data?.success) {
+          setRatioData(dataRes?.data?.data);;
+        }
+      } catch (err) {
+        // Handle the error here
+      }
 
-      setSalesTarget(data?.data?.data);
-    } catch (err) {}
-  };
+    }
+    
+  }, [
+    date,
+    confirmed_date,
+    sales_date,
+    cancel_date,
+    discount_date,
+    advance_date,
+  ]);
 
-  useEffect(() => {
-    handleFetchSellsTarget();
-    setfatch(false);
-  }, [fatch]);
+
+  const handleFetchDeliveryReport = useCallback(async () => {
+    const params = {
+      date: dateReport,
+    }
+      try {
+        let dataRes = await axios({
+          method: "get",
+          url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.DASHBOARD.ORDER_DELIVERY_REPORT}`,
+          headers: headers,
+          params,
+        });
+        if (dataRes?.data?.success) {
+          setReport(dataRes?.data?.data)
+        }
+      } catch (err) {
+        // Handle the error here
+      }
+  }, [
+    dateReport
+  ]);
+
+
+  const handleFetchSellsTarget = useCallback(async () => {
+    const params = {
+      date: dateReport,
+    }
+      try {
+        let dataRes = await axios({
+          method: "get",
+          url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.DASHBOARD.SALES_TARGET}`,
+          headers: headers,
+          params,
+        });
+        if (dataRes?.data?.success) {
+          setSalesTarget(dataRes?.data?.data);
+        }
+      } catch (err) {
+        // Handle the error here
+      }
+      setfatch(false);
+  }, [
+    fatch
+  ]);
 
   const salesTargetRfatch = () => {
     setfatch(true);
   };
 
-  const handleFetchAdvancePaymentStatus = async () => {
-    try {
-      let data = await axios({
-        method: "get",
-        url: `${process.env.NEXT_PUBLIC_API_URL}/client/settings/advance-payment/status`,
-        headers: headers,
-      });
-      if (data.data.success === true) {
-        setAdvancedPaymentConfig(data.data?.data?.advanced_payment);
+  const handleFetchAdvancePaymentStatus = useCallback(async () => {
+    const params = {
+      date: dateReport,
+    }
+      try {
+        let dataRes = await axios({
+          method: "get",
+          url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ORDERS.ORDER_ADVANCE_PAYMENT_CONFIG}`,
+          headers: headers,
+          params,
+        });
+        if (dataRes?.data?.success) {
+          setAdvancedPaymentConfig(dataRes?.data?.data?.advanced_payment);
+        }
+      } catch (err) {
+        // Handle the error here
       }
-    } catch (err) {}
-  };
+  }, []);
+  useEffect(() => {
+    handelFactchRatioStatic();
+    orderStatic();
+  }, [orderStatic ,handelFactchRatioStatic]);
+
+  useEffect(() => {
+    handleFetchDeliveryReport()
+  }, [handleFetchDeliveryReport])
+
+  useEffect(() => {
+    handleFetchSellsTarget();
+  }, [handleFetchSellsTarget]);
 
   useEffect(() => {
     handleFetchAdvancePaymentStatus();
-  }, []);
-  const percentage = 34.21;
-  const formattedPercentage = `+${new Intl.NumberFormat(undefined, {
-    style: "percent",
-  }).format(percentage / 100)}`;
+  }, [handleFetchAdvancePaymentStatus]);
 
   return (
     <section className="WebsiteLink">
@@ -388,8 +480,8 @@ const Dashboard = ({ busInfo }) => {
               title="Delivery Report"
               listItem={true}
               deliveryCount={report.delivered}
-              deliveryReturnCount={report.returned_ratio}
-              returnRatioCount={report.returned}
+              deliveryReturnCount={report.returned}
+              returnRatioCount={report.returned_ratio}
               cartImg={cartImg9}
             />
           </Grid>

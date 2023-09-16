@@ -4,6 +4,14 @@ const BKASH = process.env.NEXT_BKASH_URL;
 const API_ENDPOINTS = {
   BASE_URL: MAIN_URL,
   BKASH_URL: BKASH,
+  DASHBOARD:{
+    ORDERS_STATIC: `/client/order-statistics`,
+    RATIO_STATISTICS: `/client/ratio-statistics`,
+    PIH_CHART : `/client/channel-statistics`,
+    CHANNEL_RATIO_STATISTICS:`/client/channel/ratio-statistics`,
+    ORDER_DELIVERY_REPORT :`/client/order-delivery-report`,
+    SALES_TARGET:`/client/sales-target`
+  },
   CATEGORY: {
     GET_CATEGORIES: `/client/categories`,
     GET_CATEGORY: `/client/categories`,
@@ -44,8 +52,31 @@ const API_ENDPOINTS = {
   },
   ORDERS: {
     ORDER_GLOBAL_SEARCH: `/client/order/search`,
-    CREATE_Order_RES: `/client/orders`,
-    ORDER_EDIT: `/client/orders/`
+    CREATE_ORDER: `/client/orders`,
+    DELETE_ORDER: `client/order`,
+    ORDER_EDIT: `/client/orders/`,
+    ORDER_SHIPPING_DATE: `/client/order/date/`,
+    ORDER_SHIPPING_DATE_CONFIG: `/client/settings/shipped-date/status `,
+    ORDER_HOLD_ON_CONFIG: `/client/settings/hold-on/status `,
+    ORDER_ADVANCE_PAYMENT_CONFIG: `/client/settings/advance-payment/status`,
+    GET_ORDER_TRASHED_LIST: `/client/order/trashed/list`,
+    MOVE_ORDER_TRASHED: `/client/order/delete`,
+  },
+  CUSTOMERS: {
+    GET_CUSTOMERS: `/client/customer-list`,
+    CUSTOMERS_SEARCH: `/client/customer-search`,
+  },
+  WEBSITE_SETTINGS: {
+    UPDATE_SHIPPING_DATE_STATUS: `/client/settings/shipped-date/status/update`,
+    DOMAIN_VERIFICATION: `/client/settings/domain-meta/update`,
+
+  },
+  OTP : {
+    VERIFY_OTP : `/auth/verify`,
+    RESEND_OTP : `/auth/resend`
+  },
+  BILLING: {
+    GET_BILLING_LIST: `/client/transaction/list`
   }
 }
 

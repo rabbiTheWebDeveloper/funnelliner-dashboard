@@ -117,6 +117,7 @@ const SubProduct = () => {
           title={"Category"}
           subTitle={"Shop Category List"}
           search={false}
+          order={false}
         />
 
         <Container maxWidth="sm">

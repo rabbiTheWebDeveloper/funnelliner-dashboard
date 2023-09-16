@@ -6,7 +6,7 @@ import withAuth from '../../hook/PrivateRoute';
 import { headers } from '../api';
 
 
-const ProductPage = () => {
+const ProductPage = ({busInfo}) => {
     const [category, setCategory] = useState([])
     const hanldeFetchCategories = () => {
         axios
@@ -23,11 +23,7 @@ const ProductPage = () => {
         hanldeFetchCategories()
     }, []);
     return (
-        <>
-            <Product category={category}/>
-
-        </>
-
+        <Product category={category} busInfo={busInfo} />
     )
 
 }

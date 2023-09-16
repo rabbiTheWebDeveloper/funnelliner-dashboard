@@ -65,7 +65,7 @@ const Ticket_id = () => {
             <section className='SupportTicket'>
 
                 {/* header */}
-                <HeaderDescription headerIcon={'flaticon-customer-service'} title={'Ticket Conversation'} subTitle={'Conversation of ticket opended by clients'} search={false} />
+                <HeaderDescription headerIcon={'flaticon-customer-service'} title={'Ticket Conversation'} subTitle={'Conversation of ticket opended by clients'} search={false}   order={false}/>
 
                 <Container maxWidth='sm'>
                     <Grid Container spacing={3}>

@@ -1,10 +1,11 @@
-import { Box, Modal } from "@mui/material";
+import { Box, Button, Modal } from "@mui/material";
 import axios from "axios";
 import moment from "moment";
 import { useToast } from "../../hook/useToast";
 import { headers } from "../../pages/api";
+import Link from "next/link";
 
-const EditOrderModal = ({
+const ViewModal = ({
   order,
   handleCloseViewModal,
   viewModalOpen,
@@ -32,7 +33,6 @@ const EditOrderModal = ({
         });
     }
   };
-
   return (
     <Modal
       key={order?.id}
@@ -82,32 +82,19 @@ const EditOrderModal = ({
                     </ul>
                   );
                 })}
-
-                {/* <td>{products}</td> */}
-
                 <th>Customer Name</th>
 
                 <td>{order?.customer_name}</td>
               </tr>
-
               <tr>
                 <th>Contact No</th>
-
                 <td>{order?.phone}</td>
-
                 <th>Address</th>
-
                 <td>{order?.address}</td>
               </tr>
-
               <tr>
                 <th>Quantity</th>
-
                 <td>
-                  {/* {order?.order_details?.length
-                    ? order?.order_details[0]?.quantity
-                    : null} */}
-
                   {order?.order_details?.reduce(
                     (prevVal, currentVal) => {
                       return prevVal + currentVal?.quantity;
@@ -115,22 +102,15 @@ const EditOrderModal = ({
                     0
                   )}
                 </td>
-
                 <th>Discount</th>
-
                 <td>{order?.discount}</td>
               </tr>
-
               <tr>
                 <th>Shipping Cost</th>
-
                 <td>{order?.shipping_cost}</td>
-
                 <th>Total Price</th>
-
                 <td>{order?.grand_total}</td>
               </tr>
-
               <tr>
                 <th>Advance</th>
 
@@ -170,6 +150,31 @@ const EditOrderModal = ({
                   </div>
                 </td>
               </tr>
+              {
+                order?.order_status === "delivered" || order?.order_status === "shipped" || order?.order_status === "returned" ?
+                  <tr>
+                    <th>Invoice</th>
+
+                    <td>
+                      <div className="DataTableColum">
+                        <div className="TotalPrice">
+                          <Button className="invoice">
+                            <Link
+                              target="_blank"
+                              href={"/invoice-one/" + order?.id}
+                              rel="noopener noreferrer"
+                            >
+                              <i className="flaticon-printer" /> Print
+                            </Link>
+                          </Button>
+                        </div>
+                      </div>
+                    </td>
+
+
+                  </tr> : null
+              }
+
             </table>
           </div>
           <div className="d_flex">
@@ -205,57 +210,8 @@ const EditOrderModal = ({
             </div>
           </div>
         </div>
-
-        {/* <div className="SalesTargetModal OrderModalPopup">
-
-                    <div className="Form OrderModal">
-
-                        <ul>
-
-                            <li className="lastChild">
-
-                                <div className="CustomeInput">
-                                    <label>Order Status</label>
-
-                                    <select
-                                        defaultValue={order?.order_status}
-                                        disabled
-                                        name=""
-                                    >
-                                        <option value="pending">
-                                            Pending
-                                        </option>
-                                        <option value="cancelled">
-                                            Cancelled
-                                        </option>
-                                        <option value="confirmed">
-                                            Confirmed
-                                        </option>
-                                        <option value="follow_up">
-                                            Follow up
-                                        </option>
-                                        <option value="shipped">
-                                            shipped
-                                        </option>
-                                    </select>
-
-                                </div>
-                            </li>
-
-                            <li className="lastChild">
-                                <div className="CustomeInput TextArea">
-                                    <label>Note</label>
-                                    <textarea rows="3" defaultValue={order?.note} onKeyDown={(e) => handleKeyDownNote(order?.id, event)} />
-                                </div>
-                            </li>
-
-                        </ul>
-
-                    </div>
-
-                </div> */}
       </Box>
     </Modal>
   );
 };
-export default EditOrderModal;
+export default ViewModal;

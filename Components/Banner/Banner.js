@@ -5,18 +5,16 @@ import Cookies from "js-cookie";
 import { useRouter } from 'next/router';
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { baseTest } from "../../constant/constant";
+
 import { useToast } from "../../hook/useToast";
 import { shopId, userId } from "../../pages/api";
 import Uplode from "../edit-theme/Uplode";
-// import { baseTest } from "../../constant/constant";
-// import { useToast } from "../../hook/useToast";
-// import { shopId, userId } from "../../pages/api";
-// import Uplode from "../edit-theme/Uplode";
+;
 
 // Css
 import HeaderDescription from "../Common/HeaderDescription/HeaderDescription";
 import style from './style.module.css';
+import { API_ENDPOINTS } from "../../config/ApiEndpoints";
 
 const HomeSlider = ({ response }) => {
     const router = useRouter()
@@ -49,7 +47,7 @@ const HomeSlider = ({ response }) => {
             }
         }
         // setIsLoading(true)
-        axios.post(baseTest + "/client/sliders", formData, {
+        axios.post(API_ENDPOINTS.BASE_URL + "/client/sliders", formData, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "shop-id": shopId,
@@ -78,7 +76,7 @@ const HomeSlider = ({ response }) => {
             <section className={style.HomeSlider}>
 
                 {/* header */}
-                <HeaderDescription headerIcon={'flaticon-template'} title={'Banner Slider'} subTitle={'Update your shop info and other settings here'} search={false} />
+                <HeaderDescription headerIcon={'flaticon-template'} title={'Banner Slider'} subTitle={'Update your shop info and other settings here'} search={false}  order={false} />
 
 
                 <Container maxWidth="sm">

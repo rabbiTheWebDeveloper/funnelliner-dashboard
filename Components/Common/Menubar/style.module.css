@@ -31,6 +31,7 @@ Menubar
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  gap: 20px;
 }
 
 .MenubarContent .right .CustomeInput {
@@ -64,9 +65,6 @@ Menubar
   color: var(--bg_color);
 }
 
-.SupportTicket {
-  padding: 0 20px;
-}
 
 .SupportTicket i {
   font-size: 30px;
@@ -292,7 +290,45 @@ Notification Start
 .NotificationContent a.AllShow:hover {
   background: var(--main-hover-color);
 }
-
+  /* VideoIcon */
+  .VideoIcon button {
+    background: var(--main-color);
+    min-width: unset;
+    padding: 10px 15px;
+    color: var(--white-color);
+    font-size: 18px;
+    line-height: 24px;
+  }
+  
+  .VideoIcon button i {
+    line-height: 0;
+  }
+  
+  .VideoIcon button:hover {
+    background: var(--main-hover-color);
+  }
+  
+  .HeaderDescription .Right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .youTubeVideo {
+    margin-top: 20px;
+  }
+  
+  .youTubeVideo{
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 1px solid var(--border-color);
+  }
+  
+  .youTubeVideo iframe {
+    border-radius: 15px;
+    width: 100%;
+    height: 500px;
+  }
 @media (max-width: 1399px) {
   .MenubarContent .Left {
     width: 45%;

@@ -218,7 +218,7 @@ const Login_Part = () => {
 
 
               <div className={styles.forgetPassword}>
-                <Link href="/forgot-password">Forgot Password?</Link>
+                <Link href="/forget-password">Forgot Password?</Link>
               </div>
 
               <div className={styles.noAccount}>

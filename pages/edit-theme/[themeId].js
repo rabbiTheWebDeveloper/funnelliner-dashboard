@@ -7,9 +7,10 @@ import { useForm } from 'react-hook-form';
 import EditUpdate from '../../Components/edit-theme/EditUpdate';
 import ProductImage from '../../Components/edit-theme/ProductImage';
 import Uplode from '../../Components/edit-theme/Uplode';
-import { baseTest } from '../../constant/constant';
+
 import { useToast } from '../../hook/useToast';
 import { headers, shopId, userId } from '../api';
+import { API_ENDPOINTS } from '../../config/ApiEndpoints';
 
 const ThemeIdPage = () => {
     const [update, setUpdate] = useState(false)
@@ -59,7 +60,7 @@ const ThemeIdPage = () => {
         formData.append("note", data.note);
         formData.append("features", data.features);
         setIsLoading(true)
-        axios.post(baseTest + "/client/requests", formData, {
+        axios.post(API_ENDPOINTS.BASE_URL + "/client/requests", formData, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "shop-id": shopId,

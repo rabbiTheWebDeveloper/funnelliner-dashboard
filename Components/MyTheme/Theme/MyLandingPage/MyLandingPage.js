@@ -67,7 +67,7 @@ const MyLandingPage = () => {
             <section className='TopSellingProducts DashboardSetting LandingWebsite'>
 
             {/* header */}
-            <HeaderDescription headerIcon={'flaticon-website-design'} title={'Landing Page Template'} subTitle={'choose your theme here and customize as you want'} search={false} />
+            <HeaderDescription headerIcon={'flaticon-website-design'} title={'Landing Page Template'} subTitle={'choose your theme here and customize as you want'} search={false}  order={false} />
 
                 <Container maxWidth='sm'>
                     <Grid Container spacing={3}>

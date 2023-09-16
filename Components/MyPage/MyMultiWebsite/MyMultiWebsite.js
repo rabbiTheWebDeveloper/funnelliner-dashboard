@@ -34,6 +34,7 @@ const MyMultiWebsite = () => {
           title={"My Multipage Template"}
           subTitle={"choose your theme here and customize as you want"}
           search={false}
+          order={false}
         />
         {isLoading && <SmallLoader />}
         <Container maxWidth="sm">

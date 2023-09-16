@@ -35,6 +35,10 @@ const withAuth = (Component = null, options = {}) => {
         router.replace('/billing');
         return;
       }
+      // if (!options.show && user?.status === 'expired' && user?.payment_status === 'unpaid' && token) {
+      //   router.replace('/billing');
+      //   return;
+      // }
       if (!options.show && nextDueDate === null && token) {
         router.replace('/billing');
         return;

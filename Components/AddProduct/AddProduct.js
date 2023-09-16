@@ -186,7 +186,7 @@ const AddProduct = () => {
       <section className="TopSellingProducts DashboardSetting">
 
         {/* header */}
-        <HeaderDescription headerIcon={'flaticon-plus'} title={'Add New Products'} subTitle={'Add new products in your shop'} search={false} />
+        <HeaderDescription headerIcon={'flaticon-plus'} title={'Add New Products'} subTitle={'Add new products in your shop'} search={false}  order={false} />
 
         <Container maxWidth="sm">
           {/* DashboardSettingTabs */}

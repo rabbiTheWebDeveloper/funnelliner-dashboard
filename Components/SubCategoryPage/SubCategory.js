@@ -79,7 +79,7 @@ const SubCategory = () => {
             <section className='TopSellingProducts DashboardSetting SubCategory'>
 
                 {/* header */}
-                <HeaderDescription headerIcon={'flaticon-order-delivery'} title={'Categories / Sub Categories'} subTitle={'Your Product Sub Categories'} search={false} />
+                <HeaderDescription  order={false} headerIcon={'flaticon-order-delivery'} title={'Categories / Sub Categories'} subTitle={'Your Product Sub Categories'} search={false} />
 
                 <Container maxWidth="sm">
 

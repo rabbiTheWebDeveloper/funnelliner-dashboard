@@ -1,14 +1,26 @@
-import { Button, Container } from "@mui/material";
-import React from "react";
+import { Container } from "@mui/material";
+import React, { useState } from "react";
 import style from "./style.module.css";
+import AsyncSearchBar from "../AsyncSearchBar";
+import { Box, Button, Modal } from "@mui/material";
 
 const HeaderDescription = ({
+  videoLink,
   headerIcon,
   title,
   subTitle,
   search,
   setSearch,
+  order,
+  setSearchedOrder,
+  setOrders,
+  handleFilterStatusChange,
+  setEnableGlobalSearch,
 }) => {
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   return (
     <>
       <section className={style.HeaderDescription}>
@@ -29,18 +41,31 @@ const HeaderDescription = ({
 
               {/* right */}
               <div className={style.Right}>
+                <div className={style.VideoIcon}>
+                  <Button onClick={handleOpen}>
+                    <i className="flaticon-video-camera"></i>
+                  </Button>
+                </div>
                 {search != false && (
                   <div className={style.SearchFilter}>
                     <div className={style.customInput}>
                       <input
                         type="text"
                         placeholder="Search Here..."
-                        onKeyUp={(e) => setSearch(e.target.value)}
+                        onKeyUp={e => setSearch(e.target.value)}
                       />
-
-                      {/* <Button id="orderSearchButton">
-                        <i className="flaticon-search"></i>
-                      </Button> */}
+                    </div>
+                  </div>
+                )}
+                {order != false && (
+                  <div className={style.SearchFilter}>
+                    <div className={style.customInput}>
+                      <AsyncSearchBar
+                        setSearchedOrder={setSearchedOrder}
+                        setOrders={setOrders}
+                        handleFilterStatusChange={handleFilterStatusChange}
+                        setEnableGlobalSearch={setEnableGlobalSearch}
+                      />
                     </div>
                   </div>
                 )}
@@ -49,6 +74,39 @@ const HeaderDescription = ({
           </div>
         </Container>
       </section>
+      {/* Modal */}
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="parent-modal-title"
+        aria-describedby="parent-modal-description"
+        className="viewModal"
+      >
+        <Box className="modalBox">
+          <div className="modalContent">
+            <div className="header">
+              <div className="left">
+                <i className="flaticon-video-camera"></i>
+                <h4>Watch Video Tutorial</h4>
+              </div>
+
+              <div className="right" onClick={handleClose}>
+                <i className="flaticon-close-1"></i>
+              </div>
+            </div>
+            <div className={style.youTubeVideo}>
+              <iframe
+                src={videoLink}
+                title="YouTube video player"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen 
+                autoplay
+              ></iframe>
+            </div>
+          </div>
+        </Box>
+      </Modal>
     </>
   );
 };

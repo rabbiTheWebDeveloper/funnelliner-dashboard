@@ -8,6 +8,11 @@ import { headers } from '../../pages/api';
 import CustomDate from './HomePageCart/CustomDate';
 import PieChartPage from './PainChart';
 import { filterChannelData } from './HomeUtlis';
+import { useCallback } from 'react';
+import { API_ENDPOINTS } from '../../config/ApiEndpoints';
+function formatDateToBST(date) {
+    return date?.toLocaleString('en-US', { timeZone: 'Asia/Dhaka' });
+  }
 
 const ChartJs = () => {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -23,59 +28,103 @@ const ChartJs = () => {
     const handleClose = () => {
         setAnchorEl(null);
     };
-
-    const params = {
-        channel_status: cannel_date,
-        start_date: startDate,
-        end_date: endDate,
-
-    }
-    // http://127.0.0.1:8000/api/v1/client/channel-statistics?channel_status=custom&start_date=2023-01-01&end_date=2023-07-01
-    const handleFetchCannelList = async () => {
-        try {
-            let data = await axios({
-                method: "get",
-                params: params,
-                url: `${process.env.NEXT_PUBLIC_API_URL}/client/channel-statistics`,
-                headers: headers,
-            });
-            if (data.data.success === true) {
-                setCannelList(data?.data?.data)
-            }
-        } catch (err) {
+   
+    const handleFetchCannelList = useCallback(async () => {
+        
+        const params = {
+            channel_status: cannel_date,
+            start_date:formatDateToBST(startDate),
+            end_date:formatDateToBST( endDate),
+    
         }
-    };
-
-    const ratioParams = {
-        phone: cannel_date,
-        website: cannel_date,
-        social: cannel_date,
-        landing: cannel_date
-        // start_date: startDate,
-        // end_date: endDate,
-
-    }
-    const handleFetchCannelRatio = async () => {
-        try {
-            let data = await axios({
-                method: "get",
-                params: ratioParams,
-                url: `${process.env.NEXT_PUBLIC_API_URL}/client/channel/ratio-statistics`,
-                headers: headers,
+      
+    
+        if (
+            cannel_date === "custom" &&
+            startDate !== null &&
+            endDate !== null
+        ) {
+          try {
+            let dataRes = await axios({
+              method: "get",
+              url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.DASHBOARD.PIH_CHART}`,
+              headers: headers,
+              params,
             });
+            if (dataRes?.data?.success) {
+                setCannelList(dataRes?.data?.data)
 
-            if (data.data.success === true) {
-                setCannelRatio(data.data?.data)
+                
             }
-        } catch (err) {
+          } catch (err) {
+            // Handle the error here
+          }
+        } else if (
+          cannel_date === "today" ||
+          cannel_date == "yesterday" ||
+          cannel_date === "weekly" ||
+          cannel_date=== "monthly"
+        ) {
+          try {
+            const params = {
+                channel_status: cannel_date,
+        
+            }
+            let dataRes = await axios({
+              method: "get",
+              url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.DASHBOARD.PIH_CHART}`,
+              headers: headers,
+              params,
+            });
+    
+            if (dataRes?.data?.success) {
+                setCannelList(dataRes?.data?.data)
+            }
+          } catch (err) {
+            // Handle the error here
+          }
         }
-    };
+      }, [
+        cannel_date, endDate, startDate
+      ]);
+    const handleFetchCannelRatio = useCallback(async () => {
+        
+        const params = {
+            phone: cannel_date,
+            website: cannel_date,
+            social: cannel_date,
+            landing: cannel_date
+        }
+       
+    
+        if (
+            cannel_date !== "custom"
+        ) {
+          try {
+            let dataRes = await axios({
+              method: "get",
+              url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.DASHBOARD.CHANNEL_RATIO_STATISTICS}`,
+              headers: headers,
+              params,
+            });
+         
+    
+            if (dataRes?.data?.success) {
+                setCannelRatio(dataRes?.data?.data)
+            }
+          } catch (err) {
+            // Handle the error here
+          }
+        } 
+      }, [
+        cannel_date
+      ]);
 
     useEffect(() => {
         handleFetchCannelList();
-        cannel_date !== 'custom' && handleFetchCannelRatio()
+        handleFetchCannelRatio()
 
-    }, [cannel_date, endDate, startDate])
+    }, [handleFetchCannelList , handleFetchCannelRatio])
     const newCannelList = Array.isArray(cannelList) ? cannelList?.filter(obj => obj.name !== "" && obj.name !== "Select Order Type") : [];
     const website = Array.isArray(cannelList) ? cannelList?.filter(obj => obj.name === 'Website') : [];
     const landing = Array.isArray(cannelList) ? cannelList?.filter(obj => obj.name === 'Landing') : [];

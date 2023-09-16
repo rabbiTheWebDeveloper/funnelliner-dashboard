@@ -2,21 +2,17 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, Button, Container, Grid, Tab } from "@mui/material";
 import axios from "axios";
 import Cookies from "js-cookie";
-
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { baseTest } from "../../../constant/constant";
 import { useToast } from "../../../hook/useToast";
 import { shopId, userId } from "../../../pages/api";
 // Css
-
-
 import HeaderDescription from "../../Common/HeaderDescription/HeaderDescription";
 import UploderNew from "../../edit-theme/UploderNew";
 import style from './style.module.css';
 import Banner from "../Banner/Banner";
 import useLoading from "../../../hook/useLoading";
-import Spinner from "../../commonSection/Spinner/Spinner";
+import { API_ENDPOINTS } from "../../../config/ApiEndpoints";
 import Link from "next/link";
 
 
@@ -27,10 +23,8 @@ const HomeSlider = ({ response, IsHeaderDescription }) => {
     const showToast = useToast()
     const [imageData, setImageData] = useState([]);
     const [slider_list, setSlider_list] = useState([])
-
     // { file: null, previewURL: '' }
     const [links, setLinks] = useState([]);
-
 
     // Tabs
     const [value, setValue] = useState("1");
@@ -40,12 +34,10 @@ const HomeSlider = ({ response, IsHeaderDescription }) => {
         setValue(newValue);
         // router.push(`/dashboard-setting?pass=${newValue}`)
     };
-
-
     const token = Cookies.get("token");
 
     const fetch_slider = () => {
-        axios.get(baseTest + "/client/sliders/index", {
+        axios.get(API_ENDPOINTS.BASE_URL + "/client/sliders/index", {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "shop-id": shopId,
@@ -77,7 +69,7 @@ const HomeSlider = ({ response, IsHeaderDescription }) => {
             }
         }
         startLoading()
-        axios.post(baseTest + "/client/sliders/store", formData, {
+        axios.post(API_ENDPOINTS.BASE_URL + "/client/sliders/store", formData, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "shop-id": shopId,
@@ -106,7 +98,7 @@ const HomeSlider = ({ response, IsHeaderDescription }) => {
     }
 
     const handleDeleteSlider = (slider_id) => {
-        axios.get(baseTest + "/client/sliders/delete/" + slider_id, {
+        axios.get(API_ENDPOINTS.BASE_URL + "/client/sliders/delete/" + slider_id, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "shop-id": shopId,
@@ -115,7 +107,7 @@ const HomeSlider = ({ response, IsHeaderDescription }) => {
             },
         })
             .then(function (response) {
-                if (response.status === 200) {
+                if (response.status) {
                     setSlider_list((sliders) => sliders.filter((slider) => slider.id !== slider_id))
                     showToast(response?.data?.msg)
                 } else {
@@ -132,7 +124,7 @@ const HomeSlider = ({ response, IsHeaderDescription }) => {
 
             <section className={style.HomeSlider}>
                 {
-                    IsHeaderDescription !== false && <HeaderDescription headerIcon={'flaticon-page'} title={'All Slider'} subTitle={'Update your shop info and other settings here'} search={false} />
+                    IsHeaderDescription !== false && <HeaderDescription headerIcon={'flaticon-page'} title={'All Slider'} subTitle={'Update your shop info and other settings here'} search={false} order={false} />
 
                 }
 

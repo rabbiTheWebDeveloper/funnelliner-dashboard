@@ -2,11 +2,10 @@ import { Button } from "@mui/material";
 import axios from "axios";
 import React from 'react';
 import { useForm } from "react-hook-form";
-import Swal from 'sweetalert2';
-import { baseUrl } from "../../constant/constant";
 import { headers, shopId } from "../../pages/api";
 import { useToast } from "../../hook/useToast";
 import useLoading from "../../hook/useLoading";
+import { API_ENDPOINTS } from "../../config/ApiEndpoints";
 
 const DomainVerification = ({ data }) => {
     const showToast = useToast()
@@ -19,7 +18,7 @@ const DomainVerification = ({ data }) => {
             shop_id: shopId,
             domain_verify: domain_verify_id
         }
-        axios.post(`${baseUrl}/client/settings/domain-meta/update`, bodyData, {
+        axios.post(`${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.WEBSITE_SETTINGS.DOMAIN_VERIFICATION}`, bodyData, {
             headers: headers,
         })
             .then(function (response) {

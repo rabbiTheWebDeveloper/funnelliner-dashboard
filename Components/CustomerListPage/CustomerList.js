@@ -45,7 +45,7 @@ const CustomerList = () => {
             <section className=' DashboardSetting Order'>
 
                 {/* header */}
-                <HeaderDescription headerIcon={'flaticon-checklists'} title={'Customer List'} subTitle={'List Of Customers'} search={true} />
+                <HeaderDescription headerIcon={'flaticon-checklists'} title={'Customer List'} subTitle={'List Of Customers'} search={true}  order={false} />
 
                 <Container maxWidth='sm'>
 

@@ -1,7 +1,7 @@
-// export const baseUrl='https://funnelliner.com/api/v1';
+
 export const baseUrl = "https://web.funnelliner.com/api/v1";
 export const mainBaseUrl = "https://web.funnelliner.com";
-const localBaseUrl = "https://web.funnelliner.com";
+
 
 import axios from "axios";
 import Cookies from "js-cookie";

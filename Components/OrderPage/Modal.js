@@ -59,7 +59,7 @@ const OrderModal = ({
         shop_id: shopId,
       };
       startLoading();
-      const response = await SuperFetch.post(API_ENDPOINTS.ORDERS.CREATE_Order_RES, data, {
+      const response = await SuperFetch.post(API_ENDPOINTS.ORDERS.CREATE_ORDER, data, {
         headers: headers,
       });
 
