@@ -149,6 +149,7 @@ const Product = ({ category, busInfo }) => {
           subTitle={"Find Your Product"}
           search={false}
           order={false}
+          videoLink={"https://www.youtube.com/embed/u6C2KvB5Kzs?si=9zbRJe3-QANSMu"}
         />
 
         <Container maxWidth="sm">
