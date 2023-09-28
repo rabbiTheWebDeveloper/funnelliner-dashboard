@@ -29,7 +29,6 @@ const validationSchema = Yup.object({
     ),
     order_type: Yup.string().required("Order Source is required"),
 });
-
 function replaceEmptyStringsWithNull(arr) {
     return arr.map((item) => (item === "" ? 0 : item));
   }
@@ -84,14 +83,10 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
 
         }
     };
-
     useEffect(() => {
-        // Set the selectedProducts state based on initialValues
         const defaultSelectedProducts = order?.order_details?.map((item) => item?.product_id || "") || [];
         setSelectedProducts(defaultSelectedProducts);
       }, [order]);
-
-    console.log('selectedProducts' , selectedProducts)
     return (
         <Modal
             open={modalOpenUpdate}

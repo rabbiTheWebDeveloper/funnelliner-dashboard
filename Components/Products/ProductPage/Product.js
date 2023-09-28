@@ -275,7 +275,7 @@ const Product = ({ category, busInfo }) => {
                                     <Button
                                       className="viewActionBtn"
                                       onClick={() =>
-                                        handleOpenModal(product.id, "view")
+                                        router.push(`/product-view?id=${product?.id}`)
                                       }
                                     >
                                       <i className="flaticon-view"></i>
