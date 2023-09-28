@@ -1,66 +1,61 @@
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
-import { created } from '../../pages/api';
+import { created, nextDueDate } from '../../pages/api';
 import style from './style.module.css';
 
 const Subscribe = () => {
     const [timerDays, setTimerDays] = useState("00");
     const [timerHours, setTimerHours] = useState("00");
     const [timerMinutes, setTimerMinutes] = useState("00");
-    const [timerSeconds, setTimerSeconds] = useState("00")
+    const [timerSeconds, setTimerSeconds] = useState("00");
     let interval = useRef();
+  
     const dateConvert = (data) => {
-        const dateStr = data;
-        // Extract the day and month from the date string
-        const day = dateStr?.split(' ')[0].replace(/[^0-9]/g, '');
-        const month = dateStr?.split(' ')[1];
-        // Extract the time from the date string
-        const time = dateStr?.split(',')[1].trim();
-        // Create a new date string in the desired format
-        const formattedDateStr = `${month} ${day}, 2023 ${time}`;
-        // Create a new Date object from the formatted date string
-        return  new Date(formattedDateStr);
-    }
-    const countdownDate = new Date(dateConvert(created));
-    countdownDate.setHours(countdownDate.getHours() + 24);
-    const countdownTime = countdownDate.getTime();
-    const startTimer = () => {
-     
-        const countdownDate = new Date(countdownTime).getTime();
-
-        interval = setInterval(() => {
-            const now = new Date().getTime();
-            const distance = countdownDate - now;
-
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor(
-                (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-            );
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            if (distance < 0) {
-                // Stop Timer
-                clearInterval(interval.current);
-            } else {
-                // Update Timer
-                setTimerDays(days);
-                setTimerHours(hours);
-                setTimerMinutes(minutes);
-                setTimerSeconds(seconds);
-            }
-        }, 1000);
+      const dateStr = data;
+      // Extract the day and month from the date string
+      const day = dateStr?.split('-')[2];
+      const month = dateStr?.split('-')[1];
+      // Create a new date string in the desired format
+      const formattedDateStr = `${month} ${day}, 2023 00:00:00`;
+      // Create a new Date object from the formatted date string
+      return new Date(formattedDateStr);
     };
-
-    // use Effect
-    // Component DidMount
+    const countdownDate = new Date(dateConvert(nextDueDate));
+    countdownDate.setDate(countdownDate.getDate() + 7); // Add 7 days
+  
+    const startTimer = () => {
+      const countdownTime = countdownDate.getTime();
+  
+      interval.current = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = countdownTime - now;
+  
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+  
+        if (distance < 0) {
+          // Stop Timer
+          clearInterval(interval.current);
+        } else {
+          // Update Timer
+          setTimerDays(days.toString().padStart(2, "0"));
+          setTimerHours(hours.toString().padStart(2, "0"));
+          setTimerMinutes(minutes.toString().padStart(2, "0"));
+          setTimerSeconds(seconds.toString().padStart(2, "0"));
+        }
+      }, 1000);
+    };
+  
+    // useEffect to start the timer when the component mounts
     useEffect(() => {
-        startTimer();
-
-        return () => {
-            clearInterval(interval.current);
-        };
-    });
+      startTimer();
+  
+      return () => {
+        clearInterval(interval.current);
+      };
+    }, []);
 
     return (
 

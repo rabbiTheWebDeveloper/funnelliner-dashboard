@@ -118,7 +118,11 @@ const SubProduct = () => {
           subTitle={"Shop Category List"}
           search={false}
           order={false}
-          videoLink={"https://www.youtube.com/embed/u6C2KvB5Kzs?si=rlVlTYwQGXcRQ4uC"} 
+          videoLink={
+            {
+              video: "https://www.youtube.com/embed/u6C2KvB5Kzs?si=Qv2g-PI-ebPmsATK",
+              title: "How to add your categories step by step in FunnelLiner"
+            }}
         />
 
         <Container maxWidth="sm">

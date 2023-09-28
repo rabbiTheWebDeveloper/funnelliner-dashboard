@@ -1,4 +1,4 @@
-import { Container } from "@mui/material";
+import { Container, Tooltip } from "@mui/material";
 import React, { useState } from "react";
 import style from "./style.module.css";
 import AsyncSearchBar from "../AsyncSearchBar";
@@ -42,9 +42,12 @@ const HeaderDescription = ({
               {/* right */}
               <div className={style.Right}>
                 <div className={style.VideoIcon}>
+                  <Tooltip title={videoLink?.title}  placement="top-start">
                   <Button onClick={handleOpen}>
                     <i className="flaticon-video-camera"></i>
                   </Button>
+                  </Tooltip>
+                 
                 </div>
                 {search != false && (
                   <div className={style.SearchFilter}>
@@ -95,14 +98,23 @@ const HeaderDescription = ({
               </div>
             </div>
             <div className={style.youTubeVideo}>
-              <iframe
-                src={videoLink}
+            
+              {
+                videoLink?.video ?
+                <iframe
+                src={videoLink?.video}
                 title="YouTube video player"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen 
+                allowfullscreen
                 autoplay
-              ></iframe>
+              ></iframe>  :
+              <img src="/images/coming_soon.png" alt="video commming soon "/>
+              }
+             
+             
+           
+
             </div>
           </div>
         </Box>

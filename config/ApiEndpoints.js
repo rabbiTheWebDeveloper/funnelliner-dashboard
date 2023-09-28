@@ -4,31 +4,31 @@ const BKASH = process.env.NEXT_BKASH_URL;
 const API_ENDPOINTS = {
   BASE_URL: MAIN_URL,
   BKASH_URL: BKASH,
-  DASHBOARD:{
+  DASHBOARD: {
     ORDERS_STATIC: `/client/order-statistics`,
     RATIO_STATISTICS: `/client/ratio-statistics`,
-    PIH_CHART : `/client/channel-statistics`,
-    CHANNEL_RATIO_STATISTICS:`/client/channel/ratio-statistics`,
-    ORDER_DELIVERY_REPORT :`/client/order-delivery-report`,
-    SALES_TARGET:`/client/sales-target`
+    PIH_CHART: `/client/channel-statistics`,
+    CHANNEL_RATIO_STATISTICS: `/client/channel/ratio-statistics`,
+    ORDER_DELIVERY_REPORT: `/client/order-delivery-report`,
+    SALES_TARGET: `/client/sales-target`,
   },
   CATEGORY: {
     GET_CATEGORIES: `/client/categories`,
     GET_CATEGORY: `/client/categories`,
     UPDATE_CATEGORY: `/client/categories`,
     DELETE_CATEGORY: `/client/categories`,
-    CREATE_CATEGORY: `/client/categories`
+    CREATE_CATEGORY: `/client/categories`,
   },
   STOCK_IN: {
     GET_STOCK_IN_PRODUCTS: `/client/stocks/stock-in/list`,
     GET_STOCK_IN_PRODUCT: `/client/stocks/stock-in/show`,
-    UPDATE_STOCK_IN_PRODUCT: `/client/stocks/stock-in/update`
+    UPDATE_STOCK_IN_PRODUCT: `/client/stocks/stock-in/update`,
   },
   PIXEL: {
-    UPDATE_PIXEL: `/client/settings/pixel/update`
+    UPDATE_PIXEL: `/client/settings/pixel/update`,
   },
   SETTINGS: {
-    BUSINESS_INFO: `/client/settings/business-info`
+    BUSINESS_INFO: `/client/settings/business-info`,
   },
   ACCOUNTS: {
     GET_PAYOR_LIST: `/client/accounts/payor/list`,
@@ -48,10 +48,18 @@ const API_ENDPOINTS = {
     DELETE_PAYMENT_TYPE_CATEGORY: `/client/accounts/payment-method-delete/`,
   },
   PRODUCTS: {
-    GET_PRODUCTS: `/client/products`
+    GET_PRODUCTS: `/client/products`,
+    GET_PRODUCT_DETAILS: `/client/products/`,
+    GET_VARIANT_ATTRIBUTES: `/client/variation/attributes`,
+    GET_VARIANT_VALUES: `/client/variation/attribute-values`,
+    CREATE_VARIANT: `/client/variation/sku_combinations`,
+    CREATE_PRODUCTS: `/client/products`,
+    CREATE_VARIANT_ATTRIBUTE: `/client/variation/attributes-store`,
+    CREATE_VARIANT_ATTRIBUTE_VALUE: `/client/variation/attributes-value-store`,
   },
   ORDERS: {
     ORDER_GLOBAL_SEARCH: `/client/order/search`,
+    ORDER_DETAILS_BY_ID: `/client/orders`,
     CREATE_ORDER: `/client/orders`,
     DELETE_ORDER: `client/order`,
     ORDER_EDIT: `/client/orders/`,
@@ -69,15 +77,14 @@ const API_ENDPOINTS = {
   WEBSITE_SETTINGS: {
     UPDATE_SHIPPING_DATE_STATUS: `/client/settings/shipped-date/status/update`,
     DOMAIN_VERIFICATION: `/client/settings/domain-meta/update`,
-
   },
-  OTP : {
-    VERIFY_OTP : `/auth/verify`,
-    RESEND_OTP : `/auth/resend`
+  OTP: {
+    VERIFY_OTP: `/auth/verify`,
+    RESEND_OTP: `/auth/resend`,
   },
   BILLING: {
-    GET_BILLING_LIST: `/client/transaction/list`
-  }
-}
+    GET_BILLING_LIST: `/client/transaction/list`,
+  },
+};
 
-export { API_ENDPOINTS }
+export { API_ENDPOINTS };

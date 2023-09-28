@@ -177,7 +177,12 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
             <section className="DashboardSetting BulkSms">
                 {/* header */}
                 <HeaderDescription
-                videoLink={"https://www.youtube.com/embed/11ScSqlpuLM?si=ymipw9n4YKk8h9v3J"} 
+                   videoLink={
+                    {
+                      video: "https://www.youtube.com/embed/11ScSqlpuLM?si=ymipw9n4YKk8h9v3J",
+                      title: "How to use our one click bulk sms feature । Funnel Liner"
+                    }}
+           
                     headerIcon={"flaticon-mail"}
                     title={"Bulk SMS"}
                     subTitle={

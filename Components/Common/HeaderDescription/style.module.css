@@ -64,6 +64,7 @@
     color: var(--white-color);
     font-size: 18px;
     line-height: 24px;
+    margin-top: 0;
   }
   
   .VideoIcon button i {
@@ -84,6 +85,16 @@
     margin-top: 20px;
   }
   
+  .youTubeVideo{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .youTubeVideo img{
+    height: 300px;
+  }
+
   .youTubeVideo{
       margin-top: 30px;
       padding-top: 30px;

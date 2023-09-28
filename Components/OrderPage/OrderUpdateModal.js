@@ -6,7 +6,7 @@ import * as Yup from "yup";
 import { useToast } from "../../hook/useToast";
 import { headers } from "../../pages/api";
 import useLoading from "../../hook/useLoading";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import SuperFetch from "../../hook/Axios";
 import { API_ENDPOINTS } from "../../config/ApiEndpoints";
 import Spinner from "../commonSection/Spinner/Spinner";
@@ -29,13 +29,19 @@ const validationSchema = Yup.object({
     ),
     order_type: Yup.string().required("Order Source is required"),
 });
+
+function replaceEmptyStringsWithNull(arr) {
+    return arr.map((item) => (item === "" ? 0 : item));
+  }
 const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOpenUpdate, products, handleFetch, orderUpdate }) => {
     const showToast = useToast();
     const [isLoading, startLoading, stopLoading] = useLoading();
+    const [selectedProducts, setSelectedProducts] = useState([]);
 
     const OrderUpdate = async inputData => {
         try {
             const productIds = inputData.products.map(product => product.product_id);
+            const selectedVariants = inputData.products.map(product => product.variant_id);
             const productQuantities = inputData.products.map(
                 product => product.product_qty
             );
@@ -50,6 +56,7 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
                 product_id: productIds,
                 product_qty: productQuantities,
                 shipping_cost: shippingCosts,
+                variant_id:replaceEmptyStringsWithNull(selectedVariants),
                 order_status: inputData.order_status,
                 _method: "patch"
             };
@@ -77,6 +84,14 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
 
         }
     };
+
+    useEffect(() => {
+        // Set the selectedProducts state based on initialValues
+        const defaultSelectedProducts = order?.order_details?.map((item) => item?.product_id || "") || [];
+        setSelectedProducts(defaultSelectedProducts);
+      }, [order]);
+
+    console.log('selectedProducts' , selectedProducts)
     return (
         <Modal
             open={modalOpenUpdate}
@@ -106,6 +121,7 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
                             order_status: order?.order_status,
                             products: order?.order_details?.map(item => ({
                                 product_id: item?.product_id,
+                                variant_id: item?.variant !== null ? item.variant : "",
                                 product_qty: item?.quantity,
                                 shipping_cost: item?.shipping_cost
                             }))
@@ -115,7 +131,7 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
                             OrderUpdate(values);
                         }}
                     >
-                        {({ values }) => (
+                        {({ values, setFieldValue }) => (
                             <Form>
                                 <div className="updateModalForm OrderModal">
                                     <Grid container spacing={2}>
@@ -204,21 +220,31 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
                                         </Grid>
                                         <Grid item xs={12}>
                                             <div className="OrderAddProductModal">
-                                                <FieldArray name="products">
+                                                <FieldArray key={order?.id} name="products">
                                                     {arrayHelpers => (
                                                         <Fragment>
                                                             <div>
                                                                 {values?.products?.map((product, index) => (
                                                                     <div key={index}>
                                                                         <Grid container spacing={2}>
-                                                                            <Grid item xs={12} sm={5}>
+                                                                            <Grid item xs={12} sm={4}>
                                                                                 <div className="customInput">
                                                                                     <label>
                                                                                         Product Name <span>*</span>
                                                                                     </label>
                                                                                     <Field
                                                                                         component="select"
-                                                                                        name={`products.${index}.product_id`}
+                                                                                        onChange={(e) => {
+                                                                                            const selectedProductId = e.target.value;
+                                                                                            setFieldValue(`products[${index}].product_id`, selectedProductId);
+                                                                                            setSelectedProducts((prevSelected) => {
+                                                                                                prevSelected[index] = selectedProductId;
+                                                                                                return [...prevSelected]
+                                                                                            });
+                                                                                        }}
+                                                                                        value={values.products[index].product_id || ""}
+                                                                                        name={`products[${index}].product_id`}
+
                                                                                     >
                                                                                         <option value="">
                                                                                             Select Product
@@ -228,16 +254,7 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
                                                                                                 <option
                                                                                                     key={data?.id}
                                                                                                     value={data?.id}
-                                                                                                    disabled={values.products.some(
-                                                                                                        (p, i) =>
-                                                                                                            p.product_id ===
-                                                                                                            data.id &&
-                                                                                                            (i !== index ||
-                                                                                                                p.product_id ===
-                                                                                                                values.products[
-                                                                                                                    index
-                                                                                                                ].product_id)
-                                                                                                    )}
+
                                                                                                 >
                                                                                                     {data?.product_name}
                                                                                                 </option>
@@ -251,7 +268,7 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
                                                                                     />
                                                                                 </div>
                                                                             </Grid>
-                                                                            <Grid item xs={12} sm={3}>
+                                                                            <Grid item xs={12} sm={2}>
                                                                                 <div className="customInput">
                                                                                     <label>
                                                                                         Product Quantity<span>*</span>
@@ -271,9 +288,9 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
                                                                                     {/* Display error for product_quantity if needed */}
                                                                                 </div>
                                                                             </Grid>
-                                                                            <Grid item xs={12} sm={3}>
+                                                                            <Grid item xs={12} sm={2}>
                                                                                 <div className="customInput">
-                                                                                    <label>Shipping Cost</label>
+                                                                                    <label>Shipping Cost <span>*</span></label>
                                                                                     <Field
                                                                                         type="number"
                                                                                         variant="outlined"
@@ -288,6 +305,39 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
                                                                                     />
                                                                                 </div>
                                                                             </Grid>
+                                                                            {
+                                                                                selectedProducts[index] &&
+                                                                                    products.find((product) => product.id == selectedProducts[index]) &&
+                                                                                    products.find((product) => product.id == selectedProducts[index])
+                                                                                        .variations.length > 0 ?
+                                                                                    <Grid item xs={12} sm={3}>
+                                                                                        <div className="customInput">
+                                                                                            <label>Variant</label>
+                                                                                            <Field
+
+                                                                                                component="select"
+                                                                                                name={`products[${index}].variant_id`}
+                                                                                            >
+                                                                                                <option value="">Select Variant</option>
+                                                                                                {selectedProducts[index] &&
+                                                                                                    products.find((product) => product.id == selectedProducts[index]) &&
+                                                                                                    products.find((product) => product.id == selectedProducts[index])
+                                                                                                        .variations.map((variant) => (
+                                                                                                            <option key={variant.id} value={variant.id}>
+                                                                                                                {variant.variant}
+                                                                                                            </option>
+                                                                                                        ))}
+                                                                                            </Field>
+                                                                                            <ErrorMessage
+                                                                                                name={`products[${index}].variant_id`}
+                                                                                                component="div"
+                                                                                                className="error"
+                                                                                            />
+                                                                                        </div>
+                                                                                    </Grid> : null
+                                                                            }
+
+
                                                                             {
                                                                                 values?.products.length > 1 ?
                                                                                     <Grid item xs={12} sm={1}>
@@ -312,8 +362,9 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
                                                                     onClick={() =>
                                                                         arrayHelpers.push({
                                                                             product_id: "",
+                                                                            variant_id: "",
                                                                             product_qty: 1,
-                                                                            shipping_cost: '0',
+                                                                            shipping_cost: 0,
                                                                         })
                                                                     }
                                                                 >
@@ -350,7 +401,6 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
                                                     </div>
                                                 </Grid> : null
                                         }
-
 
                                     </Grid>
                                 </div>

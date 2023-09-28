@@ -9,10 +9,11 @@ import { API_ENDPOINTS } from "../../../config/ApiEndpoints";
 
 const AddProductCategory = ({
   handleCloseSuggestNote,
-  openSuggestNote,
+  openModal,
   HandelFetchCategory,
   setSelectedCategory,
   fetchCategoriesData,
+  closeModal
 }) => {
   const showToast = useToast();
   const [selectedCategoryImage, setSelectedCategoryImage] = useState(null);
@@ -73,8 +74,8 @@ const AddProductCategory = ({
 
   return (
     <Modal
-      open={openSuggestNote}
-      onClose={handleCloseSuggestNote}
+      open={openModal}
+      onClose={closeModal}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
       className="updateModal"

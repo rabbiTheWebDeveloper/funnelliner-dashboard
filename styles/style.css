@@ -3077,11 +3077,361 @@ Home Page Design
 -------------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------------
- Start
+ Start OrderDetailsPage
 -------------------------------------------------------------------------- */
 
+.OrderDetailsPage .OrderDetailsContent .Header {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.OrderDetailsPage .OrderDetailsContent .Header h3 {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.OrderDetailsPage .OrderDetailsContent .Header h3 a {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f2e9ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--main-color);
+}
+
+.OrderDetailsPage .OrderDetailsContent .Header h3 a i {
+  line-height: 0;
+  font-size: 16px;
+}
+
+.OrderDetailsPage .OrderDetailsContent .Header .right {
+  gap: 10px;
+}
+
+.OrderDetailsPage .OrderDetailsContent .Header .right select {
+  width: 200px;
+}
+
+.OrderDetailsPage .OrderDetailsContent .Header .right button {
+  gap: 10px;
+  font-weight: 500;
+  min-width: unset;
+  font-size: 14px;
+}
+
+/* OrderNumber */
+
+.OrderDetailsPage .OrderNumber {
+  align-items: flex-start;
+  padding: 20px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+}
+
+.OrderDetailsPage .OrderNumber .left h4 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.OrderDetailsPage .OrderNumber i {
+  cursor: pointer;
+}
+
+.OrderDetailsPage .OrderNumber ul li {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  color: var(--text-color);
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.OrderDetailsPage .OrderNumber ul li button{
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.OrderDetailsPage .OrderNumber ul li span {
+  font-weight: 700;
+  margin-right: 5px;
+}
+
+.OrderDetailsPage .OrderNumber ul li span.status {
+  color: var(--main-color);
+  padding: 5px 20px;
+  border-radius: 20px;
+  background: var(--main-bg-color);
+  font-weight: 400;
+}
+
+.OrderDetailsPage .OrderNumber ul li span.unpaid {
+  color: var(--red-color);
+  padding: 5px 20px;
+  border-radius: 20px;
+  background: #fdeced;
+  font-weight: 400;
+}
+
+.OrderDetailsPage .OrderNumber ul li span.phone {
+  color: #fb8c00;
+  padding: 5px 20px;
+  border-radius: 20px;
+  background: #feeed9;
+  font-weight: 400;
+}
+
+.OrderDetailsPage .OrderNumber .right ul li span.name {
+  color: var(--main-color);
+}
+
+.OrderDetailsPage .OrderNumber .right ul li i {
+  color: var(--main-color);
+}
+
+.OrderDetailsPage .Table td {
+  font-weight: 500;
+}
+
+.OrderDetailsPage .Table td:nth-child(2) {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.OrderDetailsPage .Table th:nth-child(2){
+  text-align: left;
+}
+
+.OrderDetailsPage .Table td:nth-child(2) div{
+  width: 80%;
+  margin: 0 auto;
+}
+
+.OrderDetailsPage .Table td:nth-child(2)  p {
+  font-weight: 400;
+}
+
+/* OrderTracking */
+
+.OrderTracking {
+  display: flex;
+  align-items: flex-start;
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.OrderTrackingLeft {
+  width: 60%;
+  border-radius: 4px;
+  border: 1px solid var(--colors-subtitle-text-3, #f2f2f2);
+  box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.25);
+  padding: 30px;
+  border-radius: 20px;
+}
+
+.OrderTrackingLeft .header {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.OrderTrackingLeftLeft {
+  padding: 20px 0;
+  border-right: 1px solid var(--border-color);
+  width: 70%;
+  min-height: 600px;
+}
+
+.OrderTrackingLeftLeft h5 {
+  font-size: 16px;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+}
+
+.OrderTrackingLeftLeft h5 span {
+  border-radius: 4px;
+  background: #efefef;
+  padding: 3px 8px;
+}
+
+.OrderTrackingLeftLeft h5 i {
+  line-height: 0;
+  color: var(--main-color);
+  cursor: pointer;
+}
+
+/* TrackingDetails */
+
+.OrderTrackingLeftBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.TrackingDetails {
+  margin-top: 50px;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  justify-content: space-between;
+  padding-right: 20px;
+}
+
+.TrackingDetails .time .timeItem {
+  margin-bottom: 20px;
+}
+
+.TrackingDetails .time .timeItem:last-child {
+  margin-bottom: 0;
+}
+
+.TrackingDetails .time h6 {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.TrackingDetails .TrackingDetailsStatus h4 {
+  font-size: 18px;
+  line-height: 30px;
+  font-weight: 700;
+  color: var(--header-color);
+  margin-bottom: 38px;
+}
+
+.TrackingDetails .TrackingDetailsStatus h4:last-child {
+  margin-bottom: 0;
+}
+
+.TrackingDetailsBg {
+  margin-top: -30px;
+  background: url("../public/images/order_bg.svg");
+  min-height: 225px;
+  height: 100%;
+  width: 50px;
+}
+
+.TrackingDetails_order_bg img {
+  height: 100%;
+  width: 80px;
+}
+
+.TrackingDetailsItem {
+  margin-top: 35px;
+  margin-left: -47px;
+}
+
+/* OrderTrackingLeftRight */
+
+.OrderTrackingLeftRight {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.OrderTrackingLeftRight .OrderNote {
+  margin-top: 30px;
+  width: 32%;
+}
+
+.OrderTrackingLeftRight label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.OrderTrackingLeftRight label i {
+  line-height: 0;
+  font-size: 20px;
+}
+
+.OrderTrackingLeftRight textarea {
+  width: -webkit-fill-available;
+}
+
+/* OrderTrackingRight */
+.OrderTrackingRight {
+  border-radius: 20px;
+  background: var(--white-color);
+  box-shadow: 0px 10px 49px 0px rgba(0, 0, 0, 0.13);
+  width: 35%;
+  padding: 30px;
+}
+
+.OrderTrackingRight li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.OrderTrackingRight li:last-child {
+  margin-bottom: 0;
+}
+
+.OrderTrackingRight li span {
+  width: 50%;
+  text-align: right;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  color: var(--text-color);
+}
+
+.OrderTrackingRight li p {
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 0;
+}
+
+.OrderTrackingRight li p i {
+  line-height: 0;
+}
+
+.OrderTrackingRight li:nth-child(3) p {
+  color: var(--main-color);
+}
+
+.OrderTrackingRight li:last-child {
+  border-top: 1px solid var(--border-color);
+  margin-top: 15px;
+  padding-top: 15px;
+}
+
+.OrderTrackingRight li:last-child span {
+  font-size: 18px;
+  line-height: 28px;
+  color: var(--red-color);
+  font-weight: 600;
+}
+
+.OrderTrackingRight li:last-child p {
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 30px;
+  color: var(--red-color);
+}
+
 /* --------------------------------------------------------------------------
- End
+ End OrderDetails
 -------------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------------
@@ -3329,6 +3679,63 @@ Media
   .ColorSection .ColorSectionItem:last-child {
     padding-left: 30px;
   }
+
+  .OrderTrackingLeft {
+    padding: 20px;
+  }
+
+  .TrackingDetails .time .timeItem {
+    width: 100px;
+  }
+
+  .TrackingDetails .time h6 {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .TrackingDetails .TrackingDetailsStatus h4 {
+    font-size: 14px;
+    line-height: 16px;
+    margin-bottom: 35px;
+  }
+
+  .OrderTrackingLeftLeft h5 {
+    font-size: 12px;
+  }
+
+  .OrderTrackingRight {
+    padding: 20px;
+    width: 30%;
+  }
+
+  .OrderTrackingRight li span {
+    font-size: 14px;
+    line-height: 20px;
+    width: 56%;
+  }
+
+  .OrderTrackingRight li:last-child span {
+    font-size: 15px;
+    line-height: 25px;
+  }
+
+  .OrderTrackingRight li:last-child p {
+    font-size: 17px;
+    line-height: 22px;
+  }
+
+  .OrderDetailsPage .OrderDetailsContent .Header h3 {
+    font-size: 20px;
+    line-height: 30px;
+  }
+
+  .OrderDetailsPage .OrderDetailsContent .Header .right select {
+    width: 150px;
+  }
+
+  .OrderDetailsPage .OrderDetailsContent .Header .right button {
+    padding: 8px;
+  }
 }
 
 /* ---------------------------------------------------  --------------------------------------------------- --------------------------------------------------- 
@@ -3418,6 +3825,32 @@ Media
     width: 130px !important;
     height: 130px !important;
     margin: 0 auto;
+  }
+
+  .OrderDetailsPage .OrderDetailsContent .Header {
+    display: block;
+  }
+
+  .OrderDetailsPage .OrderDetailsContent .Header h3 {
+    margin-bottom: 20px;
+  }
+
+  .OrderDetailsPage .Table table tr:last-child td:first-child {
+    border-radius: 0 0 0 20px;
+    width: 300px;
+  }
+
+  .OrderDetailsPage .OrderTracking {
+    display: block;
+  }
+
+  .OrderDetailsPage .OrderTrackingLeft {
+    width: -webkit-fill-available;
+  }
+
+  .OrderDetailsPage .OrderTrackingRight {
+    width: -webkit-fill-available;
+    margin-top: 30px;
   }
 }
 
@@ -3648,6 +4081,53 @@ Media
   .MobileFooterMenu li.active a {
     color: var(--main-color);
   }
+
+  .OrderDetailsPage .OrderDetailsContent .Header .right {
+    flex-wrap: wrap;
+  }
+
+  .OrderDetailsPage .OrderDetailsContent .Header .right select {
+    width: 140px;
+  }
+
+  .OrderDetailsPage .OrderNumber .left h4 {
+    display: block;
+  }
+
+  .OrderDetailsPage .OrderNumber {
+    display: block;
+  }
+
+  .OrderDetailsPage .OrderNumber .left {
+    width: 100%;
+  }
+
+  .OrderTrackingLeftBox {
+    display: block;
+  }
+
+  .OrderTrackingLeftLeft {
+    width: -webkit-fill-available;
+    border-right: 0;
+    min-height: auto;
+  }
+
+  .OrderTrackingLeftLeft h5 {
+    word-break: break-word;
+  }
+
+  .TrackingDetailsBg {
+    display: none;
+  }
+
+  .TrackingDetails {
+    padding-right: 0;
+    gap: 10px;
+  }
+
+  .OrderTrackingLeftRight {
+    width: 100%;
+  }
 }
 
 .suggested_note {
@@ -3668,17 +4148,18 @@ nav.MuiPagination-root ul.MuiPagination-ul.css-wjh20t-MuiPagination-ul {
   border-radius: 30px;
 }
 
-.product_sort_description, .product_long_description{
+.product_sort_description,
+.product_long_description {
   width: 100%;
   margin-top: 20px;
 }
-.product_sort_description .ql-container{
+.product_sort_description .ql-container {
   height: 100px;
   overflow: scroll;
   border-radius: 0 !important;
 }
 
-.product_long_description .ql-container{
+.product_long_description .ql-container {
   height: 200px;
   overflow-y: scroll;
   border-radius: 0 !important;

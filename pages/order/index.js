@@ -301,10 +301,10 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     page: currentPage,
     date: selectedValue,
     provider: selectCourier,
-    courier_status:selectCourierStatus,
+    courier_status: selectCourierStatus,
     // search: search,
-    start_date:formatDateToBST(startDate),
-    end_date:formatDateToBST(endDate),
+    start_date: formatDateToBST(startDate),
+    end_date: formatDateToBST(endDate),
     filter_date: selectedValue,
   };
   const [statusChangeLoading, setStatusChangeLoading] = useState(false);
@@ -1111,7 +1111,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
   }, [active]);
 
   useEffect(() => {
-      handleFetchOrderTrash();
+    handleFetchOrderTrash();
   }, [handleFetchOrderTrash])
   return (
     <div>
@@ -1123,7 +1123,11 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
         )}
         {/* header */}
         <HeaderDescription
-        videoLink={"https://www.youtube.com/embed/Z5bjNcweC8s?si=AYJvJWfJehFenQRO"} 
+          videoLink={
+            {
+              video: "https://www.youtube.com/embed/Z5bjNcweC8s?si=AYJvJWfJehFenQRO",
+              title: "Effective Order Management tutorial"
+            }}
           setSearch={setSearch}
           setOrders={setOrders}
           handleFilterStatusChange={handleFilterStatusChange}
@@ -1668,9 +1672,12 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                           {index + 1 + currentPage * 25 - 25}
                         </div>
                       </div>
-
+                     
                       <div className="DataTableColum">
-                        <div className="orderColor">#{order.order_no}</div>
+                        <Link href={`/order-details?id=${order?.id}`}>
+                        <div className="orderColor">#{order?.order_no}</div>
+                        </Link>
+                       
                         {/* <p>   {moment(
                         order?.created_at
                     ).fromNow()
@@ -1750,7 +1757,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                                 <ul>
                                   <li>
                                     {" "}
-                                    {index + 1} .{item?.product}{" "}
+                                    {index + 1} .{item?.product}{" "}-{item?.variant !== null && `(${item?.variant !== null ? item?.variations?.variant : ""})`}
                                   </li>
                                 </ul>
                               );
@@ -1764,23 +1771,28 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                               justifyContent: "center",
                             }}>
                               {order?.order_details[0]?.product?.length < 15 ? (
-                                <span>
-                                  {order?.order_details[0]?.product}
-
-
-                                </span>
+                                  <span>
+                                    {order?.order_details[0]?.product}
+                                  </span>
                               ) : (
-                                <span>
-                                  {order?.order_details[0]?.product?.slice(
-                                    0,
-                                    13
-                                  )}
-                                  ...
-
-                                </span>
+                            
+                                  <span>
+                                    {order?.order_details[0]?.product?.slice(
+                                      0,
+                                      13
+                                    )}
+                                    ...
+                                  </span>
+                                
                               )}
                             </span>
                           </Tooltip>
+                        </div>
+                        <div className="Quantity">
+                          {/* variant: */}
+                          <span>
+                          {order?.order_details[0]?.variant !== null ? order?.order_details[0]?.variations?.variant : null}
+                          </span>
                         </div>
 
                         <div className="Price">
@@ -2074,7 +2086,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                         <div className="DataTableColum">
                           <div className="TotalPrice">
                             <MobileDatePicker
-                               defaultValue={order?.confirmed_date !== null ? dayjs(order?.confirmed_date) : dayjs(moment(order?.updated_at).format("YYYY-MM-DD"))}
+                              defaultValue={order?.confirmed_date !== null ? dayjs(order?.confirmed_date) : dayjs(moment(order?.updated_at).format("YYYY-MM-DD"))}
                               sx={{
                                 "& .MuiInputBase-input": {
                                   fontSize: "11px",
@@ -2424,87 +2436,87 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                         </div>
                       </div>
                       {
-                          active !== "trashed" ?
+                        active !== "trashed" ?
                           <div className="DataTableColum">
-                          <div className="Action">
-                            <div className="commonDropdown">
-                              <PopupState variant="popover" popupId="demo-popup-menu">
-                                {(popupState) => (
-                                  <>
-                                    <Button {...bindTrigger(popupState)}>
-                                      <BsThreeDotsVertical />
-                                    </Button>
-                                    <Menu
-                                      id="fade-menu"
-                                      className="commonDropdownUl"
-                                      MenuListProps={{
-                                        "aria-labelledby": "fade-button",
-                                      }}
-                                      anchorEl={anchorEl}
-                                      open={open}
-                                      onClose={handleClose}
-                                      {...bindMenu(popupState)}
-                                    >
-                                      <MenuItem
-                                        className="viewActionBtn"
-                                        onClick={() => {
-                                          handleOrderDetails(order?.id);
-                                          popupState.close;
+                            <div className="Action">
+                              <div className="commonDropdown">
+                                <PopupState variant="popover" popupId="demo-popup-menu">
+                                  {(popupState) => (
+                                    <>
+                                      <Button {...bindTrigger(popupState)}>
+                                        <BsThreeDotsVertical />
+                                      </Button>
+                                      <Menu
+                                        id="fade-menu"
+                                        className="commonDropdownUl"
+                                        MenuListProps={{
+                                          "aria-labelledby": "fade-button",
                                         }}
+                                        anchorEl={anchorEl}
+                                        open={open}
+                                        onClose={handleClose}
+                                        {...bindMenu(popupState)}
                                       >
-                                        <i
-                                          className="flaticon-view"
-                                          style={{
-                                            width: "20px",
-                                            height: "auto",
-                                            margin: "5px",
+                                        <MenuItem
+                                          className="viewActionBtn"
+                                          onClick={() => {
+                                            router.push(`/order-details?id=${order?.id}`)
+                                            popupState.close();
                                           }}
-                                        />
-                                        View
-                                      </MenuItem>
-                                      <MenuItem
-                                        onClick={() => {
-                                          handleOrderUpdate(order?.id),
-                                            setOrderId(order?.id);
-                                          setOrderStatus(order?.status);
-                                        }}
-                                      >
-                                        <i
-                                          className="flaticon-edit"
-                                          style={{
-                                            width: "20px",
-                                            height: "auto",
-                                            margin: "5px",
+                                        >
+                                          <i
+                                            className="flaticon-view"
+                                            style={{
+                                              width: "20px",
+                                              height: "auto",
+                                              margin: "5px",
+                                            }}
+                                          />
+                                          View
+                                        </MenuItem>
+                                        <MenuItem
+                                          onClick={() => {
+
+                                            handleOrderUpdate(order?.id),
+                                              setOrderId(order?.id);
+                                            setOrderStatus(order?.status);
                                           }}
-                                        />
-                                        Edit
-                                      </MenuItem>
-                                          <MenuItem
-                                            onClick={() =>
-                                              {moveToTrash(order?.id) ;popupState.close()}
-                                            }
-                                          >
-                                            <i
-                                              className="flaticon-delete"
-                                              style={{
-                                                width: "20px",
-                                                height: "auto",
-                                                margin: "5px",
-                                              }}
-                                            />
-                                            Move to Trash
-                                          </MenuItem> 
-                                   
-                                    </Menu>
-                                  </>
-                                )}
-                              </PopupState>
+                                        >
+                                          <i
+                                            className="flaticon-edit"
+                                            style={{
+                                              width: "20px",
+                                              height: "auto",
+                                              margin: "5px",
+                                            }}
+                                          />
+                                          Edit
+                                        </MenuItem>
+                                        <MenuItem
+                                          onClick={() => { moveToTrash(order?.id); popupState.close() }
+                                          }
+                                        >
+                                          <i
+                                            className="flaticon-delete"
+                                            style={{
+                                              width: "20px",
+                                              height: "auto",
+                                              margin: "5px",
+                                            }}
+                                          />
+                                          Move to Trash
+                                        </MenuItem>
+
+                                      </Menu>
+                                    </>
+                                  )}
+                                </PopupState>
+                              </div>
                             </div>
-                          </div>
-                        </div> : null
+                          </div> : null
                       }
 
-                   
+
                     </div>
                   );
                 })

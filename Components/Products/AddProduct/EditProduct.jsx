@@ -7,6 +7,7 @@ import { API_ENDPOINTS } from "../../../config/ApiEndpoints";
 import axios from "axios";
 import { headers } from "../../../pages/api";
 import Select from "react-select";
+import AsyncSelect from 'react-select';
 import AddProductCategory from "./AddProductCategory";
 import { DELIVERY_CHARGE_DATA } from "../../../constant/Product";
 import ProductImage from "../../edit-theme/ProductImage";
@@ -26,7 +27,7 @@ const validationSchema = Yup.object({
   product_quantity: Yup.string().required("Product Quantity is required"),
 });
 
-const AddProduct = () => {
+const EditProduct = () => {
   const router = useRouter();
   const showToast = useToast();
   const [categories, setCategories] = useState([]);
@@ -64,6 +65,65 @@ const AddProduct = () => {
     openAddVariantAttributeValuePopup,
     setOpenAddVariantAttributeValuePopup,
   ] = useState(false);
+  const [productDetails, setProductDetails] = useState()
+
+  const fetchCategoriesData = useCallback(async () => {
+    await axios
+      .get(
+        `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.CATEGORY.GET_CATEGORIES}`,
+        {
+          headers: headers,
+        }
+      )
+      .then(function (response) {
+        if (response?.data?.data?.length) {
+          const newCategoriesArr = [];
+          response?.data?.data?.forEach(item => {
+            newCategoriesArr.push({ value: item?.id, label: item?.name });
+          });
+          newCategoriesArr.unshift({
+            value: "add",
+            label: "+ Add New Category",
+          });
+          setCategories(newCategoriesArr);
+        }
+      })
+      .catch(function (error) {
+        if (error?.response?.data?.api_status === "401") {
+          window.location.href = "/login";
+          Cookies.remove("token");
+          localStorage.clear("token");
+          Cookies.remove("user");
+          localStorage.clear("user");
+          window.location.href = "/login";
+        }
+      });
+  }, []);
+
+  const fetchProductDetails = useCallback(async () => {
+    const productDetailsRes = await axios.get(`${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.GET_PRODUCT_DETAILS}${router?.query?.id}`, {
+      headers: headers,
+    });
+    if (productDetailsRes?.data?.success) {
+      setProductDetails(productDetailsRes?.data?.data)
+      setVariantTable(productDetailsRes?.data?.data?.variations)
+
+      const makeVariantAttributesArr = [];
+      productDetailsRes?.data?.data?.attributes.forEach(item => {
+        makeVariantAttributesArr.push({
+          variantType: item?.key,
+          variantTypeId: item?.id,
+          variantValues: item?.values,
+        });
+      });
+
+      setSelectVariantTypes(makeVariantAttributesArr)
+    }
+  }, [router?.query?.id])
+
+  useEffect(() => {
+    fetchProductDetails()
+  }, [fetchProductDetails])
 
   const fetchVariantAttributes = useCallback(async () => {
     const variantAttributesRes = await axios.get(
@@ -119,38 +179,7 @@ const AddProduct = () => {
     }
   }, []);
 
-  const fetchCategoriesData = useCallback(async () => {
-    await axios
-      .get(
-        `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.CATEGORY.GET_CATEGORIES}`,
-        {
-          headers: headers,
-        }
-      )
-      .then(function (response) {
-        if (response?.data?.data?.length) {
-          const newCategoriesArr = [];
-          response?.data?.data?.forEach(item => {
-            newCategoriesArr.push({ value: item?.id, label: item?.name });
-          });
-          newCategoriesArr.unshift({
-            value: "add",
-            label: "+ Add New Category",
-          });
-          setCategories(newCategoriesArr);
-        }
-      })
-      .catch(function (error) {
-        if (error?.response?.data?.api_status === "401") {
-          window.location.href = "/login";
-          Cookies.remove("token");
-          localStorage.clear("token");
-          Cookies.remove("user");
-          localStorage.clear("user");
-          window.location.href = "/login";
-        }
-      });
-  }, []);
+
 
   const createVariant = async () => {
     const formData = new FormData();
@@ -162,7 +191,7 @@ const AddProduct = () => {
         variant?.variantValues?.forEach(variantValue => {
           formData.append(
             `choice_options_${variantValue?.attribute_id}[]`,
-            variantValue?.label
+            variantValue?.value
           );
         });
       }
@@ -229,6 +258,21 @@ const AddProduct = () => {
     setVariantTable(newVariants);
     setIsShowSingleVariantDeletePopup(false);
   };
+  useEffect(() => {
+    const defaultCategory = categories.find(
+      item => item.value === productDetails?.category_id
+    );
+    setSelectedCategory([defaultCategory] || []);
+  }, [productDetails]);
+
+  useEffect(() => {
+    const value = productDetails?.delivery_charge === 'free' ? 'Free Delivery Charge' : 'Paid Delivery Charge'
+    const defaultCategory = DELIVERY_CHARGE_DATA.find(
+      item => item.value === value
+    );
+    
+    setDeliveryChargeType([defaultCategory] || []);
+  }, [productDetails]);
 
   return (
     <section className="DashboardSetting">
@@ -238,26 +282,22 @@ const AddProduct = () => {
         subTitle={"Add new products in your shop"}
         search={false}
         order={false}
-        videoLink={
-          {
-            video: "https://www.youtube.com/embed/u6C2KvB5Kzs?si=Qv2g-PI-ebPmsATK",
-            title: "How to add your products & categories step by step in FunnelLiner"
-          }}
       />
       <Container maxWidth="sm">
         <div className="DashboardSettingTabs">
           <Box className="boxShadow">
             <Formik
+              enableReinitialize={true}
               initialValues={{
-                product_name: "",
-                selling_price: 0,
-                discount: 0,
-                discount_type: "",
-                product_code: "",
-                product_quantity: 0,
-                inside_dhaka: "",
-                outside_dhaka: "",
-                subarea_charge: "",
+                product_name: productDetails?.product_name ? productDetails?.product_name : '',
+                selling_price: productDetails?.price ? productDetails?.price : 0,
+                discount: productDetails?.discount ? productDetails?.discount : 0,
+                discount_type: productDetails?.discount_type ? productDetails?.discount_type : '',
+                product_code: productDetails?.product_code ? productDetails?.product_code : '',
+                product_quantity: productDetails?.product_qty ? productDetails?.product_qty : 0,
+                inside_dhaka: productDetails?.inside_dhaka ? productDetails?.inside_dhaka : 0,
+                outside_dhaka: productDetails?.outside_dhaka ? productDetails?.outside_dhaka : 0,
+                subarea_charge: productDetails?.sub_area_charge ? productDetails?.sub_area_charge : 0,
               }}
               validationSchema={validationSchema}
               onSubmit={async data => {
@@ -279,8 +319,13 @@ const AddProduct = () => {
                 data.status = "1";
 
                 const formData = new FormData();
+                formData.append('_method', "patch")
+                // if (selectProductImage === undefined) {
+                //   formData.append("main_image", productDetails?.main_image);
+                // } else {
+                //   formData.append("main_image", selectProductImage);
+                // }
 
-                formData.append("main_image", selectProductImage);
                 if (selectedCategory.length) {
                   formData.append("category_id", selectedCategory[0]?.value);
                 }
@@ -310,10 +355,9 @@ const AddProduct = () => {
                   const variantTableJson = JSON.stringify(variantTable);
                   formData.append("variants", variantTableJson);
                   variantTable?.forEach((variantValue, index) => {
-                    formData.append(`media_${index}`, variantValue?.media);
+                    formData.append(`media_${index}`, variantValue?.media === undefined ? null : variantValue?.media);
                   });
                 }
-                console.log(selectVariantTypes + " variants" , variantTable);	
 
                 selectVariantTypes?.forEach(variant => {
                   formData.append("choice[]", variant?.variantType);
@@ -322,23 +366,25 @@ const AddProduct = () => {
                     variant?.variantValues?.forEach(variantValue => {
                       formData.append(
                         `choice_options_${variantValue?.attribute_id}[]`,
-                        variantValue?.label
+                        variantValue?.value
                       );
                     });
                   }
                 });
 
-                // const createProductRes = await axios.post(
-                //   `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.CREATE_PRODUCTS}`,
-                //   formData,
-                //   { headers: headers }
-                // );
+
+
+                const createProductRes = await axios.post(
+                  `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.GET_PRODUCT_DETAILS}${router?.query?.id}`,
+                  formData,
+                  { headers: headers }
+                );
 
                 if (createProductRes?.data?.success) {
-                  showToast("Product Create Successfully", "success");
+                  showToast("Product Updated Successfully", "success");
                   router.push("/product");
                 } else {
-                  showToast("Product Created Failure", "error");
+                  showToast("Product Update Failure", "error");
                 }
               }}
             >
@@ -395,6 +441,7 @@ const AddProduct = () => {
                             />
                           </div>
                         </Grid>
+
                         <Grid item xs={12} sm={2}>
                           <div className={style.SelectDropdown}>
                             <label>
@@ -450,7 +497,28 @@ const AddProduct = () => {
                             <label>
                               Category Name <span>*</span>
                             </label>
-                            <Select
+                            <AsyncSelect
+                              value={selectedCategory}
+                              placeholder="Select an option..."
+                              options={categories}
+                              onChange={selectedOption => {
+                                if (selectedOption.value === "add") {
+                                  setOpenAddCategoryPopup(true);
+                                } else {
+                                  setSelectedCategory([
+                                    {
+                                      value: selectedOption.value,
+                                      label: selectedOption.label,
+                                    },
+                                  ]);
+                                }
+                              }}
+                            />
+                            
+                            {/* <Select
+                            defaultValue={categories.find(
+                              item => item.value == productDetails?.category_id
+                            )}
                               options={categories}
                               onChange={selectedOption => {
                                 if (selectedOption.value === "add") {
@@ -466,7 +534,7 @@ const AddProduct = () => {
                               }}
                               menuPosition="fixed"
                               value={selectedCategory}
-                            />
+                            /> */}
                           </div>
                         </Grid>
                         <Grid item xs={12} sm={4}>
@@ -474,7 +542,25 @@ const AddProduct = () => {
                             <label>
                               Delivery Charge <span>*</span>
                             </label>
-                            <Select
+
+                            <AsyncSelect
+                              value={deliverChargeType}
+                              placeholder="Select an option..."
+                              options={DELIVERY_CHARGE_DATA}
+                              onChange={selectedOption =>
+                                setDeliveryChargeType([
+                                  {
+                                    value: selectedOption.value,
+                                    label: selectedOption.label,
+                                  },
+                                ])
+                              }
+                            />
+                            
+                            {/* <Select
+                            defaultValue={DELIVERY_CHARGE_DATA.find(
+                              item => item.value == productDetails?.delivery_charge
+                            )}
                               options={DELIVERY_CHARGE_DATA}
                               onChange={selectedOption =>
                                 setDeliveryChargeType([
@@ -486,7 +572,7 @@ const AddProduct = () => {
                               }
                               menuPosition="fixed"
                               value={deliverChargeType}
-                            />
+                            /> */}
                             {deliverChargeType[0]?.value ===
                               "Paid Delivery Charge" ? (
                               <div className={style.duelInput}>
@@ -507,10 +593,7 @@ const AddProduct = () => {
                                     placeholder="Delivery charge out of Dhaka"
                                   />
                                 </div>
-                                <div
-                                  className=""
-                                  style={{ marginTop: "10px", width: "100%" }}
-                                >
+                                <div className="" style={{ marginTop: "10px", width: "100%" }}>
                                   <label>Sub Area Charge (Optional)</label>
                                   <Field
                                     type="text"
@@ -548,11 +631,11 @@ const AddProduct = () => {
                                   Upload Image
                                 </Button>
                               </label>
-                              {productPreviewImage && selectProductImage ? (
+                              {productDetails?.main_image !== null || (productPreviewImage && selectProductImage) ? (
                                 <Box mt={2} textAlign="center">
                                   <img
-                                    src={productPreviewImage}
-                                    alt={selectProductImage.name}
+                                    src={productDetails?.main_image ? productDetails?.main_image : productPreviewImage}
+                                    alt={productDetails?.product_name}
                                     height="100px"
                                   />
                                 </Box>
@@ -570,6 +653,7 @@ const AddProduct = () => {
                                 other_images={[]}
                               />
                             </div>
+
                           </div>
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -609,7 +693,7 @@ const AddProduct = () => {
                             <h4>Products Variants</h4>
 
                             {isOpenVariationOption ? (
-                              <React.Fragment>
+                              <>
                                 <div className="customInput">
                                   <label>Variant Type</label>
                                   <div className={style.inputPlusDelete}>
@@ -647,7 +731,7 @@ const AddProduct = () => {
                                   </div>
                                 </div>
                                 {isShowVariantValuesOption ? (
-                                  <React.Fragment>
+                                  <>
                                     <div className="customInput">
                                       <label>Option name</label>
                                       <div className={style.inputPlusDelete}>
@@ -685,11 +769,11 @@ const AddProduct = () => {
                                         Save Variant Type
                                       </Button>
                                     </div>
-                                  </React.Fragment>
+                                  </>
                                 ) : null}
-                              </React.Fragment>
+                              </>
                             ) : (
-                              <React.Fragment>
+                              <>
                                 <div className={style.empty}>
                                   <img
                                     src="/images/product-varient.png"
@@ -698,16 +782,14 @@ const AddProduct = () => {
                                 </div>
                                 <div className={style.AddNewProduct}>
                                   <Button
-                                    onClick={() =>
-                                      setIsOpenVariationOption(true)
-                                    }
+                                    onClick={() => setIsOpenVariationOption(true)}
                                   >
                                     <i className="flaticon-plus"></i>
                                     Add Product Variants Like Size , Color,
                                     Weight
                                   </Button>
                                 </div>
-                              </React.Fragment>
+                              </>
                             )}
                           </div>
                           {selectVariantTypes?.length ? (
@@ -732,7 +814,7 @@ const AddProduct = () => {
                                       {item?.variantValues?.length
                                         ? item?.variantValues?.map(
                                           singleItem => (
-                                            <span>{singleItem?.label}</span>
+                                            <span>{singleItem?.value}</span>
                                           )
                                         )
                                         : null}
@@ -797,7 +879,6 @@ const AddProduct = () => {
                                             <div className={style.overlay}>
                                               <input
                                                 type="file"
-                                                id={index}
                                                 onChange={e => {
                                                   const newVariants = [
                                                     ...variantTable,
@@ -810,17 +891,20 @@ const AddProduct = () => {
                                                 }}
                                               />
                                             </div>
+
+                                            {variant?.media !== null ? (
+                                              <Button>
+                                                <i className="flaticon-close"></i>
+                                              </Button>
+                                            ) : null}
                                           </div>
                                         ) : (
                                           <img
-                                            src={URL.createObjectURL(
-                                              variant?.media
-                                            )}
+                                            src={typeof variant?.media === 'string' ? variant?.media : URL.createObjectURL(variant?.media)}
                                             alt=""
                                           />
                                         )}
                                       </td>
-
                                       <td className={style.varient}>
                                         <input
                                           type="text"
@@ -861,7 +945,7 @@ const AddProduct = () => {
                                         <input
                                           type="text"
                                           placeholder="Product Code"
-                                          value={variant?.product_code}
+                                          value={variant?.code}
                                           onChange={e => {
                                             const newVariants = [
                                               ...variantTable,
@@ -928,7 +1012,7 @@ const AddProduct = () => {
                   <div className={style.Submit}>
                     <Button type="submit">
                       <i className="flaticon-install"> </i>
-                      Add Product
+                      Update Product
                     </Button>
                   </div>
                 </Form>
@@ -981,4 +1065,4 @@ const AddProduct = () => {
   );
 };
 
-export default AddProduct;
+export default EditProduct;

@@ -39,7 +39,7 @@ const Courier = ({ busInfo }) => {
         }
     }
 
- 
+
     const label = { inputProps: { "aria-label": "Switch demo" } };
     const mainData = data?.user;
     let parseData;
@@ -65,7 +65,7 @@ const Courier = ({ busInfo }) => {
                 if (res?.status === 200) {
                     stopLoading()
                     showToast("Steadfast details have been successfully submitted.")
-                    if (router.query.redirect_from ) {
+                    if (router.query.redirect_from) {
                         router.push("/?current_steap=panel6")
                     }
 
@@ -87,7 +87,7 @@ const Courier = ({ busInfo }) => {
             "store_id": data.store_id
         }
         const configData = JSON.stringify(config);
-        activateCourier(merchantId, "pathao", "active", configData).then((res) => {       
+        activateCourier(merchantId, "pathao", "active", configData).then((res) => {
             if (res.status === 200) {
                 showToast("Pathao details have been successfully submitted.")
                 if (router.query.redirect_from) {
@@ -125,7 +125,7 @@ const Courier = ({ busInfo }) => {
 
 
     //toggle pathao sicret 
-    
+
 
     const hanldeInputTypeChange = (input) => {
         if (input === "sicretKey") {
@@ -144,11 +144,15 @@ const Courier = ({ busInfo }) => {
         <>
             <section className='Courier'>
                 {
-                    isLoading &&  <SmallLoader/>
+                    isLoading && <SmallLoader />
                 }
-               
+
                 {/* header */}
-                <HeaderDescription videoLink={"https://www.youtube.com/embed/PkGV4CPmCWo?si=Cqzjvs5kVd4Hkyjw"}  headerIcon={'flaticon-express-delivery'} title={'Courier'} subTitle={'Deliver your products with your preferred courier service'} search={false}  order={false}/>
+                <HeaderDescription videoLink={
+                    {
+                        video: "https://www.youtube.com/embed/PkGV4CPmCWo?si=Cqzjvs5kVd4Hkyjw",
+                        title: "How to add your courier API with Funnel Liner : A detailed tutorial"
+                    }} headerIcon={'flaticon-express-delivery'} title={'Courier'} subTitle={'Deliver your products with your preferred courier service'} search={false} order={false} />
 
                 <Container maxWidth='sm'>
 
@@ -191,7 +195,7 @@ const Courier = ({ busInfo }) => {
                                                 <div className='customInput'>
 
                                                     <label>API Key</label>
-                                                    <input {...register("apiKey", { required: true })} type={showApi ?  'text' :  'password'}
+                                                    <input {...register("apiKey", { required: true })} type={showApi ? 'text' : 'password'}
                                                         defaultValue={decodeJson(steadFastData?.config)['Api-Key'] !== undefined ? decodeJson(steadFastData?.config)['Api-Key'] : null} />
                                                     <div className="eye" onClick={() => handleApiKey("apiKey")}>
                                                         {
@@ -213,7 +217,7 @@ const Courier = ({ busInfo }) => {
                                                 <div className="customInput">
                                                     <label>Secret Key</label>
                                                     <input {...register("apiSecret", { required: true })} defaultValue={decodeJson(steadFastData?.config)['Secret-Key']}
-                                                        type={secretApi ? 'text' :  'password'} />
+                                                        type={secretApi ? 'text' : 'password'} />
 
                                                     <div className="eye" onClick={() => handleApiKey("secretKey")}>
                                                         {
@@ -264,7 +268,7 @@ const Courier = ({ busInfo }) => {
                                         </div>
                                     </div>
                                     {openPathao === true ? (
-                                        <Pathao merchantId={merchantId }  stopLoading={stopLoading} startLoading={startLoading} showPathaoSicrets={showPathaoSicrets}  pathaoData={pathaoData} hanldeInputTypeChange={hanldeInputTypeChange} ></Pathao>
+                                        <Pathao merchantId={merchantId} stopLoading={stopLoading} startLoading={startLoading} showPathaoSicrets={showPathaoSicrets} pathaoData={pathaoData} hanldeInputTypeChange={hanldeInputTypeChange} ></Pathao>
                                         // <div className='InputField'>
                                         //     <form onSubmit={handleSubmit(handlePathaoSubmit)}>
 

@@ -287,7 +287,8 @@ const ForgetPasswordPage = () => {
 
                 {/* steap 2 password change */}
                 {
-                    activeStep == 2 && <section className='Login'>
+                    activeStep == 2 && 
+                    <section className='Login'>
                         <div className={`${disable === true ? 'LoginContent LoginContentDivOpacity' : 'LoginContent'}`}>
                             {/* Logo */}
                             <div className='Logo'>

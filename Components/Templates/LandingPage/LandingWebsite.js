@@ -166,14 +166,14 @@ const LandingWebsite = ({ busInfo }) => {
         search?.length > 0 && handleFetchTemplateSearch();
     }, [search]);
 
-    const indentifyLink = (status  , domain , pageTittle) => {
+    const indentifyLink = (status, domain, pageTittle) => {
         console.log("status", status)
         if (status === null) {
             return `https://funnelliner.com/${domain}/p/${pageTittle}`
         } else if (status === "pending") {
             return `https://funnelliner.com/${domain}/p/${pageTittle}`
 
-        }else if (status === "connected"){
+        } else if (status === "connected") {
             return `https://${domain_request}/p/${pageTittle}`
         }
 
@@ -182,7 +182,11 @@ const LandingWebsite = ({ busInfo }) => {
         <>
             <section className="LandingWebsite">
                 {/* header */}
-                <HeaderDescription videoLink={"https://www.youtube.com/embed/SaoSRnG_zMU?si=qlmL01i5slAX0WRU"}   order={false} headerIcon={'flaticon-website-design'} title={'Landing Page Template'} setSearch={setSearch} subTitle={'choose your theme here and customize as you want'} search={true} />
+                <HeaderDescription videoLink={
+                    {
+                        video: "https://www.youtube.com/embed/SaoSRnG_zMU?si=qlmL01i5slAX0WRU",
+                        title: "How to create a high converting landing page with Funnel Liner"
+                    }} order={false} headerIcon={'flaticon-website-design'} title={'Landing Page Template'} setSearch={setSearch} subTitle={'choose your theme here and customize as you want'} search={true} />
                 {isLoading && <SmallLoader />}
                 <Container maxWidth="sm">
                     <Grid Container spacing={3}>
@@ -196,7 +200,7 @@ const LandingWebsite = ({ busInfo }) => {
                                             <div className="LandingWebsiteItem boxShadow">
                                                 <div className="img">
                                                     <img src={item?.media} alt="" />
-                                                    <h4>{item?.theme_name + "-" + item.name}</h4>                                                
+                                                    <h4>{item?.theme_name + "-" + item.name}</h4>
                                                 </div>
                                                 <div className="DuelButton d_flex d_justify">
 
@@ -274,10 +278,10 @@ const LandingWebsite = ({ busInfo }) => {
                                                                                         {
 
 
-                                                                                            indentifyLink(busInfo?.domain_status , domain , pageTittle)
+                                                                                            indentifyLink(busInfo?.domain_status, domain, pageTittle)
 
                                                                                         }
-                                                                                       
+
                                                                                         <AiOutlineLink
 
                                                                                         />{" "}

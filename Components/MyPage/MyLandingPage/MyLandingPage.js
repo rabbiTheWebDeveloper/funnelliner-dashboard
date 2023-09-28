@@ -57,7 +57,7 @@ const MyLandingPage = () => {
           "X-Requested-With": "XMLHttpRequest",
         },
       });
-    } catch (err) {}
+    } catch (err) { }
   };
 
 
@@ -73,6 +73,11 @@ const MyLandingPage = () => {
           subTitle={"choose your theme here and customize as you want"}
           search={false}
           order={false}
+          videoLink={
+            {
+              video: "https://www.youtube.com/embed/SaoSRnG_zMU?si=qlmL01i5slAX0WRU",
+              title: "How to create a high converting landing page with Funnel Liner"
+            }}
         />
 
         <Container maxWidth="sm">
@@ -99,54 +104,54 @@ const MyLandingPage = () => {
               <Grid container spacing={3}>
                 {Array.isArray(currentItems)
                   ? currentItems?.map((item, index) => {
-                      return (
-                        <Grid key={index} item xs={12} sm={6} md={4}>
-                          <div className="LandingWebsiteItem boxShadow">
-                            <div className="img">
-                              <img src={item?.media} alt={item?.page?.title} />                         
-                              <h4>{item?.page?.title}</h4>
+                    return (
+                      <Grid key={index} item xs={12} sm={6} md={4}>
+                        <div className="LandingWebsiteItem boxShadow">
+                          <div className="img">
+                            <img src={item?.media} alt={item?.page?.title} />
+                            <h4>{item?.page?.title}</h4>
+                          </div>
+
+                          <div className="DuelButton d_flex d_justify">
+                            <div className="left">
+                              <a
+                                target="_blank"
+                                href={
+                                  domain_request !== "null"
+                                    ? `https://${domain_request}` +
+                                    "/p/" +
+                                    item?.page?.slug
+                                    : `${themeUrl}/${domain}` +
+                                    "/p/" +
+                                    item?.page?.slug
+                                }
+                              >
+                                <Button>Preview</Button>
+                              </a>
                             </div>
 
-                            <div className="DuelButton d_flex d_justify">
-                              <div className="left">
-                                <a
-                                  target="_blank"                                
-                                  href={
-                                    domain_request !== "null"
-                                      ? `https://${domain_request}` +
-                                        "/p/" +
-                                        item?.page?.slug
-                                      : `${themeUrl}/${domain}` +
-                                        "/p/" +
-                                        item?.page?.slug
-                                  }
-                                >
-                                  <Button>Preview</Button>
-                                </a>
-                              </div>
-
-                              <div className="right">
-                                <a
-                                  target="_blank"
-                                  href={
-                                    `https://editor.funnelliner.com/design.php?sid=` +
-                                    item?.page?.shop_id +
-                                    "&id=" +
-                                    item?.page?.id +
-                                    "&uid=" +
-                                    item?.page?.user_id +
-                                    "&au=" +
-                                    `${token}`
-                                  }
-                                >
-                                  <Button>Customize</Button>
-                                </a>
-                              </div>
+                            <div className="right">
+                              <a
+                                target="_blank"
+                                href={
+                                  `https://editor.funnelliner.com/design.php?sid=` +
+                                  item?.page?.shop_id +
+                                  "&id=" +
+                                  item?.page?.id +
+                                  "&uid=" +
+                                  item?.page?.user_id +
+                                  "&au=" +
+                                  `${token}`
+                                }
+                              >
+                                <Button>Customize</Button>
+                              </a>
                             </div>
                           </div>
-                        </Grid>
-                      );
-                    })
+                        </div>
+                      </Grid>
+                    );
+                  })
                   : null}
               </Grid>
               <div>

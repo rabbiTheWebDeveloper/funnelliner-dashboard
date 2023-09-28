@@ -9,6 +9,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import { Container } from "@mui/system";
+
 import axios from "axios";
 import { detect } from "detect-browser";
 import Cookies from "js-cookie";
@@ -660,9 +661,12 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
                   {
                     router.pathname === "/" ?
                     <div className={style.VideoIcon}>
-                    <Button onClick={handleOpen}>
+                      <Tooltip title="A quick overview of Funnel Liner's all in one dashboard tutorial" placement="bottom-start">
+                      <Button onClick={handleOpen}>
                       <i className="flaticon-video-camera"></i>
                     </Button>
+                      </Tooltip>
+                  
                   </div> : null
                   }
               

@@ -73,16 +73,13 @@ const UpdateCategory = ({ id, isOpen, closePopup, hanldeFetchCategories }) => {
   useEffect(() => {
     fetchSingleCategory()
   }, [fetchSingleCategory]);
-
   useEffect(() => {
     if (selectedImage) {
       setImageUrl(URL.createObjectURL(selectedImage));
     }
   }, [selectedImage]);
-
   return (
     <div>
-
       <Modal
         open={isOpen}
         aria-labelledby="modal-modal-title"
@@ -101,7 +98,6 @@ const UpdateCategory = ({ id, isOpen, closePopup, hanldeFetchCategories }) => {
                 <i className="flaticon-product"></i>
               </div>
             </div>
-
             <form onSubmit={handleSubmit(onCategorySubmit)}>
               <div className="updateModalForm">
                 <div className="customInput">
@@ -114,13 +110,11 @@ const UpdateCategory = ({ id, isOpen, closePopup, hanldeFetchCategories }) => {
                     placeholder="Category Name"
                   />
                 </div>
-
                 <div className="customInput">
                   <label>
                     Category Image (Max size 1 MB)
                   </label>
                   {/* <p className={style.ImageUploadSize}><span>Image Type:</span> png, jpg, jpeg <span>Image Size:</span>Width: 500px, Height: 500px</p> */}
-
                   <div className={style.imgUploader}>
                     <input
                       accept="image/*"

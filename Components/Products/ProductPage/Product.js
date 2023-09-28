@@ -16,8 +16,10 @@ import { useToast } from "../../../hook/useToast";
 import { headers } from "../../../pages/api";
 import HeaderDescription from "../../Common/HeaderDescription/HeaderDescription";
 import SmallLoader from "../../SmallLoader/SmallLoader";
+import { useRouter } from "next/router";
 
 const Product = ({ category, busInfo }) => {
+  const router = useRouter()
   const showToast = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [productSearchValue, setProductSearchValue] = useState("");
@@ -149,7 +151,11 @@ const Product = ({ category, busInfo }) => {
           subTitle={"Find Your Product"}
           search={false}
           order={false}
-          videoLink={"https://www.youtube.com/embed/u6C2KvB5Kzs?si=9zbRJe3-QANSMu"}
+          videoLink={
+            {
+              video: "https://www.youtube.com/embed/u6C2KvB5Kzs?si=Qv2g-PI-ebPmsATK",
+              title: "How to add your products & categories step by step in FunnelLiner"
+            }}
         />
 
         <Container maxWidth="sm">
@@ -286,7 +292,7 @@ const Product = ({ category, busInfo }) => {
                                     <Button
                                       className="updateActionBtn"
                                       onClick={() =>
-                                        handleOpenModal(product.id, "edit")
+                                        router.push(`/edit-product?id=${product?.id}`)
                                       }
                                     >
                                       <i className="flaticon-edit"></i>

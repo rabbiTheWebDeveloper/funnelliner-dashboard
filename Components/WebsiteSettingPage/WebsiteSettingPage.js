@@ -304,17 +304,22 @@ const WebsiteSettingPage = ({ response }) => {
       });
   };
 
-  const handelTabLink =(value) =>{
-    if(value ==='1'){
-      return ""
+  const handleTabLink = (value) => {
+    if (value === '1') {
+      return "";
     }
-    if(value ==='3'){
-      return "https://www.youtube.com/embed/oF2kmS_myYk?si=T8zFVec6VQzE3RQi"
+    if (value === '3') {
+      return {
+        video: "https://www.youtube.com/embed/oF2kmS_myYk?si=T8zFVec6VQzE3RQi",
+        title: "Before Request Your Custom Domain Must Watch this Video!"
+      };
     }
-    if(value ==='5'){
-      return "https://www.youtube.com/embed/qxSCcUr0Wfc?si=cs0cotPXXiPM64yP"
+    if (value === '5') {
+      return {
+        video: "https://www.youtube.com/embed/qxSCcUr0Wfc?si=cs0cotPXXiPM64yP",
+        title: "How to verify your domain & set up facebook pixel easily with Funnel Liner"
+      };
     }
-
   }
   return (
     <>
@@ -326,7 +331,7 @@ const WebsiteSettingPage = ({ response }) => {
           title={"Website Settings"}
           subTitle={"Update your shop info and other settings here"}
           search={false}
-          videoLink={handelTabLink(active)}
+          videoLink={handleTabLink(active)}
         />
 
         <Container maxWidth="sm">
