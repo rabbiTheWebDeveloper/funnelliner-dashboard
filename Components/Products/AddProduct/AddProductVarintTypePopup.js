@@ -12,6 +12,7 @@ const AddProductVariantType = ({
   openModal,
   closeModal,
   setVariantAttribute,
+  handelFetch
 }) => {
   const showToast = useToast();
 
@@ -30,6 +31,7 @@ const AddProductVariantType = ({
     if (createVariantAttributeRes?.data?.success) {
       fetchVariantAttributes();
       showToast("Created Variant Attribute", "success");
+      handelFetch()
       setVariantAttribute([
         {
           value: createVariantAttributeRes?.data?.data?.id,

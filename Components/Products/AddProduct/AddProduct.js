@@ -70,6 +70,7 @@ const AddProduct = () => {
   const [variantValues, setVariantValues] = useState([]);
   const [tempVariantValues, setTempVariantValues] = useState([]);
   const [selectVariantTypes, setSelectVariantTypes] = useState([]);
+  const [fetch, setFetch] = useState(false);
   const [discountType, setDiscountType] = useState('flat');
   const [
     isOpenDeleteProductVariantTypeModal,
@@ -111,7 +112,13 @@ const AddProduct = () => {
     } else {
       showToast("Something went wrong", "error");
     }
-  }, []);
+
+    setFetch(false);
+  }, [fetch]);
+
+  const handelFetch  = () =>{
+    setFetch(true);
+  }
 
   const fetchVariantValuesOnAttribute = useCallback(async attributeId => {
     const variantValuesRes = await axios.get(
@@ -733,7 +740,7 @@ const AddProduct = () => {
                                     </Button>
                                   </div>
                                 </div>
-                                {isShowVariantValuesOption ? (
+                                {isShowVariantValuesOption || variantAttributes ? (
                                   <React.Fragment>
                                     <div className="customInput">
                                       <label>Option name</label>
@@ -1038,6 +1045,7 @@ const AddProduct = () => {
           closeModal={() => setOpenAddVariantAttributePopup(false)}
           setVariantAttribute={setVariantAttribute}
           fetchVariantAttributes={fetchVariantAttributes}
+          handelFetch={handelFetch}
         />
       ) : null}
       {openAddVariantAttributeValuePopup ? (
