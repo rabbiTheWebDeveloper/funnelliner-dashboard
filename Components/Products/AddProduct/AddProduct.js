@@ -39,7 +39,7 @@ const validationSchema = Yup.object({
       "valid-discount-amount",
       "Discount cannot be higher than Regular Price ",
       function (value) {
-        const numericValue = parseFloat(value?.replace("%", "") || 0); 
+        const numericValue = parseFloat(value?.replace("%", "") || 0);
         const sellingPrice = this.parent.selling_price;
         return numericValue <= sellingPrice;
       }
@@ -344,6 +344,7 @@ const AddProduct = () => {
                   formData.append("delivery_charge", "paid");
                   formData.append("inside_dhaka", data.inside_dhaka);
                   formData.append("outside_dhaka", data.outside_dhaka);
+                  formData.append("subarea_charge", data.subarea_charge);
                 }
 
                 if (variantTable?.length) {
@@ -430,12 +431,12 @@ const AddProduct = () => {
                             />
                             <div className={style.absulatePrice}>
                               <h6>
-                                price: <i className="flaticon-taka"></i> {values.discount > 0  ? values.discount : ''}
+                                price: <i className="flaticon-taka"></i> {values.discount > 0 ? values.discount_type === 'flat' ? values.selling_price - values.discount : values.selling_price - (values?.selling_price * (values.discount / 100)) : ''}
 
                                 {
                                   values.discount > 0 && <del>{values.selling_price > 0 ? values.selling_price : ''}</del>
                                 }
-                                
+
                               </h6>
                             </div>
                           </div>
@@ -461,7 +462,10 @@ const AddProduct = () => {
 
                               if (newAlignment === 'flat') {
                                 setFieldValue('discount', '0.00');
-                              } 
+                              }
+                              if (newAlignment === 'percent') {
+                                setFieldValue('discount', '0');
+                              }
                             }}
                             aria-label="Platform"
                             className={style.ToggleButtonGroup}
@@ -480,17 +484,17 @@ const AddProduct = () => {
                             <Field
                               name="discount"
                               type="text"
-                              placeholder="Example: 599" 
+                              placeholder="Example: 599"
                             />
                             <span>{values.discount_type === 'percent' ? '%' : ""}</span>
                           </div>
-                    <div>
-                    <ErrorMessage
-                            name="discount"
-                            component="div"
-                            className="error"
-                          />
-                    </div>
+                          <div>
+                            <ErrorMessage
+                              name="discount"
+                              component="div"
+                              className="error"
+                            />
+                          </div>
                         </Grid>
 
 
