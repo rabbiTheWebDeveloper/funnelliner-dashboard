@@ -1,4 +1,4 @@
-import { Box, Container, Grid, Button } from "@mui/material";
+import { Box, Container, Grid, Button, ToggleButtonGroup, ToggleButton } from "@mui/material";
 import HeaderDescription from "../../Common/HeaderDescription/HeaderDescription";
 import { Field, Form, Formik, ErrorMessage } from "formik";
 import style from "./addProduct.module.css";
@@ -7,7 +7,7 @@ import { API_ENDPOINTS } from "../../../config/ApiEndpoints";
 import axios from "axios";
 import { headers } from "../../../pages/api";
 import Select from "react-select";
-import AsyncSelect from 'react-select';
+import AsyncSelect from "react-select";
 import AddProductCategory from "./AddProductCategory";
 import { DELIVERY_CHARGE_DATA } from "../../../constant/Product";
 import ProductImage from "../../edit-theme/ProductImage";
@@ -65,7 +65,7 @@ const EditProduct = () => {
     openAddVariantAttributeValuePopup,
     setOpenAddVariantAttributeValuePopup,
   ] = useState(false);
-  const [productDetails, setProductDetails] = useState()
+  const [productDetails, setProductDetails] = useState();
 
   const fetchCategoriesData = useCallback(async () => {
     await axios
@@ -101,12 +101,15 @@ const EditProduct = () => {
   }, []);
 
   const fetchProductDetails = useCallback(async () => {
-    const productDetailsRes = await axios.get(`${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.GET_PRODUCT_DETAILS}${router?.query?.id}`, {
-      headers: headers,
-    });
+    const productDetailsRes = await axios.get(
+      `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.GET_PRODUCT_DETAILS}${router?.query?.id}`,
+      {
+        headers: headers,
+      }
+    );
     if (productDetailsRes?.data?.success) {
-      setProductDetails(productDetailsRes?.data?.data)
-      setVariantTable(productDetailsRes?.data?.data?.variations)
+      setProductDetails(productDetailsRes?.data?.data);
+      setVariantTable(productDetailsRes?.data?.data?.variations);
 
       const makeVariantAttributesArr = [];
       productDetailsRes?.data?.data?.attributes.forEach(item => {
@@ -117,13 +120,13 @@ const EditProduct = () => {
         });
       });
 
-      setSelectVariantTypes(makeVariantAttributesArr)
+      setSelectVariantTypes(makeVariantAttributesArr);
     }
-  }, [router?.query?.id])
+  }, [router?.query?.id]);
 
   useEffect(() => {
-    fetchProductDetails()
-  }, [fetchProductDetails])
+    fetchProductDetails();
+  }, [fetchProductDetails]);
 
   const fetchVariantAttributes = useCallback(async () => {
     const variantAttributesRes = await axios.get(
@@ -179,12 +182,10 @@ const EditProduct = () => {
     }
   }, []);
 
-
-
-  const createVariant = async () => {
+  const createVariant = async (updatedVariantTypes) => {
     const formData = new FormData();
 
-    selectVariantTypes?.forEach(variant => {
+    updatedVariantTypes?.forEach(variant => {
       formData.append("choice[]", variant?.variantType);
       formData.append("choice_no[]", variant?.variantTypeId);
       if (variant?.variantValues?.length) {
@@ -220,11 +221,14 @@ const EditProduct = () => {
       variantTypeId: variantAttribute[0]?.value,
       variantValues: tempVariantValues,
     };
-    setSelectVariantTypes([...selectVariantTypes, makeVariantsArr]);
+    const updatedVariantTypes = [...selectVariantTypes, makeVariantsArr];
+    setSelectVariantTypes(updatedVariantTypes);
     setIsOpenVariationOption(false);
     setVariantAttribute([]);
     setIsShowVariantValuesOption(false);
     setTempVariantValues([]);
+
+    createVariant(updatedVariantTypes);
   };
 
   const handleIsDeleteVariantType = () => {
@@ -266,11 +270,14 @@ const EditProduct = () => {
   }, [productDetails]);
 
   useEffect(() => {
-    const value = productDetails?.delivery_charge === 'free' ? 'Free Delivery Charge' : 'Paid Delivery Charge'
+    const value =
+      productDetails?.delivery_charge === "free"
+        ? "Free Delivery Charge"
+        : "Paid Delivery Charge";
     const defaultCategory = DELIVERY_CHARGE_DATA.find(
       item => item.value === value
     );
-    
+
     setDeliveryChargeType([defaultCategory] || []);
   }, [productDetails]);
 
@@ -289,15 +296,33 @@ const EditProduct = () => {
             <Formik
               enableReinitialize={true}
               initialValues={{
-                product_name: productDetails?.product_name ? productDetails?.product_name : '',
-                selling_price: productDetails?.price ? productDetails?.price : 0,
-                discount: productDetails?.discount ? productDetails?.discount : 0,
-                discount_type: productDetails?.discount_type ? productDetails?.discount_type : '',
-                product_code: productDetails?.product_code ? productDetails?.product_code : '',
-                product_quantity: productDetails?.product_qty ? productDetails?.product_qty : 0,
-                inside_dhaka: productDetails?.inside_dhaka ? productDetails?.inside_dhaka : 0,
-                outside_dhaka: productDetails?.outside_dhaka ? productDetails?.outside_dhaka : 0,
-                subarea_charge: productDetails?.sub_area_charge ? productDetails?.sub_area_charge : 0,
+                product_name: productDetails?.product_name
+                  ? productDetails?.product_name
+                  : "",
+                selling_price: productDetails?.price
+                  ? productDetails?.price
+                  : 0,
+                discount: productDetails?.discount
+                  ? productDetails?.discount
+                  : 0,
+                discount_type: productDetails?.discount_type
+                  ? productDetails?.discount_type
+                  : "",
+                product_code: productDetails?.product_code
+                  ? productDetails?.product_code
+                  : "",
+                product_quantity: productDetails?.product_qty
+                  ? productDetails?.product_qty
+                  : 0,
+                inside_dhaka: productDetails?.inside_dhaka
+                  ? productDetails?.inside_dhaka
+                  : 0,
+                outside_dhaka: productDetails?.outside_dhaka
+                  ? productDetails?.outside_dhaka
+                  : 0,
+                subarea_charge: productDetails?.sub_area_charge
+                  ? productDetails?.sub_area_charge
+                  : 0,
               }}
               validationSchema={validationSchema}
               onSubmit={async data => {
@@ -319,7 +344,7 @@ const EditProduct = () => {
                 data.status = "1";
 
                 const formData = new FormData();
-                formData.append('_method', "patch")
+                formData.append("_method", "patch");
                 // if (selectProductImage === undefined) {
                 //   formData.append("main_image", productDetails?.main_image);
                 // } else {
@@ -355,7 +380,12 @@ const EditProduct = () => {
                   const variantTableJson = JSON.stringify(variantTable);
                   formData.append("variants", variantTableJson);
                   variantTable?.forEach((variantValue, index) => {
-                    formData.append(`media_${index}`, variantValue?.media === undefined ? null : variantValue?.media);
+                    formData.append(
+                      `media_${index}`,
+                      variantValue?.media === undefined
+                        ? null
+                        : variantValue?.media
+                    );
                   });
                 }
 
@@ -372,8 +402,6 @@ const EditProduct = () => {
                   }
                 });
 
-
-
                 const createProductRes = await axios.post(
                   `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.GET_PRODUCT_DETAILS}${router?.query?.id}`,
                   formData,
@@ -388,7 +416,7 @@ const EditProduct = () => {
                 }
               }}
             >
-              {({ values }) => (
+              {({ values ,setFieldValue }) => (
                 <Form>
                   <div className={style.AddProduct}>
                     <div className={style.header}>
@@ -414,10 +442,10 @@ const EditProduct = () => {
                             />
                           </div>
                         </Grid>
-                        <Grid item xs={12} sm={4}>
+                        <Grid item xs={12} sm={3}>
                           <div className="">
                             <label>
-                              Selling Price <span>*</span>
+                            Regular Price <span>*</span>
                             </label>
                             <Field
                               type="number"
@@ -431,7 +459,7 @@ const EditProduct = () => {
                             />
                           </div>
                         </Grid>
-                        <Grid item xs={12} sm={2}>
+                        {/* <Grid item xs={12} sm={2}>
                           <div className="">
                             <label>Discount Price</label>
                             <Field
@@ -440,9 +468,9 @@ const EditProduct = () => {
                               placeholder="Example: 599"
                             />
                           </div>
-                        </Grid>
+                        </Grid> */}
 
-                        <Grid item xs={12} sm={2}>
+                        {/* <Grid item xs={12} sm={2}>
                           <div className={style.SelectDropdown}>
                             <label>
                               Discount Type<span>*</span>
@@ -457,6 +485,60 @@ const EditProduct = () => {
                               </option>
                             </Field>
                           </div>
+                        </Grid> */}
+
+                        <Grid
+                          item
+                          xs={12}
+                          sm={3}
+                          className={style.ToggleButtonGroupDiv}
+                        >
+                          <label>
+                            Discount Type<span>*</span>
+                          </label>
+                          <ToggleButtonGroup
+                            name="discount_type"
+                            color="primary"
+                            value={values.discount_type}
+                            exclusive
+                            // onChange={handleChange}
+                            onChange={(event, newAlignment) => {
+                              setFieldValue("discount_type", newAlignment);
+
+                              // Update the default value of "discount" field
+                              if (newAlignment === "flat") {
+                                setFieldValue("discount", "0.00");
+                              } else {
+                                setFieldValue("discount", "%");
+                              }
+                            }}
+                            aria-label="Platform"
+                            className={style.ToggleButtonGroup}
+                          >
+                            <ToggleButton value="percent">
+                              Parcentage
+                            </ToggleButton>
+                            <ToggleButton value="flat">
+                              Fixed Amount
+                            </ToggleButton>
+                          </ToggleButtonGroup>
+                        </Grid>
+
+                        {/* {console.log(values)} */}
+                        <Grid item xs={12} sm={2}>
+                          <div className="">
+                            <label>Discount</label>
+                            <Field
+                              name="discount"
+                              type="text"
+                              placeholder="Example: 599"
+                            />
+                          </div>
+                          <ErrorMessage
+                            name="discount"
+                            component="div"
+                            className="error"
+                          />
                         </Grid>
                         <Grid item xs={12} sm={4}>
                           <div className="">
@@ -514,7 +596,7 @@ const EditProduct = () => {
                                 }
                               }}
                             />
-                            
+
                             {/* <Select
                             defaultValue={categories.find(
                               item => item.value == productDetails?.category_id
@@ -556,7 +638,7 @@ const EditProduct = () => {
                                 ])
                               }
                             />
-                            
+
                             {/* <Select
                             defaultValue={DELIVERY_CHARGE_DATA.find(
                               item => item.value == productDetails?.delivery_charge
@@ -574,7 +656,7 @@ const EditProduct = () => {
                               value={deliverChargeType}
                             /> */}
                             {deliverChargeType[0]?.value ===
-                              "Paid Delivery Charge" ? (
+                            "Paid Delivery Charge" ? (
                               <div className={style.duelInput}>
                                 <div className={style.customInput}>
                                   <label> Delivery charge in Dhaka </label>
@@ -593,7 +675,10 @@ const EditProduct = () => {
                                     placeholder="Delivery charge out of Dhaka"
                                   />
                                 </div>
-                                <div className="" style={{ marginTop: "10px", width: "100%" }}>
+                                <div
+                                  className=""
+                                  style={{ marginTop: "10px", width: "100%" }}
+                                >
                                   <label>Sub Area Charge (Optional)</label>
                                   <Field
                                     type="text"
@@ -631,10 +716,15 @@ const EditProduct = () => {
                                   Upload Image
                                 </Button>
                               </label>
-                              {productDetails?.main_image !== null || (productPreviewImage && selectProductImage) ? (
+                              {productDetails?.main_image !== null ||
+                              (productPreviewImage && selectProductImage) ? (
                                 <Box mt={2} textAlign="center">
                                   <img
-                                    src={productDetails?.main_image ? productDetails?.main_image : productPreviewImage}
+                                    src={
+                                      productDetails?.main_image
+                                        ? productDetails?.main_image
+                                        : productPreviewImage
+                                    }
                                     alt={productDetails?.product_name}
                                     height="100px"
                                   />
@@ -653,7 +743,6 @@ const EditProduct = () => {
                                 other_images={[]}
                               />
                             </div>
-
                           </div>
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -782,7 +871,9 @@ const EditProduct = () => {
                                 </div>
                                 <div className={style.AddNewProduct}>
                                   <Button
-                                    onClick={() => setIsOpenVariationOption(true)}
+                                    onClick={() =>
+                                      setIsOpenVariationOption(true)
+                                    }
                                   >
                                     <i className="flaticon-plus"></i>
                                     Add Product Variants Like Size , Color,
@@ -813,10 +904,10 @@ const EditProduct = () => {
                                       </h5>
                                       {item?.variantValues?.length
                                         ? item?.variantValues?.map(
-                                          singleItem => (
-                                            <span>{singleItem?.value}</span>
+                                            singleItem => (
+                                              <span>{singleItem?.value}</span>
+                                            )
                                           )
-                                        )
                                         : null}
                                     </div>
                                     {/* right */}
@@ -842,12 +933,12 @@ const EditProduct = () => {
                                   </div>
                                 </div>
                               ))}
-                              <div className={style.Submit}>
+                              {/* <div className={style.Submit}>
                                 <Button onClick={createVariant}>
                                   <i className="flaticon-install"> </i>
                                   Save Variants
                                 </Button>
-                              </div>
+                              </div> */}
                             </React.Fragment>
                           ) : null}
                         </Grid>
@@ -868,139 +959,146 @@ const EditProduct = () => {
                               <tbody>
                                 {variantTable?.length
                                   ? variantTable?.map((variant, index) => (
-                                    <tr key={index}>
-                                      <td>
-                                        {variant?.media === null ? (
-                                          <div className={style.img}>
+                                      <tr key={index}>
+                                        <td>
+                                          {variant?.media === null ? (
+                                            <div className={style.img}>
+                                              <img
+                                                src="images/blank-img.png"
+                                                alt=""
+                                              />
+                                              <div className={style.overlay}>
+                                                <input
+                                                  type="file"
+                                                  onChange={e => {
+                                                    const newVariants = [
+                                                      ...variantTable,
+                                                    ];
+                                                    newVariants[index].media =
+                                                      e.target.files[0];
+                                                    setVariantTable(
+                                                      newVariants
+                                                    );
+                                                  }}
+                                                />
+                                              </div>
+
+                                              {variant?.media !== null ? (
+                                                <Button>
+                                                  <i className="flaticon-close"></i>
+                                                </Button>
+                                              ) : null}
+                                            </div>
+                                          ) : (
                                             <img
-                                              src="images/blank-img.png"
+                                              src={
+                                                typeof variant?.media ===
+                                                "string"
+                                                  ? variant?.media
+                                                  : URL.createObjectURL(
+                                                      variant?.media
+                                                    )
+                                              }
                                               alt=""
                                             />
-                                            <div className={style.overlay}>
-                                              <input
-                                                type="file"
-                                                onChange={e => {
-                                                  const newVariants = [
-                                                    ...variantTable,
-                                                  ];
-                                                  newVariants[index].media =
-                                                    e.target.files[0];
-                                                  setVariantTable(
-                                                    newVariants
-                                                  );
-                                                }}
-                                              />
-                                            </div>
-
-                                            {variant?.media !== null ? (
-                                              <Button>
-                                                <i className="flaticon-close"></i>
-                                              </Button>
-                                            ) : null}
-                                          </div>
-                                        ) : (
-                                          <img
-                                            src={typeof variant?.media === 'string' ? variant?.media : URL.createObjectURL(variant?.media)}
-                                            alt=""
-                                          />
-                                        )}
-                                      </td>
-                                      <td className={style.varient}>
-                                        <input
-                                          type="text"
-                                          placeholder="20/Blue"
-                                          value={variant?.variant}
-                                          onChange={e => {
-                                            const newVariants = [
-                                              ...variantTable,
-                                            ];
-                                            newVariants[index].variant =
-                                              e.target.value;
-                                            setVariantTable(newVariants);
-                                          }}
-                                        />
-                                      </td>
-                                      <td className={style.price}>
-                                        <i className="flaticon-taka"></i>
-                                        <input
-                                          type="text"
-                                          className={style.tk}
-                                          placeholder="Price"
-                                          value={
-                                            variant?.price === 0
-                                              ? values?.selling_price
-                                              : variant?.price
-                                          }
-                                          onChange={e => {
-                                            const newVariants = [
-                                              ...variantTable,
-                                            ];
-                                            newVariants[index].price =
-                                              e.target.value;
-                                            setVariantTable(newVariants);
-                                          }}
-                                        />
-                                      </td>
-                                      <td className={style.varient}>
-                                        <input
-                                          type="text"
-                                          placeholder="Product Code"
-                                          value={variant?.code}
-                                          onChange={e => {
-                                            const newVariants = [
-                                              ...variantTable,
-                                            ];
-                                            newVariants[index].product_code =
-                                              e.target.value;
-                                            setVariantTable(newVariants);
-                                          }}
-                                        />
-                                      </td>
-                                      <td className={style.code}>
-                                        <input
-                                          type="text"
-                                          placeholder="Quantity"
-                                          value={variant?.quantity}
-                                          onChange={e => {
-                                            const newVariants = [
-                                              ...variantTable,
-                                            ];
-                                            newVariants[index].quantity =
-                                              e.target.value;
-                                            setVariantTable(newVariants);
-                                          }}
-                                        />
-                                      </td>
-                                      <td className={style.lastChild}>
-                                        <div className={style.DhakaInCharge}>
+                                          )}
+                                        </td>
+                                        <td className={style.varient}>
                                           <input
-                                            className={style.Dhaka}
                                             type="text"
-                                            placeholder="ঢাকার ভেতর ..."
-                                            value={variant?.description}
+                                            placeholder="20/Blue"
+                                            value={variant?.variant}
                                             onChange={e => {
                                               const newVariants = [
                                                 ...variantTable,
                                               ];
-                                              newVariants[index].description =
+                                              newVariants[index].variant =
                                                 e.target.value;
                                               setVariantTable(newVariants);
                                             }}
                                           />
-                                          <Button
-                                            onClick={() => {
-                                              setSelectedDeleteVariant(index);
-                                              setIsShowSingleVariantDeletePopup(
-                                                true
-                                              );
+                                        </td>
+                                        <td className={style.price}>
+                                          <i className="flaticon-taka"></i>
+                                          <input
+                                            type="text"
+                                            className={style.tk}
+                                            placeholder="Price"
+                                            value={
+                                              variant?.price === 0
+                                                ? values?.selling_price
+                                                : variant?.price
+                                            }
+                                            onChange={e => {
+                                              const newVariants = [
+                                                ...variantTable,
+                                              ];
+                                              newVariants[index].price =
+                                                e.target.value;
+                                              setVariantTable(newVariants);
                                             }}
-                                          >
-                                            <i className="flaticon-delete"></i>
-                                          </Button>
-                                        </div>
-                                      </td>
-                                    </tr>
-                                  ))
+                                          />
+                                        </td>
+                                        <td className={style.varient}>
+                                          <input
+                                            type="text"
+                                            placeholder="Product Code"
+                                            value={variant?.code}
+                                            onChange={e => {
+                                              const newVariants = [
+                                                ...variantTable,
+                                              ];
+                                              newVariants[index].product_code =
+                                                e.target.value;
+                                              setVariantTable(newVariants);
+                                            }}
+                                          />
+                                        </td>
+                                        <td className={style.code}>
+                                          <input
+                                            type="text"
+                                            placeholder="Quantity"
+                                            value={variant?.quantity}
+                                            onChange={e => {
+                                              const newVariants = [
+                                                ...variantTable,
+                                              ];
+                                              newVariants[index].quantity =
+                                                e.target.value;
+                                              setVariantTable(newVariants);
+                                            }}
+                                          />
+                                        </td>
+                                        <td className={style.lastChild}>
+                                          <div className={style.DhakaInCharge}>
+                                            <input
+                                              className={style.Dhaka}
+                                              type="text"
+                                              placeholder=""
+                                              value={variant?.description}
+                                              onChange={e => {
+                                                const newVariants = [
+                                                  ...variantTable,
+                                                ];
+                                                newVariants[index].description =
+                                                  e.target.value;
+                                                setVariantTable(newVariants);
+                                              }}
+                                            />
+                                            <Button
+                                              onClick={() => {
+                                                setSelectedDeleteVariant(index);
+                                                setIsShowSingleVariantDeletePopup(
+                                                  true
+                                                );
+                                              }}
+                                            >
+                                              <i className="flaticon-delete"></i>
+                                            </Button>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    ))
                                   : null}
                               </tbody>
                             </table>

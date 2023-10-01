@@ -1261,10 +1261,6 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                       : "0"}
                   </h6> */}
                 </BootstrapButton>
-
-
-
-
               </Box>
             </div>
 
@@ -2476,7 +2472,6 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                                         </MenuItem>
                                         <MenuItem
                                           onClick={() => {
-
                                             handleOrderUpdate(order?.id),
                                               setOrderId(order?.id);
                                             setOrderStatus(order?.status);

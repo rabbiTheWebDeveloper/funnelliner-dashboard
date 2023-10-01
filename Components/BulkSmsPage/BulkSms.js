@@ -457,7 +457,7 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
                                             <img src="/images/payment-img/nagod.png" alt="" />
                                         </label>
 
-                                        <label className="card">
+                                        {/* <label className="card">
                                             <input
                                                 name="plan"
                                                 className="radio"
@@ -467,7 +467,7 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
                                                 onChange={handlePaymentMethodSelect}
                                             />
                                             <img src={"/images/payment-img/visa.png"} alt="" />
-                                        </label>
+                                        </label> */}
                                     </div>
 
                                     <div className="Review">

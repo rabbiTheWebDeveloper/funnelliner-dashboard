@@ -2,6 +2,15 @@
   background: var(--main-color);
 }
 
+.My__parsentens span{
+    text-align: right !important;
+    width: 100%;
+    display: block;
+    margin-top: -31px;
+    margin-bottom: 33px;
+    margin-left: -10px;
+}
+
 .SelectDropdown {
   z-index: 9;
   position: relative;
@@ -441,6 +450,42 @@
   transform: scale(1.1);
 }
 
+/* ToggleButtonGroup */
+
+.ToggleButtonGroupDiv label {
+  width: 100%;
+}
+
+.ToggleButtonGroup {
+  border-radius: 10px !important;
+  width: 100% !important;
+}
+
+.ToggleButtonGroup button {
+  border-radius: 10px;
+  width: 50%;
+  /* padding: 10px 20px; */
+}
+
+.regularPrice {
+  position: relative;
+}
+
+.absulatePrice h6 {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-color);
+  line-height: 20px;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.absulatePrice h6 i {
+  margin-top: 3px;
+}
+
 /* ---------------------------------------------------  --------------------------------------------------- 
 Media 
 ---------------------------------------------------  ---------------------------------------------------  */
@@ -515,6 +560,11 @@ Media
     line-height: 20px;
     gap: 6px;
     padding: 12px;
+  }
+
+  .ToggleButtonGroup button {
+    font-size: 13px;
+    padding: 8px 5px;
   }
 }
 

@@ -321,8 +321,8 @@ Product Start
 /* add-product */
 .css-13cymwt-control,
 .css-t3ipsp-control {
-  padding: 4px 10px !important;
-  border-radius: 30px !important;
+  /* padding: 4px 10px !important; */
+  /* border-radius: 30px !important; */
   border: 1px solid var(--main-color) !important;
 }
 
@@ -3153,7 +3153,7 @@ Home Page Design
   gap: 10px;
 }
 
-.OrderDetailsPage .OrderNumber ul li button{
+.OrderDetailsPage .OrderNumber ul li button {
   padding: 0;
   margin: 0;
   min-width: 0;
@@ -3206,16 +3206,16 @@ Home Page Design
   gap: 10px;
 }
 
-.OrderDetailsPage .Table th:nth-child(2){
+.OrderDetailsPage .Table th:nth-child(2) {
   text-align: left;
 }
 
-.OrderDetailsPage .Table td:nth-child(2) div{
+.OrderDetailsPage .Table td:nth-child(2) div {
   width: 80%;
   margin: 0 auto;
 }
 
-.OrderDetailsPage .Table td:nth-child(2)  p {
+.OrderDetailsPage .Table td:nth-child(2) p {
   font-weight: 400;
 }
 
@@ -3437,6 +3437,11 @@ Home Page Design
 /* --------------------------------------------------------------------------
  Start
 -------------------------------------------------------------------------- */
+
+.MuiToggleButtonGroup-root .Mui-selected {
+  background: var(--main-bg-color) !important;
+  color: var(--main-color) !important;
+}
 
 /* --------------------------------------------------------------------------
  End

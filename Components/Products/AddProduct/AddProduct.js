@@ -19,11 +19,34 @@ import * as Yup from "yup";
 import { useRouter } from "next/router";
 import AddVariantAttributeValue from "./AddVariantAttributeValuePopup";
 
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+
 const validationSchema = Yup.object({
   product_name: Yup.string().required("Product Name is required"),
   selling_price: Yup.string().required("Selling Price is required"),
   product_code: Yup.string().required("Product Code is required"),
   product_quantity: Yup.string().required("Product Quantity is required"),
+  discount: Yup.string()
+    .test(
+      "valid-discount",
+      "Invalid discount format",
+      (value) => {
+        return /^(\d+(\.\d{1,2})?%?)$/.test(value);
+      }
+    )
+    .test(
+      "valid-discount-amount",
+      "Discount cannot be higher than Regular Price ",
+      function (value) {
+        const numericValue = parseFloat(value?.replace("%", "") || 0); 
+        const sellingPrice = this.parent.selling_price;
+        return numericValue <= sellingPrice;
+      }
+    )
+    .transform((value) => {
+      return value ? value.replace("%", "") : "";
+    })
 });
 
 const AddProduct = () => {
@@ -42,12 +65,12 @@ const AddProduct = () => {
   const [productShortDescription, setProductShortDescription] = useState("");
   const [productLongDescription, setProductLongDescription] = useState("");
   const [isOpenVariationOption, setIsOpenVariationOption] = useState(false);
-  const [isShowVariantValuesOption, setIsShowVariantValuesOption] =
-    useState(false);
+  const [isShowVariantValuesOption, setIsShowVariantValuesOption] = useState(false);
   const [variantAttribute, setVariantAttribute] = useState([]);
   const [variantValues, setVariantValues] = useState([]);
   const [tempVariantValues, setTempVariantValues] = useState([]);
   const [selectVariantTypes, setSelectVariantTypes] = useState([]);
+  const [discountType, setDiscountType] = useState('flat');
   const [
     isOpenDeleteProductVariantTypeModal,
     setIsOpenDeleteProductVariantTypeModal,
@@ -152,12 +175,12 @@ const AddProduct = () => {
       });
   }, []);
 
-  const createVariant = async () => {
+  const createVariant = async (updatedVariantTypes) => {
     const formData = new FormData();
-
-    selectVariantTypes?.forEach(variant => {
+    updatedVariantTypes?.forEach((variant, key) => {
       formData.append("choice[]", variant?.variantType);
       formData.append("choice_no[]", variant?.variantTypeId);
+
       if (variant?.variantValues?.length) {
         variant?.variantValues?.forEach(variantValue => {
           formData.append(
@@ -167,6 +190,10 @@ const AddProduct = () => {
         });
       }
     });
+
+    for (const value of formData.values()) {
+      console.log('value', value);
+    }
 
     const createVariantRes = await axios.post(
       `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.CREATE_VARIANT}`,
@@ -185,17 +212,20 @@ const AddProduct = () => {
     }
   };
 
-  const addNewVariant = () => {
+  const addNewVariant = async () => {
     const makeVariantsArr = {
       variantType: variantAttribute[0]?.label,
       variantTypeId: variantAttribute[0]?.value,
       variantValues: tempVariantValues,
     };
-    setSelectVariantTypes([...selectVariantTypes, makeVariantsArr]);
+    const updatedVariantTypes = [...selectVariantTypes, makeVariantsArr];
+    setSelectVariantTypes(updatedVariantTypes);
     setIsOpenVariationOption(false);
     setVariantAttribute([]);
     setIsShowVariantValuesOption(false);
     setTempVariantValues([]);
+
+    createVariant(updatedVariantTypes);
   };
 
   const handleIsDeleteVariantType = () => {
@@ -230,6 +260,13 @@ const AddProduct = () => {
     setIsShowSingleVariantDeletePopup(false);
   };
 
+  // Toggle Parcentage
+  // const [alignment, setAlignment] = React.useState("percent");
+
+  const handleChange = (event, newAlignment) => {
+    setAlignment(newAlignment);
+  };
+
   return (
     <section className="DashboardSetting">
       <HeaderDescription
@@ -238,11 +275,12 @@ const AddProduct = () => {
         subTitle={"Add new products in your shop"}
         search={false}
         order={false}
-        videoLink={
-          {
-            video: "https://www.youtube.com/embed/u6C2KvB5Kzs?si=Qv2g-PI-ebPmsATK",
-            title: "How to add your products & categories step by step in FunnelLiner"
-          }}
+        videoLink={{
+          video:
+            "https://www.youtube.com/embed/u6C2KvB5Kzs?si=Qv2g-PI-ebPmsATK",
+          title:
+            "How to add your products & categories step by step in FunnelLiner",
+        }}
       />
       <Container maxWidth="sm">
         <div className="DashboardSettingTabs">
@@ -251,8 +289,8 @@ const AddProduct = () => {
               initialValues={{
                 product_name: "",
                 selling_price: 0,
-                discount: 0,
                 discount_type: "",
+                discount: 0,
                 product_code: "",
                 product_quantity: 0,
                 inside_dhaka: "",
@@ -261,6 +299,8 @@ const AddProduct = () => {
               }}
               validationSchema={validationSchema}
               onSubmit={async data => {
+
+                // debugger
                 if (selectProductImage?.size > 1024 * 1024) {
                   showToast("Product image is too big !", "error");
                   return;
@@ -313,7 +353,7 @@ const AddProduct = () => {
                     formData.append(`media_${index}`, variantValue?.media);
                   });
                 }
-                console.log(selectVariantTypes + " variants" , variantTable);	
+                console.log(selectVariantTypes + " variants", variantTable);
 
                 selectVariantTypes?.forEach(variant => {
                   formData.append("choice[]", variant?.variantType);
@@ -328,11 +368,11 @@ const AddProduct = () => {
                   }
                 });
 
-                // const createProductRes = await axios.post(
-                //   `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.CREATE_PRODUCTS}`,
-                //   formData,
-                //   { headers: headers }
-                // );
+                const createProductRes = await axios.post(
+                  `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.CREATE_PRODUCTS}`,
+                  formData,
+                  { headers: headers }
+                );
 
                 if (createProductRes?.data?.success) {
                   showToast("Product Create Successfully", "success");
@@ -342,7 +382,7 @@ const AddProduct = () => {
                 }
               }}
             >
-              {({ values }) => (
+              {({ values, setFieldValue }) => (
                 <Form>
                   <div className={style.AddProduct}>
                     <div className={style.header}>
@@ -368,49 +408,92 @@ const AddProduct = () => {
                             />
                           </div>
                         </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <div className="">
+                        <Grid item xs={12} sm={3}>
+                          <div className={style.regularPrice}>
                             <label>
-                              Selling Price <span>*</span>
+                              Regular Price <span>*</span>
                             </label>
                             <Field
-                              type="number"
+                              type="text"
                               placeholder="Example: 599"
                               name="selling_price"
+                              style={{
+                                WebkitAppearance: "none",
+                                margin: 0,
+                                MozAppearance: "textfield",
+                              }}
                             />
                             <ErrorMessage
                               name="selling_price"
                               component="div"
                               className="error"
                             />
+                            <div className={style.absulatePrice}>
+                              <h6>
+                                price: <i className="flaticon-taka"></i> {values.discount > 0  ? values.discount : ''}
+
+                                {
+                                  values.discount > 0 && <del>{values.selling_price > 0 ? values.selling_price : ''}</del>
+                                }
+                                
+                              </h6>
+                            </div>
                           </div>
                         </Grid>
+                        <Grid
+                          item
+                          xs={12}
+                          sm={3}
+                          className={style.ToggleButtonGroupDiv}
+                        >
+
+                          <label>
+                            Discount Type<span>*</span>
+                          </label>
+                          <ToggleButtonGroup
+                            name="discount_type"
+                            color="primary"
+                            value={values.discount_type}
+                            exclusive
+                            // onChange={handleChange}
+                            onChange={(event, newAlignment) => {
+                              setFieldValue('discount_type', newAlignment);
+
+                              if (newAlignment === 'flat') {
+                                setFieldValue('discount', '0.00');
+                              } 
+                            }}
+                            aria-label="Platform"
+                            className={style.ToggleButtonGroup}
+                          >
+                            <ToggleButton value="percent">Parcentage</ToggleButton>
+                            <ToggleButton value="flat">
+                              Fixed Amount
+                            </ToggleButton>
+                          </ToggleButtonGroup>
+                        </Grid>
+
+                        {/* {console.log(values)} */}
                         <Grid item xs={12} sm={2}>
-                          <div className="">
-                            <label>Discount Price</label>
+                          <div className={style.My__parsentens}>
+                            <label>Discount</label>
                             <Field
                               name="discount"
                               type="text"
-                              placeholder="Example: 599"
+                              placeholder="Example: 599" 
                             />
+                            <span>{values.discount_type === 'percent' ? '%' : ""}</span>
                           </div>
+                    <div>
+                    <ErrorMessage
+                            name="discount"
+                            component="div"
+                            className="error"
+                          />
+                    </div>
                         </Grid>
-                        <Grid item xs={12} sm={2}>
-                          <div className={style.SelectDropdown}>
-                            <label>
-                              Discount Type<span>*</span>
-                            </label>
-                            <Field component="select" name="discount_type">
-                              <option value="">Select Discount Type</option>
-                              <option key={"flat"} value={"flat"}>
-                              flat Discount
-                              </option>
-                              <option key={"percent"} value={"percent"}>
-                              Percent Discount
-                              </option>
-                            </Field>
-                          </div>
-                        </Grid>
+
+
                         <Grid item xs={12} sm={4}>
                           <div className="">
                             <label>
@@ -760,12 +843,12 @@ const AddProduct = () => {
                                   </div>
                                 </div>
                               ))}
-                              <div className={style.Submit}>
+                              {/* <div className={style.Submit}>
                                 <Button onClick={createVariant}>
                                   <i className="flaticon-install"> </i>
                                   Save Variants
                                 </Button>
-                              </div>
+                              </div> */}
                             </React.Fragment>
                           ) : null}
                         </Grid>
@@ -892,7 +975,7 @@ const AddProduct = () => {
                                           <input
                                             className={style.Dhaka}
                                             type="text"
-                                            placeholder="ঢাকার ভেতর ..."
+                                            // placeholder="ঢাকার ভেতর ..."
                                             value={variant?.description}
                                             onChange={e => {
                                               const newVariants = [

@@ -11,6 +11,19 @@ import CopyIcon from "../UI/CopyIcon/CopyIcon";
 import { courierStatusFormate } from "../../constant/capitalized";
 import { toast } from "react-hot-toast";
 import SuperFetch from "../../hook/Axios";
+import Swal from "sweetalert2";
+import useLoading from "../../hook/useLoading";
+
+function handleClick(orderId) {
+  const newTab = window.open(`/invoice-one/${orderId}`, '_blank');
+  if (newTab) {
+    newTab.focus();
+  } else {
+    // Handle the case where the new tab was blocked by the browser's popup blocker.
+    // You can provide a message or an alternative way for the user to access the content.
+    alert('Popup blocked. Please allow popups for this site.');
+  }
+}
 
 
 const OrderDetails = () => {
@@ -19,6 +32,7 @@ const OrderDetails = () => {
   const [OrderDetails, setOrderDetails] = useState({});
   const [subTotal, setSubTotal] = useState(0);
   const [fetchApi, setFetch] = useState(false);
+  const [isLoading, startLoading, stopLoading] = useLoading();
   const handleFetchOrderDetails = useCallback(async () => {
     try {
       let data = await axios({
@@ -32,6 +46,72 @@ const OrderDetails = () => {
   }, [router?.query?.id, fetchApi]);
 
 
+  const handleStatusChange = async (event, id) => {
+    const params = {
+      order_id: id,
+      status: event.target.value,
+    };
+  
+    if (event.target.value === "cancelled") {
+      const confirmResult = await Swal.fire({
+        iconHtml: '<img src="/images/delete.png">',
+        customClass: {
+          icon: "no-border",
+          border: "0",
+        },
+        text: "Are you sure you want to cancel this order?",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#894BCA",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "yes, cancel it!",
+      });
+  
+      if (confirmResult.isConfirmed) {
+        startLoading();
+  
+        try {
+          const res = await SuperFetch.post("/client/orders/status/update", params, {
+            headers: headers,
+          });
+          toast.success(res.data?.message, { position: "top-right" });
+        } catch (error) {
+          if (error.response?.data?.msg?.status[0]) {
+            toast.error(error.response?.data?.msg?.status[0], {
+              position: "top-right",
+            });
+          } else {
+            toast.error("Internal Server Error", { position: "top-right" });
+          }
+        } finally {
+          setTimeout(() => {
+            setFetch(true);
+            stopLoading();
+          }, 1000);
+        }
+      }
+    } else {
+      try {
+        const res = await SuperFetch.post("/client/orders/status/update", params, {
+          headers: headers,
+        });;
+        toast.success(res.data?.message, { position: "top-right" });
+      } catch (error) {
+        if (error.response?.data?.msg?.status[0]) {
+          toast.error(error.response?.data?.msg?.status[0], {
+            position: "top-right",
+          });
+        } else {
+          toast.error("Internal Server Error", { position: "top-right" });
+        }
+      } finally {
+        setTimeout(() => {
+          setFetch(true);
+          stopLoading();
+        }, 1000);
+      }
+    }
+  };
   const handleKeyDownNote = (event, id, status) => {
     if (event.key === "Enter") {
       let data = {
@@ -51,8 +131,6 @@ const OrderDetails = () => {
         });
     }
   };
-
-
   const handleAdvancedPayment = (event, id) => {
     if (event.key === "Enter" && event.target.value > 0) {
       // debugger
@@ -181,7 +259,7 @@ const OrderDetails = () => {
                     Order Details
                   </h3>
                   <div className="right d_flex">
-                    <select name="" defaultValue={OrderDetails?.order_status}>
+                    <select name="" defaultValue={OrderDetails?.order_status} onChange={(e) => handleStatusChange(e, OrderDetails?.id)}>
                       <option value="pending">Pending</option>
                       <option value="cancelled">Cancelled</option>
                       <option value="confirmed">Confirmed</option>
@@ -206,7 +284,7 @@ const OrderDetails = () => {
 
 
 
-                    <Button className="bg" onClick={"/invoice-one/" + OrderDetails?.id}>
+                    <Button className="bg" onClick={() => handleClick(OrderDetails?.id)}>
                       <i className="flaticon-printer"></i> Print Invoice
                     </Button>
                   </div>
@@ -421,7 +499,7 @@ const OrderDetails = () => {
                       <li>
                         <span>Discount : </span>
                         <p>
-                          <i className="flaticon-taka"></i> -
+                          <i className="flaticon-taka"></i> 
                           {
                             OrderDetails?.order_status === "pending" ||
                               OrderDetails?.order_status === "confirmed" ?
@@ -453,7 +531,7 @@ const OrderDetails = () => {
                       <li>
                         <span>Advance Payment : </span>
                         <p>
-                          <i className="flaticon-taka"></i> +
+                          <i className="flaticon-taka"></i> 
                           {
                             OrderDetails?.order_status === "pending" ||
                               OrderDetails?.order_status === "confirmed" ?
@@ -475,13 +553,13 @@ const OrderDetails = () => {
                       <li>
                         <span>Delivery Fee : </span>
                         <p>
-                          <i className="flaticon-taka"></i> + {OrderDetails?.shipping_cost}.00
+                          <i className="flaticon-taka"></i>  {OrderDetails?.shipping_cost}.00
                         </p>
                       </li>
                       <li>
                         <span>Total Due : </span>
                         <p>
-                          <i className="flaticon-taka"></i> + {OrderDetails?.due}.00
+                          <i className="flaticon-taka"></i>  {OrderDetails?.due}.00
                         </p>
                       </li>
                     </ul>

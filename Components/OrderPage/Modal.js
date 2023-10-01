@@ -43,6 +43,7 @@ const OrderModal = ({
   const showToast = useToast();
   const [isLoading, startLoading, stopLoading] = useLoading();
   const [selectedProducts, setSelectedProducts] = useState([]);
+
   const createOrder = async inputData => {
     try {
       const productIds = inputData.products.map(product => product.product_id);

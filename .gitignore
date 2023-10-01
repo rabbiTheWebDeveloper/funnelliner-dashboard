@@ -7,6 +7,9 @@
 /.scannerwork
 /.vscode
 
+/.idea/
+
+
 # testing
 /coverage
 
