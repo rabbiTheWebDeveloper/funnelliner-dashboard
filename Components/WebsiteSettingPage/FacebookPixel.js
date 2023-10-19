@@ -8,11 +8,12 @@ import { useToast } from "../../hook/useToast";
 import { API_ENDPOINTS } from "../../config/ApiEndpoints";
 import { pixel_demo_text } from "../../constant/constant";
 
-const FacebookPixel = ({ shopName }) => {
+const FacebookPixel = ({ shopName ,response }) => {
   const showToast = useToast();
-  const [websiteSettingsData, setWebsiteSettingData] = useState({});
+  const [websiteSettingsData, setWebsiteSettingData] = useState( response||{});
   const label = { inputProps: { "aria-label": "Switch demo" } };
   const [advanceStatus, setAdvanceStatus] = useState(false);
+  const [cStatus, setCStatus] = useState(response?.c_status === "1");
   const {
     register,
     handleSubmit,
@@ -24,18 +25,24 @@ const FacebookPixel = ({ shopName }) => {
     if (matches && matches.length > 0) {
       pixelId = matches[0];
     }
-    if (data?.fb_pixel.length>0 &&  pixelId === undefined || pixelId ==="undefined") {
+    if (data?.fb_pixel.length > 0 && pixelId === undefined || pixelId === "undefined") {
       showToast("Invalid Pixel Code", "error");
       return;
     }
-    data.c_status = advanceStatus;
-    data.shop_name = shopName;
-    data.shop_id = shopId;
-    if(data.fb_pixel){
-      data.fb_pixel = pixelId;
+    const formData = new FormData()
+    formData.append("shop_id", shopId)
+    if (pixelId?.length > 0) {
+      formData.append("fb_pixel", pixelId)
     }
+    if (data.test_event) {
+      formData.append("test_event", data.test_event)
+    }
+    if (data.c_api) {
+      formData.append("c_api", data.c_api)
+    }
+
     axios
-      .post(`${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PIXEL.UPDATE_PIXEL}`, data, {
+      .post(`${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PIXEL.UPDATE_PIXEL}`, formData, {
         headers: headers,
       })
       .then(function (response) {
@@ -47,19 +54,10 @@ const FacebookPixel = ({ shopName }) => {
   };
 
   useEffect(() => {
-    axios
-      .get(`${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.SETTINGS.BUSINESS_INFO}`, {
-        headers: headers,
-      })
-      .then(function (response) {
-        if (response.status === 200) {
-          setWebsiteSettingData(response?.data?.data);
-          if (response?.data?.data?.c_status === true || response?.data?.data?.c_status === "true") {
-            setAdvanceStatus(true)
-          }
-        }
-      });
-  }, []);
+    // setWebsiteSettingData(response);
+    // setCStatus(response?.c_status)
+
+  }, [response]);
   const facebookPixelCode = pixelID => {
     if (pixelID) {
       return `<script>
@@ -81,7 +79,33 @@ const FacebookPixel = ({ shopName }) => {
     }
   };
 
+// console.log('response' ,typeof cStatus)
+  const handleSwitchCStatus = event => {
+    setCStatus(event.target.checked);
+    axios
+      .post(
+        `${process.env.NEXT_PUBLIC_API_URL}/client/settings/c-status/update`,
+        { c_status: event.target.checked ? "1" : "0" },
 
+        {
+          headers: headers,
+        }
+      )
+      .then(function (response) {
+        showToast(
+          event.target.checked ? "C_Status On  enable" : "C_Status On Disable ",
+          "success"
+        );
+      })
+      .catch(function (error) {
+        Swal.fire({
+          icon: "error",
+          text: "Something went wrong",
+        });
+      });
+  };
+
+  // console.log("cStatus", cStatus)
   return (
     <div className="DashboardTabsItem FacebookPixel">
       <div className="Header">
@@ -121,13 +145,15 @@ const FacebookPixel = ({ shopName }) => {
               <div className="customInput">
                 <p>Enable Conversion API (Add The Token Below)</p>
                 <Switch
+                  checked={cStatus}
+                  onChange={handleSwitchCStatus}
                   // checked={advanceStatus}
-                  onChange={event => setAdvanceStatus(event.target.checked)}
+                  // onChange={event => setAdvanceStatus(event.target.checked)}
                   {...label}
-                  checked={advanceStatus}
+                // checked={advanceStatus}
                 />
               </div>
-              {advanceStatus === true && (
+              {cStatus === true && (
                 <div className="customInput">
                   <label>Conversion API (Recommended)</label>
                   <textarea
@@ -154,7 +180,7 @@ const FacebookPixel = ({ shopName }) => {
                   placeholder="Example: TEST12345"
                   type="text"
                   {...register("test_event")}
-                  defaultValue={websiteSettingsData.test_event}
+                  defaultValue={websiteSettingsData?.test_event}
                 />
                 <h6 className="padding">
                   Use this if you need to test the server side event.{" "}

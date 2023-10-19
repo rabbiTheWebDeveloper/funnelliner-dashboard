@@ -13,7 +13,9 @@ import Spinner from "../commonSection/Spinner/Spinner";
 const validationSchema = Yup.object({
     customer_name: Yup.string().required("Customer Name is required"),
     customer_phone: Yup.string().required("Customer Contact No. is required").matches(/^(?:\+8801|01)[3-9]\d{8}$/, "Customer Contact No. must be a valid "),
-    customer_address: Yup.string().required("Customer Address is required"),
+    customer_address: Yup.string()
+    .required("Customer Address is required")
+    .min(10, "Customer Address must be at least 10 characters"),
     products: Yup.array().of(
         Yup.object().shape({
             product_id: Yup.string().required('Product is required'),

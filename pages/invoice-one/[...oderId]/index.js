@@ -59,78 +59,6 @@ const InvoicePage = () => {
     }, 5000);
   }, []);
 
-  function numberToWord(num) {
-    const ones = [
-      "",
-      "one",
-      "two",
-      "three",
-      "four",
-      "five",
-      "six",
-      "seven",
-      "eight",
-      "nine",
-    ];
-    const tens = [
-      "",
-      "",
-      "twenty",
-      "thirty",
-      "forty",
-      "fifty",
-      "sixty",
-      "seventy",
-      "eighty",
-      "ninety",
-    ];
-    const teens = [
-      "ten",
-      "eleven",
-      "twelve",
-      "thirteen",
-      "fourteen",
-      "fifteen",
-      "sixteen",
-      "seventeen",
-      "eighteen",
-      "nineteen",
-    ];
-    if (num === 0) {
-      return "zero";
-    }
-    if (num < 0) {
-      return "minus " + numberToWord(Math.abs(num));
-    }
-
-    let words = "";
-
-    if (Math.floor(num / 1000) > 0) {
-      words += numberToWord(Math.floor(num / 1000)) + " thousand ";
-      num %= 1000;
-    }
-
-    if (Math.floor(num / 100) > 0) {
-      words += numberToWord(Math.floor(num / 100)) + " hundred ";
-      num %= 100;
-    }
-
-    if (num >= 10 && num <= 19) {
-      words += teens[num - 10];
-      return words;
-    }
-
-    if (Math.floor(num / 10) > 0) {
-      words += tens[Math.floor(num / 10)];
-      num %= 10;
-    }
-
-    if (num > 0) {
-      words += ones[num];
-    }
-
-    return words.trim();
-  }
 
   const capitalizeWords = str => {
     return (str || "")
@@ -195,10 +123,16 @@ const InvoicePage = () => {
                             return (
                               <tr key={data.order_id}>
                                 <td>{index + 1}</td>
-                                <td>{data?.product}</td>
-                                <td>{data?.price}</td>
+                                <td>
+                                 {
+                                    data?.variant && data?.variations?.variant
+                                    ? data?.product + " " + data?.variations?.variant
+                                    :  data?.product
+                                 }
+                                   </td>
+                                <td>{data?.variant !== null ? data?.variations?.price : data?.price}</td>
                                 <td>{data?.quantity}</td>
-                                <td>{data?.price * data?.quantity}</td>
+                                <td> {data?.variant !== null ? data?.variations?.price * data?.quantity : data?.price * data?.quantity}</td>
                               </tr>
                             );
                           })}
@@ -225,7 +159,13 @@ const InvoicePage = () => {
                         <ul>
                           <li>
                             <h3>Subtotal :</h3>
-                            <p> Tk. {invoice?.grand_total}.00</p>
+                            <p> Tk.
+                              {
+                                invoice?.order_details?.reduce((prevVal, currentVal) => {
+                                  const price = currentVal?.variant !== null && currentVal?.variations !== null ? currentVal?.variations?.price : currentVal?.price;
+                                  return prevVal + (currentVal?.quantity * price);
+                                }, 0)}
+                              .00</p>
                           </li>
                           <li>
                             <h3>Discount :</h3>

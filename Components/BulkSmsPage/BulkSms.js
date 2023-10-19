@@ -105,7 +105,7 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
       
         startLoading();
         if (data.phone.length < 15) {
-            SuperFetch.post("/client/single-sms-send", newddata, {
+            SuperFetch.post("/client/send-custom-sms", newddata, {
                 headers: headers,
             })
                 .then(function (response) {
@@ -118,7 +118,7 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
                     showToast(error?.msg, "error");
                 });
         } else {
-            SuperFetch.post("/client/multiple-sms-send", newddata, {
+            SuperFetch.post("/client/send-custom-sms", newddata, {
                 headers: headers,
             })
                 .then(function (response) {

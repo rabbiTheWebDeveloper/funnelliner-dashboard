@@ -10,25 +10,7 @@ import * as Yup from "yup";
 import { API_ENDPOINTS } from "../../config/ApiEndpoints";
 import { Fragment } from "react";
 
-const validationSchema = Yup.object({
-  customer_name: Yup.string().required("Customer Name is required"),
-  customer_phone: Yup.string().required("Customer Contact No. is required").matches(/^(?:\+8801|01)[3-9]\d{8}$/, "Customer Contact No. must be a valid "),
-  customer_address: Yup.string().required("Customer Address is required"),
-  products: Yup.array().of(
-    Yup.object().shape({
-      product_id: Yup.string().required('Product is required'),
-      product_qty: Yup.number()
-        .typeError('Product quantity must be a number')
-        .required('Product quantity is required')
-        .min(1, 'Product quantity must be at least 1'),
-      shipping_cost: Yup.number()
-        .typeError('Shipping cost must be a number')
-        .required('Product quantity is required')
-        .min(0, 'Shipping cost cannot be negative'),
-    })
-  ),
-  order_type: Yup.string().required("Order Source is required"),
-});
+
 
 function replaceEmptyStringsWithNull(arr) {
   return arr.map((item) => (item === "" ? 0 : item));
@@ -43,6 +25,37 @@ const OrderModal = ({
   const showToast = useToast();
   const [isLoading, startLoading, stopLoading] = useLoading();
   const [selectedProducts, setSelectedProducts] = useState([]);
+
+
+  const validationSchema = Yup.object({
+  customer_name: Yup.string().required("Customer Name is required"),
+  customer_phone: Yup.string().required("Customer Contact No. is required").matches(/^(?:\+8801|01)[3-9]\d{8}$/, "Customer Contact No. must be a valid "),
+  customer_address: Yup.string()
+  .required("Customer Address is required")
+  .min(10, "Customer Address must be at least 10 characters"),
+  products: Yup.array().of(
+    Yup.object().shape({
+      product_id: Yup.string().required('Product is required'),
+      product_qty: Yup.number()
+        .typeError('Product quantity must be a number')
+        .required('Product quantity is required')
+        .min(1, 'Product quantity must be at least 1'),
+        variant_id: Yup.string().when('product_id', {
+          is: (productId) => {
+            const product = products.find((product) => product.id == productId);
+            return product && product.variations.length > 0;
+          },
+          then: Yup.string().required('Variant is required when variations exist'),
+          otherwise: Yup.string(), 
+        }),
+      shipping_cost: Yup.number()
+        .typeError('Shipping cost must be a number')
+        .required('Product quantity is required')
+        .min(0, 'Shipping cost cannot be negative'),
+    })
+  ),
+  order_type: Yup.string().required("Order Source is required"),
+});
 
   const createOrder = async inputData => {
     try {
@@ -66,7 +79,7 @@ const OrderModal = ({
         variant_id:replaceEmptyStringsWithNull(selectedVariants)
       
       };
-      console.log("data" , data)
+    
       startLoading();
       const response = await SuperFetch.post(API_ENDPOINTS.ORDERS.CREATE_ORDER, data, {
         headers: headers,

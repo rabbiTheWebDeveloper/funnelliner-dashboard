@@ -1,4 +1,4 @@
-import { Box, Container, Grid, Button } from "@mui/material";
+import { Box, Container, Grid, Button ,ToggleButtonGroup, ToggleButton } from "@mui/material";
 import HeaderDescription from "../../Common/HeaderDescription/HeaderDescription";
 import { Field, Form, Formik, ErrorMessage } from "formik";
 import style from "./addProduct.module.css";
@@ -388,7 +388,7 @@ const ViewProduct = () => {
                 }
               }}
             >
-              {({ values }) => (
+              {({ values ,setFieldValue }) => (
                 <Form>
                   <div className={style.AddProduct}>
                     <div className={style.header}>
@@ -415,14 +415,14 @@ const ViewProduct = () => {
                             />
                           </div>
                         </Grid>
-                        <Grid item xs={12} sm={4}>
+                        <Grid item xs={12} sm={3}>
                           <div className="">
                             <label>
-                              Selling Price <span>*</span>
+                            Regular Price <span>*</span>
                             </label>
                             <Field
+                            disabled
                               type="number"
-                              disabled
                               placeholder="Example: 599"
                               name="selling_price"
                             />
@@ -431,35 +431,75 @@ const ViewProduct = () => {
                               component="div"
                               className="error"
                             />
+                              <div className={style.absulatePrice}>
+                              <h6 tyle={{color : "#4d4d4d"}}>
+                                Price: <i className="flaticon-taka" /> {values.discount > 0 ? values.discount_type === 'flat' ? values.selling_price - values.discount : values.selling_price - (values?.selling_price * (values.discount / 100)) : ''}
+
+                                {
+                                  values.discount > 0 && <del style={{color : "#999"}}><i className="flaticon-taka" /> {values.selling_price > 0 ? values.selling_price : ''}</del>
+                                }
+
+                              </h6>
+                            </div>
                           </div>
                         </Grid>
+                     
+
+                        <Grid
+                          item
+                          xs={12}
+                          sm={3}
+                          className={style.ToggleButtonGroupDiv}
+                        >
+                          <label>
+                            Discount Type
+                            {/* <span>*</span> */}
+                          </label>
+                          <ToggleButtonGroup
+                            name="discount_type"
+                            color="primary"
+                            disabled
+                            value={values.discount_type}
+                            exclusive
+                            // onChange={handleChange}
+                            onChange={(event, newAlignment) => {
+                              setFieldValue("discount_type", newAlignment);
+
+                              // Update the default value of "discount" field
+                              if (newAlignment === "flat") {
+                                setFieldValue("discount", "0.00");
+                              } else {
+                                setFieldValue("discount", "%");
+                              }
+                            }}
+                            aria-label="Platform"
+                            className={style.ToggleButtonGroup}
+                          >
+                            <ToggleButton value="percent">
+                              Parcentage
+                            </ToggleButton>
+                            <ToggleButton value="flat">
+                              Fixed Amount
+                            </ToggleButton>
+                          </ToggleButtonGroup>
+                        </Grid>
+
+                        {/* {console.log(values)} */}
                         <Grid item xs={12} sm={2}>
                           <div className="">
-                            <label>Discount Price</label>
-                            <Field
+                            <label>Discount</label>
+                            <Field 
+                            disabled
                               name="discount"
-                              disabled
                               type="text"
                               placeholder="Example: 599"
                             />
                           </div>
-                        </Grid>
-
-                        <Grid item xs={12} sm={2}>
-                          <div className={style.SelectDropdown}>
-                            <label>
-                              Discount Type<span>*</span>
-                            </label>
-                            <Field component="select" name="discount_type"  disabled>
-                              <option value="">Select Discount Type</option>
-                              <option key={"flat"} value={"flat"}>
-                              flat Discount
-                              </option>
-                              <option key={"percent"} value={"percent"}>
-                              Percent Discount
-                              </option>
-                            </Field>
-                          </div>
+                          <ErrorMessage
+                            name="discount"
+                            component="div"
+                            className="error"
+                          />
                         </Grid>
                         <Grid item xs={12} sm={4}>
                           <div className="">

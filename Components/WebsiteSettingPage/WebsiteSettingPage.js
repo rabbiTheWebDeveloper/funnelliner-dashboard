@@ -752,6 +752,7 @@ const WebsiteSettingPage = ({ response }) => {
                 <TabPanel value="5">
                   <FacebookPixel
                     shopName={websiteSettingsData?.shop_name}
+                    response={response}
                   ></FacebookPixel>
                 </TabPanel>
 

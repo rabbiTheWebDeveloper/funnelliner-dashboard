@@ -142,9 +142,9 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
 
                         {/* Total Order */}
 
-                        {
+                        {/* {
                             paymentStatus === "paid" || "unpaid"
-                            &&
+                            && */}
                             <Grid item xs={12} sm={6} md={4}>
 
                                 <div className="commonCart boxShadow cart-2">
@@ -195,7 +195,7 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
                                 </div>
 
                             </Grid>
-                        }
+                        {/* } */}
 
                     </Grid>
                 </Container>

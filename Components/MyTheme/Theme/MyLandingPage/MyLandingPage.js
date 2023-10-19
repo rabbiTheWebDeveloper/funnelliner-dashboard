@@ -56,7 +56,7 @@ const MyLandingPage = () => {
                     'X-Requested-With': 'XMLHttpRequest',
                 },
             });
-            console.log("Editor", data);
+           
         } catch (err) {
             console.log(err);
         }

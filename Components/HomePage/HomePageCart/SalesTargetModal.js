@@ -10,8 +10,7 @@ const SalesTargetModal = ({salesTarget , openSales ,handleOpenSales ,handleClose
 
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
     const onSubmit = (data) => {
-        console.log(typeof(data.daily));
-        console.log(data.monthly);
+
         data.daily= parseInt(data.daily) > 0 ? data.daily : 0
         data.monthly=parseInt(data.monthly) > 0 ? data.monthly : 0
         data.custom = data.custom > 0 ? data.custom : 0

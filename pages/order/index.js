@@ -1793,7 +1793,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
 
                         <div className="Price">
                           <i className="flaticon-taka"></i>
-                          {order?.order_details[0]?.price}
+                          {order?.order_details[0]?.variant !== null ? order?.order_details[0]?.variations?.price : order?.order_details[0]?.price}.00
                         </div>
 
                         <div className="Quantity">
@@ -2059,7 +2059,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                           </div>
                         </>
                       )}
-                      {active === "follow_up" && (
+                      {shippingDateConfig && active === "follow_up" && (
                         <div className="DataTableColum">
                           <div className="TotalPrice">
                             <MobileDatePicker

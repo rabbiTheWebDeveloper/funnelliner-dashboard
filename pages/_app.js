@@ -71,6 +71,7 @@ function MyApp({ Component, pageProps, router }) {
         headers: headers,
       });
       setBusInfo(data?.data?.data);
+      Cookies.set('delivery_location', data?.data?.data?.default_delivery_location)
 
       if (data?.data?.data?.domain_status === "connected") {
         Cookies.set("domain_request", data?.data?.data.domain_request);

@@ -19,8 +19,6 @@ function handleClick(orderId) {
   if (newTab) {
     newTab.focus();
   } else {
-    // Handle the case where the new tab was blocked by the browser's popup blocker.
-    // You can provide a message or an alternative way for the user to access the content.
     alert('Popup blocked. Please allow popups for this site.');
   }
 }
@@ -31,19 +29,25 @@ const OrderDetails = () => {
   const showToast = useToast();
   const [OrderDetails, setOrderDetails] = useState({});
   const [subTotal, setSubTotal] = useState(0);
-  const [fetchApi, setFetch] = useState(false);
+  const [apiFetch, setApiFetch] = useState(false);
+
   const [isLoading, startLoading, stopLoading] = useLoading();
   const handleFetchOrderDetails = useCallback(async () => {
-    try {
-      let data = await axios({
-        method: "get",
-        url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ORDERS.ORDER_DETAILS_BY_ID}/${router?.query?.id}`,
-        headers: headers,
-      });
-      setOrderDetails(data?.data?.data);
-    } catch (err) {
+    if (router?.query?.id) {
+      try {
+        let data = await axios({
+          method: "get",
+          url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ORDERS.ORDER_DETAILS_BY_ID}/${router?.query?.id}`,
+          headers: headers,
+        });
+        setOrderDetails(data?.data?.data);
+      } catch (err) {
+      }
+
     }
-  }, [router?.query?.id, fetchApi]);
+    setApiFetch(false)
+
+  }, [router?.query?.id , apiFetch]);
 
 
   const handleStatusChange = async (event, id) => {
@@ -51,7 +55,7 @@ const OrderDetails = () => {
       order_id: id,
       status: event.target.value,
     };
-  
+
     if (event.target.value === "cancelled") {
       const confirmResult = await Swal.fire({
         iconHtml: '<img src="/images/delete.png">',
@@ -66,10 +70,10 @@ const OrderDetails = () => {
         cancelButtonColor: "#d33",
         confirmButtonText: "yes, cancel it!",
       });
-  
+
       if (confirmResult.isConfirmed) {
         startLoading();
-  
+
         try {
           const res = await SuperFetch.post("/client/orders/status/update", params, {
             headers: headers,
@@ -85,7 +89,7 @@ const OrderDetails = () => {
           }
         } finally {
           setTimeout(() => {
-            setFetch(true);
+            setApiFetch(true);
             stopLoading();
           }, 1000);
         }
@@ -106,7 +110,7 @@ const OrderDetails = () => {
         }
       } finally {
         setTimeout(() => {
-          setFetch(true);
+          setApiFetch(true);
           stopLoading();
         }, 1000);
       }
@@ -124,6 +128,7 @@ const OrderDetails = () => {
         .then(function (res) {
 
           showToast(res.data?.message);
+          setApiFetch(true);
 
         })
         .catch((error) => {
@@ -141,7 +146,7 @@ const OrderDetails = () => {
       )
         .then(res => {
           toast.success(res.data?.message, { position: "top-right" });
-          setFetch(true);
+          setApiFetch(true);
         })
         .catch(error => {
           toast.error("Something went wrong please wait for some time", {
@@ -156,7 +161,7 @@ const OrderDetails = () => {
       )
         .then(res => {
           toast.success(res.data?.message, { position: "top-right" });
-          setFetch(true);
+          setApiFetch(true);
 
         })
         .catch(error => {
@@ -180,7 +185,7 @@ const OrderDetails = () => {
         .then(res => {
           toast.success(res.data?.message, { position: "top-right" });
 
-          setFetch(true);
+          setApiFetch(true);
         })
         .catch(error => {
           toast.error("Something went wrong please wait for some time", {
@@ -202,7 +207,7 @@ const OrderDetails = () => {
         .then(res => {
           toast.success(res.data?.message, { position: "top-right" });
 
-          setFetch(true);
+          setApiFetch(true);
         })
         .catch(error => {
           toast.error("Something went wrong please wait for some time", {
@@ -221,7 +226,7 @@ const OrderDetails = () => {
         .then(res => {
           toast.success(res.data?.message, { position: "top-right" });
 
-          setFetch(true);
+          setApiFetch(true);
         })
         .catch(error => {
           toast.error("Something went wrong please wait for some time", {
@@ -241,7 +246,6 @@ const OrderDetails = () => {
     handleFetchOrderDetails();
   }, [handleFetchOrderDetails]);
 
-  console.log("OrderDetails", OrderDetails)
   return (
     <>
       <section className="OrderDetailsPage">
@@ -253,7 +257,7 @@ const OrderDetails = () => {
                 <div className="Header d_flex d_justify">
                   {/* left */}
                   <h3>
-                    <Link href="">
+                    <Link href=" " onClick={() => router.back()}>
                       <i className="flaticon-left-arrow"></i>
                     </Link>
                     Order Details
@@ -315,7 +319,7 @@ const OrderDetails = () => {
                       </li>
                       <li>
                         <span>Payment Status : </span>
-                        <span className="unpaid"> Panding</span>
+                        <span className="unpaid"> Unpaid</span>
                       </li>
                       <li>
                         <span>Order Source : </span>
@@ -356,7 +360,7 @@ const OrderDetails = () => {
                         <th>Price</th>
                         <th>Product Code</th>
                         <th>QTY (BDT)</th>
-                        <th>Discount</th>
+                        {/* <th>Discount</th> */}
                         <th>Total Price</th>
                       </tr>
                     </thead>
@@ -383,13 +387,15 @@ const OrderDetails = () => {
                               <td>
                                 <i className="flaticon-taka"></i> {item?.variant !== null ? item?.variations?.price : item?.price}.00
                               </td>
-                              <td>{item?.variant !== null ? item?.variations?.code : item?.product_code}</td>
-                              <td>{item?.variant !== null ? item?.variations?.quantity : item?.quantity}</td>
-                              <td>
+                              <td>{item?.variant !== null ? item?.variations?.code !== "" ? item?.variations?.code : item?.product_code : item?.product_code}</td>
+                              <td>{item?.quantity}</td>
+                              {/* <td>
                                 <i className="flaticon-taka"></i> {item?.discount}
-                              </td>
+                              </td> */}
                               <td>
-                                <i className="flaticon-taka"></i> {item?.variant !== null ? item?.variations?.price * item?.variations?.quantity : item?.price * item?.quantity}.00
+                                <i className="flaticon-taka"></i>
+                                {item?.variations !== null ? item?.variations?.price * item?.quantity : item?.price * item?.quantity}
+                                .00
                               </td>
                               {/* <td>
                                 <i className="flaticon-taka"></i> 234.00
@@ -490,16 +496,22 @@ const OrderDetails = () => {
                       <li>
                         <span>Sub Total : </span>
                         <p>
-                          <i className="flaticon-taka"></i>
+                          <i className="flaticon-taka"></i> +
 
-
-                          {OrderDetails?.grand_total}.00
+                          {
+                            OrderDetails?.order_details?.reduce((prevVal, currentVal) => {
+                              const price = currentVal?.variant !== null && currentVal?.variations !== null ? currentVal?.variations.price : currentVal?.price;
+                              return prevVal + (currentVal?.quantity * price);
+                            }, 0)
+                          }
+                          {/* {OrderDetails?.order_details?.map((item) => item?.variant !== null ? (item?.variations?.price * item?.quantity) : (item?.price * item?.quantity))  || 0} */}
+                          .00
                         </p>
                       </li>
                       <li>
                         <span>Discount : </span>
                         <p>
-                          <i className="flaticon-taka"></i> 
+                          <i className="flaticon-taka"></i> -
                           {
                             OrderDetails?.order_status === "pending" ||
                               OrderDetails?.order_status === "confirmed" ?
@@ -531,7 +543,7 @@ const OrderDetails = () => {
                       <li>
                         <span>Advance Payment : </span>
                         <p>
-                          <i className="flaticon-taka"></i> 
+                          <i className="flaticon-taka"></i> -
                           {
                             OrderDetails?.order_status === "pending" ||
                               OrderDetails?.order_status === "confirmed" ?
@@ -553,7 +565,14 @@ const OrderDetails = () => {
                       <li>
                         <span>Delivery Fee : </span>
                         <p>
-                          <i className="flaticon-taka"></i>  {OrderDetails?.shipping_cost}.00
+                          {OrderDetails?.shipping_cost !== 0 ? (
+                            <>
+                              <i className="flaticon-taka"></i> +
+                              {`${OrderDetails?.shipping_cost}.00`}
+                            </>
+                          ) : (
+                            "Free Delivery"
+                          )}
                         </p>
                       </li>
                       <li>

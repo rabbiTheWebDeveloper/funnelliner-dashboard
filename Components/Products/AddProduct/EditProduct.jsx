@@ -1,4 +1,11 @@
-import { Box, Container, Grid, Button, ToggleButtonGroup, ToggleButton } from "@mui/material";
+import {
+  Box,
+  Container,
+  Grid,
+  Button,
+  ToggleButtonGroup,
+  ToggleButton,
+} from "@mui/material";
 import HeaderDescription from "../../Common/HeaderDescription/HeaderDescription";
 import { Field, Form, Formik, ErrorMessage } from "formik";
 import style from "./addProduct.module.css";
@@ -19,17 +26,43 @@ import DeleteSingleVariant from "./DeleteSingleVariantModal";
 import * as Yup from "yup";
 import { useRouter } from "next/router";
 import AddVariantAttributeValue from "./AddVariantAttributeValuePopup";
+import useLoading from "../../../hook/useLoading";
+import Spinner from "../../commonSection/Spinner/Spinner";
+import Cookies from "js-cookie";
 
 const validationSchema = Yup.object({
   product_name: Yup.string().required("Product Name is required"),
   selling_price: Yup.string().required("Selling Price is required"),
   product_code: Yup.string().required("Product Code is required"),
   product_quantity: Yup.string().required("Product Quantity is required"),
+  discount: Yup.string()
+    .test("valid-discount", "Invalid discount format", value => {
+      return /^(\d+(\.\d{1,2})?%?)$/.test(value);
+    })
+    .test(
+      "valid-discount-amount",
+      "Discount cannot be higher than Regular Price ",
+      function (value) {
+        const numericValue = parseFloat(value?.replace("%", "") || 0);
+        const sellingPrice = this.parent.selling_price;
+        return numericValue <= sellingPrice;
+      }
+    )
+    .transform(value => {
+      return value ? value.replace("%", "") : "";
+    }),
+  // main_image: Yup.mixed()
+  //   .test("valid-image-size", "Product image is too big!", (value) => {
+  //     return !value || (value && value.size <= 1024 * 1024);
+  //   })
+  //   .required("Product Image required"),
 });
 
-const EditProduct = () => {
+const EditProduct = ({busInfo}) => {
   const router = useRouter();
   const showToast = useToast();
+  const [isLoading, startLoading, stopLoading] = useLoading();
+  const [productDetails, setProductDetails] = useState();
   const [categories, setCategories] = useState([]);
   const [variantAttributes, setVariantAttributes] = useState([]);
   const [openAddCategoryPopup, setOpenAddCategoryPopup] = useState(false);
@@ -37,11 +70,11 @@ const EditProduct = () => {
     useState(false);
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [deliverChargeType, setDeliveryChargeType] = useState([]);
-  const [selectProductImage, setSelectProductImage] = useState();
+  const [selectProductImage, setSelectProductImage] = useState(null);
   const [productPreviewImage, setProductPreviewImage] = useState();
   const [productGalleryImage, setProductGalleryImage] = useState([]);
-  const [productShortDescription, setProductShortDescription] = useState("");
-  const [productLongDescription, setProductLongDescription] = useState("");
+  const [productShortDescription, setProductShortDescription] = useState(productDetails?.short_description ||"");
+  const [productLongDescription, setProductLongDescription] = useState(productDetails?.long_description ||"");
   const [isOpenVariationOption, setIsOpenVariationOption] = useState(false);
   const [isShowVariantValuesOption, setIsShowVariantValuesOption] =
     useState(false);
@@ -65,7 +98,8 @@ const EditProduct = () => {
     openAddVariantAttributeValuePopup,
     setOpenAddVariantAttributeValuePopup,
   ] = useState(false);
-  const [productDetails, setProductDetails] = useState();
+  
+  const delivery_location = Cookies.get('delivery_location')
 
   const fetchCategoriesData = useCallback(async () => {
     await axios
@@ -101,6 +135,7 @@ const EditProduct = () => {
   }, []);
 
   const fetchProductDetails = useCallback(async () => {
+    if(router?.query?.id){
     const productDetailsRes = await axios.get(
       `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.GET_PRODUCT_DETAILS}${router?.query?.id}`,
       {
@@ -109,7 +144,19 @@ const EditProduct = () => {
     );
     if (productDetailsRes?.data?.success) {
       setProductDetails(productDetailsRes?.data?.data);
-      setVariantTable(productDetailsRes?.data?.data?.variations);
+
+      const modifiedData = productDetailsRes?.data?.data?.variations.map(item => {
+        // Change the field name "code" to "product_code"
+        return {
+            ...item,
+            product_code: item.code,
+            code: undefined, // Remove the old "code" field
+        };
+    });
+      setVariantTable(modifiedData);
+      setProductShortDescription(productDetailsRes?.data?.data?.short_description)
+      setProductLongDescription(productDetailsRes?.data?.data?.long_description)
+
 
       const makeVariantAttributesArr = [];
       productDetailsRes?.data?.data?.attributes.forEach(item => {
@@ -121,7 +168,7 @@ const EditProduct = () => {
       });
 
       setSelectVariantTypes(makeVariantAttributesArr);
-    }
+    }}
   }, [router?.query?.id]);
 
   useEffect(() => {
@@ -166,7 +213,7 @@ const EditProduct = () => {
       const makeVariantValuesArr = [];
       variantValuesRes?.data?.data.forEach(item => {
         makeVariantValuesArr.push({
-          value: item?.id,
+          value: item?.value,
           label: item?.value,
           attribute_id: item?.attribute_id,
         });
@@ -182,7 +229,7 @@ const EditProduct = () => {
     }
   }, []);
 
-  const createVariant = async (updatedVariantTypes) => {
+  const createVariant = async updatedVariantTypes => {
     const formData = new FormData();
 
     updatedVariantTypes?.forEach(variant => {
@@ -281,6 +328,7 @@ const EditProduct = () => {
     setDeliveryChargeType([defaultCategory] || []);
   }, [productDetails]);
 
+  if(router?.query?.id){
   return (
     <section className="DashboardSetting">
       <HeaderDescription
@@ -326,97 +374,133 @@ const EditProduct = () => {
               }}
               validationSchema={validationSchema}
               onSubmit={async data => {
-                if (selectProductImage?.size > 1024 * 1024) {
-                  showToast("Product image is too big !", "error");
-                  return;
-                } else if (!selectedCategory.length) {
-                  showToast("Category required", "error");
-                  return;
-                } else if (selectProductImage === null) {
-                  showToast("Product Image required", "error");
-                  return;
-                }
+                
+              try{  if (selectProductImage?.size > 1024 * 1024) {
+                showToast("Product image is too big !", "error");
+                return;
+              } else if (!selectedCategory.length) {
+                showToast("Category required", "error");
+                return;
+              } 
+              // else if (selectProductImage === null) {
+              //   showToast("Product Image required", "error");
+              //   return;
+              // }
 
-                data.size = "XL";
-                data.color = "white";
-                data.meta_tag = "buy";
-                data.meta_description = "IT was good and I like it";
-                data.status = "1";
+              data.size = "XL";
+              data.color = "white";
+              data.meta_tag = "buy";
+              data.meta_description = "IT was good and I like it";
+              data.status = "1";
 
-                const formData = new FormData();
-                formData.append("_method", "patch");
-                // if (selectProductImage === undefined) {
-                //   formData.append("main_image", productDetails?.main_image);
-                // } else {
-                //   formData.append("main_image", selectProductImage);
-                // }
+              const formData = new FormData();
+              formData.append("_method", "patch");
+              // if (selectProductImage === undefined) {
+              //   formData.append("main_image", productDetails?.main_image);
+              // } else {
+              //   formData.append("main_image", selectProductImage);
+              // }
+              if (selectProductImage) {
+                formData.append("main_image", selectProductImage ? selectProductImage : productDetails?.main_image );
+            }
 
-                if (selectedCategory.length) {
-                  formData.append("category_id", selectedCategory[0]?.value);
-                }
-                formData.append("product_name", data.product_name);
-                formData.append("price", data.selling_price);
-                formData.append("discount", data?.discount);
-                formData.append("discount_type", data?.discount_type);
-                formData.append("size", data.size);
-                formData.append("color", data.color);
-                formData.append("product_code", data.product_code);
-                formData.append("product_qty", data.product_quantity);
-                formData.append("short_description", productShortDescription);
-                formData.append("long_description", productLongDescription);
-                formData.append("meta_tag", data.meta_tag);
-                formData.append("meta_description", data.meta_description);
-                formData.append("status", data.status);
-                if (deliverChargeType[0]?.value === "Free Delivery Charge") {
-                  formData.append("delivery_charge", "free");
-                }
-                if (deliverChargeType[0]?.value === "Paid Delivery Charge") {
-                  formData.append("delivery_charge", "paid");
-                  formData.append("inside_dhaka", data.inside_dhaka);
-                  formData.append("outside_dhaka", data.outside_dhaka);
-                }
+            if (productGalleryImage.length) {
+              for (let i = 0; i < productGalleryImage.length; i++) {
+                formData.append("gallery_image[]", productGalleryImage[i]);
+              }
+            }
+              if (selectedCategory.length) {
+                formData.append("category_id", selectedCategory[0]?.value);
+              }
+              formData.append("product_name", data.product_name);
+              formData.append("price", data.selling_price);
+              formData.append("discount", data?.discount);
+              formData.append("discount_type", data?.discount_type);
+              formData.append("size", data.size);
+              formData.append("color", data.color);
+              formData.append("product_code", data.product_code);
+              formData.append("product_qty", data.product_quantity);
+              formData.append("short_description", productShortDescription ? productShortDescription: productDetails?.short_description);
+              formData.append("long_description", productLongDescription ? productLongDescription: productDetails?.long_description);
+              formData.append("meta_tag", data.meta_tag);
+              formData.append("meta_description", data.meta_description);
+              formData.append("status", data.status);
+              if (deliverChargeType[0]?.value === "Free Delivery Charge") {
+                formData.append("delivery_charge", "free");
+              }
+              if (deliverChargeType[0]?.value === "Paid Delivery Charge") {
+                formData.append("delivery_charge", "paid");
+                formData.append("inside_dhaka", data.inside_dhaka);
+                formData.append("outside_dhaka", data.outside_dhaka);
+                formData.append("sub_area_charge", data.subarea_charge || 0);
+              }
 
-                if (variantTable?.length) {
-                  const variantTableJson = JSON.stringify(variantTable);
-                  formData.append("variants", variantTableJson);
-                  variantTable?.forEach((variantValue, index) => {
+              if (variantTable?.length) {
+                console.log('api call' , variantTable)
+                const variantTableJson = JSON.stringify(variantTable);
+                formData.append("variants", variantTableJson);
+                variantTable?.forEach((variantValue, index) => {
+                  formData.append(
+                    `media_${index}`,
+                    variantValue?.media === undefined
+                      ? null
+                      : variantValue?.media
+                  );
+                });
+              }
+
+              selectVariantTypes?.forEach(variant => {
+                formData.append("choice[]", variant?.variantType);
+                formData.append("choice_no[]", variant?.variantTypeId);
+                if (variant?.variantValues?.length) {
+                  variant?.variantValues?.forEach(variantValue => {
                     formData.append(
-                      `media_${index}`,
-                      variantValue?.media === undefined
-                        ? null
-                        : variantValue?.media
+                      `choice_options_${variantValue?.attribute_id}[]`,
+                      variantValue?.value
                     );
                   });
                 }
+              });
+              startLoading()
+              const createProductRes = await axios.post(
+                `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.GET_PRODUCT_DETAILS}${router?.query?.id}`,
+                formData,
+                { headers: headers }
+              );
 
-                selectVariantTypes?.forEach(variant => {
-                  formData.append("choice[]", variant?.variantType);
-                  formData.append("choice_no[]", variant?.variantTypeId);
-                  if (variant?.variantValues?.length) {
-                    variant?.variantValues?.forEach(variantValue => {
-                      formData.append(
-                        `choice_options_${variantValue?.attribute_id}[]`,
-                        variantValue?.value
-                      );
-                    });
-                  }
-                });
+              if (createProductRes?.data?.success) {
+              
+                showToast("Product Updated Successfully", "success");
+                router.push("/product");
+              } 
+              // else {
+              //   showToast("Product Update Failure", "error");
+              // }
 
-                const createProductRes = await axios.post(
-                  `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.GET_PRODUCT_DETAILS}${router?.query?.id}`,
-                  formData,
-                  { headers: headers }
-                );
-
-                if (createProductRes?.data?.success) {
-                  showToast("Product Updated Successfully", "success");
-                  router.push("/product");
-                } else {
-                  showToast("Product Update Failure", "error");
+              }
+              catch(e){
+                console.log(e)
+                if (e.response) {
+                  Object.keys(e?.response?.data?.errors).forEach((key) => {
+                    const errorMessage = e?.response?.data?.errors[key][0];
+                    showToast(errorMessage, "error");
+                  })
                 }
+                else {
+                  showToast(
+                    <>
+                      <h5>Error: Request Entity Too Large</h5>
+                    </>,
+                    "error");
+                }
+              }
+              finally {
+                  stopLoading();
+              }
+
               }}
             >
-              {({ values ,setFieldValue }) => (
+              {({ values, setFieldValue }) => (
                 <Form>
                   <div className={style.AddProduct}>
                     <div className={style.header}>
@@ -445,7 +529,7 @@ const EditProduct = () => {
                         <Grid item xs={12} sm={3}>
                           <div className="">
                             <label>
-                            Regular Price <span>*</span>
+                              Regular Price <span>*</span>
                             </label>
                             <Field
                               type="number"
@@ -457,35 +541,28 @@ const EditProduct = () => {
                               component="div"
                               className="error"
                             />
+                            <div className={style.absulatePrice}>
+                              <h6 tyle={{ color: "#4d4d4d" }}>
+                                Price: <i className="flaticon-taka" />{" "}
+                                {values.discount > 0
+                                  ? values.discount_type === "flat"
+                                    ? values.selling_price - values.discount
+                                    : values.selling_price -
+                                      values?.selling_price *
+                                        (values.discount / 100)
+                                  : ""}
+                                {values.discount > 0 && (
+                                  <del style={{ color: "#999" }}>
+                                    <i className="flaticon-taka" />{" "}
+                                    {values.selling_price > 0
+                                      ? values.selling_price
+                                      : ""}
+                                  </del>
+                                )}
+                              </h6>
+                            </div>
                           </div>
                         </Grid>
-                        {/* <Grid item xs={12} sm={2}>
-                          <div className="">
-                            <label>Discount Price</label>
-                            <Field
-                              name="discount"
-                              type="text"
-                              placeholder="Example: 599"
-                            />
-                          </div>
-                        </Grid> */}
-
-                        {/* <Grid item xs={12} sm={2}>
-                          <div className={style.SelectDropdown}>
-                            <label>
-                              Discount Type<span>*</span>
-                            </label>
-                            <Field component="select" name="discount_type">
-                              <option value="">Select Discount Type</option>
-                              <option key={"flat"} value={"flat"}>
-                              flat Discount
-                              </option>
-                              <option key={"percent"} value={"percent"}>
-                              Percent Discount
-                              </option>
-                            </Field>
-                          </div>
-                        </Grid> */}
 
                         <Grid
                           item
@@ -494,7 +571,8 @@ const EditProduct = () => {
                           className={style.ToggleButtonGroupDiv}
                         >
                           <label>
-                            Discount Type<span>*</span>
+                            Discount Type
+                            {/* <span>*</span> */}
                           </label>
                           <ToggleButtonGroup
                             name="discount_type"
@@ -507,7 +585,7 @@ const EditProduct = () => {
 
                               // Update the default value of "discount" field
                               if (newAlignment === "flat") {
-                                setFieldValue("discount", "0.00");
+                                setFieldValue("discount", "0");
                               } else {
                                 setFieldValue("discount", "%");
                               }
@@ -580,7 +658,11 @@ const EditProduct = () => {
                               Category Name <span>*</span>
                             </label>
                             <AsyncSelect
-                              value={selectedCategory}
+                            key={productDetails?.id}
+                              // value={selectedCategory}
+                              defaultValue={categories.find(
+                                item => item.value == productDetails?.category_id
+                              )}
                               placeholder="Select an option..."
                               options={categories}
                               onChange={selectedOption => {
@@ -659,7 +741,7 @@ const EditProduct = () => {
                             "Paid Delivery Charge" ? (
                               <div className={style.duelInput}>
                                 <div className={style.customInput}>
-                                  <label> Delivery charge in Dhaka </label>
+                                  <label> Delivery charge in {delivery_location ? delivery_location : "Dhaka"} </label>
                                   <Field
                                     type="text"
                                     placeholder="Delivery charge in Dhaka"
@@ -668,7 +750,7 @@ const EditProduct = () => {
                                 </div>
 
                                 <div className={style.customInput}>
-                                  <label>Delivery charge out of Dhaka</label>
+                                  <label>Delivery charge out of {delivery_location? delivery_location : "Dhaka"}</label>
                                   <Field
                                     type="text"
                                     name="outside_dhaka"
@@ -701,9 +783,13 @@ const EditProduct = () => {
                                 type="file"
                                 id="select-image"
                                 style={{ display: "none" }}
-                                onChange={e =>
-                                  setSelectProductImage(e.target.files[0])
-                                }
+                                onChange={e => {
+                                  setFieldValue(
+                                    "main_image",
+                                    e.currentTarget.files[0]
+                                  );
+                                  setSelectProductImage(e.target.files[0]);
+                                }}
                               />
 
                               <label htmlFor="select-image">
@@ -716,20 +802,33 @@ const EditProduct = () => {
                                   Upload Image
                                 </Button>
                               </label>
-                              {productDetails?.main_image !== null ||
+
+                              {productPreviewImage && selectProductImage && (
+                                            <Box mt={2} textAlign="center">
+                                                {/* <h6>Image Preview:</h6> */}
+                                                <img src={productPreviewImage} alt={selectProductImage.name} Height="100px" />
+                                            </Box>
+                                        )}
+                                        {
+                                            productPreviewImage && selectProductImage ? "" : <Box mt={2} textAlign="center">
+                                                {/* <h6>Image Preview:</h6> */}
+                                                <img src={productDetails?.main_image} alt={productDetails?.product_name} Height="100px" />
+                                            </Box>
+                                        }
+                              {/* {productDetails?.main_image !== null ||
                               (productPreviewImage && selectProductImage) ? (
                                 <Box mt={2} textAlign="center">
                                   <img
                                     src={
-                                      productDetails?.main_image
-                                        ? productDetails?.main_image
-                                        : productPreviewImage
+                                      productPreviewImage
+                                        ? productPreviewImage
+                                        : productDetails?.main_image
                                     }
                                     alt={productDetails?.product_name}
                                     height="100px"
                                   />
                                 </Box>
-                              ) : null}
+                              ) : null} */}
                             </div>
                           </div>
                         </Grid>
@@ -740,7 +839,8 @@ const EditProduct = () => {
                               <ProductImage
                                 productImage={productGalleryImage}
                                 setProductImage={setProductGalleryImage}
-                                other_images={[]}
+                                // other_images={[]}
+                                other_images={productDetails?.other_images}
                               />
                             </div>
                           </div>
@@ -959,6 +1059,7 @@ const EditProduct = () => {
                               <tbody>
                                 {variantTable?.length
                                   ? variantTable?.map((variant, index) => (
+                                
                                       <tr key={index}>
                                         <td>
                                           {variant?.media === null ? (
@@ -971,6 +1072,7 @@ const EditProduct = () => {
                                                 <input
                                                   type="file"
                                                   onChange={e => {
+                                                  
                                                     const newVariants = [
                                                       ...variantTable,
                                                     ];
@@ -1009,6 +1111,7 @@ const EditProduct = () => {
                                             placeholder="20/Blue"
                                             value={variant?.variant}
                                             onChange={e => {
+                                              console.log(variant)
                                               const newVariants = [
                                                 ...variantTable,
                                               ];
@@ -1026,13 +1129,14 @@ const EditProduct = () => {
                                             placeholder="Price"
                                             value={
                                               variant?.price === 0
-                                                ? values?.selling_price
+                                                ? values.discount_type === 'flat' ? values.selling_price - values.discount : values.selling_price - (values?.selling_price * (values.discount / 100))
                                                 : variant?.price
                                             }
                                             onChange={e => {
                                               const newVariants = [
                                                 ...variantTable,
                                               ];
+                                             
                                               newVariants[index].price =
                                                 e.target.value;
                                               setVariantTable(newVariants);
@@ -1043,7 +1147,7 @@ const EditProduct = () => {
                                           <input
                                             type="text"
                                             placeholder="Product Code"
-                                            value={variant?.code}
+                                            defaultValue={variant?.product_code}
                                             onChange={e => {
                                               const newVariants = [
                                                 ...variantTable,
@@ -1108,10 +1212,18 @@ const EditProduct = () => {
                     </div>
                   </div>
                   <div className={style.Submit}>
-                    <Button type="submit">
-                      <i className="flaticon-install"> </i>
-                      Update Product
-                    </Button>
+                    {
+                      isLoading ?
+                      <Button type="submit" disabled>
+                      <Spinner/> 
+                      Updating Product
+                    </Button> :
+                       <Button type="submit">
+                       <i className="flaticon-install"> </i>
+                       Update Product
+                     </Button>
+                    }
+                 
                   </div>
                 </Form>
               )}
@@ -1160,7 +1272,7 @@ const EditProduct = () => {
         />
       ) : null}
     </section>
-  );
+  );}
 };
 
 export default EditProduct;
