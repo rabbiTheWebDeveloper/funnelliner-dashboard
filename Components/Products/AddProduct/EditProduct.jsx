@@ -375,7 +375,13 @@ const EditProduct = ({busInfo}) => {
               validationSchema={validationSchema}
               onSubmit={async data => {
                 
-              try{  if (selectProductImage?.size > 1024 * 1024) {
+              try{ 
+                const varitionPrice = variantTable.map(item => {
+                  return item.price
+                })
+                console.log('varitionPrice' , varitionPrice);
+                console.log('varitionPrice' , varitionPrice.every((str) => data?.selling_price <= parseInt(str, 10)));
+                if (selectProductImage?.size > 1024 * 1024) {
                 showToast("Product image is too big !", "error");
                 return;
               } else if (!selectedCategory.length) {
@@ -386,6 +392,13 @@ const EditProduct = ({busInfo}) => {
               //   showToast("Product Image required", "error");
               //   return;
               // }
+             
+
+              else if (varitionPrice.some((str) => data?.selling_price < parseInt(str, 10))) {
+                showToast("Variation Price cannot be higher than Regular Price", "error");
+                return
+
+              }
 
               data.size = "XL";
               data.color = "white";

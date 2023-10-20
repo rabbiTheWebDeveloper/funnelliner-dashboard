@@ -334,7 +334,7 @@ const AddProduct = ({ busInfo }) => {
                   } else if (selectProductImage === null) {
                     showToast("Product Image required", "error");
                     return;
-                  } else if (varitionPrice.every((str) => data?.selling_price <= parseInt(str, 10))) {
+                  } else if (varitionPrice.some((str) => data?.selling_price < parseInt(str, 10))) {
                     showToast("Variation Price cannot be higher than Regular Price", "error");
                     return
 
