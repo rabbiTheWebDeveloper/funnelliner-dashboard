@@ -207,6 +207,9 @@ const OrderUpdateModal = ({ order, orderId, handleCloseOrderUpdateModal, modalOp
                                                     <option key={"website"} value={"website"}>
                                                         Website
                                                     </option>
+                                                    <option key={"others"} value={"others"}>
+                                                        Others
+                                                    </option>
                                                 </Field>
                                                 <ErrorMessage
                                                     name="order_type"

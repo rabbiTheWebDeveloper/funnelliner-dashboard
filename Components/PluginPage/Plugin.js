@@ -360,7 +360,7 @@ const Plugin = ({ setFetch }) => {
                                   </div>
                                   <div className="img">
                                     <img
-                                      src={Addons.addons_image_details}
+                                      src={Addons?.addons_image_details}
                                       alt={Addons?.addons_details?.name}
                                     />
                                   </div>
@@ -411,7 +411,7 @@ const Plugin = ({ setFetch }) => {
                     <TabPanel value="1">
                       <Grid container spacing={3}>
                         {/* item */}
-                       
+
                         {addonsList.length > 0 &&
                           addonsList.map((addon, index) => {
                             return (
@@ -431,7 +431,7 @@ const Plugin = ({ setFetch }) => {
                                   >
                                     <h5>{addon?.payment_type}</h5>
                                   </div>
-                                  <div className="img">             
+                                  <div className="img">
                                     <img
                                       src={addon?.addons_image}
                                       alt=""
@@ -439,6 +439,20 @@ const Plugin = ({ setFetch }) => {
                                   </div>
                                   <div className="text">
                                     <h4>{addon?.name}</h4>
+                                    {
+                                      addon?.id === 17 &&
+                                      <>
+                                        <h4>What you will get:</h4>
+                                        <ol>
+                                          <li>Domain Verification</li>
+                                          <li>Pixel Setup</li>
+                                          <li>Conversion API Setup</li>
+                                        </ol>
+                                        <p>
+                                          If you would like direct setup support from our team, please consider purchasing this addon. Alternatively, if you prefer to handle the setup yourself, we invite you to follow our tutorial guidelines to configure your account.</p>
+                                      </>
+                                    }
+
                                     {addon?.payment_type !== "free"
                                       ? addonsTextBeforeVerifyWithPay(
                                         addon.id,

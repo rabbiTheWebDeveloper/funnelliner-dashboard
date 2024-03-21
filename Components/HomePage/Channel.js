@@ -17,7 +17,7 @@ function formatDateToBST(date) {
 const ChartJs = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-    const [cannel_date, setCannel_date] = useState('weekly');
+    const [cannel_date, setCannel_date] = useState('today');
     const [cannelList, setCannelList] = useState({});
     const [cannelRatio, setCannelRatio] = useState([]);
     const [startDate, setStartDate] = useState(null);

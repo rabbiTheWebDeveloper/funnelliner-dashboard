@@ -205,6 +205,10 @@ Menu Start
   border-bottom: 1px solid var(--border-color);
 }
 
+.custom_date_picer_width .nice-dates-popover {
+  max-width: 254px !important;
+}
+
 .NotificationContent .header p {
   margin-top: 2px;
 }
@@ -3232,9 +3236,9 @@ Home Page Design
   width: 60%;
   border-radius: 4px;
   border: 1px solid var(--colors-subtitle-text-3, #f2f2f2);
-  box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.25);
   padding: 30px;
   border-radius: 20px;
+  box-shadow: 0px 1px 10px 0px rgba(0, 0, 0, 0.05);
 }
 
 .OrderTrackingLeft .header {
@@ -3272,12 +3276,6 @@ Home Page Design
 }
 
 /* TrackingDetails */
-
-.OrderTrackingLeftBox {
-  display: flex;
-  align-items: flex-start;
-  gap: 20px;
-}
 
 .TrackingDetails {
   margin-top: 50px;
@@ -3337,15 +3335,15 @@ Home Page Design
 /* OrderTrackingLeftRight */
 
 .OrderTrackingLeftRight {
-  width: 100%;
+  width: 40%;
   display: flex;
   align-items: center;
-  gap: 20px;
+  flex-direction: column;
 }
 
 .OrderTrackingLeftRight .OrderNote {
-  margin-top: 30px;
-  width: 32%;
+  margin-top: 20px;
+  width: 100%;
 }
 
 .OrderTrackingLeftRight label {
@@ -3440,7 +3438,7 @@ Home Page Design
 
 .MuiToggleButtonGroup-root .Mui-selected {
   background: var(--main-bg-color) !important;
-  color: var(--main-color) !important;
+  color: var(--main-color) !important;
 }
 
 /* --------------------------------------------------------------------------
@@ -4168,4 +4166,35 @@ nav.MuiPagination-root ul.MuiPagination-ul.css-wjh20t-MuiPagination-ul {
   height: 200px;
   overflow-y: scroll;
   border-radius: 0 !important;
+}
+
+.sr-only {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.fraudCheck.modalContent .MuiPagination-ul button {
+  font-size: 1rem;
+  padding: 0;
+  height: 2rem;
+}
+.fraudCheck.modalContent .MuiPagination-ul button:hover {
+  background-color: var(--main-color);
+  color: white;
+}
+.fraudCheck.modalContent {
+  max-height: 80svh;
+  margin-bottom: 8svh;
+}
+
+.boxShadow2 {
+  box-shadow: 0px 4px 32px 0px rgba(0, 0, 0, 0.07);
+  background-color: #fff;
 }

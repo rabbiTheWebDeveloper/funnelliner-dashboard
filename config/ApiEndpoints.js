@@ -1,8 +1,10 @@
 const MAIN_URL = process.env.NEXT_PUBLIC_API_URL;
+const LEAD_URL = process.env.NEXT_PUBLIC_LEAD_API_URL;
 const BKASH = process.env.NEXT_BKASH_URL;
 
 const API_ENDPOINTS = {
   BASE_URL: MAIN_URL,
+  LEAD_BASE_URL: LEAD_URL,
   BKASH_URL: BKASH,
   DASHBOARD: {
     ORDERS_STATIC: `/client/order-statistics`,
@@ -77,6 +79,13 @@ const API_ENDPOINTS = {
   WEBSITE_SETTINGS: {
     UPDATE_SHIPPING_DATE_STATUS: `/client/settings/shipped-date/status/update`,
     DOMAIN_VERIFICATION: `/client/settings/domain-meta/update`,
+    GET_GOOGLE_TAG_MANAGER: `/client/other-script/list`,
+    POST_GOOGLE_TAG_MANAGER: `/client/connection`,
+    UPDATE_COMMON_SHIPPING_COST_STATUS: `/client/shipping-setting/status-update`,
+    GET_COMMON_SHIPPING_COST: `/client/shipping-setting/show`,
+    POST_COMMON_SHIPPING_COST: `/client/shipping-setting/store-update`,
+    ORDERS_OTP_PERMISSION: `/client/order-otp-permission/status-update`,
+
   },
   OTP: {
     VERIFY_OTP: `/auth/verify`,
@@ -85,6 +94,9 @@ const API_ENDPOINTS = {
   BILLING: {
     GET_BILLING_LIST: `/client/transaction/list`,
   },
+  PAGE : {
+    FOOTER_COLOR : `/client/multi-page/update`,
+    GET_BILLING_LIST: `/client/multi-page/footer-id`,
+  }
 };
-
 export { API_ENDPOINTS };

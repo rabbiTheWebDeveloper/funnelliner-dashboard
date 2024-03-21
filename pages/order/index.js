@@ -45,6 +45,9 @@ import useLoading from "../../hook/useLoading";
 import { useToast } from "../../hook/useToast";
 import { headers } from "../api";
 import ViewModal from "../../Components/OrderPage/ViewModal";
+import * as XLSX from "xlsx";
+import _ from "lodash";
+import { saveAs } from "file-saver";
 
 const followUpOrderFilterOption = [
   { value: 'today', label: 'Today' },
@@ -62,12 +65,12 @@ const confirmedOrderFilterOption = [
 function formatDateToBST(date) {
   return date?.toLocaleString('en-US', { timeZone: 'Asia/Dhaka' });
 }
-const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
+const OrderPage = ({ orderUpdate, myAddonsList }) => {
   const showToast = useToast();
   const router = useRouter();
   const [isLoading, startLoading, stopLoading] = useLoading();
   const [enableGlobalSearch, setEnableGlobalSearch] = useState(false);
-  const [active, setDefault] = useState("pending");
+  const [active, setDefault] = useState("all");
   const [products, setProducts] = useState([]);
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
@@ -95,15 +98,11 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
   const [search, setSearch] = useState(null);
   const [followUpChange, setFollowUpInputChange] = useState("");
   const [courierModal, setCourierModal] = useState(false);
-  const [courierStatus, setCourierStatus] = useState("");
-  //   courier
   const [courierList, setCourierList] = useState({});
   const [tabValue, setTabValue] = useState("1");
   const [cities, setCities] = useState();
   const [followUpDate, setFollowUpDate] = useState();
-  const [shippingDate, setShippingDate] = useState();
-  const [selectedSingleCourier, setSelectedSingleCourier] = useState("");
-  const [selectedOrder, setSelectedOrder] = useState();
+  const [pendingOrderCount, setPendingOrderCount] = useState([]);
 
 
 
@@ -181,43 +180,6 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     cancelledOnStatus.push({ item: "Hold On", value: "hold_on" });
   }
 
-  const couriers = [
-    { item: "Office Delivery", value: "office_delivery" },
-    { item: "SteadFast", value: "steadfast" },
-    { item: "Pathao", value: "pathao" },
-  ];
-
-  const steadfast = [
-    { item: "in_review", value: "In Review" },
-    { item: "pending", value: "Pending" },
-    { item: "hold", value: "Hold" },
-    { item: "cancelled", value: "Cancelled" },
-    { item: "delivered", value: "Delivered" },
-    { item: "cancelled_approval_pending", value: "Cancel" },
-    { item: "unknown_approval_pending", value: "Need Approval" },
-    // { item: 'partial_delivered_approval_pending', value: 'Partial Delivered' },
-    { item: "delivered_approval_pending", value: "Delivered" },
-    { item: "partial_delivered", value: "Partial Delivered" },
-    { item: "unknown", value: "Unknown" },
-  ];
-  const pathao = [
-    { item: "Pickup_Requested", value: "Pickup Requested" },
-    { item: "Assigned_for_Pickup", value: "Assigned For Pickup" },
-    { item: "Picked", value: "Picked" },
-    { item: "Pickup_Failed", value: "Pickup Failed" },
-    { item: "Pickup_Cancelled", value: "Pickup Cancelled" },
-    { item: "At_the_Sorting_HUB", value: "At The Sorting HUB" },
-    { item: "In_Transit", value: "In Transit" },
-    { item: "Received_at_Last_Mile_HUB", value: "Received At Last Mile HUB" },
-    { item: "Assigned_for_Delivery", value: "Assigned For Delivery" },
-    { item: "Delivered", value: "Delivered" },
-    { item: "Partial_Delivery", value: "Partial Delivery" },
-    { item: "Return", value: "Return" },
-    { item: "Delivery_Failed", value: "Delivery Failed" },
-    { item: "On_Hold", value: "On Hold" },
-    { item: "Payment_Invoice", value: "Payment Invoice" },
-  ];
-
   const handleOpenModal = () => {
     setModalOpen(true);
   };
@@ -278,17 +240,13 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     setFollowUpInputChange(null);
     setSelectedValue(null)
     setDefault(value);
+    setCurrentPage(1)
     setShowPicker(false)
     setStartDate()
     setEndDate()
     setEnableGlobalSearch(false)
-    setTotalPage(0)
+    // setTotalPage(0)
   };
-
-  const handleFilterStatusCOurier = value => {
-    setCourierStatus(value);
-  };
-
   const handleCourierModalOpen = () => {
     setCourierModal(true);
   };
@@ -303,10 +261,13 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     provider: selectCourier,
     courier_status: selectCourierStatus,
     // search: search,
-    start_date: formatDateToBST(startDate),
-    end_date: formatDateToBST(endDate),
+    start_date: active === "all" ? formatDateToBST(startDate) : formatDateToBST(startDate),
+    end_date: active === "all" ? formatDateToBST(endDate) : formatDateToBST(endDate),
     filter_date: selectedValue,
   };
+  if (active === "all" && startDate && endDate) delete params.type
+  if (active === "all" && startDate && endDate) delete params.page
+  if (active === "all") params.filter_date = "custom"
   const [statusChangeLoading, setStatusChangeLoading] = useState(false);
   const handleStatusChange = (event, id) => {
     const params = {
@@ -492,21 +453,6 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
   const handleFetch = () => {
     setFetch(true);
   };
-
-  const handleOrderDetails = id => {
-    SuperFetch.get(`/client/orders/${id}`, { headers: headers })
-      .then(res => {
-        setViewOrderModalOpen(true);
-        setOrder(res.data.data);
-        handleFetch();
-      })
-      .catch(error => {
-        toast.error("Something went wrong please wait for some time", {
-          position: "top-right",
-        });
-      });
-  };
-
   const handleOrderUpdate = id => {
     SuperFetch.get(`/client/orders/${id}`, { headers: headers })
       .then(res => {
@@ -561,11 +507,15 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
         .catch(e => { });
 
       if (callCount === 0) {
-        SuperFetch.get(API_ENDPOINTS.PRODUCTS.GET_PRODUCTS, { headers: headers }).then(res => {
-          if (res.data.success) {
-            setProducts(res.data?.data);
+        if (modalOpenUpdate || modalOpen) {
+          SuperFetch.get(API_ENDPOINTS.PRODUCTS.GET_PRODUCTS, { headers: headers }).then(res => {
+            if (res.data.success) {
+              setProducts(res.data?.data);
+            }
           }
-        });
+
+          );
+        }
         if (active === 'pending') {
           SuperFetch.get(API_ENDPOINTS.ORDERS.ORDER_ADVANCE_PAYMENT_CONFIG, {
             headers: headers,
@@ -608,10 +558,9 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     update,
     startDate,
     endDate,
+    modalOpenUpdate,
+    modalOpen
   ]);
-
-  const today = new Date().toISOString().slice(0, 10);
-
   // follow date
 
   const [openStock, setOpenStock] = useState(false);
@@ -641,74 +590,6 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
           });
         }
       });
-  };
-
-  const onChangeShippingDate = orderId => {
-    if (shippingDate === undefined) {
-      showToast("Please select valid Date", "error");
-      return;
-    }
-    const postBody = {
-      date: `${shippingDate.$y}-${shippingDate.$M + 1}-${shippingDate.$D}`,
-      type: "confirmed",
-    };
-    axios
-      .post(API_ENDPOINTS.BASE_URL + `${API_ENDPOINTS.ORDERS.ORDER_SHIPPING_DATE}${orderId}/update`, postBody, {
-        headers: headers,
-      })
-      .then(function (response) {
-        if (response.status === 200) {
-          handleFetch()
-          showToast(response?.data?.message, "success");
-        }
-      }).catch(function (error) {
-        showToast("An error occurred while updating the shipping date", "error");
-      })
-  };
-
-  // delete order
-  const deleteProduct = id => {
-    Swal.fire({
-      iconHtml: '<img src="/images/delete.png">',
-      customClass: {
-        icon: "no-border",
-        border: "0",
-      },
-      text: "Are you sure you want to delete this order?",
-      icon: "info",
-      showCancelButton: true,
-      confirmButtonColor: "#894BCA",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "yes, delete",
-    }).then(result => {
-      if (result.isConfirmed) {
-        axios
-          .post(
-            `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ORDERS}/${id}/delete`,
-            // `${process.env.NEXT_PUBLIC_API_URL}/client/order/${id}/delete`,
-            {},
-            {
-              headers: headers,
-            }
-          )
-          .then(function (result) {
-            if (result) {
-              setOrders(pd => {
-                const filter = orders.filter(prod => {
-                  return prod.id !== id;
-                });
-                return [...filter];
-              });
-              Swal.fire("Deleted!", "Your order has been deleted.", "success");
-              orderUpdate();
-            } else {
-            }
-          })
-          .catch(errr => {
-            alert("something went wrong");
-          });
-      }
-    });
   };
 
   const [courierViewValue, setCourierViewValue] = useState("");
@@ -916,23 +797,6 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
       return "Add Note";
     }
   };
-  // onChange={() => handleOnChangeNote(order?.order_no, order?.note)}
-  const handleOnChangeNote = (orderId, note_data, event, type) => {
-    setOnChangeOrderNoteData({ orderId: orderId, note: note_data });
-    // if (event.key === "Enter") {
-    //     SuperFetch.post(`/client/order/note/${id}/update`, {
-    //         note: event.target.value,
-    //         type: type
-    //     }, { headers: headers })
-    //         .then(res => {
-    //             toast.success(res.data?.message, { position: 'top-right' })
-    //         }).catch(error => {
-    //             toast.error('Something went wrong please wait for some time', { position: 'top-right' })
-    //         }
-    //         )
-    // }
-  };
-
   const removeTextFromNumber = (phoneNumber, textToRemove) => {
     if (phoneNumber.includes(textToRemove)) {
       return phoneNumber.replace(textToRemove, "");
@@ -942,57 +806,6 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
   };
 
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
-
-  // const steadfast = [
-  //     { item: 'in_review', value: 'In Review' },
-  //     { item: 'pending', value: 'Pending' },
-  //     { item: 'hold', value: 'Hold' },
-  //     { item: 'cancelled', value: 'Cancelled' },
-  //     { item: 'delivered', value: 'Delivered' },
-  //     { item: 'cancelled_approval_pending', value: 'Cancel' },
-  //     { item: 'unknown_approval_pending', value: 'Need Approval' },
-  //     // { item: 'partial_delivered_approval_pending', value: 'Partial Delivered' },
-  //     { item: 'delivered_approval_pending', value: 'Delivered' },
-  //     { item: 'partial_delivered', value: 'Partial Delivered' },
-  //     { item: 'unknown', value: 'Unknown' }
-  // ]
-
-  const courierText = value => {
-    if (value === "In Review") {
-      return "in_review";
-    } else if (value === "Unknown") {
-      return "unknown";
-    } else if (value === "Pending") {
-      return "pending";
-    } else if (value === "Unknown") {
-      return "unknown";
-    } else if (value === "Hold") {
-      return "hold";
-    } else if (value === "Cancelled") {
-      return "cancelled";
-    } else if (value === "Delivered") {
-      return "delivered";
-    } else if (value === "Cancel") {
-      return "cancelled_approval_pending";
-    }
-
-    return;
-  };
-
-  function createUniqueCityArray(inputArray) {
-    const uniqueCourier = [];
-    const jsonObject = [];
-
-    for (const item of inputArray) {
-      const courier = item?.courier_status;
-      if (!uniqueCourier.includes(courier)) {
-        uniqueCourier.push(courier);
-        jsonObject.push({ item: courier, value: courier });
-      }
-    }
-    return jsonObject;
-  }
-
   const countNonNullFields = (invoiceNote, courierNote) => {
     if (
       invoiceNote !== null &&
@@ -1011,12 +824,6 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
     }
   };
 
-  const courierStatusOrderCount = value => {
-    const order = orders.filter(order => {
-      return order.courier_status === value;
-    });
-    return order?.length;
-  };
   useEffect(() => {
     setSelectedOrders([]);
     setSelectAll(false);
@@ -1031,11 +838,6 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
 
   const [selectedStatus, setSelectedStatus] = useState("Select Status");
 
-  const handleTableAction = (type, id) => {
-    if (type === "view") {
-      handleOrderDetails(id);
-    }
-  };
 
   const orderType = value => {
     if (value === "landing") {
@@ -1101,18 +903,108 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
           method: "get",
           url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ORDERS.GET_ORDER_TRASHED_LIST}`,
           headers: headers,
+          params:params,
         });
         if (data.status) {
           setOrders(data?.data?.data);
+          setTotalPage(data?.data.last_page);
         }
       } catch (err) { }
 
     }
-  }, [active]);
+  }, [active ,currentPage]);
 
+
+  const [selectedOption, setSelectedOption] = useState("");
+  const generateExcelFile = (data) => {
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(data);
+
+    const headerStyle = {
+      font: { bold: true },
+      fill: { fgColor: { rgb: 'CCCCCC' } },
+    };
+
+    const dataStyle = { fill: { fgColor: { rgb: 'FFFFFF' } } };
+
+    // Apply header style
+    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
+    for (let col = headerRange.s.c; col <= headerRange.e.c; col++) {
+      const headerCell = XLSX.utils.encode_cell({ r: headerRange.s.r, c: col });
+      if (worksheet[headerCell]) {
+        worksheet[headerCell].s = headerStyle;
+      }
+    }
+
+    // Apply data style
+    const dataRange = XLSX.utils.decode_range(worksheet['!ref']);
+    for (let row = dataRange.s.r + 1; row <= dataRange.e.r; row++) {
+      for (let col = dataRange.s.c; col <= dataRange.e.c; col++) {
+        const cell = XLSX.utils.encode_cell({ r: row, c: col });
+        if (worksheet[cell]) {
+          worksheet[cell].s = dataStyle;
+        }
+      }
+    }
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+
+    const file = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    return file;
+  };
+
+  const downloadExcelFile = async () => {
+    const orderss = [...orders];
+    console.log(orderss); // Replace this with your actual data
+    const file = generateExcelFile(orderss);
+    saveAs(file, 'y_list.xlsx');
+  };
+
+
+  const handleOptionChange = (event) => {
+    setSelectedOption(event.target.value);
+    // Perform corresponding action based on the selected option
+    switch (event.target.value) {
+      // case "pdf":
+      //   // handelPdf();
+      //   generateCustomerPDF(customers, active);
+      //   break;
+      // // case "image":
+      // //   downlodeImage();
+      // //   break;
+      case "excel":
+        downloadExcelFile();
+        break;
+      default:
+        break;
+    }
+  };
   useEffect(() => {
     handleFetchOrderTrash();
   }, [handleFetchOrderTrash])
+
+
+  const handleFetchOrderCount = async () => {
+    try {
+      let data = await axios({
+        method: "get",
+        url: `${API_ENDPOINTS.BASE_URL}/client/order/count`,
+        headers: headers,
+      });
+      setPendingOrderCount(data.data.data);
+    } catch (err) { }
+
+  };
+
+  useEffect(() => {
+    handleFetchOrderCount();
+  }, []);
   return (
     <div>
       <section className="DashboardSetting Order">
@@ -1142,8 +1034,19 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
 
         <Container maxWidth="sm">
           <div className="OrderTabs">
-            <div className="CommonTab">
+            <div className="CommonTab" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <Box sx={{ width: "100%", typography: "body1" }}>
+                <BootstrapButton
+                  className={active === "all" ? "filterActive" : ""}
+                  onClick={e => handleFilterStatusChange("all")}
+                >
+                  All
+                  <h6>
+                    {pendingOrderCount?.allOrderCount > 0
+                      ? pendingOrderCount?.allOrderCount
+                      : "0"}
+                  </h6>
+                </BootstrapButton>
                 <BootstrapButton
                   className={active === "pending" ? "filterActive" : ""}
                   onClick={e => handleFilterStatusChange("pending")}
@@ -1155,8 +1058,9 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                       : "0"}
                   </h6>
                 </BootstrapButton>
-                {myAddonsList[1]?.addons_id === 13 &&
-                  myAddonsList[1]?.status === 1 && (
+                {(Array.isArray(myAddonsList)) && myAddonsList?.some(
+                  (addon) => addon?.addons_id === 13 && addon?.status === 1
+                ) && (
                     <BootstrapButton
                       className={active === "unverified" ? "filterActive" : ""}
                       onClick={e => handleFilterStatusChange("unverified")}
@@ -1255,22 +1159,65 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                   onClick={e => handleFilterStatusChange("trashed")}
                 >
                   Order Trash
-                  {/* <h6>
-                    {pendingOrderCount?.follow_up > 0
-                      ? pendingOrderCount?.follow_up
+                  <h6>
+                    {pendingOrderCount?.trash > 0
+                      ? pendingOrderCount?.trash
                       : "0"}
-                  </h6> */}
+                  </h6>
                 </BootstrapButton>
               </Box>
+              {
+                active === "all" || active === "pending" || active === "unverified" || active === "confirmed" || active === "shipped" || active === "delivered" || active === "cancelled" || active === "returned" || active === "follow_up" || active === "hold_on" ?
+                  <div className="custom_date_picer_width">
+                    <DateRangePicker
+                      startDate={startDate}
+                      endDate={endDate}
+                      focus={focus}
+                      onStartDateChange={setStartDate}
+                      onEndDateChange={setEndDate}
+                      locale={enGB}
+
+                      modifiersClassNames={{ open: "-open" }}
+
+                    >
+                      {({ startDateInputProps, endDateInputProps }) => (
+                        <div className="date-range">
+                          <FilterDateInput
+                            className="input"
+                            {...endDateInputProps}
+
+                            {...startDateInputProps}
+                            value={dateValue}
+                            placeholder="Select date range"
+
+                          />
+                        </div>
+                      )}
+                    </DateRangePicker>
+                  </div> : null
+              }
+
             </div>
 
-            {active === "pending" && (
-              <div className="duelSelect">
+            {active === "all" || active === "pending" ? (
+              <div className="duelSelect" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <Button className="CreateNewBtn" onClick={handleOpenModal}>
                   Create New Order <i className="flaticon-plus"></i>
                 </Button>
+                <select
+                  name="downloadReport"
+                  value={selectedOption}
+                  onChange={handleOptionChange}
+                >
+                  <option value="" disabled>
+                    Download Report
+                  </option>
+                  {/* <option value="pdf">As PDF</option>
+                  <option value="image">As Image</option> */}
+                  <option value="excel">As Excel</option>
+                </select>
               </div>
-            )}
+            ) : null}
             {active === "shipped" && (
               <div className="duelSelect d_flex">
                 {/* new Design */}
@@ -1530,6 +1477,10 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                 <div className="DataTableColum">
                   <h3>Product Info</h3>
                 </div>
+
+                <div className="DataTableColum Address">
+                  <h3>Delivery Score</h3>
+                </div>
                 {/* <div className="DataTableColum">
                   <h3>Order Source</h3>
                 </div> */}
@@ -1574,7 +1525,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                   </>
                 )}
                 {/* || active === "confirmed" */}
-                {shippingDateConfig ? active === "confirmed" || active === "follow_up" ? (
+                {(shippingDateConfig && active === "confirmed") || active === "follow_up" ? (
                   <div className="DataTableColum">
                     <h3>
                       {
@@ -1582,7 +1533,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                       }
                     </h3>
                   </div>
-                ) : null : null}
+                ) : null}
                 {active === "shipped" && (
                   <>
                     <div className="DataTableColum">
@@ -1611,9 +1562,10 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                 ) : null}
                 {(active === "pending" ||
                   active === "follow_up" ||
+                  active === "all" ||
                   active === "hold_on" ||
                   active === "cancelled") && (
-                    <div className="DataTableColum Address">
+                    <div className={`DataTableColum `}>
                       <h3>Status</h3>
                     </div>
                   )}
@@ -1628,6 +1580,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
 
                 {(active === "pending" ||
                   active === "unverified" ||
+                  active === "all" ||
                   active === "follow_up" ||
                   active === "shipped" ||
                   active === "confirmed" ||
@@ -1668,12 +1621,12 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                           {index + 1 + currentPage * 25 - 25}
                         </div>
                       </div>
-                     
+
                       <div className="DataTableColum">
                         <Link href={`/order-details?id=${order?.id}`}>
-                        <div className="orderColor">#{order?.order_no}</div>
+                          <div className="orderColor">#{order?.order_no}</div>
                         </Link>
-                       
+
                         {/* <p>   {moment(
                         order?.created_at
                     ).fromNow()
@@ -1767,19 +1720,19 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                               justifyContent: "center",
                             }}>
                               {order?.order_details[0]?.product?.length < 15 ? (
-                                  <span>
-                                    {order?.order_details[0]?.product}
-                                  </span>
+                                <span>
+                                  {order?.order_details[0]?.product}
+                                </span>
                               ) : (
-                            
-                                  <span>
-                                    {order?.order_details[0]?.product?.slice(
-                                      0,
-                                      13
-                                    )}
-                                    ...
-                                  </span>
-                                
+
+                                <span>
+                                  {order?.order_details[0]?.product?.slice(
+                                    0,
+                                    13
+                                  )}
+                                  ...
+                                </span>
+
                               )}
                             </span>
                           </Tooltip>
@@ -1787,7 +1740,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                         <div className="Quantity">
                           {/* variant: */}
                           <span>
-                          {order?.order_details[0]?.variant !== null ? order?.order_details[0]?.variations?.variant : null}
+                            {order?.order_details[0]?.variant !== null ? order?.order_details[0]?.variations?.variant : null}
                           </span>
                         </div>
 
@@ -1807,6 +1760,77 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                             )}
                           </span>
                         </div>
+                      </div>
+
+
+                      <div className="DataTableColum Address">
+                        {
+                          order?.fraud_processing ? " Processed....."
+                            :
+                            <>
+                              <div className="Name">
+                                <div >
+                                  {/* <i className="flaticon-user"></i> */}
+                                  Return :
+
+                                </div>
+                                {/* <Tooltip
+                            title={order?.customer_name}
+                            placement="top-start"
+                          >
+                            <span>
+                              {order?.customer_name?.length < 12 ? (
+                                <span>{order?.customer_name}</span>
+                              ) : (
+                                <span>
+                                  {order?.customer_name?.slice(0, 13)}
+                                  ...
+                                </span>
+                              )}
+                            </span>
+                          </Tooltip> */}
+                                {order?.fraud_return}
+                              </div>
+
+                              <div className="Name PhoneNumber">
+                                <div >
+                                  {/* <i className="flaticon-phone-call"></i> */}
+                                  Delivery  :
+                                </div>
+                                {/* <Link href={`tel:${order?.phone}`}>
+                            {removeTextFromNumber(order?.phone, "+88")}
+                          </Link> */}  {order?.fraud_delivery}
+                              </div>
+
+                              <div className="Name">
+                                <div >
+                                  {/* <i className="flaticon-location"></i> */}
+                                  Entry :
+                                </div>
+                                <p>
+                                  {/* <Tooltip
+                              title={order?.address}
+                              placement="top-start"
+                            >
+                              <span>
+                                {order?.address?.length < 15 ? (
+                                  <span>{order?.address}</span>
+                                ) : (
+                                  <span>
+                                    {order?.address?.slice(0, 13)}
+                                    ...
+                                  </span>
+                                )}
+                              </span>
+                            </Tooltip> */}
+                                  {order?.fraud_entry}
+                                </p>
+                              </div>
+
+
+                            </>
+                        }
+
                       </div>
                       {/* <div className="DataTableColum">
                         <div
@@ -2059,7 +2083,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                           </div>
                         </>
                       )}
-                      {shippingDateConfig && active === "follow_up" && (
+                      {active === "follow_up" && (
                         <div className="DataTableColum">
                           <div className="TotalPrice">
                             <MobileDatePicker
@@ -2270,6 +2294,7 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
 
                       {(active === "pending" ||
                         active === "follow_up" ||
+                        active === "follow_up" ||
                         active === "hold_on" ||
                         active === "cancelled") && (
                           <div className="DataTableColum Address">
@@ -2343,6 +2368,14 @@ const OrderPage = ({ orderUpdate, pendingOrderCount, myAddonsList }) => {
                               </FormControl>
                             </div>
                           </div>
+                        ) || (active === "all" &&
+                          <div className="DataTableColum">
+                            <div className="TotalPrice">
+                              {courierStatusFormate(order?.order_status)}
+                            </div>
+
+                          </div>
+
                         )}
                       {active === "delivered" && (
                         <div className="DataTableColum">

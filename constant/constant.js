@@ -17,3 +17,24 @@ fbq('track', 'PageView');
 <img height="1" width="1" style="display:none" 
      src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID&ev=PageView&noscript=1"/>
 </noscript>`
+
+
+export const googleTagManagerText = <ol>
+
+               <li>
+               Paste this code as high in the  &lt;head &gt; of the page as possible
+               </li>
+          </ol>
+
+
+export const googleTagManagerNoscript= <ol>
+               <li>
+               Paste this code immediately after the opening   &lt;body &gt; tag
+                    
+               </li>
+          </ol>
+     
+
+
+
+

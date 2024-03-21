@@ -1,70 +1,59 @@
+import React from 'react';
 import { Container, Grid } from '@mui/material';
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
 import AccountDashboard from '../../Components/AccountingModeul/AccountDashboard';
 import { headers } from '../api';
 
 const AccountDashboardPage = ({ myAddonsList, isApiResponse }) => {
-    const [fetchApi, setFetch] = useState(false)
-    const [payment, setPayment] = useState([]);
-    const handleFetch = () => {
-        setFetch(true);
-    }
+  const [fetchApi, setFetch] = React.useState(false);
+  const [payment, setPayment] = React.useState([]);
 
-    if (myAddonsList[0]?.addons_id === 16 && myAddonsList[0]?.status === 1) {
-        return (
-            <>
+  const handleFetch = () => {
+    setFetch(true);
+  };
 
-                <section>
+  // Check if any addon in the list satisfies the condition
+  const isAccessDenied = myAddonsList.some(
+    (addon) => addon.addons_id === 16 && addon.status === 1
+  );
 
-                    <Container maxWidth="sm">
+  return (
+    <>
+      {myAddonsList.map((addon) =>
+        addon.addons_id === 16 && addon.status === 1 ? (
+          <section key={addon.id}>
+            <Container maxWidth="sm">
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <AccountDashboard
+                    fetchApi={fetchApi}
+                    payment={payment}
+                    setPayment={setPayment}
+                    handleFetch={handleFetch}
+                    addon={addon}
+                  />
+                </Grid>
+              </Grid>
+            </Container>
+          </section>
+        ) : null
+      )}
 
-                        <Grid Container spacing={3}>
+      {/* Display "Access Denied" message only once if any addon satisfies the condition */}
+      {isApiResponse && !isAccessDenied && (
+        <section key="no-payment">
+          <Container maxWidth="sm">
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <div className="NoPayment boxShadow commonCart cart-1">
+                  <h3>Access Denied. Please make a payment or activate to access.</h3>
+                </div>
+              </Grid>
+            </Grid>
+          </Container>
+        </section>
+      )}
+    </>
+  );
+};
 
-                            <Grid item xs={12}>
-
-                                <AccountDashboard fetchApi={fetchApi} payment={payment} setPayment={setPayment} handleFetch={handleFetch} />
-
-                            </Grid>
-
-                        </Grid>
-
-                    </Container>
-
-                </section>
-
-            </>
-
-        )
-    } else if (isApiResponse) {
-        return (
-            <>
-
-                <section>
-
-                    <Container maxWidth="sm">
-
-                        <Grid Container spacing={3}>
-
-                            <Grid item xs={12} >
-                                <div className="NoPayment boxShadow commonCart cart-1">
-
-                                    <h3>Access Denied. Please make a payment or activate to access.</h3>
-
-                                </div>
-                            </Grid>
-
-                        </Grid>
-
-                    </Container>
-
-                </section>
-
-            </>)
-
-    }
-}
-
-
-
-export default AccountDashboardPage
+export default AccountDashboardPage;

@@ -1,5 +1,3 @@
-
-
 import SubCategory from '../../Components/Category/SubCategoryPage/SubCategory';
 import withAuth from '../../hook/PrivateRoute';
 
@@ -12,8 +10,8 @@ const index = () => {
 
         <>
 
-          
-            <SubCategory/>
+
+            <SubCategory />
 
         </>
 

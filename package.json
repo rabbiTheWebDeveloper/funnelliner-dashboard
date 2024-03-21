@@ -20,6 +20,7 @@
     "@reduxjs/toolkit": "^1.6.1",
     "@tiptap/react": "^2.0.0-beta.209",
     "@tiptap/starter-kit": "^2.0.0-beta.209",
+    "animate.css": "^4.1.1",
     "axios": "^1.2.0",
     "bcryptjs": "^2.4.3",
     "browser-image-resizer": "^2.4.1",

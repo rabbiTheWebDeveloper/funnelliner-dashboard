@@ -7,13 +7,16 @@ import { Box, Button, Modal } from "@mui/material";
 const HeaderDescription = ({
   videoLink,
   headerIcon,
+  novideo,
   title,
   subTitle,
+  subTitle2,
   search,
   setSearch,
   order,
   setSearchedOrder,
   setOrders,
+  handleChange,
   handleFilterStatusChange,
   setEnableGlobalSearch,
 }) => {
@@ -36,26 +39,28 @@ const HeaderDescription = ({
                 <div className={style.text}>
                   <h4>{title}</h4>
                   <p>{subTitle}</p>
+                  <p>{subTitle2}</p>
                 </div>
               </div>
 
               {/* right */}
               <div className={style.Right}>
-                <div className={style.VideoIcon}>
-                  <Tooltip title={videoLink?.title}  placement="top-start">
-                  <Button onClick={handleOpen}>
-                    <i className="flaticon-video-camera"></i>
-                  </Button>
-                  </Tooltip>
-                 
-                </div>
+                {!novideo && (
+                  <div className={style.VideoIcon}>
+                    <Tooltip title={videoLink?.title} placement="top-start">
+                      <Button onClick={handleOpen}>
+                        <i className="flaticon-video-camera"></i>
+                      </Button>
+                    </Tooltip>
+                  </div>
+                )}
                 {search != false && (
                   <div className={style.SearchFilter}>
                     <div className={style.customInput}>
                       <input
                         type="text"
                         placeholder="Search Here..."
-                        onKeyUp={e => setSearch(e.target.value)}
+                        onKeyUp={e =>{ setSearch(e.target.value); handleChange && handleChange(e)}}
                       />
                     </div>
                   </div>
@@ -98,23 +103,18 @@ const HeaderDescription = ({
               </div>
             </div>
             <div className={style.youTubeVideo}>
-            
-              {
-                videoLink?.video ?
+              {videoLink?.video ? (
                 <iframe
-                src={videoLink?.video}
-                title="YouTube video player"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen
-                autoplay
-              ></iframe>  :
-              <img src="/images/coming_soon.png" alt="video commming soon "/>
-              }
-             
-             
-           
-
+                  src={videoLink?.video}
+                  title="YouTube video player"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowfullscreen
+                  autoplay
+                ></iframe>
+              ) : (
+                <img src="/images/coming_soon.png" alt="video commming soon " />
+              )}
             </div>
           </div>
         </Box>

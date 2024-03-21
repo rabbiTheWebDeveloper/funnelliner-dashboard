@@ -149,7 +149,7 @@ const Banner = ({ response }) => {
                                                     <br />
                                                     <label>
                                                         Image <span className="mustBe">Must be:</span> (png, jpg, jpeg) ;
-                                                        <span className="mustBe">Image Size:</span> (Width:375px, height: 275px)
+                                                        <span className="mustBe">Recommended size :</span> (415px*275px)
                                                     </label>
 
                                                     <div className={style.homeSliderDivMain}>

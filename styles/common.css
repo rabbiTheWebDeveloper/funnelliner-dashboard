@@ -2,6 +2,39 @@
   height: 80px;
 }
 
+.flex-center {
+  display: flex;
+  align-items: center;
+}
+.custom-dropdown
+  .css-1itpi5-MuiFormControl-root-MuiTextField-root
+  .MuiInputBase-root {
+  height: auto !important;
+}
+
+.text-custom-green {
+  color: #009721;
+}
+
+.ghost {
+  padding: 0 !important;
+}
+.ghost.cardContent,
+.ghost.cardContent .card {
+  background: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border-right: 1px solid var(--border-color);
+}
+.ghost.cardContent .card:last-child {
+  border-right: none;
+}
+.ghost.cardContent .card:nth-child(1) {
+  border-right: 1px solid var(--border-color);
+}
 /* ---------------------------------------------------  --------------------------------------------------- --------------------------------------------------- 
 --------------------------------------------------- --------------------------------------------------- --------------------------------------------------- 
 SidebarMenu 
@@ -59,7 +92,7 @@ SidebarMenu
   border-radius: 50%;
   object-fit: cover;
 }
-.react_Select_custom_date_select{
+.react_Select_custom_date_select {
   margin-right: 15px;
 }
 
@@ -2303,7 +2336,7 @@ Media
   }
   .updateModalForm .customInput {
     margin-top: 10px;
-}
+  }
 }
 
 /* ---------------------------------------------------  --------------------------------------------------- 

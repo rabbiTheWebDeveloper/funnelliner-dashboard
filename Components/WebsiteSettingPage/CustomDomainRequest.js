@@ -99,7 +99,7 @@ const CustomDomainRequest = ({ shopName }) => {
             <tr>
               <td>CNAME Record</td>
               <td>www</td>
-              <td>secure.funnelliner.com</td>
+              <td> {websiteSettingsData?.domain_request ? `${websiteSettingsData?.domain_request}` : "your-custom-domain.com"}</td>
               <td>Automatic</td>
             </tr>
 
@@ -171,10 +171,10 @@ const CustomDomainRequest = ({ shopName }) => {
               )}
             </div>
 
-            <h6>
-              Do not use http:// or hops:// The valid format will be exactly
-              like this one - domain.tld, www.domain.tld or
-              subdomain.domain.t1d, www.subdomain.domain.tld "11/..
+            <h6 style={{color: "red"}}>
+              Do not use http:// or https:// The valid format will be exactly
+              like this one - domain.tld or
+              subdomain.domain.t1d 
             </h6>
 
             <div className="duelButton">

@@ -51,7 +51,7 @@ const Pathao = ({
     <div className="InputField">
       <form onSubmit={handleSubmit(handlePathaoSubmit)}>
         <div className="customInput">
-          <label>Client Id</label>
+          <label>Pathao Client Id</label>
           <input
             type="text"
             {...register("client_id", { required: true })}
@@ -60,7 +60,7 @@ const Pathao = ({
         </div>
 
         <div className="customInput">
-          <label>Client Secret</label>
+          <label>Pathao Client Secret</label>
           <input
             type={showPathaoSicrets?.sicretKey ? "text" : "password"}
             {...register("client_secret", { required: true })}
@@ -78,7 +78,7 @@ const Pathao = ({
           </div>
         </div>
         <div className="customInput">
-          <label>Username</label>
+          <label>Pathao Username</label>
           <input
             type="text"
             {...register("username", { required: true })}
@@ -86,7 +86,7 @@ const Pathao = ({
           />
         </div>
         <div className="customInput">
-          <label>Password</label>
+          <label>Pathao Password</label>
           <input
             type={showPathaoSicrets?.password ? "text" : "password"}
             {...register("password", { required: true })}
@@ -108,7 +108,7 @@ const Pathao = ({
                                                     <input type="text" {...register('grant_type', { required: true })} defaultValue={decodeJson(pathaoData?.config)?.grant_type} />
                                                 </div> */}
         <div className="customInput">
-          <label>Store ID</label>
+          <label>Pathao Store ID</label>
           <input
             type="text"
             {...register("store_id", { required: true })}

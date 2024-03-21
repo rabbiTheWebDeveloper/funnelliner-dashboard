@@ -21,7 +21,7 @@ import HeaderDescription from "../Common/HeaderDescription/HeaderDescription";
 import useLoading from "./../../hook/useLoading";
 import Spinner from "./../commonSection/Spinner/Spinner";
 import BulkSmsStatus from "./BulkSmsStatus";
-
+import SMSTemplate from "./SMSTemplate";
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -32,21 +32,17 @@ const MenuProps = {
         },
     },
 };
-
 const names = [
     { value: "delivered", name: "Delivered Order" },
     { value: "cancelled", name: "Cancelled Order" },
     { value: "follow_up", name: "Follow Up Order" },
     { value: "returned", name: "Returned Order" },
 ];
-
-const label = { inputProps: { "aria-label": "Switch demo" } };
 const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
     const showToast = useToast();
     const [isLoading, startLoading, stopLoading] = useLoading();
     const router = useRouter();
     const { register, handleSubmit, reset } = useForm();
-
     const [AllNumber, setAllNumber] = useState([]);
     const [pending, setPending] = useState([]);
     const [personName, setPersonName] = useState([]);
@@ -55,8 +51,7 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
     const [openModal, setModalOpen] = useState(false);
     const handleCloseNote = () => setModalOpen(false);
     const [selectedPayment, setSelectedPayment] = useState("");
-
-
+    const [smsLength, setSmsLength] = useState(0)
     const bdNumbers = AllNumber?.filter((item) =>
         personName.includes(item?.order_status)
     )
@@ -69,21 +64,26 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
         ?.map((num) => num?.phone)
         ?.map((number) => number?.match(/^(\+?0{0,2}88)?(01\d{9})$/)?.[2])
         ?.filter(Boolean);
-
-    const smsCountCheck = (num) => {
-        return Math.ceil(num / 160);
-    };
-
     const handlePaymentMethodSelect = (event) => {
         setSelectedPayment(event.target.value);
     };
+    const handleChangeContent = (e) => {
+        const smsContent = e.target.value;
+        setText(smsContent);
+        const banglaRegex = /[\u0980-\u09FF]+/;
+        const isBangla = banglaRegex.test(smsContent);
+        if (isBangla) {
+            setSmsLength(Math.ceil(smsContent.length / 70))
+        } else {
+            setSmsLength(Math.ceil(smsContent.length / 160))
+        }
 
+    }
     const handleFetchSmsUser = async () => {
         try {
             const response = await SuperFetch.get("/client/smsuser", {
                 headers: headers,
             });
-
             const data = response?.data?.data || [];
             const userProduct = data.filter(
                 (word) => word?.order_status === "pending"
@@ -102,7 +102,7 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
             phone: data.phone,
             msg: data.msg,
         };
-      
+
         startLoading();
         if (data.phone.length < 15) {
             SuperFetch.post("/client/send-custom-sms", newddata, {
@@ -171,18 +171,17 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
     useEffect(() => {
         handleFetchSmsUser();
     }, []);
-
     return (
         <>
             <section className="DashboardSetting BulkSms">
                 {/* header */}
                 <HeaderDescription
-                   videoLink={
-                    {
-                      video: "https://www.youtube.com/embed/11ScSqlpuLM?si=ymipw9n4YKk8h9v3J",
-                      title: "How to use our one click bulk sms feature । Funnel Liner"
-                    }}
-           
+                    videoLink={
+                        {
+                            video: "https://www.youtube.com/embed/11ScSqlpuLM?si=ymipw9n4YKk8h9v3J",
+                            title: "How to use our one click bulk sms feature । Funnel Liner"
+                        }}
+
                     headerIcon={"flaticon-mail"}
                     title={"Bulk SMS"}
                     subTitle={
@@ -313,6 +312,9 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
                         <Grid item xs={12} sm={12} md={6}>
                             <BulkSmsStatus handelFetchBusInfo={handelFetchBusInfo} />
                         </Grid>
+                        <Grid item xs={12} sm={12} md={6}>
+                            <SMSTemplate />
+                        </Grid>
                     </Grid>
                 </Container>
             </section>
@@ -326,8 +328,11 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
                 {/* Header  */}
                 <HeaderDescription
                     headerIcon={"flaticon-sms"}
-                    title={"Send SMS"}
-                    subTitle={"Send SMS to the clients in large scale"}
+                    title={"SMS Content"}
+                    subTitle={"*160 Characters are counted as 1 SMS in case of English language & 70 in other language."}
+                    subTitle2={"*One simple text message containing extended GSM character set (~^{}[]\|) is of 70 characters long. Check your SMS count before pushing SMS."}
+
+
                     search={false}
                     order={false}
                 />
@@ -380,10 +385,15 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
                                                 name=""
                                                 rows="4"
                                                 {...register("msg", { required: true })}
-                                                onChange={(e) => setText(e.target.value)}
+                                                onChange={handleChangeContent}
+                                            // onChange={(e) => {
+                                            //     const inputText = e.target.value;{
+                                            //     setText(inputText)
+
+                                            // }}
                                             ></textarea>
                                             <h5>
-                                                {text.length} -characters ,{smsCountCheck(text.length)}{" "}
+                                                {text.length} -characters ,{smsLength}{" "}
                                                 SMS message(s)
                                             </h5>
                                         </div>

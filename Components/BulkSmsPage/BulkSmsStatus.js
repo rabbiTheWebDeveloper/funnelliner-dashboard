@@ -24,7 +24,7 @@ const BulkSmsStatus = ({ handelFetchBusInfo }) => {
             .then(function (response) {
 
                 showToast(response?.data?.message, 'success');
-              
+
             })
             .catch(function (error) {
                 Swal.fire({
@@ -39,26 +39,20 @@ const BulkSmsStatus = ({ handelFetchBusInfo }) => {
             let response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/client/order-sms-status-show`, {
                 headers: headers,
             });
-
             setData(response?.data?.data);
             setState(response?.data?.data);
-           
+
         } catch (err) {
 
         }
     };
-
     useEffect(() => {
         handleFetchBusInfo().then(r => r);
     }, []);
-
-
     return (
         <div className="BulkSms">
-
             <div className="commonCart boxShadow cart-5">
                 <FormControl component="fieldset" variant="standard">
-
                     <div className="header">
                         <h4><i className='flaticon-order-delivery'></i> Order Status Message</h4>
                         <p>Choose When You Want to Send Your Order Status Message</p>
@@ -76,7 +70,6 @@ const BulkSmsStatus = ({ handelFetchBusInfo }) => {
                             }
                             label="Pending Order"
                         />
-
                         <FormControlLabel
                             control={
                                 <Switch
@@ -87,7 +80,6 @@ const BulkSmsStatus = ({ handelFetchBusInfo }) => {
                             }
                             label="Confirm Order"
                         />
-
                         <FormControlLabel
                             control={
                                 <Switch
@@ -98,7 +90,6 @@ const BulkSmsStatus = ({ handelFetchBusInfo }) => {
                             }
                             label="Cancel Order"
                         />
-
                         <FormControlLabel
                             control={
                                 <Switch
@@ -109,7 +100,6 @@ const BulkSmsStatus = ({ handelFetchBusInfo }) => {
                             }
                             label="Shipped"
                         />
-
                         <FormControlLabel
                             control={
                                 <Switch
@@ -120,7 +110,6 @@ const BulkSmsStatus = ({ handelFetchBusInfo }) => {
                             }
                             label="Delivered"
                         />
-
                         <FormControlLabel
                             control={
                                 <Switch

@@ -38,6 +38,14 @@ ul {
   padding-top: 0;
 }
 
+.flexbox-fix {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
 /* color Setup */
 :root {
   --header-color: #101840;

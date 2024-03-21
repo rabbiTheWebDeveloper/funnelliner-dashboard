@@ -1,6 +1,6 @@
 import { Box, Container, Grid, Button } from "@mui/material";
 import HeaderDescription from "../../Common/HeaderDescription/HeaderDescription";
-import { Field, Form, Formik, ErrorMessage } from "formik";
+import { Field, Form, Formik, ErrorMessage, useFormikContext } from "formik";
 import style from "./addProduct.module.css";
 import React, { useCallback, useEffect, useState } from "react";
 import { API_ENDPOINTS } from "../../../config/ApiEndpoints";
@@ -18,11 +18,11 @@ import DeleteSingleVariant from "./DeleteSingleVariantModal";
 import * as Yup from "yup";
 import { useRouter } from "next/router";
 import AddVariantAttributeValue from "./AddVariantAttributeValuePopup";
-
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import useLoading from "../../../hook/useLoading";
 import Spinner from "../../commonSection/Spinner/Spinner";
+import { getTotalQuantity } from "../../../utlit/product";
 
 const validationSchema = Yup.object({
   product_name: Yup.string().required("Product Name is required"),
@@ -71,7 +71,10 @@ const AddProduct = ({ busInfo }) => {
   const router = useRouter();
   const showToast = useToast();
   const [isLoading, startLoading, stopLoading] = useLoading();
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState([{
+            value: "add",
+            label: "+ Add New Category",
+          }]);
   const [variantAttributes, setVariantAttributes] = useState([]);
   const [openAddCategoryPopup, setOpenAddCategoryPopup] = useState(false);
   const [openAddVariantAttributePopup, setOpenAddVariantAttributePopup] =
@@ -81,6 +84,7 @@ const AddProduct = ({ busInfo }) => {
   const [selectProductImage, setSelectProductImage] = useState();
   const [productPreviewImage, setProductPreviewImage] = useState();
   const [productGalleryImage, setProductGalleryImage] = useState([]);
+  const [golobalProductQuantity, setGolobalProductQuantity] = useState([]);
   const [productShortDescription, setProductShortDescription] = useState("");
   const [productLongDescription, setProductLongDescription] = useState("");
   const [isOpenVariationOption, setIsOpenVariationOption] = useState(false);
@@ -139,7 +143,6 @@ const AddProduct = ({ busInfo }) => {
     setFetch(true);
   }
 
-  console.log("variantTable", variantTable)
   const fetchVariantValuesOnAttribute = useCallback(async attributeId => {
     const variantValuesRes = await axios.get(
       `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.GET_VARIANT_VALUES}/${attributeId}`,
@@ -203,7 +206,6 @@ const AddProduct = ({ busInfo }) => {
   }, []);
 
   const createVariant = async (updatedVariantTypes) => {
-    console.log("createVariant", updatedVariantTypes)
     const formData = new FormData();
     updatedVariantTypes?.forEach((variant, key) => {
       formData.append("choice[]", variant?.variantType);
@@ -219,9 +221,7 @@ const AddProduct = ({ busInfo }) => {
       }
     });
 
-    for (const value of formData.values()) {
-      console.log('value', value);
-    }
+
 
     const createVariantRes = await axios.post(
       `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.CREATE_VARIANT}`,
@@ -261,6 +261,7 @@ const AddProduct = ({ busInfo }) => {
     ];
     setSelectVariantTypes(newSelectVariantAfterDelete);
     setIsOpenDeleteProductVariantTypeModal(false);
+    createVariant(newSelectVariantAfterDelete)
   };
 
   useEffect(() => {
@@ -285,7 +286,24 @@ const AddProduct = ({ busInfo }) => {
     setVariantTable(newVariants);
     setIsShowSingleVariantDeletePopup(false);
   };
+  
 
+
+
+  // const handleButtonClick = async () => {
+  //   // Call the first function
+  //  const result= await addNewVariant() ;  
+  //  console.log(result);
+  //   // Check if the first function has completed
+  //   if (result) {
+  //     // If first function completed, call the second function
+  //     setFieldValue("product_quantity", getTotalQuantity(variantTable));
+  //     console.log(getTotalQuantity(variantTable), "variantTable");
+  //   } else {
+  //     // If first function is not completed, you can handle the logic accordingly
+  //     console.log('First function is not completed yet');
+  //   }
+  // };
   return (
     <section className="DashboardSetting">
       <HeaderDescription
@@ -313,7 +331,7 @@ const AddProduct = ({ busInfo }) => {
                 delivery_charge: "",
                 discount: 0,
                 product_code: "",
-                product_quantity: "",
+                product_quantity: variantTable ? getTotalQuantity(variantTable) : "",
                 inside_dhaka: "",
                 outside_dhaka: "",
                 subarea_charge: "",
@@ -339,13 +357,6 @@ const AddProduct = ({ busInfo }) => {
                     return
 
                   }
-
-
-
-
-
-                  
-
 
                   data.size = "XL";
                   data.color = "white";
@@ -410,8 +421,7 @@ const AddProduct = ({ busInfo }) => {
                       formData.append(`media_${index}`, variantValue?.media);
                     });
                   }
-                  console.log(selectVariantTypes + " variants", variantTable);
-                  console.log(selectVariantTypes + " variants", JSON.stringify(variantTable));
+
                   selectVariantTypes?.forEach(variant => {
                     formData.append("choice[]", variant?.variantType);
                     formData.append("choice_no[]", variant?.variantTypeId);
@@ -589,9 +599,12 @@ const AddProduct = ({ busInfo }) => {
                               Product Code <span>*</span>
                             </label>
                             <Field
-                              type="text"
-                              placeholder="Example: A103"
                               name="product_code"
+                              type="text"
+                           
+                              placeholder="Example: A103"
+
+
                             />
                             <ErrorMessage
                               name="product_code"
@@ -607,8 +620,13 @@ const AddProduct = ({ busInfo }) => {
                             </label>
                             <Field
                               type="text"
+                              disabled={variantTable.length > 0 ? true : false}
+                              value={variantTable.length > 0 ? getTotalQuantity(variantTable) : values?.product_quantity}
                               placeholder="Enter available quantity here"
                               name="product_quantity"
+                              onChange={e => {
+                                setFieldValue('product_quantity', e.target.value);
+                              }}
                             />
                             <ErrorMessage
                               name="product_quantity"
@@ -677,6 +695,7 @@ const AddProduct = ({ busInfo }) => {
                                     type="text"
                                     placeholder="Delivery charge in Dhaka"
                                     name="inside_dhaka"
+                                   
                                   />
                                 </div>
 
@@ -711,7 +730,7 @@ const AddProduct = ({ busInfo }) => {
                         <Grid item xs={12} sm={4}>
                           <div className="">
                             <label>
-                              Product Main Image <span>*</span>
+                              Main Image(Recommended Size 600px * 600px) <span>*</span>
                             </label>
                             <div className={style.imgUploader}>
                               <input
@@ -760,7 +779,7 @@ const AddProduct = ({ busInfo }) => {
                         <Grid item xs={12} sm={4}>
                           <div className="">
                             <div className="EditTheme  CustomeInput">
-                              <label>Product Gallery Image (Maximum 5)</label>
+                              <label>Gallery Images (Maximum 5, Recommended Size 600px * 600px)</label>
                               <ProductImage
                                 productImage={productGalleryImage}
                                 setProductImage={setProductGalleryImage}
@@ -983,7 +1002,7 @@ const AddProduct = ({ busInfo }) => {
                               <tbody>
                                 {variantTable?.length
                                   ? variantTable?.map((variant, index) => (
-                                    <tr key={index}>
+                                    <tr key={variant.id}>
                                       <td>
                                         {variant?.media === null ? (
                                           <div className={style.img}>
@@ -994,7 +1013,7 @@ const AddProduct = ({ busInfo }) => {
                                             <div className={style.overlay}>
                                               <input
                                                 type="file"
-                                                id={index}
+                                                key={variant.id}
                                                 onChange={e => {
                                                   const newVariants = [
                                                     ...variantTable,
@@ -1030,6 +1049,7 @@ const AddProduct = ({ busInfo }) => {
                                             newVariants[index].variant =
                                               e.target.value;
                                             setVariantTable(newVariants);
+                                           
                                           }}
                                         />
                                       </td>
@@ -1067,6 +1087,7 @@ const AddProduct = ({ busInfo }) => {
                                             newVariants[index].product_code =
                                               e.target.value;
                                             setVariantTable(newVariants);
+                                          
                                           }}
                                         />
                                       </td>
@@ -1082,6 +1103,7 @@ const AddProduct = ({ busInfo }) => {
                                             newVariants[index].quantity =
                                               e.target.value;
                                             setVariantTable(newVariants);
+                                            setFieldValue("product_quantity", getTotalQuantity(variantTable));
                                           }}
                                         />
                                       </td>
@@ -1101,7 +1123,7 @@ const AddProduct = ({ busInfo }) => {
                                               setVariantTable(newVariants);
                                             }}
                                           />
-                                          <Button
+                                          {/* <Button
                                             onClick={() => {
                                               setSelectedDeleteVariant(index);
                                               setIsShowSingleVariantDeletePopup(
@@ -1110,7 +1132,7 @@ const AddProduct = ({ busInfo }) => {
                                             }}
                                           >
                                             <i className="flaticon-delete"></i>
-                                          </Button>
+                                          </Button> */}
                                         </div>
                                       </td>
                                     </tr>
@@ -1143,14 +1165,14 @@ const AddProduct = ({ busInfo }) => {
           </Box>
         </div>
       </Container>
-      {openAddCategoryPopup ? (
+      {openAddCategoryPopup && (
         <AddProductCategory
           openModal={openAddCategoryPopup}
           closeModal={() => setOpenAddCategoryPopup(false)}
           setSelectedCategory={setSelectedCategory}
           fetchCategoriesData={fetchCategoriesData}
         />
-      ) : null}
+      ) }
       {openAddVariantAttributePopup ? (
         <AddProductVariantType
           openModal={openAddVariantAttributePopup}

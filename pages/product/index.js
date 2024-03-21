@@ -7,23 +7,9 @@ import { headers } from '../api';
 
 
 const ProductPage = ({busInfo}) => {
-    const [category, setCategory] = useState([])
-    const hanldeFetchCategories = () => {
-        axios
-            .get(process.env.NEXT_PUBLIC_API_URL + "/client/categories", { headers: headers })
-            .then(function (response) {
-                let categories = response.data.data;
-                setCategory(categories);
-            })
-            .catch(function (error) {
-            });
-    }
-
-    useEffect(() => {
-        hanldeFetchCategories()
-    }, []);
+   
     return (
-        <Product category={category} busInfo={busInfo} />
+        <Product  busInfo={busInfo} />
     )
 
 }

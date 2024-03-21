@@ -1,19 +1,33 @@
-import { Box, Button, Container, Grid } from "@mui/material";
+import { Box, Button, Container, Grid, Pagination } from "@mui/material";
 import axios from "axios";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "../../hook/useToast";
 import { handleGetSupportTicketList, headers, userId } from "../../pages/api";
+import { styled } from "@mui/material/styles";
 
 import useLoading from '../../hook/useLoading';
 import HeaderDescription from "../Common/HeaderDescription/HeaderDescription";
+import { API_ENDPOINTS } from "../../config/ApiEndpoints";
+
+
+const Paginator = styled(Pagination)({
+    "& .MuiPagination-ul": {
+        width: "100%",
+        height: "100%",
+        justifyContent: "center",
+        marginTop: "10px",
+    },
+});
 
 const SupportTicket = () => {
     const showToast = useToast()
     const [isLoading, startLoading, stopLoading] = useLoading();
     // Filter
     const [update, setUpdate] = useState({});
+    const [totalPage, setTotalPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
     const [selectedImage, setSelectedImage] = useState(null);
     const [imageUrl, setImageUrl] = useState(null);
     const [merchant, setMerchant] = useState({});
@@ -72,11 +86,36 @@ const SupportTicket = () => {
     const hanldeGetData = () => {
         handleGetSupportTicketList(userId).then((result) => {
             setTicketList(result?.data?.data);
+            setTotalPage(result.data?.last_page);
         });
     };
+
+    const handleFetchOrderGlobalSearch = useCallback(async () => {
+        try {
+            const params = {
+                page: currentPage,
+              }
+            const result = await axios.post(`${API_ENDPOINTS.BASE_URL}/client/support-ticket/list`,{merchant_id: userId}, {
+                headers: headers,
+                params
+            });
+            // setOrders(OrderGlobalSearchResponse?.data?.data);
+            setTicketList(result?.data?.data);
+            setTotalPage(result.data?.last_page);
+        } catch (error) {
+            console.error("Error fetching orders:", error);
+        } finally {
+            // setApiResponse(true);
+        }
+    }, [currentPage]);
+
     useEffect(() => {
-        hanldeGetData();
-    }, [update]);
+        handleFetchOrderGlobalSearch();
+    }, [handleFetchOrderGlobalSearch]);
+    const handleChange = (event, value) => {
+        setCurrentPage(value);
+        // setCount(1);
+    };
 
 
     useEffect(() => {
@@ -196,7 +235,7 @@ const SupportTicket = () => {
                                         {ticketList && ticketList?.reverse()?.map((item, index) => {
                                             return (
                                                 <tr key={index}>
-                                                    <td>{index + 1}</td>
+                                                    <td>     {index + 1 + currentPage * 10 - 10}</td>
                                                     <td>{item?.ticket_id}</td>
                                                     <td
 
@@ -219,6 +258,15 @@ const SupportTicket = () => {
                                         })}
                                     </tbody>
                                 </table>
+
+                                <Paginator
+                                    count={totalPage}
+                                    page={currentPage}
+                                    onChange={handleChange}
+                                    showFirstButton
+                                    showLastButton
+                                    variant="outlined"
+                                />
                             </div>
                         </div>
                     </div>

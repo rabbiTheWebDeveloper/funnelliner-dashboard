@@ -11,7 +11,7 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { domain, headers } from "../../../pages/api";
 
-const FirstSetup = ({ skip, busInfo = {} }) => {
+const FirstSetup = ({ skip, busInfo = {}, shopStep }) => {
   const { domain_status, domain_request } = busInfo;
   const router = useRouter();
   const [expanded, setExpanded] = useState();
@@ -28,21 +28,21 @@ const FirstSetup = ({ skip, busInfo = {} }) => {
     setExpanded(isExpanded ? panel : false);
   };
 
-  const [shopStep, setShopStep] = useState({});
-  const handleFetchShopStep = async () => {
-    try {
-      let data = await axios({
-        method: "get",
-        url: `${process.env.NEXT_PUBLIC_API_URL}/client/shop-steps`,
-        headers: headers,
-      });
-      setShopStep(data?.data?.data);
-    } catch (err) { }
-  };
+  // const [shopStep, setShopStep] = useState({});
+  // const handleFetchShopStep = async () => {
+  //   try {
+  //     let data = await axios({
+  //       method: "get",
+  //       url: `${process.env.NEXT_PUBLIC_API_URL}/client/shop-steps`,
+  //       headers: headers,
+  //     });
+  //     setShopStep(data?.data?.data);
+  //   } catch (err) { }
+  // };
 
-  useEffect(() => {
-    handleFetchShopStep();
-  }, []);
+  // useEffect(() => {
+  //   handleFetchShopStep();
+  // }, []);
 
   const stepCount = (count) => {
     const items = [];

@@ -95,7 +95,7 @@ const UpdateCategory = ({ id, isOpen, closePopup, hanldeFetchCategories }) => {
               </div>
 
               <div className="right" onClick={closePopup}>
-                <i className="flaticon-product"></i>
+                <i className="flaticon-close-1"></i>
               </div>
             </div>
             <form onSubmit={handleSubmit(onCategorySubmit)}>

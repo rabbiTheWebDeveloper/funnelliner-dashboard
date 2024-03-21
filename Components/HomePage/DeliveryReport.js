@@ -18,6 +18,8 @@ const DeliveryReport = () => {
             setReport(res.data?.data)
         })
     }, [date])
+
+    
     
 
     return (

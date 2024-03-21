@@ -214,8 +214,8 @@ const BussnessInfo = ({ redirectFrom, response }) => {
               <Grid item md={12}>
                 <div className="customInput">
                   <label>
-                    <span>Image</span> (png, jpg, jpeg)<span>Image Size:</span>
-                    (Width: 100px, Height: 100px)
+                    <span>Image</span> (png, jpg, jpeg)<span> Recommended size :</span>
+                    (105px*42px)
                   </label>
 
                   <div className="imgUploader">

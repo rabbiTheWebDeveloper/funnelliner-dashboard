@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
-import renderActiveShape from './HomePageCart/renderActiveShape';
-import { border } from '@mui/system';
+import React, { useState } from "react";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import renderActiveShape from "./HomePageCart/renderActiveShape";
+import { border } from "@mui/system";
 
-const COLORS = ['#F5B849', '#6B2CD1','#23B7E5', '#26BF94'];
-
+const COLORS = ["#F5B849", "#6B2CD1", "#23B7E5", "#26BF94"];
 
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const activeData = payload[0];
     return (
-      <div className="custom-tooltip" style={{ backgroundColor: '#fff', border: '1px solid #ccc', padding: '5px', color: activeData.fill }}>
+      <div
+        className="custom-tooltip"
+        style={{
+          backgroundColor: "#fff",
+          border: "1px solid #ccc",
+          padding: "5px",
+          color: activeData.fill,
+        }}
+      >
         <p>{`${activeData.name}: ${activeData.value}%`}</p>
       </div>
     );
@@ -19,9 +26,14 @@ const CustomTooltip = ({ active, payload }) => {
   return null;
 };
 
-
-
-const PieChartPage = ({ newCannelList }) => {
+const PieChartPage = ({
+  newCannelList,
+  innerRadius,
+  outerRadius,
+  width,
+  height,
+  color = COLORS,
+}) => {
   const [activeIndex, setActiveIndex] = useState(-1); // Initialize activeIndex to -1
 
   const onPieEnter = (_, index) => {
@@ -32,12 +44,11 @@ const PieChartPage = ({ newCannelList }) => {
     setActiveIndex(-1); // Reset activeIndex to -1 when leaving the pie chart
   };
 
-
   function convertToPercentages(arr) {
     const total = arr.reduce((acc, item) => acc + item.value, 0);
     const result = arr.map(item => ({
       name: item.name,
-      value: parseFloat(((item.value / total) * 100).toFixed(2))
+      value: parseFloat(((item.value / total) * 100).toFixed(2)),
     }));
     return result;
   }
@@ -45,16 +56,15 @@ const PieChartPage = ({ newCannelList }) => {
   // Usage example
   const transformedData = convertToPercentages(newCannelList);
 
-
   return (
-    <ResponsiveContainer width="100%" height={400}>
-      <PieChart width={600} height={500}>
+    <ResponsiveContainer width={width || "100%"} height={height || 400}>
+      <PieChart width={width || 600} height={height || 400}>
         <Pie
           data={transformedData}
           activeIndex={activeIndex}
           activeShape={renderActiveShape}
-          innerRadius={40}
-          outerRadius={100}
+          innerRadius={innerRadius || 40}
+          outerRadius={outerRadius || 100}
           fill="#8884d8"
           paddingAngle={1}
           dataKey="value"
@@ -62,7 +72,7 @@ const PieChartPage = ({ newCannelList }) => {
           onMouseLeave={onPieLeave} // Add onMouseLeave event handler
         >
           {transformedData.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            <Cell key={`cell-${index}`} fill={color[index % color.length]} />
           ))}
         </Pie>
         <Tooltip content={<CustomTooltip />} />

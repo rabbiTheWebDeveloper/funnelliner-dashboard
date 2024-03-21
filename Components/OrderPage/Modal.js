@@ -207,6 +207,9 @@ const OrderModal = ({
                           <option key={"phone"} value={"phone"}>
                             Phone Call
                           </option>
+                          <option key={"others"} value={"others"}>
+                            Others
+                          </option>
                         </Field>
                         <ErrorMessage
                           name="order_type"

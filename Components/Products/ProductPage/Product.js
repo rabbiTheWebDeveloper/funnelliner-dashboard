@@ -1,4 +1,4 @@
-import { Box, Button, Container, Pagination, Stack } from "@mui/material";
+import { Box, Button, Container, FormControl, InputLabel, MenuItem, Pagination, Select, Stack } from "@mui/material";
 import Skeleton from "@mui/material/Skeleton";
 import Tooltip from "@mui/material/Tooltip";
 import axios from "axios";
@@ -17,47 +17,77 @@ import { headers } from "../../../pages/api";
 import HeaderDescription from "../../Common/HeaderDescription/HeaderDescription";
 import SmallLoader from "../../SmallLoader/SmallLoader";
 import { useRouter } from "next/router";
+import { API_ENDPOINTS } from "../../../config/ApiEndpoints";
+import useDebounce from "../../../hook/useDebounce";
 
-const Product = ({ category, busInfo }) => {
+const Product = ({ busInfo }) => {
   const router = useRouter()
   const showToast = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [productSearchValue, setProductSearchValue] = useState("");
-  const [filterProducts, setFilterProducts] = useState([]);
-  const [products, setProducts] = useState([]);
+  const [totalPage, setTotalPage] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
+  const [products, setProducts] = useState([]);
   const [perPage, setPerPage] = useState(10);
+  const [category, setCategory] = useState([])
   //confirmation alert
   const handleConfirmationDialog = useConfirmationDialog(
     "Delete Product?",
     "Are you sure you want to delete?",
     "Yes, delete"
   );
-  const fetchProduct = () => {
-    axios
-      .get(process.env.NEXT_PUBLIC_API_URL + "/client/products", {
+  const fetchProduct = async () => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.BASE_URL + "/client/products", {
         headers: headers,
-      })
-      .then(function (response) {
-        // handle success
-        setProducts(response.data.data);
-        setIsLoading(false);
-      })
-      .catch(function (error) {
-        if (error.response.data.api_status === "401") {
-          window.location.href = "/login";
-          Cookies.remove("token");
-          localStorage.clear("token");
-          Cookies.remove("user");
-          localStorage.clear("user");
-
-          window.location.href = "/login";
-        }
+        params: { page: currentPage, perPage: perPage },
       });
+      setProducts(response.data.data);
+      setTotalPage(response.data?.last_page);
+      setIsLoading(false);
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.api_status === "401") {
+        handleUnauthorizedError();
+      } else {
+        console.error("Error fetching products:", error);
+      }
+    }
   };
+  const fetchProductSearch = async (term) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.BASE_URL + "/client/products-for-search", {
+        headers: headers,
+        params: { search: term },
+      });
+      setProducts(response.data.data);
+      setTotalPage(response.data?.last_page);
+      setIsLoading(false);
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.api_status === "401") {
+        handleUnauthorizedError();
+      } else {
+        console.error("Error fetching products:", error);
+      }
+    }
+  };
+  
+  const handleUnauthorizedError = () => {
+    // Clear token and user data
+    Cookies.remove("token");
+    localStorage.clear("token");
+    Cookies.remove("user");
+    localStorage.clear("user");
+    
+    // Redirect to login page
+    window.location.href = "/login";
+  };
+  
   useEffect(() => {
     fetchProduct();
-  }, []);
+  }, [currentPage, perPage]);
+
+
+
 
   const deleteProduct = async id => {
     const confirmed = await handleConfirmationDialog();
@@ -88,32 +118,6 @@ const Product = ({ category, busInfo }) => {
     }
   };
 
-  const indexOfLastProducts = currentPage * perPage;
-  const indexOfFirstProducts = indexOfLastProducts - perPage;
-  const currentProduct = products.slice(
-    indexOfFirstProducts,
-    indexOfLastProducts
-  );
-
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(products.length / perPage); i++) {
-    pageNumbers.push(i);
-  }
-
-  const paginate = (pageNumber, value) => setCurrentPage(value);
-  const handleChangeSearchBox = e => {
-    setProductSearchValue(e.target.value);
-    const filtered = products.filter(
-      item =>
-        item?.id?.toString().includes(e.target.value) ||
-        item?.product_name
-          ?.toLowerCase()
-          .includes(e.target.value.toLowerCase()) ||
-        item?.product_code?.toLowerCase().includes(e.target.value.toLowerCase())
-    );
-    setFilterProducts(filtered);
-  };
-
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [productModalViewId, setProductModalViewId] = useState(null);
@@ -134,6 +138,49 @@ const Product = ({ category, busInfo }) => {
     setViewModalOpen(false);
     setEditModalOpen(false);
   };
+
+  const hanldeFetchCategories = () => {
+    if (editModalOpen || viewModalOpen) {
+      axios
+        .get(process.env.NEXT_PUBLIC_API_URL + "/client/categories", { headers: headers })
+        .then(function (response) {
+          let categories = response.data.data;
+          setCategory(categories);
+        })
+        .catch(function (error) {
+        });
+
+    }
+
+  }
+
+  const handleChange = (event, value) => {
+    setCurrentPage(value);
+    // setCount(1);
+  };
+  useEffect(() => {
+    hanldeFetchCategories()
+  }, [editModalOpen , viewModalOpen]);
+
+  const handlePerPageChange = event => {
+    const perPageValue = parseInt(event.target.value);
+    setPerPage(perPageValue);
+    setCurrentPage(1);
+};
+
+const doSearch = useDebounce((term) => {
+  if(term){
+  fetchProductSearch(term);
+}else{
+  fetchProduct();
+}
+}, 500);
+
+function handleChangeSearch(e) {
+  const value = e.target.value;
+  doSearch(value);
+}
+
   return (
     <>
       <section className="TopSellingProducts DashboardSetting Order">
@@ -149,8 +196,10 @@ const Product = ({ category, busInfo }) => {
           headerIcon={"flaticon-product"}
           title={"Product List"}
           subTitle={"Find Your Product"}
-          search={false}
+          handleChange={handleChangeSearch}
+          search={true}
           order={false}
+          setSearch={setProductSearchValue}
           videoLink={
             {
               video: "https://www.youtube.com/embed/u6C2KvB5Kzs?si=Qv2g-PI-ebPmsATK",
@@ -197,11 +246,11 @@ const Product = ({ category, busInfo }) => {
                         </Box>
                       </td>
                     </tr>
-                  ) : currentProduct.length > 0 ? (
+                  ) : products.length > 0 ? (
                     <>
                       <tbody>
-                        {productSearchValue === "" &&
-                          currentProduct?.map((product, index) => {
+                        { !!products &&
+                          products?.map((product, index) => {
                             return (
                               <tr key={product.id}>
                                 <td>
@@ -251,11 +300,11 @@ const Product = ({ category, busInfo }) => {
                                   ) : (
                                     <>
                                       <p>
-                                        In Dhaka -{" "}
+                                        In {busInfo?.default_delivery_location ? busInfo?.default_delivery_location + "-" : "Dhaka -"}{" "}
                                         <span>{product?.inside_dhaka}TK</span>
                                       </p>
                                       <p>
-                                        Out Dhaka -{" "}
+                                        Out  In {busInfo?.default_delivery_location ? busInfo?.default_delivery_location + "-" : "Dhaka -"}{" "} -{" "}
                                         <span>{product?.outside_dhaka}TK</span>
                                       </p>
                                       {product?.sub_area_charge ? (
@@ -320,96 +369,6 @@ const Product = ({ category, busInfo }) => {
                               </tr>
                             );
                           })}
-
-                        {/* filter product */}
-                        {productSearchValue &&
-                          filterProducts?.map((product, index) => {
-                            return (
-                              <tr key={product.id}>
-                                <td>
-                                  <td>{index + 1}</td>
-                                </td>
-                                <td>
-                                  <img src={product?.main_image} alt="" />
-                                </td>
-
-                                <td>
-                                  <Tooltip
-                                    title={product?.product_name}
-                                    placement="top-start"
-                                  >
-                                    <span>
-                                      {product?.product_name.length < 15 ? (
-                                        <span>{product?.product_name}</span>
-                                      ) : (
-                                        <span>
-                                          {product?.product_name?.slice(0, 15)}
-                                          ...
-                                        </span>
-                                      )}
-                                    </span>
-                                  </Tooltip>
-                                </td>
-                                <td>{product.product_code}</td>
-                                <td>{product.price}</td>
-                                <td>
-                                  {product?.product_qty > 0 ? (
-                                    product?.product_qty
-                                  ) : (
-                                    <span style={{ color: "red" }}>
-                                      stock out
-                                    </span>
-                                  )}
-                                </td>
-                                <td>
-                                  {moment(product.created_at).format("LL")}
-                                </td>
-                                <td>
-                                  {product?.delivery_charge !== "paid" ? (
-                                    <p>
-                                      <span>Delivery Free</span>
-                                    </p>
-                                  ) : (
-                                    <React.Fragment>
-                                      <p>
-                                        In Dhaka -{" "}
-                                        <span>{product?.inside_dhaka}TK</span>
-                                      </p>
-                                      <p>
-                                        Sub Area -{" "}
-                                        <span>
-                                          {product?.sub_area_charge}TK
-                                        </span>
-                                      </p>
-                                      <p>
-                                        Out Dhaka -{" "}
-                                        <span>{product?.outside_dhaka}TK</span>
-                                      </p>
-                                    </React.Fragment>
-                                  )}
-                                </td>
-                                <td className="EditViewDelete">
-                                  <Button className="ButtonEdit" href="">
-                                    <ShowProduct id={product.id} />
-                                  </Button>
-                                  <Button className="ButtonEdit">
-                                    <ProductUpdate
-                                      id={product.id}
-                                      category={category}
-                                      fetchProduct={fetchProduct}
-                                      busInfo={busInfo}
-                                    />
-                                  </Button>
-                                  <Link
-                                    href=""
-                                    onClick={() => deleteProduct(product.id)}
-                                  >
-                                    <RiDeleteBin6Line />
-                                  </Link>
-                                </td>
-                              </tr>
-                            );
-                          })}
                       </tbody>
                     </>
                   ) : (
@@ -437,7 +396,7 @@ const Product = ({ category, busInfo }) => {
               </div>
             </div>
 
-            <div
+            {/* <div
               style={{ display: productSearchValue === "" ? "block" : "none" }}
             >
               <Box
@@ -449,14 +408,51 @@ const Product = ({ category, busInfo }) => {
               >
                 <Stack spacing={2}>
                   <Pagination
-                    count={pageNumbers.length}
+                      count={totalPage}
+                      page={currentPage}
+                      onChange={handleChange}
+                      showFirstButton
+                      showLastButton
                     variant="outlined"
-                    page={currentPage}
-                    onChange={paginate}
+                    
                   />
                 </Stack>
               </Box>
-            </div>
+            </div> */}
+               <Box
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    marginTop: "20px",
+                                }}
+                            >
+                                <div></div>
+                                <Stack spacing={2}>
+                                    <Pagination
+                                        count={totalPage}
+                                        page={currentPage}
+                                        onChange={handleChange}
+                                        variant="outlined"
+                                    />
+                                </Stack>
+                                <div className="DropDown Download">
+                                    <FormControl variant="outlined">
+                                        <InputLabel id="per-page-label">Items per page</InputLabel>
+                                        <Select
+                                            labelId="per-page-label"
+                                            id="per-page-select"
+                                            value={perPage}
+                                            onChange={handlePerPageChange}
+                                            label="Items per page"
+                                        >
+                                            <MenuItem value={10}>10</MenuItem>
+                                            <MenuItem value={20}>20</MenuItem>
+                                            <MenuItem value={30}>30</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </div>
+                            </Box>
           </div>
         </Container>
       </section>

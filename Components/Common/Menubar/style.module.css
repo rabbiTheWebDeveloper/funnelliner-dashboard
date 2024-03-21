@@ -1,4 +1,3 @@
-
 /* ---------------------------------------------------------------------------------------------------------------------------
 Menubar
 --------------------------------------------------------------------------------------------------------------------------- */
@@ -65,7 +64,6 @@ Menubar
   color: var(--bg_color);
 }
 
-
 .SupportTicket i {
   font-size: 30px;
   line-height: 30px;
@@ -76,16 +74,16 @@ Menubar
   cursor: pointer;
 }
 
-.MenubarContent .Profile .profileButton{
+.MenubarContent .Profile .profileButton {
   padding: 0 !important;
   margin: 0 !important;
 }
 
-.MenubarContent .Profile .profileButton:hover{
+.MenubarContent .Profile .profileButton:hover {
   background: none;
 }
 
-.MenubarContent .Profile i{
+.MenubarContent .Profile i {
   font-size: 30px;
   color: var(--main-color);
 }
@@ -141,7 +139,6 @@ Menubar
   padding-top: 5px;
   min-width: unset;
 }
-
 
 /* --------------------------------------------------------------------------
 Notification Start
@@ -290,45 +287,84 @@ Notification Start
 .NotificationContent a.AllShow:hover {
   background: var(--main-hover-color);
 }
-  /* VideoIcon */
-  .VideoIcon button {
-    background: var(--main-color);
-    min-width: unset;
-    padding: 10px 15px;
-    color: var(--white-color);
-    font-size: 18px;
-    line-height: 24px;
-  }
-  
-  .VideoIcon button i {
-    line-height: 0;
-  }
-  
-  .VideoIcon button:hover {
-    background: var(--main-hover-color);
-  }
-  
-  .HeaderDescription .Right {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
-  
-  .youTubeVideo {
-    margin-top: 20px;
-  }
-  
-  .youTubeVideo{
-      margin-top: 30px;
-      padding-top: 30px;
-      border-top: 1px solid var(--border-color);
-  }
-  
-  .youTubeVideo iframe {
-    border-radius: 15px;
-    width: 100%;
-    height: 500px;
-  }
+/* VideoIcon */
+.VideoIcon button {
+  background: var(--main-color);
+  min-width: unset;
+  padding: 10px 15px;
+  color: var(--white-color);
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.VideoIcon button i {
+  line-height: 0;
+}
+
+.VideoIcon button:hover {
+  background: var(--main-hover-color);
+}
+/* ChangeLogs */
+.changeLogs {
+  position: relative;
+}
+
+.changeLogsBadge {
+  position: absolute;
+  top: -10px;
+  right: -15px;
+  z-index: 2;
+  font-size: 10px;
+  background-color: var(--white-color);
+  padding: 1px 2px;
+  font-weight: 700;
+  border-radius: 3px;
+  text-transform: uppercase;
+  color: var(--main-color);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+.changeLogs button {
+  background: var(--main-color);
+  color: var(--white-color);
+  width: 3rem;
+  min-width: unset;
+}
+
+.changeLogs button:hover {
+  background: var(--main-hover-color);
+}
+
+/* Changelog Icon */
+.changeIcon {
+  display: flex;
+  align-items: center;
+  height: 26px;
+  color: var(--white-color);
+  width: 1rem;
+}
+
+.HeaderDescription .Right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.youTubeVideo {
+  margin-top: 20px;
+}
+
+.youTubeVideo {
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 1px solid var(--border-color);
+}
+
+.youTubeVideo iframe {
+  border-radius: 15px;
+  width: 100%;
+  height: 500px;
+}
+
 @media (max-width: 1399px) {
   .MenubarContent .Left {
     width: 45%;
@@ -467,5 +503,13 @@ Notification Start
     width: 16px;
     height: 16px;
     font-size: 10px;
+  }
+
+  .MenubarContent .right {
+    gap: 10px;
+  }
+
+  .changeLogsBadge {
+    top: -13px;
   }
 }

@@ -1,66 +1,45 @@
-import { Container, Grid } from '@mui/material'
-import React from 'react'
-import AccountReport from '../../Components/AccountingModeul/AccountReport'
+import React from 'react';
+import { Container, Grid } from '@mui/material';
+import AccountReport from '../../Components/AccountingModeul/AccountReport';
 
-const index = ({ myAddonsList, isApiResponse }) => {
-    if (myAddonsList[0]?.addons_id === 16 && myAddonsList[0]?.status === 1) {
+const Index = ({ myAddonsList, isApiResponse }) => {
+  const isFirstAddonActive = myAddonsList[0]?.addons_id === 16 && myAddonsList[0]?.status === 1;
+  const shouldShowAccessDeniedMessage = isApiResponse && !myAddonsList.some((addon) => addon.addons_id === 16 && addon.status === 1);
 
-        return (
+  const renderAccountReport = () => (
+    <section>
+      <Container maxWidth="sm">
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <AccountReport />
+          </Grid>
+        </Grid>
+      </Container>
+    </section>
+  );
 
-            <>
+  const renderAccessDeniedMessage = () => (
+    <section>
+      <Container maxWidth="sm">
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            {shouldShowAccessDeniedMessage && (
+              <div className="NoPayment boxShadow commonCart cart-1">
+                <h3>Access Denied. Please make a payment or activate to access.</h3>
+              </div>
+            )}
+          </Grid>
+        </Grid>
+      </Container>
+    </section>
+  );
 
-                <section>
+  return (
+    <>
+      {isFirstAddonActive && renderAccountReport()}
+      {renderAccessDeniedMessage()}
+    </>
+  );
+};
 
-                    <Container maxWidth="sm">
-
-                        <Grid Container spacing={3}>
-
-                            <Grid item xs={12}>
-
-                                <AccountReport />
-
-                            </Grid>
-
-                        </Grid>
-
-                    </Container>
-
-                </section>
-
-            </>
-
-        )
-    }
-    else if (isApiResponse) {
-        return (
-            <>
-
-                <section>
-
-                    <Container maxWidth="sm">
-
-                        <Grid Container spacing={3}>
-
-                            <Grid item xs={12} >
-                                <div className="NoPayment boxShadow commonCart cart-1">
-
-                                    <h3>Access Denied. Please make a payment or activate to access.</h3>
-
-                                </div>
-                            </Grid>
-
-                        </Grid>
-
-                    </Container>
-
-                </section>
-
-            </>)
-
-
-
-    }
-
-}
-
-export default index
+export default Index;

@@ -61,13 +61,14 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
                 url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.BILLING.GET_BILLING_LIST}`,
                 headers: headers,
             });
-            if (data?.data?.success) {
+            if (data?.data.success) {
                 const unpaidList = data.data?.data?.filter((item) => item.status === 'unpaid');
                 setUnpaidBill(unpaidList)
                 setBillingList(data?.data?.data);
                 setOrderCount(data?.data?.orders)
 
             }
+         
 
         } catch (err) { }
     }, []);
@@ -226,6 +227,7 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
                                         <th>Sub Gateway</th>
                                         <th>Type</th>
                                         <th>Amount</th>
+                                        <th>Orders</th>
                                         <th>Status</th>
                                         <th>Download Invoice</th>
                                     </tr>
@@ -251,6 +253,7 @@ const Subscription = ({ subscriptions, merchant, handelFetchBusInfo, isApiRespon
                                                     <td>{order?.sub_gateway}</td>
                                                     <td>{order?.type}</td>
                                                     <td>{order?.amount}</td>
+                                                    <td>{order?.order_count ? order?.order_count : "0" }</td>
                                                     <td>{order?.status}</td>
                                                     <td>
                                                         <div

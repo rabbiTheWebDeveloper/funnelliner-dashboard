@@ -35,7 +35,6 @@ const CustomDate = ({ startDate, setStartDate, endDate, setEndDate }) => {
     >
       {({ startDateInputProps, endDateInputProps }) => (
         <div className="date-range">
-
           <FilterDateInput
             className="input"
             {...endDateInputProps}

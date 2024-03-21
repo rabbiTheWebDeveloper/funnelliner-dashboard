@@ -1,8 +1,8 @@
 import EditProduct from "../Components/Products/AddProduct/EditProduct";
 
-const EditProductPage = () => {
+const EditProductPage = ({busInfo}) => {
   return(
-    <EditProduct />
+    <EditProduct busInfo={busInfo} />
   )
 }
 

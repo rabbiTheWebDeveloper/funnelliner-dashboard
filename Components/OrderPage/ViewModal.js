@@ -14,11 +14,13 @@ const ViewModal = ({
   const showToast = useToast();
   const today = new Date().toISOString().slice(0, 10);
 
-  const handleKeyDownNote = (event, id, status) => {
+  const handleKeyDownNote = (event,type, id, status) => {
     if (event.key === "Enter") {
       let data = {
-        note: event.target.value,
+        note: type === "note" ? event.target.value : orderNote?.order_note.length > 0 ? order?.order_note : "0",
         type: status,
+        courier_note:  type === "courier_note" ? event.target.value : order?.courier_note.length > 0 ? order?.courier_note : "0",
+        invoice_note:  type === "invoice_note" ? event.target.value : order?.invoice_note.length > 0 ? order?.invoice_note : "0",
       };
       axios.post(process.env.NEXT_PUBLIC_API_URL + `/client/order/note/${id}/update`, data, {
         headers: headers,
@@ -184,7 +186,7 @@ const ViewModal = ({
                 rows="3"
                 defaultValue={order?.order_note}
                 onKeyDown={(event) =>
-                  handleKeyDownNote(event, order.id, order.order_status)
+                  handleKeyDownNote(event,"note", order.id, order.order_status)
                 }
               />
             </div>
@@ -194,7 +196,7 @@ const ViewModal = ({
                 rows="3"
                 defaultValue={order?.invoice_note}
                 onKeyDown={(event) =>
-                  handleKeyDownNote(event, order.id, order.order_status)
+                  handleKeyDownNote(event,"invoice_note", order.id, order.order_status)
                 }
               />
             </div>
@@ -204,7 +206,7 @@ const ViewModal = ({
                 rows="3"
                 defaultValue={order?.courier_note}
                 onKeyDown={(event) =>
-                  handleKeyDownNote(event, order.id, order.order_status)
+                  handleKeyDownNote(event, "courier_note", order.id, order.order_status)
                 }
               />
             </div>

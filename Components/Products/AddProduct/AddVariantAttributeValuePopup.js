@@ -6,6 +6,7 @@ import { useToast } from "../../../hook/useToast";
 import { headers } from "../../../pages/api";
 import style from "./addCategory.module.css";
 import { API_ENDPOINTS } from "../../../config/ApiEndpoints";
+import { replaceSpacesWithHyphens } from "../../../utlit/product";
 
 const AddVariantAttributeValue = ({
   fetchVariantValuesOnAttribute,
@@ -18,8 +19,9 @@ const AddVariantAttributeValue = ({
   const { register, handleSubmit } = useForm();
 
   const onCategorySubmit = async values => {
+    // console.log(replaceSpacesWithHyphens(values?.variant_attribute_value));
     const formData = new FormData();
-    formData.append("value", values?.variant_attribute_value);
+    formData.append("value", replaceSpacesWithHyphens(values?.variant_attribute_value));
     formData.append("attribute_id", variantAttributeId);
 
     const createVariantAttributeRes = await axios.post(

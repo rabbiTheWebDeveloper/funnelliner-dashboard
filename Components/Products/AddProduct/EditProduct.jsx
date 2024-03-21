@@ -29,6 +29,7 @@ import AddVariantAttributeValue from "./AddVariantAttributeValuePopup";
 import useLoading from "../../../hook/useLoading";
 import Spinner from "../../commonSection/Spinner/Spinner";
 import Cookies from "js-cookie";
+import { getTotalQuantity } from "../../../utlit/product";
 
 const validationSchema = Yup.object({
   product_name: Yup.string().required("Product Name is required"),
@@ -99,8 +100,6 @@ const EditProduct = ({busInfo}) => {
     setOpenAddVariantAttributeValuePopup,
   ] = useState(false);
   
-  const delivery_location = Cookies.get('delivery_location')
-
   const fetchCategoriesData = useCallback(async () => {
     await axios
       .get(
@@ -285,6 +284,7 @@ const EditProduct = ({busInfo}) => {
     ];
     setSelectVariantTypes(newSelectVariantAfterDelete);
     setIsOpenDeleteProductVariantTypeModal(false);
+    createVariant(newSelectVariantAfterDelete)
   };
 
   useEffect(() => {
@@ -359,7 +359,8 @@ const EditProduct = ({busInfo}) => {
                 product_code: productDetails?.product_code
                   ? productDetails?.product_code
                   : "",
-                product_quantity: productDetails?.product_qty
+                product_quantity:
+                variantTable ? getTotalQuantity(variantTable): productDetails?.product_qty
                   ? productDetails?.product_qty
                   : 0,
                 inside_dhaka: productDetails?.inside_dhaka
@@ -379,8 +380,6 @@ const EditProduct = ({busInfo}) => {
                 const varitionPrice = variantTable.map(item => {
                   return item.price
                 })
-                console.log('varitionPrice' , varitionPrice);
-                console.log('varitionPrice' , varitionPrice.every((str) => data?.selling_price <= parseInt(str, 10)));
                 if (selectProductImage?.size > 1024 * 1024) {
                 showToast("Product image is too big !", "error");
                 return;
@@ -449,7 +448,6 @@ const EditProduct = ({busInfo}) => {
               }
 
               if (variantTable?.length) {
-                console.log('api call' , variantTable)
                 const variantTableJson = JSON.stringify(variantTable);
                 formData.append("variants", variantTableJson);
                 variantTable?.forEach((variantValue, index) => {
@@ -657,6 +655,11 @@ const EditProduct = ({busInfo}) => {
                               type="text"
                               placeholder="Enter available quantity here"
                               name="product_quantity"
+                              disabled={variantTable.length > 0 ? true : false}
+                              value={variantTable.length > 0 ? getTotalQuantity(variantTable) : values?.product_quantity}
+                              onChange={e => {
+                                setFieldValue('product_quantity', e.target.value);
+                              }}
                             />
                             <ErrorMessage
                               name="product_quantity"
@@ -754,7 +757,8 @@ const EditProduct = ({busInfo}) => {
                             "Paid Delivery Charge" ? (
                               <div className={style.duelInput}>
                                 <div className={style.customInput}>
-                                  <label> Delivery charge in {delivery_location ? delivery_location : "Dhaka"} </label>
+                                  <label> Delivery charge in {busInfo?.default_delivery_location ? busInfo?.default_delivery_location: "Dhaka"}{" "}
+                                   </label>
                                   <Field
                                     type="text"
                                     placeholder="Delivery charge in Dhaka"
@@ -763,7 +767,8 @@ const EditProduct = ({busInfo}) => {
                                 </div>
 
                                 <div className={style.customInput}>
-                                  <label>Delivery charge out of {delivery_location? delivery_location : "Dhaka"}</label>
+                                  <label>Delivery charge out of  {busInfo?.default_delivery_location ? busInfo?.default_delivery_location : "Dhaka"}{" "}
+                                  </label>
                                   <Field
                                     type="text"
                                     name="outside_dhaka"
@@ -787,8 +792,8 @@ const EditProduct = ({busInfo}) => {
                         </Grid>
                         <Grid item xs={12} sm={4}>
                           <div className="">
-                            <label>
-                              Product Main Image <span>*</span>
+                          <label>
+                              Main Image(Recommended Size 600px * 600px) <span>*</span>
                             </label>
                             <div className={style.imgUploader}>
                               <input
@@ -848,7 +853,7 @@ const EditProduct = ({busInfo}) => {
                         <Grid item xs={12} sm={4}>
                           <div className="">
                             <div className="EditTheme  CustomeInput">
-                              <label>Product Gallery Image (Maximum 5)</label>
+                            <label>Gallery Images (Maximum 5, Recommended Size 600px * 600px)</label>
                               <ProductImage
                                 productImage={productGalleryImage}
                                 setProductImage={setProductGalleryImage}
@@ -1124,7 +1129,7 @@ const EditProduct = ({busInfo}) => {
                                             placeholder="20/Blue"
                                             value={variant?.variant}
                                             onChange={e => {
-                                              console.log(variant)
+                                            
                                               const newVariants = [
                                                 ...variantTable,
                                               ];
@@ -1183,6 +1188,7 @@ const EditProduct = ({busInfo}) => {
                                               newVariants[index].quantity =
                                                 e.target.value;
                                               setVariantTable(newVariants);
+                                              setFieldValue("product_quantity", getTotalQuantity(variantTable));
                                             }}
                                           />
                                         </td>
@@ -1202,7 +1208,7 @@ const EditProduct = ({busInfo}) => {
                                                 setVariantTable(newVariants);
                                               }}
                                             />
-                                            <Button
+                                            {/* <Button
                                               onClick={() => {
                                                 setSelectedDeleteVariant(index);
                                                 setIsShowSingleVariantDeletePopup(
@@ -1211,7 +1217,7 @@ const EditProduct = ({busInfo}) => {
                                               }}
                                             >
                                               <i className="flaticon-delete"></i>
-                                            </Button>
+                                            </Button> */}
                                           </div>
                                         </td>
                                       </tr>

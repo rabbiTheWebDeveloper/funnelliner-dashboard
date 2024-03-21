@@ -20,17 +20,15 @@ import "../styles/admin_dashboard_media.css";
 import "../styles/common.css";
 import "../styles/globals.css";
 import "../styles/style.css";
+import 'animate.css/animate.min.css';
 
 import { headers } from "./api";
 
 function MyApp({ Component, pageProps, router }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isStatus, setIsStatus] = useState(1);
-  const [verifyPayment, setVerifyPayment] = useState("");
   const [busInfo, setBusInfo] = useState({});
   const [fetchBusInfo, setFetchBusInfo] = useState(false);
-  const [fetchOrderApi, setFetchOrder] = useState(false);
-  const [pendingOrderCount, setPendingOrderCount] = useState([]);
   const [fetchApi, setFetch] = useState(false);
   // addons show and hode
   const [myAddonsList, setMyAddonsList] = useState([]);
@@ -95,25 +93,6 @@ function MyApp({ Component, pageProps, router }) {
     setFetchBusInfo(true);
   };
 
-  const handleFetchOrderCount = async () => {
-    try {
-      let data = await axios({
-        method: "get",
-        url: `${process.env.NEXT_PUBLIC_API_URL}/client/pending-order/count`,
-        headers: headers,
-      });
-      setPendingOrderCount(data.data.data);
-    } catch (err) { }
-    setFetchOrder(false);
-  };
-
-  useEffect(() => {
-    handleFetchOrderCount();
-  }, [fetchOrderApi]);
-
-  const orderUpdate = () => {
-    setFetchOrder(true);
-  };
   const [isApiResponse, setIsApiResponse] = useState(false);
 
   const handleFetchMyAddonsList = async () => {
@@ -218,15 +197,12 @@ function MyApp({ Component, pageProps, router }) {
             busInfo={busInfo}
             myAddonsList={myAddonsList}
             setFetch={setFetch}
-            pendingOrderCount={pendingOrderCount}
           >
             <Component
               {...pageProps}
               busInfo={busInfo}
               setFetch={setFetch}
-              orderUpdate={orderUpdate}
               myAddonsList={myAddonsList}
-              pendingOrderCount={pendingOrderCount}
               isApiResponse={isApiResponse}
               handelFetchBusInfo={handelFetchBusInfo}
             />

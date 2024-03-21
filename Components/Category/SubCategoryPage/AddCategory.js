@@ -107,7 +107,7 @@ const AddCategory = () => {
                                     </div>
 
                                     <div className={style.customInput}>
-                                        <label>Image <span className={style.mustBe}>Must be:</span> (png, jpg) ; <span className={style.mustBe}>Image Size: </span> (W:500px, h: 500px)</label>
+                                        <label>Category Image<span className={style.mustBe}> [Max size 1 MB, Recommended size (200px*200px)]</span></label>
 
                                         <div className={style.imgUploader}>
 

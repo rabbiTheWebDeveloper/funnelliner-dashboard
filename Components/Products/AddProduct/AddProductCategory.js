@@ -47,12 +47,14 @@ const AddProductCategory = ({
         headers: headers,
       })
       .then(function (response) {
+        closeModal()
         if (response?.data?.success) {
           fetchCategoriesData();
           showToast(response?.data?.message, "success");
           handleCloseSuggestNote();
           HandelFetchCategory();
           setValue("name", "");
+          closeModal()
         }
       })
       .catch(function (error) {
@@ -61,7 +63,7 @@ const AddProductCategory = ({
         } else if (error?.response?.status === 400) {
           showToast("Category image is required!", "error");
         } else {
-          showToast("Something went wrong!", "error");
+          // showToast("Something went wrong!", "error");
         }
       });
   };
@@ -121,7 +123,7 @@ const AddProductCategory = ({
                             />
                             <label htmlFor="select-category-image">
                               <Button
-                                className={style.SelectImgButton} 
+                                className={style.SelectImgButton}
                                 variant="contained"
                                 color="primary"
                                 component="span"
@@ -138,7 +140,7 @@ const AddProductCategory = ({
                                   Height="100px"
                                 />
                               </Box>
-                            ) :null}
+                            ) : null}
                           </div>
                         </div>
                       </div>

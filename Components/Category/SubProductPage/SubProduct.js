@@ -1,4 +1,4 @@
-import { Box, Button, Container, Pagination, Stack } from "@mui/material";
+import { Box, Button, Container, FormControl, InputLabel, MenuItem, Pagination, Select, Stack } from "@mui/material";
 import Skeleton from "@mui/material/Skeleton";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -20,6 +20,8 @@ const SubProduct = () => {
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+  const [totalPage, setTotalPage] = useState(1);
+
   const [isLoading, setIsLoading] = useState(true);
   const [isPageLoader, setIsPageLoader] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState();
@@ -28,9 +30,10 @@ const SubProduct = () => {
 
   const hanldeFetchCategories = useCallback(() => {
     axios
-      .get(`${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.CATEGORY.GET_CATEGORIES}`, { headers: headers })
+      .get(`${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.CATEGORY.GET_CATEGORIES}`, { headers: headers, params: { page: currentPage, perPage: perPage } })
       .then(function (response) {
         let allProduct = response.data.data;
+        setTotalPage(response.data?.last_page);
         setProducts(allProduct);
         setIsLoading(false);
       })
@@ -45,7 +48,7 @@ const SubProduct = () => {
           window.location.href = "/login";
         }
       });
-  }, []);
+  }, [currentPage, perPage]);
 
   useEffect(() => {
     hanldeFetchCategories();
@@ -90,22 +93,16 @@ const SubProduct = () => {
     });
   };
 
-  const indexOfLastProducts = currentPage * perPage;
-  const indexOfFirstProducts = indexOfLastProducts - perPage;
-  const currentProduct = products.slice(
-    indexOfFirstProducts,
-    indexOfLastProducts
-  );
 
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(products.length / perPage); i++) {
-    pageNumbers.push(i);
-  }
-
-  const paginate = (pageNumber, value) => {
+  const handleChange = (event, value) => {
     setCurrentPage(value);
+    // setCount(1);
+  }
+  const handlePerPageChange = (event) => {
+    const perPageValue = parseInt(event.target.value);
+    setPerPage(perPageValue);
+    setCurrentPage(1);
   };
-
   return (
     <>
       <section className="TopSellingProducts DashboardSetting Order">
@@ -167,9 +164,9 @@ const SubProduct = () => {
                         </Box>
                       </td>
                     </tr>
-                  ) : currentProduct.length > 0 ? (
+                  ) : products.length > 0 ? (
                     <tbody>
-                      {currentProduct?.map((product, index) => {
+                      {products?.map((product, index) => {
                         return (
                           <tr key={index}>
                             <td>
@@ -250,20 +247,38 @@ const SubProduct = () => {
               </div>
 
               <Box
-                sx={{
-                  margin: "auto",
-                  width: "fit-content",
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
                   alignItems: "center",
+                  marginTop: "20px",
                 }}
               >
+                <div></div>
                 <Stack spacing={2}>
                   <Pagination
-                    count={pageNumbers.length}
-                    variant="outlined"
+                    count={totalPage}
                     page={currentPage}
-                    onChange={paginate}
+                    onChange={handleChange}
+                    variant="outlined"
                   />
                 </Stack>
+                <div className="DropDown Download">
+                  <FormControl variant="outlined">
+                    <InputLabel id="per-page-label">Items per page</InputLabel>
+                    <Select
+                      labelId="per-page-label"
+                      id="per-page-select"
+                      value={perPage}
+                      onChange={handlePerPageChange}
+                      label="Items per page"
+                    >
+                      <MenuItem value={10}>10</MenuItem>
+                      <MenuItem value={20}>20</MenuItem>
+                      <MenuItem value={30}>30</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
               </Box>
             </div>
           </div>
