@@ -16,7 +16,6 @@ export const getStaticProps = async () => {
       throw new Error(`Error fetching data: ${res.status}`);
     }
     const data = await res.json();
-    console.log(data)
     return {
       props: {
         releaseNotes: data?.data || [], // Use null if data is undefined

@@ -85,6 +85,7 @@ const API_ENDPOINTS = {
     GET_COMMON_SHIPPING_COST: `/client/shipping-setting/show`,
     POST_COMMON_SHIPPING_COST: `/client/shipping-setting/store-update`,
     ORDERS_OTP_PERMISSION: `/client/order-otp-permission/status-update`,
+    ORDERS_IMAGE_PERMISSION: `/client/order-attach-image/status-update`,
 
   },
   OTP: {
@@ -96,6 +97,8 @@ const API_ENDPOINTS = {
   },
   PAGE : {
     FOOTER_COLOR : `/client/multi-page/update`,
+    FOOTER_COLOR_GET : `/client/multi-page/update`,
+    GET_FOOTER_LIST: `/client/multi-page/footer-id`,
     GET_BILLING_LIST: `/client/multi-page/footer-id`,
   }
 };

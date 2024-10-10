@@ -6,6 +6,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const CustomeTemplateForm = ({onSaveMessage, defultValue}) => {
+  console.log(defultValue);
   const initialValues = {
     message: defultValue?.message, 
   };
@@ -25,6 +26,7 @@ const CustomeTemplateForm = ({onSaveMessage, defultValue}) => {
         initialValues={initialValues}
         onSubmit={handleSubmit}
         validationSchema={validationSchema}
+        enableReinitialize
       >
         {({ isSubmitting }) => (
           <Form>

@@ -61,74 +61,76 @@ const Ticket_id = () => {
         }
     }, [ticket_ID])
     return (
-        <div>
-            <section className='SupportTicket'>
+        // <div>
+        //     <section className='SupportTicket'>
 
-                {/* header */}
-                <HeaderDescription headerIcon={'flaticon-customer-service'} title={'Ticket Conversation'} subTitle={'Conversation of ticket opended by clients'} search={false}   order={false}/>
+        //         {/* header */}
+        //         <HeaderDescription headerIcon={'flaticon-customer-service'} title={'Ticket Conversation'} subTitle={'Conversation of ticket opended by clients'} search={false}   order={false}/>
 
-                <Container maxWidth='sm'>
-                    <Grid Container spacing={3}>
-                        <Grid item xs={12}>
-                            <form onSubmit={handleSubmit(handleCreateReply)}>
-                                <div className='SupportTicketItem boxShadow'>
-                                    <div className='customInput'>
-                                        <label>Write Message<span>*</span></label>
-                                        <textarea name="" rows="5" {...register("replyContent", { required: true })} placeholder="Write message here">
+        //         <Container maxWidth='sm'>
+        //             <Grid Container spacing={3}>
+        //                 <Grid item xs={12}>
+        //                     <form onSubmit={handleSubmit(handleCreateReply)}>
+        //                         <div className='SupportTicketItem boxShadow'>
+        //                             <div className='customInput'>
+        //                                 <label>Write Message<span>*</span></label>
+        //                                 <textarea name="" rows="5" {...register("replyContent", { required: true })} placeholder="Write message here">
 
-                                        </textarea>
-                                        {errors.msgContent && (
-                                            <p className="error">
-                                                Message content required for reply
-                                                {/* SMS Content must be at least 10 characters */}
-                                            </p>
-                                        )}
-                                    </div>
-                                    <div className="duelButton">
-                                        <Button type="submit">Submit</Button>
-                                        <Button type="reset" className="red">Reset</Button>
-                                    </div>
-                                </div>
-                            </form>
-                        </Grid>
-                    </Grid>
+        //                                 </textarea>
+        //                                 {errors.msgContent && (
+        //                                     <p className="error">
+        //                                         Message content required for reply
+        //                                         {/* SMS Content must be at least 10 characters */}
+        //                                     </p>
+        //                                 )}
+        //                             </div>
+        //                             <div className="duelButton">
+        //                                 <Button type="submit">Submit</Button>
+        //                                 <Button type="reset" className="red">Reset</Button>
+        //                             </div>
+        //                         </div>
+        //                     </form>
+        //                 </Grid>
+        //             </Grid>
 
-                    <Grid Container spacing={3} my={5}>
-                        <Grid item xs={12}>
-                            <div className='SupportTicketItem boxShadow'>
-                                <div>
-                                    <h3>Ticket Id: {ticket_details?.ticket_id}</h3>
-                                    <h4>{ticket_details?.subject}</h4>
-                                    <p>{ticket_details?.content}</p>
-                                </div>
-                                <br></br>
-                                <br></br>
+        //             <Grid Container spacing={3} my={5}>
+        //                 <Grid item xs={12}>
+        //                     <div className='SupportTicketItem boxShadow'>
+        //                         <div>
+        //                             <h3>Ticket Id: {ticket_details?.ticket_id}</h3>
+        //                             <h4>{ticket_details?.subject}</h4>
+        //                             <p>{ticket_details?.content}</p>
+        //                         </div>
+        //                         <br></br>
+        //                         <br></br>
 
 
-                                {
-                                    ticket_details?.comments?.map((comment, index) => <div key={index} className={`conversation_comments  ${comment?.shop_id?"conversation_comments_shop_owner": "conversation_comments_staf"}`}>
+        //                         {
+        //                             ticket_details?.comments?.map((comment, index) => <div key={index} className={`conversation_comments  ${comment?.shop_id?"conversation_comments_shop_owner": "conversation_comments_staf"}`}>
                                        
-                                        <div className='d_flex d_justify '>
-                                            <h4>{comment?.shop_name?comment?.shop_name:"Support Team"}</h4>
-                                            <h6>{comment?.created_at}</h6>
-                                        </div>
+        //                                 <div className='d_flex d_justify '>
+        //                                     <h4>{comment?.shop_name?comment?.shop_name:"Support Team"}</h4>
+        //                                     <h6>{comment?.created_at}</h6>
+        //                                 </div>
 
-                                        <div>
-                                            <p>{comment?.content} </p>
-                                        </div>
+        //                                 <div>
+        //                                     <p>{comment?.content} </p>
+        //                                 </div>
 
-                                    </div>)
-                                }
+        //                             </div>)
+        //                         }
 
 
                                 
 
-                            </div>
-                        </Grid>
-                    </Grid>
-                </Container>
-            </section>
-        </div>
+        //                     </div>
+        //                 </Grid>
+        //             </Grid>
+        //         </Container>
+        //     </section>
+        // </div>
+        <>
+        </>
     );
 };
 

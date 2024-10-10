@@ -11,12 +11,12 @@ import { useToast } from "../../hook/useToast";
 import { activateCourier, headers } from "../../pages/api";
 import SmallLoader from "../SmallLoader/SmallLoader";
 import Pathao from "./Pathao";
+import RedxCourier from "./RedxCourier";
 
 const Courier = ({ busInfo }) => {
     const router = useRouter()
     const showToast = useToast();
     const [isLoading, startLoading, stopLoading] = useLoading();
-
     let [showApi, setShowApi] = useState(false);
     let [secretApi, setSecretApi] = useState(false);
     const [showPathaoSicrets, setShowPathaoSicrets] = useState({
@@ -26,10 +26,12 @@ const Courier = ({ busInfo }) => {
     const data = Cookies.get();
 
     const [openSteadFast, setOpenSteadFast] = useState(false);
+    const [openRedx, setOpenRedx] = useState(false);
     const [openPathao, setOpenPathao] = useState(false);
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [pathaoData, setPathaoData] = useState()
     const [steadFastData, setSteadFastData] = useState({})
+    const [redxData, setRedxData] = useState({})
     // handleApiKey
     const handleApiKey = (key) => {
         if (key === "apiKey") {
@@ -61,6 +63,26 @@ const Courier = ({ busInfo }) => {
         };
         const configData = JSON.stringify(config);
         activateCourier(merchantId, "steadfast", "active", configData).then(
+            (res) => {
+                if (res?.status === 200) {
+                    stopLoading()
+                    showToast("Steadfast details have been successfully submitted.")
+                    if (router.query.redirect_from) {
+                        router.push("/?current_steap=panel6")
+                    }
+
+                }
+            }
+        );
+    };
+    const handleRedxSubmit = (data) => {
+        startLoading()
+        const config = {
+            "Api-Key": data.apiKey,
+            "Secret-Key": data.apiSecret,
+        };
+        const configData = JSON.stringify(config);
+        activateCourier(merchantId, "redx", "active", configData).then(
             (res) => {
                 if (res?.status === 200) {
                     stopLoading()
@@ -112,6 +134,10 @@ const Courier = ({ busInfo }) => {
                         if (response.data?.data[i].provider === 'pathao') {
                             setPathaoData(response.data?.data[i])
                             setOpenPathao(true)
+                        }
+                        if (response.data?.data[i].provider === 'redx') {
+                            setRedxData(response.data?.data[i])
+                            setOpenRedx(true)
                         }
                     }
                 }
@@ -328,6 +354,102 @@ const Courier = ({ busInfo }) => {
                                     )}
                                 </div>
                             </Grid>
+
+
+
+                            {/* <Grid item xs={12} sm={6} md={4}>
+                                <div className='CourierItem boxShadow'>
+
+                                    <div className='img'>
+                                        <img src='../images/new-redx-logo.svg' alt='' />
+                                    </div>
+
+                                    <div className='text'>
+                                        <h4>Select Redx</h4>
+
+                                        <div className='Toggle'>
+                                            <Switch
+                                                onChange={() => setOpenSteadFast(event.target.checked)}
+                                                {...label}
+                                                checked={openSteadFast}
+                                            />
+                                        </div>
+
+                                        <div className='Toggle'>
+                                            {status && <>
+                                                {openSteadFast && <button>Activated</button>}
+                                            </>
+                                            }
+                                        </div>
+                                    </div>
+
+
+                                    {openSteadFast === true ? (
+
+                                        <div className='InputField'>
+                                            <form onSubmit={handleSubmit(handleRedxSubmit)}>
+
+                                                <div className='customInput'>
+
+                                                    <label>API Key</label>
+                                                    <input {...register("apiKey", { required: true })} type={showApi ? 'text' : 'password'}
+
+                                                        // defaultValue={decodeJson(steadFastData?.config)['Api-Key'] !== undefined ? decodeJson(steadFastData?.config)['Api-Key'] : null} 
+                                                        />
+                                                    <div className="eye" onClick={() => handleApiKey("apiKey")}>
+                                                        {
+                                                            showApi
+                                                                ?
+                                                                <i className="flaticon-eye"></i>
+                                                                :
+                                                                <i className="flaticon-hidden"></i>
+                                                        }
+                                                    </div>
+                                                    {errors.apiKey && (
+                                                        <p className="error">
+                                                            Api Key is required
+                                                        </p>
+                                                    )}
+
+                                                </div>
+
+                                                <div className="customInput">
+                                                    <label>Secret Key</label>
+                                                    <input {...register("apiSecret", { required: true })}
+                                                        // defaultValue={decodeJson(steadFastData?.config)['Secret-Key']}
+                                                        type={secretApi ? 'text' : 'password'} />
+
+                                                    <div className="eye" onClick={() => handleApiKey("secretKey")}>
+                                                        {
+                                                            secretApi
+                                                                ?
+                                                                <i className="flaticon-eye"></i>
+                                                                :
+                                                                <i className="flaticon-hidden"></i>
+                                                        }
+                                                    </div>
+                                                    {errors.apiSecret && (
+                                                        <p className="error">
+                                                            Api secret is required
+                                                        </p>
+                                                    )}
+
+                                                </div>
+
+                                                <div className="duelButton">
+                                                    <Button type="submit">Submit</Button>
+
+                                                </div>
+
+                                            </form>
+                                        </div>
+                                    ) : (
+                                        ""
+                                    )}
+                                </div>
+                            </Grid> */}
+                            <RedxCourier merchantId={merchantId} showToast={showToast} setOpenRedx={setOpenRedx} openRedx={openRedx} stopLoading={stopLoading} startLoading={startLoading} redxData={redxData}  />
+
                         </Grid>
                     </div>
                 </Container>

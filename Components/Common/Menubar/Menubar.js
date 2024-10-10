@@ -580,14 +580,14 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
                     >
                       Courier
                     </Link>
-                    <Link
+                    {/* <Link
                       href="/courier/dashboard"
                       className={
                         router.pathname === "/product-return" ? "active" : ""
                       }
                     >
                       Payment Dashboard
-                    </Link>
+                    </Link> */}
                   </li>
                 </ul>
               )}
@@ -617,7 +617,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
             </li>
 
             {/* Support Ticket */}
-            <li
+            {/* <li
               className={router.pathname === "/support-ticket" ? "active" : ""}
             >
               <Tooltip title="Support Ticket" placement="right">
@@ -627,7 +627,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
                   <span> Support Ticket </span>{" "}
                 </Link>
               </Tooltip>
-            </li>
+            </li> */}
 
             {/* Bkash Merchant */}
             {Array.isArray(myAddonsList)

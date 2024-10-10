@@ -101,7 +101,6 @@ const LandingWebsite = () => {
     const [mas, setMas] = useState("");
 
     const textToCopy = domain_request !== null ? `${themeUrl}/${domain}/p/` : `https://funnelliner.com/${domain}/p/${pageTittle}`;
-   
     const handleCopyToClick = () => {
         const clipboard = new Clipboard(".SocialLink", {
             text: () => textToCopy,
@@ -114,11 +113,10 @@ const LandingWebsite = () => {
         clipboard.on("error", (e) => {
         });
     };
-
     //product fetching and add with theme
     useEffect(() => {
         axios
-            .get(process.env.NEXT_PUBLIC_API_URL + "/client/products", { headers: headers })
+            .get(process.env.NEXT_PUBLIC_API_URL + "/client/products-for-search", { headers: headers })
             .then(function (response) {
                 if (response?.status === 200) {
                     setProducts(response.data.data);
@@ -128,11 +126,9 @@ const LandingWebsite = () => {
               
             })
     }, []);
-
     let options = products.length === 0 ? [] : products?.map(function (item) {
         return { value: item.id, label: item.product_name, };
     })
-
     const [currentPage, setCurrentPage] = useState(1);
     const [perPage, setPerPage] = useState(6);
     const indexOfLastProducts = currentPage * perPage;
@@ -146,11 +142,7 @@ const LandingWebsite = () => {
     for (let i = 1; i <= Math.ceil(landingPageTemplate.length / perPage); i++) {
         pageNumbers.push(i);
     }
-
     const paginate = (pageNumber, value) => setCurrentPage(value);
-
-   
-
     return (
         <>
             <section className="TopSellingProducts DashboardSetting LandingWebsite">

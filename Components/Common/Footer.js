@@ -15,7 +15,7 @@ const Footer = () => {
 
                         <Grid item xs={12}>
 
-                            <p> <img src="/images/light-logo.png" alt="" /> Version-1.0 </p>
+                            <p> <img src="/images/light-logo.png" alt="" /> Version-1.3 </p>
 
                         </Grid>
 

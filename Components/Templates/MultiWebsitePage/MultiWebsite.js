@@ -1,4 +1,4 @@
-import { Box, Button, Container, Grid } from "@mui/material";
+import { Box, Button, Container, FormControl, Grid, MenuItem, Pagination, Select, Stack } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -15,13 +15,18 @@ const MultiWebsite = () => {
     const [openPreview, setOpenPreview] = useState(false);
     const handlePreview = () => setOpenPreview(true);
     const previewClose = () => setOpenPreview(false);
-
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
+    const [perPage, setPerPage] = useState(10);
+    
     const [multiPageTemplate, setMultiPageTemplate] = useState([]);
     useEffect(() => {
-        allThemeList("multiple").then((result) => {
+        const params = { page: currentPage, perPage: perPage }
+        allThemeList("multiple", params).then((result) => {
             setMultiPageTemplate(result?.data?.data);
+            setTotalPage(result.data?.last_page);
         });
-    }, []);
+    }, [currentPage, perPage]);
 
     const handleActiveTheme = (e) => {
         Swal.fire({
@@ -53,13 +58,21 @@ const MultiWebsite = () => {
             }
         })
     };
+    const handleChange = (event, value) => {
+        setCurrentPage(value);
 
+    };
+    const handlePerPageChange = event => {
+        const perPageValue = parseInt(event.target.value);
+        setPerPage(perPageValue);
+        setCurrentPage(1);
+    };
     return (
         <>
             <section className='LandingWebsite'>
                 {multiPageTemplate.length === 0 && <SmallLoader />}
                 {/* header */}
-                <HeaderDescription videoLink={"https://www.youtube.com/embed/ExoVAA15ad0?si=_-r8cd9WDyf5xff0"}    order={false} headerIcon={'flaticon-website-design'} title={'Multiple Page Template'} subTitle={'choose your theme here and customize as you want'} search={false} />
+                <HeaderDescription videoLink={"https://www.youtube.com/embed/ExoVAA15ad0?si=_-r8cd9WDyf5xff0"} order={false} headerIcon={'flaticon-website-design'} title={'Multiple Page Template'} subTitle={'choose your theme here and customize as you want'} search={false} />
 
                 <Container maxWidth='sm'>
 
@@ -115,6 +128,50 @@ const MultiWebsite = () => {
 
                         </div>
                     </Grid>
+                    <Box
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginTop: "20px",
+                        }}
+                    >
+                        <div className="DropDown Download " style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <span style={{ fontSize: "14px" }}>Rows per page</span>
+
+                            <div id="per-page-select_order">
+                                <FormControl variant="outlined" style={{ width: "100px", marginLeft: "10px" }} >
+
+                                    {/* <InputLabel id="per-page-label">Items per page</InputLabel> */}
+                                    <Select
+                                        // labelId="per-page-label"
+                                        id="per-page-select"
+                                        value={perPage}
+                                        onChange={handlePerPageChange}
+                                    // label="Items per page"
+                                    >
+                                        <MenuItem value={10}>10</MenuItem>
+                                        <MenuItem value={20}>20</MenuItem>
+                                        <MenuItem value={30}>30</MenuItem>
+                                        <MenuItem value={40}>40</MenuItem>
+                                        <MenuItem value={50}>50</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </div>
+
+                        </div>
+
+                        <Stack spacing={2}>
+                            <Pagination
+                                count={totalPage}
+                                page={currentPage}
+                                onChange={handleChange}
+                                variant="outlined"
+                            />
+                        </Stack>
+                        <div></div>
+
+                    </Box>
                 </Container>
             </section>
         </>

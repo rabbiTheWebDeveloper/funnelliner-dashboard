@@ -22,6 +22,7 @@ import useLoading from "./../../hook/useLoading";
 import Spinner from "./../commonSection/Spinner/Spinner";
 import BulkSmsStatus from "./BulkSmsStatus";
 import SMSTemplate from "./SMSTemplate";
+import { sms_price } from "../../constant/bulksms";
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -64,6 +65,7 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
         ?.map((num) => num?.phone)
         ?.map((number) => number?.match(/^(\+?0{0,2}88)?(01\d{9})$/)?.[2])
         ?.filter(Boolean);
+
     const handlePaymentMethodSelect = (event) => {
         setSelectedPayment(event.target.value);
     };
@@ -228,7 +230,7 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
                                         <h3>
                                             <i className="flaticon-mail"></i>
                                             {busInfo?.sms_sent >= 0
-                                                ? (busInfo?.sms_sent * 0.3).toFixed(2)
+                                                ? (busInfo?.sms_sent * sms_price).toFixed(2)
                                                 : 0}
                                         </h3>
                                     </div>
@@ -255,7 +257,7 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
                                             <li>
                                                 Non Masking SMS:{" "}
                                                 <span>
-                                                    {Math.floor(busInfo?.sms_balance / 0.3)}
+                                                    {Math.floor(busInfo?.sms_balance / sms_price)}
                                                 </span>{" "}
                                             </li>
                                             <li>
@@ -303,7 +305,7 @@ const BulkSms = ({ busInfo, handelFetchBusInfo }) => {
                                     <div className="middle">
                                         <h4>
                                             {" "}
-                                            Regular SMS : <span>0.30 /sms </span>
+                                            Regular SMS : <span>{sms_price} /sms </span>
                                         </h4>
                                     </div>
                                 </div>

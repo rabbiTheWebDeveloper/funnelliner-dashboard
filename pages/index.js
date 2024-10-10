@@ -5,6 +5,7 @@ import { headers } from "./api";
 import Dashboard from "../Components/HomePage/Dashboard";
 import withAuth from "../hook/PrivateRoute";
 import FirstSetup from "../Components/HomePage/FirstSetup/FirstSetup";
+import useOrderLiveData from "../hook/useOrderLiveData";
 
 const HomePage = ({ busInfo }) => {
   const [isApiResponse, setIsApiResponse] = useState(false);
@@ -30,7 +31,6 @@ const HomePage = ({ busInfo }) => {
     Cookies.set("Skip_status", true);
     window.location.href = "/";
   };
-
   return (
     <div className="HomePage">
       {isApiResponse && (

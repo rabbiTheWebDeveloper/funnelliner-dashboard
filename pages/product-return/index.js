@@ -11,7 +11,7 @@ const index = () => {
 
         <>
 
-            <ProductReturn></ProductReturn>
+            <ProductReturn/>
 
         </>
 

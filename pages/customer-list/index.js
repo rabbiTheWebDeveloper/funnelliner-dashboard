@@ -5,6 +5,10 @@ import {
   Pagination,
   TextField,
   Tooltip,
+  FormControl,
+  Select,
+  MenuItem,
+  Stack
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import download from "downloadjs";
@@ -72,17 +76,13 @@ const CustomerListPage = () => {
   const [totalPage, setTotalPage] = useState(1);
   const [callCount, setCount] = useState(0);
   const [selectedOption, setSelectedOption] = useState("");
-  const handleChange = (event, value) => {
-    setCurrentPage(value);
-    setCount(1);
-  };
-
+  const [perPage, setPerPage] = useState(10);
   const handleFetchCustomer = useCallback(async () => {
     try {
       const params = {
         order_status: active,
         page: currentPage,
-        limit: 25
+        perPage: perPage
       }
       let data = await axios({
         method: "get",
@@ -95,7 +95,7 @@ const CustomerListPage = () => {
         setTotalPage(data?.data?.last_page);
       }
     } catch (err) { }
-  }, [active, currentPage]);
+  }, [active, currentPage , perPage]);
 
 
   const selectedData = customers?.map((obj) =>
@@ -196,18 +196,20 @@ const CustomerListPage = () => {
   };
 
   const handleFetchSearch = useCallback(async () => {
-   const params = {
-    search: search
-   }
+    const params = {
+      search: search
+    }
     try {
-      const searchResponse = await axios.get(`${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.CUSTOMERS.CUSTOMERS_SEARCH}`, {
-        headers: headers,
-        params
-      });
-      if (searchResponse?.data?.success) {
-        setCustomers(searchResponse.data?.data);
+      if (search.length > 0) {
+        const searchResponse = await axios.get(`${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.CUSTOMERS.CUSTOMERS_SEARCH}`, {
+          headers: headers,
+          params
+        });
+        if (searchResponse?.data?.success) {
+          setCustomers(searchResponse.data?.data);
+        }
       }
-    } catch (error) {}
+    } catch (error) { }
   }, [search]);
 
 
@@ -219,6 +221,14 @@ const CustomerListPage = () => {
   useEffect(() => {
     handleFetchSearch();
   }, [handleFetchSearch]);
+  const handlePerPageChange = event => {
+    const perPageValue = parseInt(event.target.value);
+    setPerPage(perPageValue);
+    setCurrentPage(1);
+  };
+  const handleChange = (event, value) => {
+    setCurrentPage(value);
+  };
   return (
     <div>
       <section className={style.CustomerList}>
@@ -351,7 +361,7 @@ const CustomerListPage = () => {
                     <div className="DataTableRow" key={index}>
                       <div className="DataTableColum">
                         <div className="number">
-                          {index + 1 + currentPage * 25 - 25}
+                          {index + 1 + currentPage * perPage - perPage}
                         </div>
                       </div>
                       <div className="DataTableColum">
@@ -413,14 +423,50 @@ const CustomerListPage = () => {
               )}
             </div>
           </div>
-          <Paginator
-            count={totalPage}
-            page={currentPage}
-            onChange={handleChange}
-            showFirstButton
-            showLastButton
-            variant="outlined"
-          />
+          <Box
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginTop: "20px",
+            }}
+          >
+            <div className="DropDown Download " style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: "14px" }}>Rows per page</span>
+
+              <div id="per-page-select_order">
+                <FormControl variant="outlined" style={{ width: "100px", marginLeft: "10px" }} >
+
+                  {/* <InputLabel id="per-page-label">Items per page</InputLabel> */}
+                  <Select
+                    // labelId="per-page-label"
+                    id="per-page-select"
+                    value={perPage}
+                    onChange={handlePerPageChange}
+                  // label="Items per page"
+                  >
+                    <MenuItem value={10}>10</MenuItem>
+                    <MenuItem value={20}>20</MenuItem>
+                    <MenuItem value={30}>30</MenuItem>
+                    <MenuItem value={40}>40</MenuItem>
+                    <MenuItem value={50}>50</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
+
+            </div>
+
+            <Stack spacing={2}>
+              <Pagination
+                count={totalPage}
+                page={currentPage}
+                onChange={handleChange}
+                variant="outlined"
+              />
+            </Stack>
+            <div></div>
+
+          </Box>
         </Container>
       </section>
     </div>

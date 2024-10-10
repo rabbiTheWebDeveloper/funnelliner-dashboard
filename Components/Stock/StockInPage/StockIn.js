@@ -2,7 +2,10 @@ import {
   Box,
   Button,
   Container,
+  FormControl,
+  MenuItem,
   Pagination,
+  Select,
   Skeleton,
   Stack,
 } from "@mui/material";
@@ -23,83 +26,36 @@ const StockIn = () => {
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+  const [totalPage, setTotalPage] = useState(1);
+ 
 
   const fetchStockProducts = useCallback(async () => {
+    const params = { page: currentPage, perPage: perPage }
     await axios
       .get(
         `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.STOCK_IN.GET_STOCK_IN_PRODUCTS}`,
-        { headers: headers }
+        { headers: headers, params: params }
       )
       .then(function (response) {
         setProducts(response.data.data);
+        setTotalPage(response.data?.last_page);
         setIsLoading(false);
       });
-  }, []);
+  }, [ currentPage, fetchApi, perPage]);
 
   useEffect(() => {
     fetchStockProducts();
-  }, [fetchApi, fetchStockProducts]);
+  }, [fetchApi, fetchStockProducts, currentPage, perPage]);
+  const handleChange = (event, value) => {
+    setCurrentPage(value);
 
-  //   const deleteProduct = (id) => {
-  //     Swal.fire({
-  //       title: "Are you sure?",
-  //       text: "You won't be able to revert this!",
-  //       icon: "warning",
-  //       showCancelButton: true,
-  //       confirmButtonColor: "#3085d6",
-  //       cancelButtonColor: "#d33",
-  //       confirmButtonText: "Yes, delete it!",
-  //     }).then((result) => {
-  //       if (result.isConfirmed) {
-  //         axios
-  //           .delete(process.env.API_URL + "/client/stocks/stock-in/list" + id, {
-  //             headers: headers,
-  //           })
-  //           .then(function (result) {
-  //             // handle success
-
-  //             if (result) {
-  //               setProducts((pd) => {
-  //                 const filter = products.filter((prod) => {
-  //                   return prod.id !== id;
-  //                 });
-  //                 return [...filter];
-  //               });
-  //             }
-  //           });
-  //         Swal.fire("Deleted!", "Your file has been deleted.", "success");
-  //       }
-  //     });
-  //   };
-
-  const indexOfLastProducts = currentPage * perPage;
-  const indexOfFirstProducts = indexOfLastProducts - perPage;
-  const currentProduct = products.slice(
-    indexOfFirstProducts,
-    indexOfLastProducts
-  );
-
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(products.length / perPage); i++) {
-    pageNumbers.push(i);
-  }
-
-  const paginate = (pageNumber, value) => setCurrentPage(value);
-
-  //   const handleChangeSearchBox = (e) => {
-  //     setProductSearchValue(e.target.value);
-  //     const filtered = products.filter(
-  //       (item) =>
-  //         item?.id?.toString().includes(e.target.value) ||
-  //         item?.product_name
-  //           ?.toLowerCase()
-  //           .includes(e.target.value.toLowerCase()) ||
-  //         item?.product_code?.toLowerCase().includes(e.target.value.toLowerCase())
-  //     );
-  //     setFilterProducts(filtered);
-  //   };
-
-
+  };
+  const handlePerPageChange = event => {
+    const perPageValue = parseInt(event.target.value);
+    setPerPage(perPageValue);
+    setCurrentPage(1);
+  };
+  console.log(currentPage, perPage);
   return (
     <>
       <section className="TopSellingProducts DashboardSetting Order Stock">
@@ -196,39 +152,7 @@ const StockIn = () => {
                             </tr>
                           );
                         })}
-                        {/* {productSearchValue &&
-                          filterProducts?.map((product, index) => {
-                            return (
-                              <tr key={product.id}>
-                                <td>{index + 1}</td>
-                                <td>
-                                  <img src={product?.main_image} alt="" />
-                                </td>
-                                <td>{product?.product_name}</td>
-                                <td>{product.product_code}</td>
-                                <td>{product.price}</td>
-                                <td>
-                                  {product?.product_qty > 0 ? (
-                                    product?.product_qty
-                                  ) : (
-                                    <span style={{ color: "red" }}>
-                                      stock out-{product?.product_qty}
-                                    </span>
-                                  )}
-                                </td>
-                                <td>
-                                  <div className="action">
-                                    <Button className="updateActionBtn">
-                                      <UpdateStock
-                                        productId={product?.id}
-                                        handleFetch={handleFetch}
-                                      ></UpdateStock>
-                                    </Button>
-                                  </div>
-                                </td>
-                              </tr>
-                            );
-                          })} */}
+
                       </tbody>
                     </>
                   ) : (
@@ -253,17 +177,43 @@ const StockIn = () => {
 
               <Box
                 style={{
-                  display: products.length > 0 ? "block" : "none",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginTop: "20px",
                 }}
               >
+                <div className="DropDown Download " style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "14px" }}>Rows per page</span>
+
+                  <div id="per-page-select_order">
+                    <FormControl variant="outlined" style={{ width: "100px", marginLeft: "10px" }} >
+                      <Select
+                        id="per-page-select"
+                        value={perPage}
+                        onChange={handlePerPageChange}
+                      >
+                        <MenuItem value={10}>10</MenuItem>
+                        <MenuItem value={20}>20</MenuItem>
+                        <MenuItem value={30}>30</MenuItem>
+                        <MenuItem value={40}>40</MenuItem>
+                        <MenuItem value={50}>50</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </div>
+
+                </div>
+
                 <Stack spacing={2}>
                   <Pagination
-                    count={pageNumbers.length}
-                    variant="outlined"
+                    count={totalPage}
                     page={currentPage}
-                    onChange={paginate}
+                    onChange={handleChange}
+                    variant="outlined"
                   />
                 </Stack>
+                <div></div>
+
               </Box>
             </div>
           </div>

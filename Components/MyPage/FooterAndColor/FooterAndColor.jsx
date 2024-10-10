@@ -8,6 +8,7 @@ import { API_ENDPOINTS } from '../../../config/ApiEndpoints';
 import { headers } from '../../../pages/api';
 
 const FooterAndColor = () => {
+  const [dara , setData] = useState([]);
   const [selected, setSelected] = useState(1);
   const [background, setBackground] = useState("#fff");
   const [isLoading, setIsLoading] = useState(false);
@@ -36,22 +37,19 @@ const FooterAndColor = () => {
       setIsLoading(false);
     }
   };
-  const handleFetchShippingStatus = useCallback(async () => {
+  const handleFetchFooterAndColor = useCallback(async () => {
     try {
-      let data = await axios({
-        method: "get",
-        url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ORDERS.ORDER_SHIPPING_DATE_CONFIG}`,
-        headers: headers,
-      });
-      if (data.status) {
-        setShippingDate(data?.data?.data?.shipped_date_status);
-      }
-    } catch (err) { }
+      const response = await axios.get(`${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PAGE.FOOTER_COLOR}`, { headers });
+      setData(response.data);
+    } catch (error) {
+      // Handle errors if needed
+      console.error("Error fetching data:", error);
+    }
   }, []);
-
+  
   useEffect(() => {
-    handleFetchShippingStatus();
-  }, [handleFetchShippingStatus]);
+    handleFetchFooterAndColor();
+  }, [handleFetchFooterAndColor]);
 
   return (
     <>

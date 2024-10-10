@@ -153,7 +153,7 @@ const RecentOrder = () => {
 
                                     {/* item */}
                                     <div className="item">
-                                        <h4> <i className="flaticon-taka"></i> {order?.pricing?.grand_total.toFixed(0)?.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</h4>
+                                        <h4> <i className="flaticon-taka"></i> {order?.pricing?.grand_total?.toFixed(0)?.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</h4>
                                     </div>
 
                                     {/* item */}

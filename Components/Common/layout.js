@@ -56,7 +56,7 @@ export default function Layout({
 
         {location.pathname !== "/change-logs" && <Footer />}
 
-        {isConditionTrue && <Subscribe/>}
+        {isConditionTrue && <Subscribe setIsConditionTrue={setIsConditionTrue}/>}
       </>
     );
   }

@@ -1,13 +1,17 @@
 import {
+  Avatar,
+  AvatarGroup,
   Box,
   Button,
   Checkbox,
   Container,
   FormControl,
+  InputLabel,
   OutlinedInput,
   Pagination,
   Select,
   Skeleton,
+  Stack,
   TextField,
   Tooltip,
 } from "@mui/material";
@@ -34,7 +38,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import ReactSelect from 'react-select';
+import ReactSelect from "react-select";
 import HeaderDescription from "../../Components/Common/HeaderDescription/HeaderDescription";
 import CourierModal from "../../Components/CourierPage/CourierModal";
 import SmallLoader from "../../Components/SmallLoader/SmallLoader";
@@ -48,24 +52,31 @@ import ViewModal from "../../Components/OrderPage/ViewModal";
 import * as XLSX from "xlsx";
 import _ from "lodash";
 import { saveAs } from "file-saver";
+import RedxCourierModel from "../../Components/OrderPage/RedxCourierModel";
+import { calculateDeliveryPercentage } from "../../utlit/orders";
+import useOrderLiveData from "../../hook/useOrderLiveData";
+
+import SearchIcon from "../../Components/OrderPage/SearchIcon";
+import Image from "next/image";
+import searchAnimation from "../../public/search.gif";
 
 const followUpOrderFilterOption = [
-  { value: 'today', label: 'Today' },
-  { value: 'next_seven_days', label: 'Next Seven Days' },
-  { value: 'custom', label: 'Custom' }
-]
+  { value: "today", label: "Today" },
+  { value: "next_seven_days", label: "Next Seven Days" },
+  { value: "custom", label: "Custom" },
+];
 
 const confirmedOrderFilterOption = [
-  { value: 'today', label: 'Today' },
-  { value: 'tomorrow', label: 'Tomorrow' },
-  { value: 'previous', label: 'Previous' },
-  { value: 'next_seven_days', label: 'Next Seven Days' },
-  { value: 'custom', label: 'Custom' }
-]
+  { value: "today", label: "Today" },
+  { value: "tomorrow", label: "Tomorrow" },
+  { value: "previous", label: "Previous" },
+  { value: "next_seven_days", label: "Next Seven Days" },
+  { value: "custom", label: "Custom" },
+];
 function formatDateToBST(date) {
-  return date?.toLocaleString('en-US', { timeZone: 'Asia/Dhaka' });
+  return date?.toLocaleString("en-US", { timeZone: "Asia/Dhaka" });
 }
-const OrderPage = ({ orderUpdate, myAddonsList }) => {
+const OrderPage = ({ myAddonsList, busInfo }) => {
   const showToast = useToast();
   const router = useRouter();
   const [isLoading, startLoading, stopLoading] = useLoading();
@@ -84,6 +95,11 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
   const [totalPage, setTotalPage] = useState(1);
   const [callCount, setCount] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
+  const [redxModal, setRedxModal] = useState({
+    open: false,
+    orderID: "",
+    provider: "",
+  });
   const [selectedValue, setSelectedValue] = useState(null);
   const [selectCourier, setSelectCourier] = useState(null);
   const [selectCourierStatus, setSelectCourierStatus] = useState(null);
@@ -103,8 +119,14 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
   const [cities, setCities] = useState();
   const [followUpDate, setFollowUpDate] = useState();
   const [pendingOrderCount, setPendingOrderCount] = useState([]);
-
-
+  const [perPage, setPerPage] = useState(10);
+  // const liveOrder = useOrderLiveData(setOrders);
+  // useEffect(() => {
+  //   if (liveOrder) {
+  //     setOrders(prevOrders => [liveOrder, ...prevOrders]);
+  //   }
+  // }, [liveOrder]);
+  // console.log("liveOrder", liveOrder);
 
   const BootstrapButton = styled(Button)({
     backgroundColor: "#fff",
@@ -238,13 +260,15 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
     setSelectCourier(null);
     setSelectCourierStatus(null);
     setFollowUpInputChange(null);
-    setSelectedValue(null)
+    setSelectedValue(null);
     setDefault(value);
-    setCurrentPage(1)
-    setShowPicker(false)
-    setStartDate()
-    setEndDate()
-    setEnableGlobalSearch(false)
+    setCurrentPage(1);
+    setShowPicker(false);
+    setStartDate();
+    setEndDate();
+    setEnableGlobalSearch(false);
+    setPerPage(10);
+    setCurrentPage(1);
     // setTotalPage(0)
   };
   const handleCourierModalOpen = () => {
@@ -255,19 +279,27 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
   };
 
   const params = {
-    type: active,
+    type: active === "all" && startDate && endDate ? "all_order_filter" : active,
     page: currentPage,
+    perPage: perPage,
     date: selectedValue,
     provider: selectCourier,
     courier_status: selectCourierStatus,
     // search: search,
-    start_date: active === "all" ? formatDateToBST(startDate) : formatDateToBST(startDate),
-    end_date: active === "all" ? formatDateToBST(endDate) : formatDateToBST(endDate),
+
+    start_date:
+      active === "all"
+        ? formatDateToBST(startDate)
+        : formatDateToBST(startDate),
+    end_date:
+      active === "all" ? formatDateToBST(endDate) : formatDateToBST(endDate),
+
     filter_date: selectedValue,
   };
-  if (active === "all" && startDate && endDate) delete params.type
-  if (active === "all" && startDate && endDate) delete params.page
-  if (active === "all") params.filter_date = "custom"
+  // if (active === "all" && startDate && endDate) delete params.type;
+  if (active === "all" && startDate && endDate) delete params.page;
+  if (active === "all" && startDate && endDate) delete params.perPage;
+  if (startDate && endDate) params.filter_date = "custom";
   const [statusChangeLoading, setStatusChangeLoading] = useState(false);
   const handleStatusChange = (event, id) => {
     const params = {
@@ -296,13 +328,11 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
             headers: headers,
           })
             .then(res => {
-              orderUpdate();
               handleFetch();
               toast.success(res.data?.message, { position: "top-right" });
             })
             .catch(error => {
               if (error.response?.data?.msg?.status[0]) {
-                orderUpdate();
                 handleFetch();
                 toast.error(error.response?.data?.msg?.status[0], {
                   position: "top-right",
@@ -312,7 +342,7 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
             });
           setTimeout(() => {
             setFetch(true);
-            orderUpdate();
+
             stopLoading();
           }, 1000);
         }
@@ -322,13 +352,11 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
         headers: headers,
       })
         .then(res => {
-          orderUpdate();
           handleFetch();
           toast.success(res.data?.message, { position: "top-right" });
         })
         .catch(error => {
           if (error.response?.data?.msg?.status[0]) {
-            orderUpdate();
             handleFetch();
             toast.error(error.response?.data?.msg?.status[0], {
               position: "top-right",
@@ -338,7 +366,7 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
         });
       setTimeout(() => {
         setFetch(true);
-        orderUpdate();
+
         stopLoading();
       }, 1000);
     }
@@ -469,15 +497,18 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
 
   const searchParams = {
     search: search,
-  }
+  };
 
   const handleFetchOrderGlobalSearch = useCallback(async () => {
     setApiResponse(false);
     try {
-      const OrderGlobalSearchResponse = await axios.get(`${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ORDERS.ORDER_GLOBAL_SEARCH}`, {
-        headers: headers,
-        params: searchParams
-      });
+      const OrderGlobalSearchResponse = await axios.get(
+        `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ORDERS.ORDER_GLOBAL_SEARCH}`,
+        {
+          headers: headers,
+          params: searchParams,
+        }
+      );
       setOrders(OrderGlobalSearchResponse?.data?.data);
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -501,22 +532,22 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
             setOrders(res.data?.data);
             setTotalPage(res.data?.last_page);
             setFetch(false);
-            setApiResponse(true)
+            setApiResponse(true);
           }
         })
-        .catch(e => { });
+        .catch(e => {});
 
       if (callCount === 0) {
         if (modalOpenUpdate || modalOpen) {
-          SuperFetch.get(API_ENDPOINTS.PRODUCTS.GET_PRODUCTS, { headers: headers }).then(res => {
+          SuperFetch.get("/client/products-for-search", {
+            headers: headers,
+          }).then(res => {
             if (res.data.success) {
               setProducts(res.data?.data);
             }
-          }
-
-          );
+          });
         }
-        if (active === 'pending') {
+        if (active === "pending") {
           SuperFetch.get(API_ENDPOINTS.ORDERS.ORDER_ADVANCE_PAYMENT_CONFIG, {
             headers: headers,
           }).then(res => {
@@ -524,7 +555,6 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
               setAdvancedPaymentConfig(res.data?.data?.advanced_payment);
             }
           });
-
         }
 
         SuperFetch.get(API_ENDPOINTS.ORDERS.ORDER_HOLD_ON_CONFIG, {
@@ -543,7 +573,6 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
             }
           });
         }
-
       }
 
       setFetch(false);
@@ -559,7 +588,8 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
     startDate,
     endDate,
     modalOpenUpdate,
-    modalOpen
+    modalOpen,
+    perPage,
   ]);
   // follow date
 
@@ -576,12 +606,16 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
       type: type,
     };
     axios
-      .post(API_ENDPOINTS.BASE_URL + `/client/order/date/${orderId}/update`, postBody, {
-        headers: headers,
-      })
+      .post(
+        API_ENDPOINTS.BASE_URL + `/client/order/date/${orderId}/update`,
+        postBody,
+        {
+          headers: headers,
+        }
+      )
       .then(function (response) {
         if (response.status === 200) {
-          handleFetch()
+          handleFetch();
           toast.success(response.data.message, {
             autoClose: 2000,
             hideProgressBar: true,
@@ -607,7 +641,7 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
           setCities(res.data?.data);
           setOrderId(id);
           handleCourierModalOpen();
-          orderUpdate();
+          // orderUpdate();
           setCourierViewValue("");
         } else {
           showToast(res?.data?.message, "error");
@@ -626,9 +660,18 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
         showToast("Order Send Courier Provider Successfully", "success");
         handleFetch();
         stopLoading();
-        orderUpdate();
+
         setCourierViewValue("");
       });
+    } else if (event.target.value === "redx") {
+      setRedxModal({
+        ...redxModal,
+        open: true,
+        orderID: id,
+        provider: event.target.value,
+      });
+      stopLoading();
+      setCourierViewValue("");
     } else if (event.target.value === "office") {
       SuperFetch.post(
         "/client/orders/status/update",
@@ -641,7 +684,7 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
         showToast("Office Delivery successfully", "success");
         handleFetch();
         stopLoading();
-        orderUpdate();
+
         setCourierViewValue("");
       });
     } else if (event.target.value === "redriect-courier") {
@@ -722,7 +765,8 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
     }).then(result => {
       if (result.isConfirmed) {
         axios
-          .post(`${process.env.NEXT_PUBLIC_API_URL}/client/bulkdelete`,
+          .post(
+            `${process.env.NEXT_PUBLIC_API_URL}/client/bulkdelete`,
             {
               orders: [...selectedOrders],
             },
@@ -731,7 +775,6 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
             }
           )
           .then(function (result) {
-            orderUpdate();
             handleFetch();
             setSelectedOrders([]);
 
@@ -769,7 +812,6 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
       setSelectedOrders([]);
       handleFetch();
       stopLoading();
-      orderUpdate();
     });
   };
 
@@ -838,7 +880,6 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
 
   const [selectedStatus, setSelectedStatus] = useState("Select Status");
 
-
   const orderType = value => {
     if (value === "landing") {
       return "#894bca";
@@ -854,7 +895,7 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
     }
   };
 
-  const moveToTrash = (id) => {
+  const moveToTrash = id => {
     Swal.fire({
       iconHtml: '<img src="/images/delete.png">',
       customClass: {
@@ -885,7 +926,6 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                 return [...filter];
               });
               showToast("Your order has been Moved to trash", "success");
-              orderUpdate();
             } else {
             }
           })
@@ -894,8 +934,7 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
           });
       }
     });
-
-  }
+  };
   const handleFetchOrderTrash = useCallback(async () => {
     if (active === "trashed") {
       try {
@@ -903,32 +942,30 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
           method: "get",
           url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ORDERS.GET_ORDER_TRASHED_LIST}`,
           headers: headers,
-          params:params,
+          params: params,
         });
         if (data.status) {
           setOrders(data?.data?.data);
           setTotalPage(data?.data.last_page);
         }
-      } catch (err) { }
-
+      } catch (err) {}
     }
-  }, [active ,currentPage]);
-
+  }, [active, currentPage, perPage]);
 
   const [selectedOption, setSelectedOption] = useState("");
-  const generateExcelFile = (data) => {
+  const generateExcelFile = data => {
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.json_to_sheet(data);
 
     const headerStyle = {
       font: { bold: true },
-      fill: { fgColor: { rgb: 'CCCCCC' } },
+      fill: { fgColor: { rgb: "CCCCCC" } },
     };
 
-    const dataStyle = { fill: { fgColor: { rgb: 'FFFFFF' } } };
+    const dataStyle = { fill: { fgColor: { rgb: "FFFFFF" } } };
 
     // Apply header style
-    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
+    const headerRange = XLSX.utils.decode_range(worksheet["!ref"]);
     for (let col = headerRange.s.c; col <= headerRange.e.c; col++) {
       const headerCell = XLSX.utils.encode_cell({ r: headerRange.s.r, c: col });
       if (worksheet[headerCell]) {
@@ -937,7 +974,7 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
     }
 
     // Apply data style
-    const dataRange = XLSX.utils.decode_range(worksheet['!ref']);
+    const dataRange = XLSX.utils.decode_range(worksheet["!ref"]);
     for (let row = dataRange.s.r + 1; row <= dataRange.e.r; row++) {
       for (let col = dataRange.s.c; col <= dataRange.e.c; col++) {
         const cell = XLSX.utils.encode_cell({ r: row, c: col });
@@ -947,14 +984,14 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
       }
     }
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
     const excelBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
+      bookType: "xlsx",
+      type: "array",
     });
 
     const file = new Blob([excelBuffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
     return file;
   };
@@ -963,11 +1000,10 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
     const orderss = [...orders];
     console.log(orderss); // Replace this with your actual data
     const file = generateExcelFile(orderss);
-    saveAs(file, 'y_list.xlsx');
+    saveAs(file, "y_list.xlsx");
   };
 
-
-  const handleOptionChange = (event) => {
+  const handleOptionChange = event => {
     setSelectedOption(event.target.value);
     // Perform corresponding action based on the selected option
     switch (event.target.value) {
@@ -987,8 +1023,7 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
   };
   useEffect(() => {
     handleFetchOrderTrash();
-  }, [handleFetchOrderTrash])
-
+  }, [handleFetchOrderTrash]);
 
   const handleFetchOrderCount = async () => {
     try {
@@ -998,13 +1033,18 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
         headers: headers,
       });
       setPendingOrderCount(data.data.data);
-    } catch (err) { }
-
+    } catch (err) {}
   };
 
   useEffect(() => {
     handleFetchOrderCount();
   }, []);
+
+  const handlePerPageChange = event => {
+    const perPageValue = parseInt(event.target.value);
+    setPerPage(perPageValue);
+    setCurrentPage(1);
+  };
   return (
     <div>
       <section className="DashboardSetting Order">
@@ -1015,11 +1055,11 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
         )}
         {/* header */}
         <HeaderDescription
-          videoLink={
-            {
-              video: "https://www.youtube.com/embed/Z5bjNcweC8s?si=AYJvJWfJehFenQRO",
-              title: "Effective Order Management tutorial"
-            }}
+          videoLink={{
+            video:
+              "https://www.youtube.com/embed/Z5bjNcweC8s?si=AYJvJWfJehFenQRO",
+            title: "Effective Order Management tutorial",
+          }}
           setSearch={setSearch}
           setOrders={setOrders}
           handleFilterStatusChange={handleFilterStatusChange}
@@ -1031,10 +1071,16 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
           order={true}
         />
 
-
         <Container maxWidth="sm">
           <div className="OrderTabs">
-            <div className="CommonTab" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div
+              className="CommonTab"
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
               <Box sx={{ width: "100%", typography: "body1" }}>
                 <BootstrapButton
                   className={active === "all" ? "filterActive" : ""}
@@ -1058,9 +1104,10 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                       : "0"}
                   </h6>
                 </BootstrapButton>
-                {(Array.isArray(myAddonsList)) && myAddonsList?.some(
-                  (addon) => addon?.addons_id === 13 && addon?.status === 1
-                ) && (
+                {Array.isArray(myAddonsList) &&
+                  myAddonsList?.some(
+                    addon => addon?.addons_id === 13 && addon?.status === 1
+                  ) && (
                     <BootstrapButton
                       className={active === "unverified" ? "filterActive" : ""}
                       onClick={e => handleFilterStatusChange("unverified")}
@@ -1166,44 +1213,56 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                   </h6>
                 </BootstrapButton>
               </Box>
-              {
-                active === "all" || active === "pending" || active === "unverified" || active === "confirmed" || active === "shipped" || active === "delivered" || active === "cancelled" || active === "returned" || active === "follow_up" || active === "hold_on" ?
-                  <div className="custom_date_picer_width">
-                    <DateRangePicker
-                      startDate={startDate}
-                      endDate={endDate}
-                      focus={focus}
-                      onStartDateChange={setStartDate}
-                      onEndDateChange={setEndDate}
-                      locale={enGB}
-
-                      modifiersClassNames={{ open: "-open" }}
-
-                    >
-                      {({ startDateInputProps, endDateInputProps }) => (
-                        <div className="date-range">
-                          <FilterDateInput
-                            className="input"
-                            {...endDateInputProps}
-
-                            {...startDateInputProps}
-                            value={dateValue}
-                            placeholder="Select date range"
-
-                          />
-                        </div>
-                      )}
-                    </DateRangePicker>
-                  </div> : null
-              }
-
+              {active === "all" ||
+              active === "pending" ||
+              active === "unverified" ||
+              active === "confirmed" ||
+              active === "shipped" ||
+              active === "delivered" ||
+              active === "cancelled" ||
+              active === "returned" ||
+              active === "follow_up" ||
+              active === "hold_on" ? (
+                <div className="custom_date_picer_width">
+                  <DateRangePicker
+                    startDate={startDate}
+                    endDate={endDate}
+                    focus={focus}
+                    onStartDateChange={setStartDate}
+                    onEndDateChange={setEndDate}
+                    locale={enGB}
+                    modifiersClassNames={{ open: "-open" }}
+                  >
+                    {({ startDateInputProps, endDateInputProps }) => (
+                      <div className="date-range">
+                        <FilterDateInput
+                          className="input"
+                          {...endDateInputProps}
+                          {...startDateInputProps}
+                          value={dateValue}
+                          placeholder="Select date range"
+                        />
+                      </div>
+                    )}
+                  </DateRangePicker>
+                </div>
+              ) : null}
             </div>
 
-            {active === "all" || active === "pending" ? (
-              <div className="duelSelect" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            {/* {active === "all" || active === "pending" ? ( */}
+              <div
+                className="duelSelect"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                {active === "all" || active === "pending" ? (
                 <Button className="CreateNewBtn" onClick={handleOpenModal}>
                   Create New Order <i className="flaticon-plus"></i>
                 </Button>
+                 ) : <div></div>}
                 <select
                   name="downloadReport"
                   value={selectedOption}
@@ -1217,7 +1276,7 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                   <option value="excel">As Excel</option>
                 </select>
               </div>
-            ) : null}
+            {/* ) : null} */}
             {active === "shipped" && (
               <div className="duelSelect d_flex">
                 {/* new Design */}
@@ -1240,21 +1299,23 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
             {active === "confirmed" || active === "follow_up" ? (
               <div className="duelSelect d_flex">
                 <div className="react_Select_custom_date_select">
-                  {shippingDateConfig ?
-                    active === "confirmed" ? <ReactSelect
-                      options={confirmedOrderFilterOption}
-                      onChange={(event) => handleSelected(event.value)}
-                      placeholder="Find Your Shipping Order"
-                    /> : null : null
-                  }
+                  {shippingDateConfig ? (
+                    active === "confirmed" ? (
+                      <ReactSelect
+                        options={confirmedOrderFilterOption}
+                        onChange={event => handleSelected(event.value)}
+                        placeholder="Find Your Shipping Order"
+                      />
+                    ) : null
+                  ) : null}
 
-                  {
-                    active === "follow_up" ? <ReactSelect
+                  {active === "follow_up" ? (
+                    <ReactSelect
                       options={followUpOrderFilterOption}
-                      onChange={(event) => handleSelected(event.value)}
+                      onChange={event => handleSelected(event.value)}
                       placeholder="Find Your Follow Up Order"
-                    /> : null
-                  }
+                    />
+                  ) : null}
                 </div>
                 <div>
                   {showPicker ? (
@@ -1481,6 +1542,7 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                 <div className="DataTableColum Address">
                   <h3>Delivery Score</h3>
                 </div>
+
                 {/* <div className="DataTableColum">
                   <h3>Order Source</h3>
                 </div> */}
@@ -1505,15 +1567,13 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                     <h3>Payment Info</h3>
                   </div>
                 )}
-                {
-                  active !== "shipped" &&
+                {active !== "shipped" && (
                   <div className="DataTableColum">
                     <h3>Due</h3>
                   </div>
-                }
+                )}
                 {active === "confirmed" && (
                   <>
-
                     <div className="DataTableColum">
                       <h3>Invoice</h3>
                     </div>
@@ -1525,12 +1585,13 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                   </>
                 )}
                 {/* || active === "confirmed" */}
-                {(shippingDateConfig && active === "confirmed") || active === "follow_up" ? (
+                {(shippingDateConfig && active === "confirmed") ||
+                active === "follow_up" ? (
                   <div className="DataTableColum">
                     <h3>
-                      {
-                        active === "confirmed" ? "Shipping Date" : "Follow Up Date"
-                      }
+                      {active === "confirmed"
+                        ? "Shipping Date"
+                        : "Follow Up Date"}
                     </h3>
                   </div>
                 ) : null}
@@ -1550,7 +1611,7 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                     </div>
                   </>
                 )}
-                {(active === "delivered" || active === "returned") ? (
+                {active === "delivered" || active === "returned" ? (
                   <React.Fragment>
                     <div className="DataTableColum">
                       <h3>Courier ID</h3>
@@ -1565,10 +1626,10 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                   active === "all" ||
                   active === "hold_on" ||
                   active === "cancelled") && (
-                    <div className={`DataTableColum `}>
-                      <h3>Status</h3>
-                    </div>
-                  )}
+                  <div className={`DataTableColum `}>
+                    <h3>Status</h3>
+                  </div>
+                )}
                 {active === "delivered" && (
                   <div className="DataTableColum">
                     <h3>Delivery Providers</h3>
@@ -1588,251 +1649,280 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                   active === "delivered" ||
                   active === "cancelled" ||
                   active === "returned") && (
-                    <div className="DataTableColum">
-                      <h3>Action</h3>
-                    </div>
-                  )}
+                  <div className="DataTableColum">
+                    <h3>Action</h3>
+                  </div>
+                )}
               </div>
 
               {/* DataTableRow */}
               {/* item */}
 
-              {apiResponse ? orders?.length > 0 ? (
-                orders.map((order, index) => {
-                  return (
-                    <div className="DataTableRow" key={index}>
-                      <div className="DataTableColum">
-                        {/* <input
+              {apiResponse ? (
+                orders?.length > 0 ? (
+                  orders.map((order, index) => {
+                    return (
+                      <div className="DataTableRow" key={index}>
+                        <div className="DataTableColum">
+                          {/* <input
                         type="checkbox"
                         checked={selectedOrders.includes(order.id)}
                         onChange={() => handleOrderSelection(order.id)}
                     /> */}
-                        {active === "confirmed" && (
-                          <Checkbox
-                            {...label}
-                            checked={selectedOrders.includes(order.id)}
-                            onChange={() => handleOrderSelection(order.id)}
-                          />
-                        )}
-                      </div>
-
-                      <div className="DataTableColum">
-                        <div className="number">
-                          {index + 1 + currentPage * 25 - 25}
+                          {active === "confirmed" && (
+                            <Checkbox
+                              {...label}
+                              checked={selectedOrders.includes(order.id)}
+                              onChange={() => handleOrderSelection(order.id)}
+                            />
+                          )}
                         </div>
-                      </div>
 
-                      <div className="DataTableColum">
-                        <Link href={`/order-details?id=${order?.id}`}>
-                          <div className="orderColor">#{order?.order_no}</div>
-                        </Link>
+                        <div className="DataTableColum">
+                          <div className="number">
+                            {index + 1 + currentPage * perPage - perPage}
+                          </div>
+                        </div>
 
-                        {/* <p>   {moment(
+                        <div className="DataTableColum">
+                          <Link href={`/order-details?id=${order?.id}`}>
+                            <div className="orderColor">#{order?.order_no}</div>
+                          </Link>
+
+                          {/* <p>   {moment(
                         order?.created_at
                     ).fromNow()
                     }</p> */}
-                        <p>{moment(order?.created_at).format("h:mm a")}</p>
-                        <p>
-                          {moment(order?.created_at).format('DD.MM.YY')}
-                        </p>
-                        <p className="TotalPrice" style={{ color: orderType(order?.order_type) }}>
-                          {Capitalized(order?.order_type)}
-                        </p>
-                      </div>
-
-
-
-                      <div className="DataTableColum Address">
-                        <div className="Name">
-                          <div className="icon">
-                            <i className="flaticon-user"></i>
-
-                          </div>
-                          <Tooltip
-                            title={order?.customer_name}
-                            placement="top-start"
+                          <p>{moment(order?.created_at).format("h:mm a")}</p>
+                          <p>{moment(order?.created_at).format("DD.MM.YY")}</p>
+                          <p
+                            className="TotalPrice"
+                            style={{ color: orderType(order?.order_type) }}
                           >
-                            <span>
-                              {order?.customer_name?.length < 12 ? (
-                                <span>{order?.customer_name}</span>
-                              ) : (
-                                <span>
-                                  {order?.customer_name?.slice(0, 13)}
-                                  ...
-                                </span>
-                              )}
-                            </span>
-                          </Tooltip>
+                            {Capitalized(order?.order_type)}
+                          </p>
                         </div>
 
-                        <div className="Name PhoneNumber">
-                          <div className="icon">
-                            <i className="flaticon-phone-call"></i>
-                          </div>
-                          <Link href={`tel:${order?.phone}`}>
-                            {removeTextFromNumber(order?.phone, "+88")}
-                          </Link>
-                        </div>
-
-                        <div className="Name">
-                          <div className="icon">
-                            <i className="flaticon-location"></i>
-                          </div>
-                          <p>
+                        <div className="DataTableColum Address">
+                          <div className="Name">
+                            <div className="icon">
+                              <i className="flaticon-user"></i>
+                            </div>
                             <Tooltip
-                              title={order?.address}
+                              title={order?.customer_name}
                               placement="top-start"
                             >
                               <span>
-                                {order?.address?.length < 15 ? (
-                                  <span>{order?.address}</span>
+                                {order?.customer_name?.length < 12 ? (
+                                  <span>{order?.customer_name}</span>
                                 ) : (
                                   <span>
-                                    {order?.address?.slice(0, 13)}
+                                    {order?.customer_name?.slice(0, 13)}
                                     ...
                                   </span>
                                 )}
                               </span>
                             </Tooltip>
-                          </p>
-                        </div>
-                      </div>
+                          </div>
 
-                      <div className="DataTableColum">
-                        <div className="Name" >
-                          <Tooltip
-                            title={order?.order_details[0]?.product ? order?.order_details?.map((item, index) => {
-                              return (
-                                <ul>
-                                  <li>
-                                    {" "}
-                                    {index + 1} .{item?.product}{" "}-{item?.variant !== null && `(${item?.variant !== null ? item?.variations?.variant : ""})`}
-                                  </li>
-                                </ul>
-                              );
-                            }) : "N/A"}
-                            placement="top-start"
+                          <div className="Name PhoneNumber">
+                            <div className="icon">
+                              <i className="flaticon-phone-call"></i>
+                            </div>
+                            <Link href={`tel:${order?.phone}`}>
+                              {removeTextFromNumber(order?.phone, "+88")}
+                            </Link>
+                          </div>
 
-                          >
-                            <span style={{
-                              display: "flex",
-                              alignItem: "center",
-                              justifyContent: "center",
-                            }}>
-                              {order?.order_details[0]?.product?.length < 15 ? (
+                          <div className="Name">
+                            <div className="icon">
+                              <i className="flaticon-location"></i>
+                            </div>
+                            <p>
+                              <Tooltip
+                                title={order?.address}
+                                placement="top-start"
+                              >
                                 <span>
-                                  {order?.order_details[0]?.product}
-                                </span>
-                              ) : (
-
-                                <span>
-                                  {order?.order_details[0]?.product?.slice(
-                                    0,
-                                    13
+                                  {order?.address?.length < 15 ? (
+                                    <span>{order?.address}</span>
+                                  ) : (
+                                    <span>
+                                      {order?.address?.slice(0, 13)}
+                                      ...
+                                    </span>
                                   )}
-                                  ...
                                 </span>
-
-                              )}
-                            </span>
-                          </Tooltip>
-                        </div>
-                        <div className="Quantity">
-                          {/* variant: */}
-                          <span>
-                            {order?.order_details[0]?.variant !== null ? order?.order_details[0]?.variations?.variant : null}
-                          </span>
-                        </div>
-
-                        <div className="Price">
-                          <i className="flaticon-taka"></i>
-                          {order?.order_details[0]?.variant !== null ? order?.order_details[0]?.variations?.price : order?.order_details[0]?.price}.00
-                        </div>
-
-                        <div className="Quantity">
-                          Quantity:
-                          <span>
-                            {order?.order_details?.reduce(
-                              (prevVal, currentVal) => {
-                                return prevVal + currentVal?.quantity;
-                              },
-                              0
-                            )}
-                          </span>
-                        </div>
-                      </div>
-
-
-                      <div className="DataTableColum Address">
-                        {
-                          order?.fraud_processing ? " Processed....."
-                            :
-                            <>
+                              </Tooltip>
+                            </p>
+                          </div>
+                          {busInfo?.order_attach_img_perm ? (
+                            order.order_attach_images.length > 0 ? (
                               <div className="Name">
-                                <div >
-                                  {/* <i className="flaticon-user"></i> */}
-                                  Return :
-
+                                <div className="icon">
+                                  <i className="flaticon-link"></i>
                                 </div>
-                                {/* <Tooltip
-                            title={order?.customer_name}
-                            placement="top-start"
-                          >
-                            <span>
-                              {order?.customer_name?.length < 12 ? (
-                                <span>{order?.customer_name}</span>
-                              ) : (
-                                <span>
-                                  {order?.customer_name?.slice(0, 13)}
-                                  ...
-                                </span>
-                              )}
-                            </span>
-                          </Tooltip> */}
-                                {order?.fraud_return}
+
+                                <AvatarGroup>
+                                  {order.order_attach_images &&
+                                    order.order_attach_images.map(
+                                      (image, index) => {
+                                        return (
+                                          <Avatar
+                                            alt={`Product ${index + 1}`}
+                                            src={image}
+                                          />
+                                        );
+                                      }
+                                    )}
+                                </AvatarGroup>
                               </div>
+                            ) : null
+                          ) : null}
+                        </div>
 
-                              <div className="Name PhoneNumber">
-                                <div >
-                                  {/* <i className="flaticon-phone-call"></i> */}
-                                  Delivery  :
-                                </div>
-                                {/* <Link href={`tel:${order?.phone}`}>
-                            {removeTextFromNumber(order?.phone, "+88")}
-                          </Link> */}  {order?.fraud_delivery}
-                              </div>
-
-                              <div className="Name">
-                                <div >
-                                  {/* <i className="flaticon-location"></i> */}
-                                  Entry :
-                                </div>
-                                <p>
-                                  {/* <Tooltip
-                              title={order?.address}
+                        <div className="DataTableColum">
+                          <div className="Name">
+                            <Tooltip
+                              title={
+                                order?.order_details[0]?.product
+                                  ? order?.order_details?.map((item, index) => {
+                                      return (
+                                        <ul>
+                                          <li>
+                                            {" "}
+                                            {index + 1} .{item?.product} -
+                                            {item?.variant !== null &&
+                                              `(${
+                                                item?.variant !== null
+                                                  ? item?.variations?.variant
+                                                  : ""
+                                              })`}
+                                          </li>
+                                        </ul>
+                                      );
+                                    })
+                                  : "N/A"
+                              }
                               placement="top-start"
                             >
-                              <span>
-                                {order?.address?.length < 15 ? (
-                                  <span>{order?.address}</span>
+                              <span
+                                style={{
+                                  display: "flex",
+                                  alignItem: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                {order?.order_details[0]?.product?.length <
+                                15 ? (
+                                  <span>
+                                    {order?.order_details[0]?.product}
+                                  </span>
                                 ) : (
                                   <span>
-                                    {order?.address?.slice(0, 13)}
+                                    {order?.order_details[0]?.product?.slice(
+                                      0,
+                                      13
+                                    )}
                                     ...
                                   </span>
                                 )}
                               </span>
-                            </Tooltip> */}
-                                  {order?.fraud_entry}
-                                </p>
+                            </Tooltip>
+                          </div>
+                          <div className="Quantity">
+                            {/* variant: */}
+                            <span>
+                              {order?.order_details[0]?.variant !== null
+                                ? order?.order_details[0]?.variations?.variant
+                                : null}
+                            </span>
+                          </div>
+
+                          <div className="Price">
+                            <i className="flaticon-taka"></i>
+                            {order?.order_details[0]?.variant !== null
+                              ? order?.order_details[0]?.variations?.price
+                              : order?.order_details[0]?.price}
+                            .00
+                          </div>
+
+                          <div className="Quantity">
+                            Quantity:
+                            <span>
+                              {order?.order_details?.reduce(
+                                (prevVal, currentVal) => {
+                                  return prevVal + currentVal?.quantity;
+                                },
+                                0
+                              )}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="DataTableColum Address">
+                          {order?.fraud_info?.fraud_processing ? (
+                            <Image
+                              src={searchAnimation}
+                              alt="Search Animation"
+                              width={40}
+                              height={40}
+                            />
+                          ) : (
+                            // <SearchIcon/>
+                            <>
+                              <div className="Name">
+                                <div>Return :</div>
+                                <span style={{ color: "red" }}>
+                                  {" "}
+                                  {order?.fraud_info?.fraud_return}
+                                </span>
+                              </div>
+                              <div className="Name PhoneNumber">
+                                <div style={{ color: "black" }}>
+                                  Delivery  :
+                                </div>
+                                {order?.fraud_info?.fraud_delivery}
                               </div>
 
-
+                              <div className="Name">
+                                <div>Entry :</div>
+                                <p>{order?.fraud_info?.fraud_entry}</p>
+                              </div>
+                              <div className="Name">
+                                <div>Success :</div>
+                                <p
+                                  style={
+                                    calculateDeliveryPercentage(
+                                      parseInt(
+                                        order?.fraud_info?.fraud_delivery
+                                      ),
+                                      parseInt(order?.fraud_info?.fraud_return),
+                                      parseInt(order?.fraud_info?.fraud_entry)
+                                    ) < 70 &&
+                                    calculateDeliveryPercentage(
+                                      parseInt(
+                                        order?.fraud_info?.fraud_delivery
+                                      ),
+                                      parseInt(order?.fraud_info?.fraud_return),
+                                      parseInt(order?.fraud_info?.fraud_entry)
+                                    ) > 0
+                                      ? { color: "red" }
+                                      : { color: "green" }
+                                  }
+                                >
+                                  {calculateDeliveryPercentage(
+                                    parseInt(order?.fraud_info?.fraud_delivery),
+                                    parseInt(order?.fraud_info?.fraud_return),
+                                    parseInt(order?.fraud_info?.fraud_entry)
+                                  )}
+                                  %
+                                </p>
+                              </div>
                             </>
-                        }
-
-                      </div>
-                      {/* <div className="DataTableColum">
+                          )}
+                        </div>
+                        {/* <div className="DataTableColum">
                         <div
                           className="TotalPrice"
                           style={{ color: orderType(order?.order_type) }}
@@ -1841,123 +1931,138 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                         </div>
                       </div> */}
 
-                      {/* {active === 'pending' ?
+                        {/* {active === 'pending' ?
                             <input key={order.id} type="text" defaultValue={order?.discount}
                                 onKeyDown={(event => handleDiscount(event, order?.id, order?.order_status))} />
                             :
                             <span>{order?.discount}</span>
                         } */}
 
-                      {active !== "shipped" && (
-                        <div className="DataTableColum">
-                          <div className="Discount">
+                        {active !== "shipped" && (
+                          <div className="DataTableColum">
+                            <div className="Discount">
+                              {active === "pending" ? (
+                                <>
+                                  <div className="inputTaka">
+                                    <i className="flaticon-taka"></i>
+                                  </div>
+                                  <input
+                                    key={order.id}
+                                    type="text"
+                                    defaultValue={
+                                      order.discount_type === "percent"
+                                        ? order?.discount + "%"
+                                        : order?.discount
+                                    }
+                                    onKeyDown={event =>
+                                      handleDiscount(
+                                        event,
+                                        order?.id,
+                                        order?.order_status
+                                      )
+                                    }
+                                  />
+                                </>
+                              ) : (
+                                <>
+                                  <i className="flaticon-taka"></i>
+                                  {order?.discount_type === "percent"
+                                    ? order?.discount + "%"
+                                    : order?.discount}
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {active !== "shipped" && (
+                          <div className="DataTableColum">
+                            <div className="TotalPrice">
+                              <i className="flaticon-taka"></i>
+                              {order?.grand_total}
+                            </div>
+                          </div>
+                        )}
+
+                        {active !== "shipped" && advancedPaymentConfig && (
+                          <>
                             {active === "pending" ? (
-                              <>
-                                <div className="inputTaka">
-                                  <i className="flaticon-taka"></i>
+                              <div className="DataTableColum">
+                                <div className="Discount">
+                                  <div className="inputTaka">
+                                    <i className="flaticon-taka"></i>
+                                  </div>
+                                  <input
+                                    key={order.id}
+                                    type="text"
+                                    defaultValue={order?.advanced}
+                                    onKeyDown={event =>
+                                      handleAdvancedPayment(event, order?.id)
+                                    }
+                                  />
                                 </div>
-                                <input
-                                  key={order.id}
-                                  type="text"
-                                  defaultValue={
-                                    order.discount_type === "percent"
-                                      ? order?.discount + "%"
-                                      : order?.discount
-                                  }
-                                  onKeyDown={event =>
-                                    handleDiscount(
-                                      event,
-                                      order?.id,
-                                      order?.order_status
-                                    )
-                                  }
-                                />
-                              </>
+                              </div>
                             ) : (
-                              <>
-                                <i className="flaticon-taka"></i>
-                                {order?.discount_type === "percent"
-                                  ? order?.discount + "%"
-                                  : order?.discount}
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      {active !== "shipped" && (
-                        <div className="DataTableColum">
-                          <div className="TotalPrice">
-                            <i className="flaticon-taka"></i>
-                            {order?.grand_total}
-                          </div>
-                        </div>
-                      )}
-
-                      {active !== "shipped" && advancedPaymentConfig && (
-                        <>
-                          {active === "pending" ? (
-                            <div className="DataTableColum">
-                              <div className="Discount">
-                                <div className="inputTaka">
+                              <div className="DataTableColum">
+                                <div className="TotalPrice">
                                   <i className="flaticon-taka"></i>
+                                  {order?.advanced}
                                 </div>
-                                <input
-                                  key={order.id}
-                                  type="text"
-                                  defaultValue={order?.advanced}
-                                  onKeyDown={event =>
-                                    handleAdvancedPayment(event, order?.id)
-                                  }
-                                />
                               </div>
+                            )}
+                          </>
+                        )}
+
+                        {active === "shipped" && (
+                          <div className="DataTableColum Address PaymentInfo">
+                            <div className="TotalPrice">
+                              <span>Price</span> :
+                              <i
+                                className="flaticon-taka"
+                                style={{ marginRight: "-4px" }}
+                              ></i>
+                              {order?.grand_total}
                             </div>
-                          ) : (
-                            <div className="DataTableColum">
-                              <div className="TotalPrice">
-                                <i className="flaticon-taka"></i>
-                                {order?.advanced}
-                              </div>
+
+                            <div className="TotalPrice">
+                              <span> Dis.</span> :{" "}
+                              <i
+                                className="flaticon-taka"
+                                style={{ marginRight: "-4px" }}
+                              ></i>
+                              {order?.discount}
                             </div>
-                          )}
-                        </>
-                      )}
 
-                      {active === "shipped" && (
-                        <div className="DataTableColum Address PaymentInfo">
-                          <div className="TotalPrice">
-                            <span>Price</span> :<i className="flaticon-taka" style={{ marginRight: '-4px' }}></i>{order?.grand_total}
+                            <div className="TotalPrice">
+                              <span>Adv.</span> :
+                              <i
+                                className="flaticon-taka"
+                                style={{ marginRight: "-4px" }}
+                              ></i>{" "}
+                              {order?.advanced}
+                            </div>
+                            <div className="TotalPrice">
+                              <span>Due.</span> :
+                              <i
+                                className="flaticon-taka"
+                                style={{ marginRight: "-4px" }}
+                              ></i>{" "}
+                              {order?.due}
+                            </div>
                           </div>
-
-                          <div className="TotalPrice">
-                            <span> Dis.</span> : <i className="flaticon-taka" style={{ marginRight: '-4px' }}></i>{order?.discount}
-                          </div>
-
-                          <div className="TotalPrice">
-
-                            <span>Adv.</span> :<i className="flaticon-taka" style={{ marginRight: '-4px' }}></i> {order?.advanced}
-                          </div>
-                          <div className="TotalPrice">
-
-                            <span>Due.</span> :<i className="flaticon-taka" style={{ marginRight: '-4px' }}></i> {order?.due}
-                          </div>
-                        </div>
-                      )}
-                      {
-                        active !== "shipped" ?
-
+                        )}
+                        {active !== "shipped" ? (
                           <div className="DataTableColum">
                             <div className="TotalPrice">
                               <i className="flaticon-taka"></i>
                               {order?.due}
                             </div>
                           </div>
-                          : null
-                      }
+                        ) : null}
 
-                      {active === "confirmed" && (
-                        <>
-                          {/* <div className="DataTableColum">
+                        {active === "confirmed" && (
+                          <>
+                            {/* <div className="DataTableColum">
                             <div className="TotalPrice">
                               <MobileDatePicker
                                 defaultValue={dayjs(order?.confirmed_date)}
@@ -1973,197 +2078,243 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                               />
                             </div>
                           </div> */}
-                          <div className="DataTableColum">
-                            <div className="TotalPrice">
-                              <Button className="invoice">
-                                <Link
-                                  target="_blank"
-                                  href={"/invoice-one/" + order?.id}
-                                  rel="noopener noreferrer"
-                                >
-                                  <i className="flaticon-printer" /> Print
-                                </Link>
-                              </Button>
-                            </div>
-                          </div>
-                          <div
-                            className="DataTableColum Address"
-                            key={order.id}
-                          >
-                            <div className="Status">
-                              <div className="commonDropdown">
-                                <FormControl
-                                  sx={{ m: 1, width: 150 }}
-                                  key={order.id}
-                                >
-                                  <Select
-                                    value={courierViewValue}
-                                    displayEmpty
-                                    defaultValue={selectedStatus}
-                                    onChange={event =>
-                                      courierSubmit(event, order?.id)
-                                    }
-                                    input={<OutlinedInput />}
-                                    inputProps={{
-                                      "aria-label": "Without label",
-                                    }}
+                            <div className="DataTableColum">
+                              <div className="TotalPrice">
+                                <Button className="invoice">
+                                  <Link
+                                    target="_blank"
+                                    href={"/invoice-one/" + order?.id}
+                                    rel="noopener noreferrer"
                                   >
-                                    <MenuItem value="">
-                                      <em>Select Status</em>
-                                    </MenuItem>
-                                    <MenuItem key={"office"} value={"office"}>
-                                      <i
-                                        style={{
-                                          width: "20px",
-                                          height: "auto",
-                                          margin: "5px",
-                                        }}
-                                        className="flaticon-people"
-                                      ></i>
-                                      Office Delivery
-                                    </MenuItem>
-                                    {courierList.length > 0 ? (
-                                      courierList.map(item => {
-                                        return (
-                                          <MenuItem
-                                            key={item?.provider}
-                                            value={item?.provider}
-                                          >
-                                            {item?.provider === "steadfast" ? (
-                                              <>
-                                                <img
-                                                  src="https://funnelliner.s3.ap-southeast-1.amazonaws.com/media/steadfast.svg"
-                                                  alt=""
-                                                  style={{
-                                                    width: "20px",
-                                                    height: "auto",
-                                                    margin: "5px",
-                                                  }}
-                                                />
-                                                SteadFast
-                                              </>
-                                            ) : (
-                                              <>
-                                                <img
-                                                  src="https://funnelliner.s3.ap-southeast-1.amazonaws.com/media/pathao.svg"
-                                                  alt=""
-                                                  style={{
-                                                    width: "20px",
-                                                    height: "auto",
-                                                    margin: "5px",
-                                                  }}
-                                                />
-                                                Pathao
-                                              </>
-                                            )}
-                                          </MenuItem>
-                                        );
-                                      })
-                                    ) : (
-                                      <MenuItem
-                                        key={"redriect-courier"}
-                                        value={"redriect-courier"}
-                                      >
+                                    <i className="flaticon-printer" /> Print
+                                  </Link>
+                                </Button>
+                              </div>
+                            </div>
+                            <div
+                              className="DataTableColum Address"
+                              key={order.id}
+                            >
+                              <div className="Status">
+                                <div className="commonDropdown">
+                                  <FormControl
+                                    sx={{ m: 1, width: 150 }}
+                                    key={order.id}
+                                  >
+                                    <Select
+                                      value={courierViewValue}
+                                      displayEmpty
+                                      defaultValue={selectedStatus}
+                                      onChange={event =>
+                                        courierSubmit(event, order?.id)
+                                      }
+                                      input={<OutlinedInput />}
+                                      inputProps={{
+                                        "aria-label": "Without label",
+                                      }}
+                                    >
+                                      <MenuItem value="">
+                                        <em>Select Status</em>
+                                      </MenuItem>
+                                      <MenuItem key={"office"} value={"office"}>
                                         <i
                                           style={{
                                             width: "20px",
                                             height: "auto",
                                             margin: "5px",
                                           }}
-                                          className="flaticon-courier"
+                                          className="flaticon-people"
                                         ></i>
-                                        Add Courier
+                                        Office Delivery
                                       </MenuItem>
-                                    )}
-                                  </Select>
-                                </FormControl>
-
+                                      {courierList.length > 0 ? (
+                                        courierList.map(item => {
+                                          return (
+                                            <MenuItem
+                                              key={item?.id}
+                                              value={item?.provider}
+                                            >
+                                              {item?.provider ===
+                                              "steadfast" ? (
+                                                <>
+                                                  <img
+                                                    src="https://funnelliner.s3.ap-southeast-1.amazonaws.com/media/steadfast.svg"
+                                                    alt=""
+                                                    style={{
+                                                      width: "20px",
+                                                      height: "auto",
+                                                      margin: "5px",
+                                                    }}
+                                                  />
+                                                  SteadFast
+                                                </>
+                                              ) : item?.provider ===
+                                                "pathao" ? (
+                                                <>
+                                                  <img
+                                                    src="https://funnelliner.s3.ap-southeast-1.amazonaws.com/media/pathao.svg"
+                                                    alt=""
+                                                    style={{
+                                                      width: "20px",
+                                                      height: "auto",
+                                                      margin: "5px",
+                                                    }}
+                                                  />
+                                                  Pathao
+                                                </>
+                                              ) : item?.provider === "redx" ? (
+                                                <>
+                                                  <img
+                                                    src="https://redx.com.bd//images/favicon.png"
+                                                    alt=""
+                                                    style={{
+                                                      width: "20px",
+                                                      height: "auto",
+                                                      margin: "5px",
+                                                    }}
+                                                  />
+                                                  Redx
+                                                </>
+                                              ) : null}
+                                            </MenuItem>
+                                          );
+                                        })
+                                      ) : (
+                                        <MenuItem
+                                          key={"redriect-courier"}
+                                          value={"redriect-courier"}
+                                        >
+                                          <i
+                                            style={{
+                                              width: "20px",
+                                              height: "auto",
+                                              margin: "5px",
+                                            }}
+                                            className="flaticon-courier"
+                                          ></i>
+                                          Add Courier
+                                        </MenuItem>
+                                      )}
+                                    </Select>
+                                  </FormControl>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </>
-                      )}
-                      {active === "follow_up" && (
-                        <div className="DataTableColum">
-                          <div className="TotalPrice">
-                            <MobileDatePicker
-                              defaultValue={dayjs(order?.follow_up_date)}
-                              sx={{
-                                "& .MuiInputBase-input": {
-                                  fontSize: "11px",
-                                  padding: "0",
-                                },
-                              }}
-                              key={order?.id}
-                              onChange={e => setFollowUpDate(dayjs(e))}
-                              onAccept={() => onChangeDate(order?.id, "follow_up")}
-                            />
-                          </div>
-                        </div>
-                      )}
-
-                      {shippingDateConfig ? active === "confirmed" ? (
-                        <div className="DataTableColum">
-                          <div className="TotalPrice">
-                            <MobileDatePicker
-                              defaultValue={order?.confirmed_date !== null ? dayjs(order?.confirmed_date) : dayjs(moment(order?.updated_at).format("YYYY-MM-DD"))}
-                              sx={{
-                                "& .MuiInputBase-input": {
-                                  fontSize: "11px",
-                                  padding: "0",
-                                },
-                              }}
-                              key={order?.id}
-                              onChange={e => setFollowUpDate(dayjs(e))}
-                              onAccept={() => onChangeDate(order?.id, "confirmed")}
-                            />
-                          </div>
-                        </div>
-                      ) : null : null}
-                      {active === "shipped" && (
-                        <>
+                          </>
+                        )}
+                        {active === "follow_up" && (
                           <div className="DataTableColum">
                             <div className="TotalPrice">
-                              {/* <i className='flaticon-taka'></i> */}
-                              {order?.courier_provider === "steadfast" ? (
-                                <>
-                                  <img
-                                    src="https://funnelliner.s3.ap-southeast-1.amazonaws.com/media/steadfast.svg"
-                                    alt=""
-                                    style={{
-                                      width: "20px", // Adjust the width as desired
-                                      height: "auto", // Set height to 'auto' to maintain aspect ratio
-                                      margin: "5px", // Adjust the margin value as desired
-                                    }}
-                                  />
-                                  SteadFast
-                                </>
-                              ) : (
-                                <>
-                                  <img
-                                    src="https://funnelliner.s3.ap-southeast-1.amazonaws.com/media/pathao.svg"
-                                    alt=""
-                                    style={{
-                                      width: "20px", // Adjust the width as desired
-                                      height: "auto", // Set height to 'auto' to maintain aspect ratio
-                                      margin: "5px", // Adjust the margin value as desired
-                                    }}
-                                  />
-                                  Pathao
-                                </>
-                              )}
+                              <MobileDatePicker
+                                defaultValue={dayjs(order?.follow_up_date)}
+                                sx={{
+                                  "& .MuiInputBase-input": {
+                                    fontSize: "11px",
+                                    padding: "0",
+                                  },
+                                }}
+                                key={order?.id}
+                                onChange={e => setFollowUpDate(dayjs(e))}
+                                onAccept={() =>
+                                  onChangeDate(order?.id, "follow_up")
+                                }
+                              />
                             </div>
                           </div>
-                          <div className="DataTableColum">
-                            <div className="TotalPrice">
-                              {courierStatusFormate(order?.courier_status)}
-                            </div>
+                        )}
 
-                          </div>
-                          <div className="DataTableColum">
-                            <div className="TotalPrice ">
-                              {
-                                order?.consignment_id ?
+                        {shippingDateConfig ? (
+                          active === "confirmed" ? (
+                            <div className="DataTableColum">
+                              <div className="TotalPrice">
+                                <MobileDatePicker
+                                  defaultValue={
+                                    order?.confirmed_date !== null
+                                      ? dayjs(order?.confirmed_date)
+                                      : dayjs(
+                                          moment(order?.updated_at).format(
+                                            "YYYY-MM-DD"
+                                          )
+                                        )
+                                  }
+                                  sx={{
+                                    "& .MuiInputBase-input": {
+                                      fontSize: "11px",
+                                      padding: "0",
+                                    },
+                                  }}
+                                  key={order?.id}
+                                  onChange={e => setFollowUpDate(dayjs(e))}
+                                  onAccept={() =>
+                                    onChangeDate(order?.id, "confirmed")
+                                  }
+                                />
+                              </div>
+                            </div>
+                          ) : null
+                        ) : null}
+                        {active === "shipped" && (
+                          <>
+                            <div className="DataTableColum">
+                              <div className="TotalPrice">
+                                {/* <i className='flaticon-taka'></i> */}
+                                {order?.courier_provider === "steadfast" ? (
+                                  <>
+                                    <img
+                                      src="https://funnelliner.s3.ap-southeast-1.amazonaws.com/media/steadfast.svg"
+                                      alt=""
+                                      style={{
+                                        width: "20px", // Adjust the width as desired
+                                        height: "auto", // Set height to 'auto' to maintain aspect ratio
+                                        margin: "5px", // Adjust the margin value as desired
+                                      }}
+                                    />
+                                    SteadFast
+                                  </>
+                                ) : order?.courier_provider === "pathao" ? (
+                                  <>
+                                    <img
+                                      src="https://funnelliner.s3.ap-southeast-1.amazonaws.com/media/pathao.svg"
+                                      alt=""
+                                      style={{
+                                        width: "20px", // Adjust the width as desired
+                                        height: "auto", // Set height to 'auto' to maintain aspect ratio
+                                        margin: "5px", // Adjust the margin value as desired
+                                      }}
+                                    />
+                                    Pathao
+                                  </>
+                                ) : order?.courier_provider === "redx" ? (
+                                  <>
+                                    <img
+                                      src="https://redx.com.bd//images/favicon.png"
+                                      alt=""
+                                      style={{
+                                        width: "20px", // Adjust the width as desired
+                                        height: "auto", // Set height to 'auto' to maintain aspect ratio
+                                        margin: "5px", // Adjust the margin value as desired
+                                      }}
+                                    />
+                                    Redx
+                                  </>
+                                ) : (
+                                  <div
+                                    className="TrackingId"
+                                    style={{ textAlign: "center" }}
+                                  >
+                                    N/A
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="DataTableColum">
+                              <div className="TotalPrice">
+                                {courierStatusFormate(order?.courier_status)}
+                              </div>
+                            </div>
+                            <div className="DataTableColum">
+                              <div className="TotalPrice ">
+                                {order?.consignment_id ? (
                                   <div className="TrackingId">
                                     <Tooltip
                                       title={order?.consignment_id}
@@ -2185,55 +2336,65 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                                     </Tooltip>
 
                                     {/* {order?.consignment_id} */}
-                                    {
-                                      order?.consignment_id ?
-                                        <CopyIcon
-                                          url={
-                                            order?.consignment_id
-                                          } /> : null
-                                    }
-
-
-                                  </div> : <div className="TrackingId" style={{ textAlign: 'center' }}>N/A</div>
-                              }
-
-
-
-
-
+                                    {order?.consignment_id ? (
+                                      <CopyIcon url={order?.consignment_id} />
+                                    ) : null}
+                                  </div>
+                                ) : (
+                                  <div
+                                    className="TrackingId"
+                                    style={{ textAlign: "center" }}
+                                  >
+                                    N/A
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                          <div className="DataTableColum">
-                            <div className="TotalPrice">
-                              {/* <i className='flaticon-taka'></i> */}
+                            <div className="DataTableColum">
+                              <div className="TotalPrice">
+                                {/* <i className='flaticon-taka'></i> */}
 
-                              {order?.courier_provider === "steadfast" ? (
-                                <Link
-                                  href={`https://steadfast.com.bd/t/${order?.tracking_code}`}
-                                  className="TrackingId"
-                                  target="_blank"
-                                >
-                                  {order?.tracking_code}
-                                </Link>
-                              ) : (
-                                <Link
-                                  href={`https://merchant.pathao.com/tracking?consignment_id=${order?.tracking_code}&phone=${order?.phone}`}
-                                  className="TrackingId"
-                                  target="_blank"
-                                >
-                                  {order?.tracking_code}
-                                </Link>
-                              )}
+                                {order?.courier_provider === "steadfast" ? (
+                                  <Link
+                                    href={`https://steadfast.com.bd/t/${order?.tracking_code}`}
+                                    className="TrackingId"
+                                    target="_blank"
+                                  >
+                                    {order?.tracking_code}
+                                  </Link>
+                                ) : order?.courier_provider === "pathao" ? (
+                                  <Link
+                                    href={`https://merchant.pathao.com/tracking?consignment_id=${order?.tracking_code}&phone=${order?.phone}`}
+                                    className="TrackingId"
+                                    target="_blank"
+                                  >
+                                    {order?.tracking_code}
+                                  </Link>
+                                ) : order?.courier_provider === "redx" ? (
+                                  <Link
+                                    href={`https://redx.com.bd/track-parcel/?trackingId=${order?.tracking_code}`}
+                                    className="TrackingId"
+                                    target="_blank"
+                                  >
+                                    {order?.tracking_code}
+                                  </Link>
+                                ) : (
+                                  <div
+                                    className="TrackingId"
+                                    style={{ textAlign: "center" }}
+                                  >
+                                    N/A
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        </>
-                      )}
-                      {(active === "delivered" || active === "returned") ? (
-                        <React.Fragment>
-                          <div className="DataTableColum">
-                            <div className="TotalPrice ">
-                              {
-                                order?.consignment_id ?
+                          </>
+                        )}
+                        {active === "delivered" || active === "returned" ? (
+                          <React.Fragment>
+                            <div className="DataTableColum">
+                              <div className="TotalPrice ">
+                                {order?.consignment_id ? (
                                   <div className="TrackingId">
                                     <Tooltip
                                       title={order?.consignment_id}
@@ -2253,21 +2414,23 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                                         )}
                                       </span>
                                     </Tooltip>
-                                    {
-                                      order?.consignment_id ?
-                                        <CopyIcon
-                                          url={
-                                            order?.consignment_id
-                                          } /> : null
-                                    }
-                                  </div> : <div className="TrackingId" style={{ textAlign: 'center' }}>N/A</div>
-                              }
+                                    {order?.consignment_id ? (
+                                      <CopyIcon url={order?.consignment_id} />
+                                    ) : null}
+                                  </div>
+                                ) : (
+                                  <div
+                                    className="TrackingId"
+                                    style={{ textAlign: "center" }}
+                                  >
+                                    N/A
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                          <div className="DataTableColum">
-                            <div className="TotalPrice">
-                              {
-                                order?.tracking_code ?
+                            <div className="DataTableColum">
+                              <div className="TotalPrice">
+                                {order?.tracking_code ? (
                                   order?.courier_provider === "steadfast" ? (
                                     <Link
                                       href={`https://steadfast.com.bd/t/${order?.tracking_code}`}
@@ -2276,7 +2439,7 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                                     >
                                       {order?.tracking_code}
                                     </Link>
-                                  ) : (
+                                  ) : order?.courier_provider === "pathao" ? (
                                     <Link
                                       href={`https://merchant.pathao.com/tracking?consignment_id=${order?.tracking_code}&phone=${order?.phone}`}
                                       className="TrackingId"
@@ -2284,23 +2447,42 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                                     >
                                       {order?.tracking_code}
                                     </Link>
-                                  ) : <div className="TrackingId" style={{ textAlign: 'center' }}>N/A</div>
-                              }
-
+                                  ) : order?.courier_provider === "redx" ? (
+                                    <Link
+                                      href={`https://redx.com.bd/track-parcel/?trackingId=${order?.tracking_code}`}
+                                      className="TrackingId"
+                                      target="_blank"
+                                    >
+                                      {order?.tracking_code}
+                                    </Link>
+                                  ) : (
+                                    <div
+                                      className="TrackingId"
+                                      style={{ textAlign: "center" }}
+                                    >
+                                      N/A
+                                    </div>
+                                  )
+                                ) : (
+                                  <div
+                                    className="TrackingId"
+                                    style={{ textAlign: "center" }}
+                                  >
+                                    N/A
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        </React.Fragment>
-                      ) : null}
+                          </React.Fragment>
+                        ) : null}
 
-                      {(active === "pending" ||
-                        active === "follow_up" ||
-                        active === "follow_up" ||
-                        active === "hold_on" ||
-                        active === "cancelled") && (
+                        {((active === "pending" ||
+                          active === "follow_up" ||
+                          active === "follow_up" ||
+                          active === "hold_on" ||
+                          active === "cancelled") && (
                           <div className="DataTableColum Address">
                             <div className="Status ">
-
-
                               <FormControl sx={{ m: 1, width: 150 }}>
                                 <Select
                                   displayEmpty
@@ -2368,77 +2550,90 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                               </FormControl>
                             </div>
                           </div>
-                        ) || (active === "all" &&
+                        )) ||
+                          (active === "all" && (
+                            <div className="DataTableColum">
+                              <div className="TotalPrice">
+                                {courierStatusFormate(order?.order_status)}
+                              </div>
+                            </div>
+                          ))}
+                        {active === "delivered" && (
                           <div className="DataTableColum">
                             <div className="TotalPrice">
-                              {courierStatusFormate(order?.order_status)}
-                            </div>
-
-                          </div>
-
-                        )}
-                      {active === "delivered" && (
-                        <div className="DataTableColum">
-                          <div className="TotalPrice">
-                            {/* <i className='flaticon-taka'></i> */}
-                            {order.courier_provider !== null
-                              ? order.courier_provider === "steadfast" ? (
-                                <>
-                                  <img
-                                    src="https://funnelliner.s3.ap-southeast-1.amazonaws.com/media/steadfast.svg"
-                                    alt=""
-                                    style={{
-                                      width: "20px",
-                                      height: "auto",
-                                      margin: "5px",
-                                    }}
-                                  />
-                                  SteadFast
-                                </>
+                              {/* <i className='flaticon-taka'></i> */}
+                              {order.courier_provider !== null ? (
+                                order.courier_provider === "steadfast" ? (
+                                  <>
+                                    <img
+                                      src="https://funnelliner.s3.ap-southeast-1.amazonaws.com/media/steadfast.svg"
+                                      alt=""
+                                      style={{
+                                        width: "20px",
+                                        height: "auto",
+                                        margin: "5px",
+                                      }}
+                                    />
+                                    SteadFast
+                                  </>
+                                ) : order.courier_provider === "pathao" ? (
+                                  <>
+                                    <img
+                                      src="https://funnelliner.s3.ap-southeast-1.amazonaws.com/media/pathao.svg"
+                                      alt=""
+                                      style={{
+                                        width: "20px",
+                                        height: "auto",
+                                        margin: "5px",
+                                      }}
+                                    />
+                                    Pathao
+                                  </>
+                                ) : order.courier_provider === "redx" ? (
+                                  <>
+                                    <img
+                                      src="https://redx.com.bd//images/favicon.png"
+                                      alt=""
+                                      style={{
+                                        width: "20px",
+                                        height: "auto",
+                                        margin: "5px",
+                                      }}
+                                    />
+                                    Redx
+                                  </>
+                                ) : null
                               ) : (
-                                <>
-                                  <img
-                                    src="https://funnelliner.s3.ap-southeast-1.amazonaws.com/media/pathao.svg"
-                                    alt=""
-                                    style={{
-                                      width: "20px",
-                                      height: "auto",
-                                      margin: "5px",
-                                    }}
-                                  />
-                                  Pathao
-                                </>
-                              )
-                              : "Office Delivery"}
+                                "Office Delivery"
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
 
-                      <div key={order?.id} className="DataTableColum">
-                        <div
-                          className="Note"
-                          style={{
-                            display: "flex",
-                            alignItem: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-
-                          <Button
-                            key={order?.id}
-                            onClick={() =>
-                              handleOpenOrderNoteModal(
-                                order?.id,
-                                order?.order_note
-                              )
-                            }
+                        <div key={order?.id} className="DataTableColum">
+                          <div
+                            className="Note"
+                            style={{
+                              display: "flex",
+                              alignItem: "center",
+                              justifyContent: "center",
+                            }}
                           >
-                            {getNoteDefaultValue(order?.order_note)}
+                            <Button
+                              key={order?.id}
+                              onClick={() =>
+                                handleOpenOrderNoteModal(
+                                  order?.id,
+                                  order?.order_note
+                                )
+                              }
+                            >
+                              {getNoteDefaultValue(order?.order_note)}
 
-                            {countNonNullFields(
-                              order?.invoice_note,
-                              order?.courier_note
-                            ) > 0 && (
+                              {countNonNullFields(
+                                order?.invoice_note,
+                                order?.courier_note
+                              ) > 0 && (
                                 <h6>
                                   {countNonNullFields(
                                     order?.invoice_note,
@@ -2447,30 +2642,32 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                                   <i class="flaticon-plus"></i>
                                 </h6>
                               )}
-                          </Button>
-                          <Note
-                            orderNote={order}
-                            isOpenOrderNoteModal={isOpenOrderNoteModal}
-                            handleCloseOrderNoteModal={
-                              handleCloseOrderNoteModal
-                            }
-                            onChangeOrderNoteData={onChangeOrderNoteData}
-                            orderIdOfModal={orderIdOfModal}
-                            orderNo={order?.id}
-                            status={order?.order_status}
-                            handleFetch={handleFetch}
-                            startLoading={startLoading}
-                            stopLoading={stopLoading}
-                          />
+                            </Button>
+                            <Note
+                              orderNote={order}
+                              isOpenOrderNoteModal={isOpenOrderNoteModal}
+                              handleCloseOrderNoteModal={
+                                handleCloseOrderNoteModal
+                              }
+                              onChangeOrderNoteData={onChangeOrderNoteData}
+                              orderIdOfModal={orderIdOfModal}
+                              orderNo={order?.id}
+                              status={order?.order_status}
+                              handleFetch={handleFetch}
+                              startLoading={startLoading}
+                              stopLoading={stopLoading}
+                            />
+                          </div>
                         </div>
-                      </div>
-                      {
-                        active !== "trashed" ?
+                        {active !== "trashed" ? (
                           <div className="DataTableColum">
                             <div className="Action">
                               <div className="commonDropdown">
-                                <PopupState variant="popover" popupId="demo-popup-menu">
-                                  {(popupState) => (
+                                <PopupState
+                                  variant="popover"
+                                  popupId="demo-popup-menu"
+                                >
+                                  {popupState => (
                                     <>
                                       <Button {...bindTrigger(popupState)}>
                                         <BsThreeDotsVertical />
@@ -2489,7 +2686,9 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                                         <MenuItem
                                           className="viewActionBtn"
                                           onClick={() => {
-                                            router.push(`/order-details?id=${order?.id}`)
+                                            router.push(
+                                              `/order-details?id=${order?.id}`
+                                            );
                                             popupState.close();
                                           }}
                                         >
@@ -2521,8 +2720,10 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                                           Edit
                                         </MenuItem>
                                         <MenuItem
-                                          onClick={() => { moveToTrash(order?.id); popupState.close() }
-                                          }
+                                          onClick={() => {
+                                            moveToTrash(order?.id);
+                                            popupState.close();
+                                          }}
                                         >
                                           <i
                                             className="flaticon-delete"
@@ -2534,68 +2735,126 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
                                           />
                                           Move to Trash
                                         </MenuItem>
-
                                       </Menu>
                                     </>
                                   )}
                                 </PopupState>
                               </div>
                             </div>
-                          </div> : null
-                      }
+                          </div>
+                        ) : null}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <table>
+                    <tr>
+                      <td colSpan={14}>
+                        <section className="MiddleSection">
+                          <div className="MiddleSectionContent">
+                            <div className="img">
+                              <img src="/images/empty.png" alt="" />
+                            </div>
 
-
-                    </div>
-                  );
-                })
+                            <div className="text">
+                              <p>Not Found</p>
+                            </div>
+                          </div>
+                        </section>
+                      </td>
+                    </tr>
+                  </table>
+                )
               ) : (
-                <table>
-                  <tr>
-                    <td colSpan={14}>
-                      <section className="MiddleSection">
-                        <div className="MiddleSectionContent">
-                          <div className="img">
-                            <img src="/images/empty.png" alt="" />
-                          </div>
-
-                          <div className="text">
-                            <p>Not Found</p>
-                          </div>
-                        </div>
-                      </section>
-                    </td>
-                  </tr>
-                </table>
-              ) :
                 <Box sx={{ width: "100%" }} spacing={2}>
                   {[...Array(15)].map((_, index) => (
                     <Skeleton key={index} />
                   ))}
                   <Skeleton />
                 </Box>
-              }
-
+              )}
             </div>
           </div>
 
-          <Paginator
-            count={totalPage}
-            page={currentPage}
-            onChange={handleChange}
-            showFirstButton
-            showLastButton
-            variant="outlined"
-          />
+          <Box
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginTop: "20px",
+            }}
+          >
+            <div
+              className="DropDown Download "
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <span style={{ fontSize: "14px" }}>Rows per page</span>
+              {/* <select id="per-page-select" name="per-page-select" value={perPage}
+                onChange={handlePerPageChange} style={{ width: "100px" }}>
+                <option selected key={10} value={10}>
+                  10
+                </option>
+                <option key={20} value={20}>
+                  20
+                </option>
+                <option key={30} value={30}>
+                  30
+                </option>
+                <option key={40} value={30}>
+                  40
+                </option>
+                <option key={50} value={50}>
+                  50
+                </option>
+              </select> */}
+              <div id="per-page-select_order">
+                <FormControl
+                  variant="outlined"
+                  style={{ width: "100px", marginLeft: "10px" }}
+                >
+                  {/* <InputLabel id="per-page-label">Items per page</InputLabel> */}
+                  <Select
+                    // labelId="per-page-label"
+                    id="per-page-select"
+                    value={perPage}
+                    onChange={handlePerPageChange}
+                    // label="Items per page"
+                  >
+                    <MenuItem value={10}>10</MenuItem>
+                    <MenuItem value={20}>20</MenuItem>
+                    <MenuItem value={30}>30</MenuItem>
+                    <MenuItem value={40}>40</MenuItem>
+                    <MenuItem value={50}>50</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
+            </div>
+
+            <Stack spacing={2}>
+              <Pagination
+                count={totalPage}
+                page={currentPage}
+                onChange={handleChange}
+                variant="outlined"
+              />
+            </Stack>
+            <div></div>
+          </Box>
         </Container>
       </section>
       <OrderModal
+        imagePermetions={busInfo?.order_attach_img_perm}
         modalOpen={modalOpen}
         handleCloseModal={handleCloseModal}
         products={products}
         handleFetch={handleFetch}
-        orderUpdate={orderUpdate}
       />
       <ViewModal
+        imagePermetions={busInfo?.order_attach_img_perm}
         key={order.id}
         order={order}
         handleCloseViewModal={handleCloseViewModal}
@@ -2604,11 +2863,11 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
         handleFetch={handleFetch}
       />
       <OrderUpdateModal
+        imagePermetions={busInfo?.order_attach_img_perm}
         key={order.id}
         order={order}
         products={products}
         orderId={orderId}
-        orderUpdate={orderUpdate}
         modalOpenUpdate={modalOpenUpdate}
         handleCloseOrderUpdateModal={handleCloseOrderUpdateModal}
         handleFetch={handleFetch}
@@ -2621,6 +2880,21 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
           order_id={orderId}
         />
       )}
+      {cities && (
+        <CourierModal
+          handleCourierModalOpen={courierModal}
+          handleCourierModalClose={handleCourierModalClose}
+          city={cities}
+          order_id={orderId}
+        />
+      )}
+      {redxModal.open && (
+        <RedxCourierModel
+          redxModal={redxModal}
+          setRedxModal={setRedxModal}
+          handleFetch={handleFetch}
+        />
+      )}
     </div>
   );
 };
@@ -2628,4 +2902,3 @@ const OrderPage = ({ orderUpdate, myAddonsList }) => {
 export default withAuth(OrderPage, {
   isProtectedRoute: true,
 });
-

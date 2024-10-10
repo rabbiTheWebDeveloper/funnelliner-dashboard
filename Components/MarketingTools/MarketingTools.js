@@ -71,7 +71,7 @@ const MarketingTools = ({ response }) => {
                       aria-label="lab API tabs example"
                     >
                       <Tab label="Domain Verification" value="1" onClick={() => setActive('1')} />
-                      <Tab label="Facebook Pixel" value="2" onClick={() => setActive('1')} />
+                      {/* <Tab label="Facebook Pixel" value="2" onClick={() => setActive('1')} /> */}
                       <Tab label="Google Tag Manager" value="3" onClick={() => setActive('3')} />
                       <Tab label="Google Analytics" value="4" onClick={() => setActive('4')} /> 
 
@@ -88,12 +88,12 @@ const MarketingTools = ({ response }) => {
                   />
                 </TabPanel>
                 {/* Facebook Pixel */}
-                <TabPanel value="2">
+                {/* <TabPanel value="2">
                   <FacebookPixel
                     shopName={response?.shop_name}
                     response={response}
                   ></FacebookPixel>
-                </TabPanel>
+                </TabPanel> */}
 
                 {/* GoogleAnalytics */}
                 <TabPanel value="4">

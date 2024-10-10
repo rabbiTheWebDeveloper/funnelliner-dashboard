@@ -184,7 +184,7 @@ const ForgetPasswordPage = () => {
                     <div className={`${disable === true ? 'LoginContent LoginContentDivOpacity' : 'LoginContent'}`}>
                         {/* Logo */}
                         <div className='Logo'>
-                            <img src='/images/funnel-liner-logo-beta.png' alt='' />
+                            <img src='/images/logo-beta.png' alt='' />
                         </div>
 
                         {/* HeaderText */}
@@ -240,7 +240,7 @@ const ForgetPasswordPage = () => {
                     <div className={`${disable === true ? 'LoginContent LoginContentDivOpacity' : 'LoginContent'}`}>
                         {/* Logo */}
                         <div className='Logo'>
-                            <img src='/images/funnel-liner-logo-beta.png' alt='' />
+                            <img src='/images/logo-beta.png' alt='' />
                         </div>
 
                         {/* HeaderText */}
@@ -292,7 +292,7 @@ const ForgetPasswordPage = () => {
                         <div className={`${disable === true ? 'LoginContent LoginContentDivOpacity' : 'LoginContent'}`}>
                             {/* Logo */}
                             <div className='Logo'>
-                                <img src='/images/funnel-liner-logo-beta.png' alt='' />
+                                <img src='/images/logo-beta.png' alt='' />
                             </div>
                             {/* HeaderText */}
                             <div className='HeaderText'>

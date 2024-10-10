@@ -53,7 +53,7 @@ const SectionCustomize = () => {
     try {
       let data = await axios({
         method: "get",
-        url: `${process.env.NEXT_PUBLIC_API_URL}/client/footer-list`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/footer-list?type=landing`,
         headers: headers,
       });
       setFooterList(data?.data?.data);
@@ -83,7 +83,7 @@ const SectionCustomize = () => {
     try {
       let data = await axios({
         method: "get",
-        url: `${process.env.NEXT_PUBLIC_API_URL}/client/products`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/client/products-for-search`,
         headers: headers,
       });
       setProductsList(data?.data?.data);

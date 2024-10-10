@@ -165,14 +165,14 @@ export const activeLandingPageTemplate = (id) => {
 
 
 //theme list
-export const allThemeList = (type) => {
+export const allThemeList = (type , params) => {
     const postBody = {
         shop_id: 970795,
         type: type,
     };
     let EndPoint = `${API_ENDPOINTS.BASE_URL}/client/themes/list`;
     return axios
-        .post(EndPoint, postBody, {headers: headers})
+        .post(EndPoint, postBody, {headers: headers , params: params})
         .then((res) => {
             return res;
         })

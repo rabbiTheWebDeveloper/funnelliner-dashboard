@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { nextDueDate } from "../../pages/api";
 import style from "./style.module.css";
 
-const Subscribe = () => {
+const Subscribe = ({setIsConditionTrue}) => {
   const [timerDays, setTimerDays] = useState(0);
   const [timerHours, setTimerHours] = useState(0);
   const [timerMinutes, setTimerMinutes] = useState(0);
@@ -44,6 +44,9 @@ const Subscribe = () => {
       clearInterval(interval.current);
     };
   }, []);
+  const handleIconClick = () => {
+    setIsConditionTrue(false);
+  };
   return (
     <>
       <div className={style.Subscribe}>
@@ -72,7 +75,8 @@ const Subscribe = () => {
           </h5>
         </div>
 
-        <Link href="/billing">Pay Now</Link>
+        <Link href="/billing?status=pay">Pay Now</Link>
+        <Link href="" onClick={handleIconClick} >Skip</Link>
       </div>
     </>
   );

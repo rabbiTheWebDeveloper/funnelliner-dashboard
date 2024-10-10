@@ -22,7 +22,7 @@ const LandingPageDuplicateModal = ({ openModal, closeModal, busInfo, id, fetchPa
   const [showProductErrorMsg, setShowProductErrorMsg] = useState(false);
 
   const getProductsData = useCallback(async () => {
-    const productsRes = await axios.get(`${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.GET_PRODUCTS}`, { headers: headers })
+    const productsRes = await axios.get(`${API_ENDPOINTS.BASE_URL}/client/products-for-search`, { headers: headers })
     if (productsRes?.data?.success) {
       if (!productsRes?.data?.data?.length) {
         setProducts([])

@@ -1227,6 +1227,9 @@ commonCart
 .commonCart.cart-5 {
   background: var(--cart-color-5);
 }
+.commonCart.cart-6 {
+  background: var(--cart-color-6);
+}
 
 .commonCart .header h4 {
   color: var(--header-color);
@@ -2250,6 +2253,7 @@ Media
     padding: 8px 10px;
   }
 }
+
 
 @media (max-width: 600px) {
   .Order {

@@ -1,13 +1,32 @@
 import { Box } from "@mui/material";
 import style from "./style.module.css";
 import { id } from "date-fns/locale";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Colors } from "../ColorPicker/Colors";
+import { API_ENDPOINTS } from "../../config/ApiEndpoints";
+import axios from "axios";
+import { headers } from "../../pages/api";
 
 const EditFooter = ({ selected, setSelected }) => {
+  const [footerData, seFooterData] = useState([]);
   const handleSelect = id => {
     setSelected(id);
   };
+
+
+  const handleFetchFooterAndColor = useCallback(async () => {
+    try {
+      const response = await axios.get(`${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PAGE.GET_FOOTER_LIST}`, { headers: headers });
+      seFooterData(response.data);
+    } catch (error) {  
+      // Handle errors if needed
+      console.error("Error fetching data:", error);
+    }
+  }, []);
+  
+  useEffect(() => {
+    handleFetchFooterAndColor();
+  }, [handleFetchFooterAndColor]);
   return (
     <section className={style.HomeSlider}>
       {/* <Container maxWidth="sm"> */}

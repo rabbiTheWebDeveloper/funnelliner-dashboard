@@ -2,8 +2,11 @@ import {
   Box,
   Button,
   Container,
+  FormControl,
   Grid,
+  MenuItem,
   Pagination,
+  Select,
   Skeleton,
   Stack,
   TextField,
@@ -19,70 +22,30 @@ import HeaderDescription from "../../../Components/Common/HeaderDescription/Head
 
 const ProductReturn = () => {
   const [isLoading, setIsLoading] = useState(true);
-
-
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+
 
   useEffect(() => {
     axios
       .get(process.env.NEXT_PUBLIC_API_URL + "/client/stocks/product-return/list", {
         headers: headers,
+        params: {
+          page: currentPage,
+          perPage: perPage,
+        },
       })
       .then(function (response) {
         // handle success
         setProducts(response.data.data);
+        setTotalPage(response.data?.last_page);
         setIsLoading(false);
       });
-  }, []);
-  const deleteProduct = (id) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axios
-          .delete(process.env.NEXT_PUBLIC_API_URL + "/client/products/" + id, {
-            headers: headers,
-          })
-          .then(function (result) {
-            // handle success
+  }, [ currentPage, perPage]);
 
-            if (result) {
-              setProducts((pd) => {
-                const filter = products.filter((prod) => {
-                  return prod.id !== id;
-                });
-                return [...filter];
-              });
-            } 
-            
-          });
-        Swal.fire("Deleted!", "Your file has been deleted.", "success");
-      }
-    });
-  };
 
-  const indexOfLastProducts = currentPage * perPage;
-  const indexOfFirstProducts = indexOfLastProducts - perPage;
-  const currentProduct = products.slice(
-    indexOfFirstProducts,
-    indexOfLastProducts
-  );
-
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(products.length / perPage); i++) {
-    pageNumbers.push(i);
-  }
-
-  const paginate = (pageNumber, value) => setCurrentPage(value);
   const [productSearchValue, setProductSearchValue] = useState("");
   const [filterProducts, setFilterProducts] = useState([]);
   const handleChangeSearchBox = (e) => {
@@ -98,6 +61,15 @@ const ProductReturn = () => {
     setFilterProducts(filtered);
   };
 
+  const handleChange = (event, value) => {
+    setCurrentPage(value);
+
+  };
+  const handlePerPageChange = event => {
+    const perPageValue = parseInt(event.target.value);
+    setPerPage(perPageValue);
+    setCurrentPage(1);
+  };
   return (
     <>
       <section className="TopSellingProducts DashboardSetting Order">
@@ -156,11 +128,11 @@ const ProductReturn = () => {
                         </Box>
                       </td>
                     </tr>
-                  ) : currentProduct.length > 0 ? (
+                  ) : products.length > 0 ? (
                     <>
                       <tbody>
                         {productSearchValue === "" &&
-                          currentProduct?.map((product) => {
+                          products?.map((product) => {
                             return (
                               <tr key={product.id}>
                                 <td>
@@ -241,17 +213,41 @@ const ProductReturn = () => {
               </div>
               <Box
                 style={{
-                  display: productSearchValue === "" ? "block" : "none",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginTop: "20px",
                 }}
               >
+                <div className="DropDown Download " style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "14px" }}>Rows per page</span>
+                  <div id="per-page-select_order">
+                    <FormControl variant="outlined" style={{ width: "100px", marginLeft: "10px" }} >
+                      <Select
+                        id="per-page-select"
+                        value={perPage}
+                        onChange={handlePerPageChange}
+                      >
+                        <MenuItem value={10}>10</MenuItem>
+                        <MenuItem value={20}>20</MenuItem>
+                        <MenuItem value={30}>30</MenuItem>
+                        <MenuItem value={40}>40</MenuItem>
+                        <MenuItem value={50}>50</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </div>
+                </div>
+
                 <Stack spacing={2}>
                   <Pagination
-                    count={pageNumbers.length}
+                    count={totalPage}
+                    page={currentPage}
+                    onChange={handleChange}
                     variant="outlined"
-                    page={page}
-                    onChange={paginate}
                   />
                 </Stack>
+                <div></div>
+
               </Box>
             </div>
           </div>

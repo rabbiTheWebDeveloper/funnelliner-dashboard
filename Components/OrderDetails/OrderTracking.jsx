@@ -1,113 +1,69 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from "react";
 import style from "./style.module.css";
-import CopyIcon from '../UI/CopyIcon/CopyIcon';
-const OrderTracking = () => {
+import CopyIcon from "../UI/CopyIcon/CopyIcon";
+import { API_ENDPOINTS } from "../../config/ApiEndpoints";
+import axios from "axios";
+import { headers } from "../../pages/api";
+import Link from "next/link";
+import moment from "moment/moment";
+const OrderTracking = ({ orderID, orderTraking }) => {
+  const [orderTracking, setOrderTracking] = useState([]);
+  const [loding, setLoding] = useState(false);
+  const handleFetchOrderTracking = useCallback(async () => {
+    if (orderID) {
+      try {
+        setLoding(true);
+        let data = await axios({
+          method: "get",
+          url: `${API_ENDPOINTS.BASE_URL}/client/order-tracking-timeline/${orderID}`,
+          headers: headers,
+        });
+        if (data?.data.data) {
+          setLoding(false);
+          setOrderTracking(data?.data?.data);
+        }
+      } catch (err) {}
+    }
+  }, [orderID]);
+  useEffect(() => {
+    handleFetchOrderTracking();
+  }, [handleFetchOrderTracking]);
+  console.log(orderTracking);
   return (
     <div className={style.inner}>
-    <div className={style.details}>
-      Tracking Link:{" "}
-      <a href="https://steadfast.com.bd/t/2252D1C4D">
-        https://steadfast.com.bd/t/2252D1C4D
-      </a>
-      <CopyIcon
-        className={style.copy}
-        url="https://steadfast.com.bd/t/2252D1C4D"
-      />
-    </div>
-    <div className={style.timeline}>
-      <div className={style.item}>
-        <div className={style.date}>
-          <h1>Mar 13</h1>
-          <h2>9:04 pm</h2>
-        </div>
-
-        <div className={style.visual}>
-          <div className={style.line}></div>
-          <div className={style.point}></div>
-        </div>
-        <h1 className={style.title}>
-          Consignment has been marked as delivered by
-          rider.
-        </h1>
-        <h1></h1>
+      <div className={style.details}>
+        Tracking Link:{" "}
+        <Link
+          target="_blank"
+          href={`https://funnelliner.com/t/${orderTraking}`}
+        >
+          https://funnelliner.com/t/{orderTraking}
+        </Link>
+        <CopyIcon
+          className={style.copy}
+          url={`https://funnelliner.com/t/${orderTraking}`}
+        />
       </div>
-      <div className={style.item}>
-        <div className={style.date}>
-          <h1>Mar 13</h1>
-          <h2>3:03 pm</h2>
-        </div>
+      <div className={style.timeline}>
+        {orderTracking?.map(item => (
+          <div className={style.item} key={item?.note}>
+            <div className={style.date}>
+              <h1>{moment(item?.created_at).format("MMM DD")}</h1>
+              <h2>{moment(item?.created_at).format("h:mm a")}</h2>
+            </div>
 
-        <div className={style.visual}>
-          <div className={style.line}></div>
-          <div className={style.point}></div>
-        </div>
-        <h1 className={style.title}>
-          Rider Note: "প্রাপক ফোন রিসিভ করেন নি"
-        </h1>
-        <h1></h1>
-      </div>
-      <div className={style.item}>
-        <div className={style.date}>
-          <h1>09 Dec 2022</h1>
-          <h2>06:37:46 PM</h2>
-        </div>
-
-        <div className={style.visual}>
-          <div className={style.line}></div>
-          <div className={style.point}></div>
-        </div>
-        <h1 className={style.title}>
-          Status has been updated as pending
-        </h1>
-        <h1></h1>
-      </div>
-      <div className={style.item}>
-        <div className={style.date}>
-          <h1>09 Dec 2022</h1>
-          <h2>06:37:46 PM</h2>
-        </div>
-
-        <div className={style.visual}>
-          <div className={style.line}></div>
-          <div className={style.point}></div>
-        </div>
-        <h1 className={style.title}>
-          Order received for the website
-        </h1>
-        <h1></h1>
-      </div>
-      <div className={style.item}>
-        <div className={style.date}>
-          <h1>09 Dec 2022</h1>
-          <h2>06:37:46 PM</h2>
-        </div>
-
-        <div className={style.visual}>
-          <div className={style.line}></div>
-          <div className={style.point}></div>
-        </div>
-        <h1 className={style.title}>
-          Order received for the website
-        </h1>
-        <h1></h1>
-      </div>
-      <div className={style.item}>
-        <div className={style.date}>
-          <h1>09 Dec 2022</h1>
-          <h2>06:37:46 PM</h2>
-        </div>
-
-        <div className={style.visual}>
-          <div className={style.line}></div>
-          <div className={style.point}></div>
-        </div>
-        <h1 className={style.title}>
-          Order received for the website
-        </h1>
-        <h1></h1>
+            <div className={style.visual}>
+              <div className={style.line}></div>
+              <div className={style.point}></div>
+            </div>
+            <h1 className={style.title}>
+            {item?.note}
+            </h1>
+            <h1></h1>
+          </div>
+        ))}
       </div>
     </div>
-  </div>
   );
 };
 

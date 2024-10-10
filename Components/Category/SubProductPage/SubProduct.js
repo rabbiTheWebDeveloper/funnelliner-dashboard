@@ -263,21 +263,22 @@ const SubProduct = () => {
                     variant="outlined"
                   />
                 </Stack>
-                <div className="DropDown Download">
-                  <FormControl variant="outlined">
-                    <InputLabel id="per-page-label">Items per page</InputLabel>
-                    <Select
-                      labelId="per-page-label"
-                      id="per-page-select"
-                      value={perPage}
-                      onChange={handlePerPageChange}
-                      label="Items per page"
-                    >
-                      <MenuItem value={10}>10</MenuItem>
-                      <MenuItem value={20}>20</MenuItem>
-                      <MenuItem value={30}>30</MenuItem>
-                    </Select>
-                  </FormControl>
+                <div className="DropDown Download " style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "14px" }}>Rows per page</span>
+                  <div id="per-page-select_order">
+                    <FormControl variant="outlined" style={{ width: "100px", marginLeft: "10px" }} >
+                      <Select
+                        id="per-page-select"
+                        value={perPage}
+                        onChange={handlePerPageChange}
+                      >
+                        <MenuItem value={10}>10</MenuItem>
+                        <MenuItem value={20}>20</MenuItem>
+                        <MenuItem value={30}>30</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </div>
+
                 </div>
               </Box>
             </div>

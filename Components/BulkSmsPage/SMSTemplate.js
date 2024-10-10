@@ -9,20 +9,20 @@ import axios from "axios";
 const SMSTemplate = () => {
   const [tabValue, setTabValue] = useState("one");
   const [smsTemplateList, setSmsTemplateList] = useState([]);
-  const [status, setStatus] = useState("pending");
+  const [status, setStatus] = useState("place");
   const [rFace, setRFace] = useState(false);
   const showToast = useToast();
   const handleTabChange = (event, newTabValue) => {
     setTabValue(newTabValue);
     switch (newTabValue) {
       case "one":
-        setStatus("pending");
+        setStatus("place");
         break;
       case "two":
         setStatus("confirmed");
         break;
       case "three":
-        setStatus("canceled");
+        setStatus("cancelled");
         break;
       case "four":
         setStatus("shipped");
@@ -39,7 +39,6 @@ const SMSTemplate = () => {
     }
   };;
   const onSaveMessage = async (data) => {
-    console.log(status);
     const value = {
       module: "order",
       type: status,
@@ -70,7 +69,7 @@ const SMSTemplate = () => {
       }
       setRFace(false)
     } catch (err) { }
-  }, []);
+  }, [rFace]);
   useEffect(() => {
     handleFetchSMSTemplate();
   }, [handleFetchSMSTemplate]);

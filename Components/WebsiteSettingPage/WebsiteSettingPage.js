@@ -1,51 +1,46 @@
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { Box, Button, Container, Grid, Tab } from "@mui/material";
+import { Box, Button, Container, Grid, Tab, Tooltip } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import Switch from "@mui/material/Switch";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import { getWebsiteSettings, headers, shopId } from "../../pages/api";
-
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import { useToast } from "../../hook/useToast";
 import CustomDomain from "./CustomDomain";
-import FacebookPixel from "./FacebookPixel";
-
 import HeaderDescription from "../../Components/Common/HeaderDescription/HeaderDescription";
 import HomeSlider from "../MyPage/HomeSlider/HomeSlider";
-import DomainVerification from "./DomainVerification";
 import { API_ENDPOINTS } from "../../config/ApiEndpoints";
 import { useCallback } from "react";
-import GoogleAnalytics from "./GoogleAnalytics";
-import GoogleTagManager from "./GoogleTagManager";
 import CommonShippingCost from "./CommonShippingCost";
 import BusinessInfo from "./BusinessInfo";
 import OrderOtpPermesion from "./Trigger/OrderOtpPermesion";
+import PaymentMethod from "./PaymentMethod";
+import OrderImagePermesion from "./Trigger/OrderImagePermesion";
 
-const handleTabLink = (value) => {
-  if (value === '1') {
+const handleTabLink = value => {
+  if (value === "1") {
     return "";
   }
-  if (value === '3') {
+  if (value === "3") {
     return {
       video: "https://www.youtube.com/embed/oF2kmS_myYk?si=T8zFVec6VQzE3RQi",
-      title: "Before Request Your Custom Domain Must Watch this Video!"
+      title: "Before Request Your Custom Domain Must Watch this Video!",
     };
   }
-  if (value === '5') {
+  if (value === "5") {
     return {
       video: "https://www.youtube.com/embed/qxSCcUr0Wfc?si=cs0cotPXXiPM64yP",
-      title: "How to verify your domain & set up facebook pixel easily with Funnel Liner"
+      title:
+        "How to verify your domain & set up facebook pixel easily with Funnel Liner",
     };
   }
-}
+};
 
-
-
-const WebsiteSettingPage = ({ response , myAddonsList}) => {
+const WebsiteSettingPage = ({ response, myAddonsList }) => {
   const [active, setActive] = useState(1);
   const router = useRouter();
   const showToast = useToast();
@@ -119,7 +114,7 @@ const WebsiteSettingPage = ({ response , myAddonsList}) => {
     setCustomDomain(e.target.value);
   };
   const handleUpdateDomain = () => {
-    handleUpdateWebsiteSetting(checked, customDomain).then(result => { });
+    handleUpdateWebsiteSetting(checked, customDomain).then(result => {});
   };
 
   //advance payment update by trigger
@@ -232,7 +227,7 @@ const WebsiteSettingPage = ({ response , myAddonsList}) => {
       if (data.status) {
         setShippingDate(data?.data?.data?.shipped_date_status);
       }
-    } catch (err) { }
+    } catch (err) {}
   }, []);
   const handleFetchCommonShippingCostStatus = useCallback(async () => {
     try {
@@ -246,14 +241,14 @@ const WebsiteSettingPage = ({ response , myAddonsList}) => {
         setShippingCostData(data?.data?.data);
         // console.log(data.data.data);
       }
-    } catch (err) { }
+    } catch (err) {}
   }, [reFatch]);
 
   useEffect(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_API_URL +
-        "/client/settings/advance-payment/status",
+          "/client/settings/advance-payment/status",
         { headers: headers }
       )
       .then(function (response) {
@@ -311,9 +306,9 @@ const WebsiteSettingPage = ({ response , myAddonsList}) => {
     handleFetchCommonShippingCostStatus();
   }, [handleFetchCommonShippingCostStatus]);
 
-  const isAccessOrderOTP = Array.isArray(myAddonsList) && myAddonsList.some(
-    (addon) => addon?.addons_id === 13 && addon?.status === 1
-  );
+  const isAccessOrderOTP =
+    Array.isArray(myAddonsList) &&
+    myAddonsList.some(addon => addon?.addons_id === 13 && addon?.status === 1);
   return (
     <>
       <section className="DashboardSetting WebsiteSetting">
@@ -338,9 +333,17 @@ const WebsiteSettingPage = ({ response , myAddonsList}) => {
                       onChange={handleChangeTab}
                       aria-label="lab API tabs example"
                     >
-                      <Tab label="Payment Method" value="1" onClick={() => setActive('1')} />
+                      <Tab
+                        label="Payment Method"
+                        value="1"
+                        onClick={() => setActive("1")}
+                      />
                       <Tab label="Invoice Format" value="2" />
-                      <Tab label="Custom Domain" value="3" onClick={() => setActive('3')} />
+                      <Tab
+                        label="Custom Domain"
+                        value="3"
+                        onClick={() => setActive("3")}
+                      />
                       <Tab label="Business Info" value="4" />
                       <Tab label="Shipping Settings" value="5" />
                       <Tab label="Slider and Banner" value="7" />
@@ -442,10 +445,17 @@ const WebsiteSettingPage = ({ response , myAddonsList}) => {
                       </div>
                     </div>
                   </div>
-                  {
-                    isAccessOrderOTP &&  <OrderOtpPermesion response={response} showToast={showToast} />
-                  }
-                
+                  <PaymentMethod />
+                  {isAccessOrderOTP && (
+                    <OrderOtpPermesion
+                      response={response}
+                      showToast={showToast}
+                    />
+                  )}
+                  <OrderImagePermesion
+                    response={response}
+                    showToast={showToast}
+                  />
                 </TabPanel>
 
                 {/* Invoice Format */}
@@ -519,7 +529,12 @@ const WebsiteSettingPage = ({ response , myAddonsList}) => {
                   <BusinessInfo websiteSettingsData={websiteSettingsData} />
                 </TabPanel>
                 <TabPanel value="5">
-                  <CommonShippingCost IsHeaderDescription={false} websiteSettingsData={websiteSettingsData} shopId={shopId} shippingCostData={shippingCostData} />
+                  <CommonShippingCost
+                    IsHeaderDescription={false}
+                    websiteSettingsData={websiteSettingsData}
+                    shopId={shopId}
+                    shippingCostData={shippingCostData}
+                  />
                 </TabPanel>
                 <TabPanel value="7">
                   <HomeSlider IsHeaderDescription={false} />

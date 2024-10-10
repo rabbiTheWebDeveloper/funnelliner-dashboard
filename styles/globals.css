@@ -68,6 +68,7 @@ ul {
   --cart-color-3: #ecd4ff;
   --cart-color-4: #d2daff;
   --cart-color-5: #dcd1ff;
+  --cart-color-6: #cbbdf8;
 }
 
 /* .MuiContainer-root {
@@ -728,4 +729,9 @@ Media
   border-radius: 8px;
   padding: 12px 10px;
   cursor: pointer;
+}
+#per-page-select_order .MuiInputBase-root.MuiOutlinedInput-root.MuiInputBase-colorPrimary.MuiInputBase-formControl{
+  height: 35px;
+  width: 70px;
+  border-radius: 2rem !important;
 }

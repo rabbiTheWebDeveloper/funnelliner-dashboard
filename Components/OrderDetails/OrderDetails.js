@@ -16,6 +16,7 @@ import useLoading from "../../hook/useLoading";
 import style from "./style.module.css";
 import { FraudActivities } from "./FraudActivities";
 import OrderTracking from "./OrderTracking";
+import { OrderImages } from "./OrderImages";
 
 function handleClick(orderId) {
   const newTab = window.open(`/invoice-one/${orderId}`, "_blank");
@@ -251,8 +252,7 @@ const OrderDetails = () => {
     }
   };
 
-
-  const handleFetchOrdfraudsReport= useCallback(async () => {
+  const handleFetchOrdfraudsReport = useCallback(async () => {
     if (OrderDetails?.phone) {
       try {
         let data = await axios({
@@ -292,7 +292,7 @@ const OrderDetails = () => {
                   <div className="right d_flex">
                     <select
                       name=""
-                      defaultValue={OrderDetails?.order_status}
+                      value={OrderDetails?.order_status}
                       onChange={e => handleStatusChange(e, OrderDetails?.id)}
                     >
                       <option value="pending">Pending</option>
@@ -365,6 +365,14 @@ const OrderDetails = () => {
                           {courierStatusFormate(OrderDetails?.order_type)}
                         </span>
                       </li>
+                      {!!OrderDetails?.order_attach_images?.length && (
+                        <li className={style.attachedImage}>
+                          <span>Attached Images : </span>
+                          <OrderImages
+                            images={OrderDetails?.order_attach_images}
+                          />
+                        </li>
+                      )}
                     </ul>
                   </div>
                   {/* right */}
@@ -502,7 +510,10 @@ const OrderDetails = () => {
                         </div>
                       </div> */}
                       <div className={style.timeline_wrapper}>
-                     <OrderTracking/>
+                        <OrderTracking
+                          orderID={OrderDetails?.id}
+                          orderTraking={OrderDetails?.order_tracking_code}
+                        />
                         <div className="OrderTrackingLeftRight">
                           <div className="OrderNote">
                             <label>
@@ -652,11 +663,9 @@ const OrderDetails = () => {
                     </ul>
                   </div>
                 </div>
-                {
-                  !orderfraudsReport?.fraud_processing &&<FraudActivities orderfraudsReport={orderfraudsReport} />
-                }
-
-                
+                {!orderfraudsReport?.fraud_processing && (
+                  <FraudActivities orderfraudsReport={orderfraudsReport} />
+                )}
               </div>
             </Grid>
           </Grid>

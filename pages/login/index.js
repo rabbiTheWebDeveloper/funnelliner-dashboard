@@ -224,7 +224,7 @@ const Login_Part = () => {
               <div className={styles.noAccount}>
                 <p>
                   Don't have an account?{" "}
-                  <Link href="https://funnelliner.com/signup">Register</Link>
+                  <Link href="https://app.funnelliner.com/offer">Register</Link>
                 </p>
               </div>
             </form>

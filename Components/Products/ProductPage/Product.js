@@ -70,18 +70,18 @@ const Product = ({ busInfo }) => {
       }
     }
   };
-  
+
   const handleUnauthorizedError = () => {
     // Clear token and user data
     Cookies.remove("token");
     localStorage.clear("token");
     Cookies.remove("user");
     localStorage.clear("user");
-    
+
     // Redirect to login page
     window.location.href = "/login";
   };
-  
+
   useEffect(() => {
     fetchProduct();
   }, [currentPage, perPage]);
@@ -160,26 +160,26 @@ const Product = ({ busInfo }) => {
   };
   useEffect(() => {
     hanldeFetchCategories()
-  }, [editModalOpen , viewModalOpen]);
+  }, [editModalOpen, viewModalOpen]);
 
   const handlePerPageChange = event => {
     const perPageValue = parseInt(event.target.value);
     setPerPage(perPageValue);
     setCurrentPage(1);
-};
+  };
 
-const doSearch = useDebounce((term) => {
-  if(term){
-  fetchProductSearch(term);
-}else{
-  fetchProduct();
-}
-}, 500);
+  const doSearch = useDebounce((term) => {
+    if (term) {
+      fetchProductSearch(term);
+    } else {
+      fetchProduct();
+    }
+  }, 500);
 
-function handleChangeSearch(e) {
-  const value = e.target.value;
-  doSearch(value);
-}
+  function handleChangeSearch(e) {
+    const value = e.target.value;
+    doSearch(value);
+  }
 
   return (
     <>
@@ -249,7 +249,7 @@ function handleChangeSearch(e) {
                   ) : products.length > 0 ? (
                     <>
                       <tbody>
-                        { !!products &&
+                        {!!products &&
                           products?.map((product, index) => {
                             return (
                               <tr key={product.id}>
@@ -419,40 +419,41 @@ function handleChangeSearch(e) {
                 </Stack>
               </Box>
             </div> */}
-               <Box
-                                style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    marginTop: "20px",
-                                }}
-                            >
-                                <div></div>
-                                <Stack spacing={2}>
-                                    <Pagination
-                                        count={totalPage}
-                                        page={currentPage}
-                                        onChange={handleChange}
-                                        variant="outlined"
-                                    />
-                                </Stack>
-                                <div className="DropDown Download">
-                                    <FormControl variant="outlined">
-                                        <InputLabel id="per-page-label">Items per page</InputLabel>
-                                        <Select
-                                            labelId="per-page-label"
-                                            id="per-page-select"
-                                            value={perPage}
-                                            onChange={handlePerPageChange}
-                                            label="Items per page"
-                                        >
-                                            <MenuItem value={10}>10</MenuItem>
-                                            <MenuItem value={20}>20</MenuItem>
-                                            <MenuItem value={30}>30</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </div>
-                            </Box>
+            <Box
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginTop: "20px",
+              }}
+            >
+              <div></div>
+              <Stack spacing={2}>
+                <Pagination
+                  count={totalPage}
+                  page={currentPage}
+                  onChange={handleChange}
+                  variant="outlined"
+                />
+              </Stack>
+              <div className="DropDown Download " style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{fontSize: "14px"}}>Rows per page</span>
+              <div id="per-page-select_order">
+              <FormControl variant="outlined"  style={{ width: "100px", marginLeft: "10px"}} >
+                <Select
+                  id="per-page-select"
+                  value={perPage}
+                  onChange={handlePerPageChange}
+                >
+                  <MenuItem value={10}>10</MenuItem>
+                  <MenuItem value={20}>20</MenuItem>
+                  <MenuItem value={30}>30</MenuItem>
+                </Select>
+              </FormControl>
+              </div>
+
+            </div>
+            </Box>
           </div>
         </Container>
       </section>
