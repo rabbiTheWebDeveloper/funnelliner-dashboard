@@ -40,7 +40,7 @@ const LandingPageVisitorChart = () => {
       
       )
       .then(res => {
-        console.log(res.data.data)
+        // console.log(res.data.data)
         setReportData(res.data.data);
       })
       .catch(error => {

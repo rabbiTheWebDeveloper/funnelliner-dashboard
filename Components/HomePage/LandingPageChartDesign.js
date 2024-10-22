@@ -35,7 +35,10 @@ const LandingPageChart = ({data}) => {
     ? data.find(item => item.landingPageSlug === selectedSlug)?.hourlyCounts ||
       []
     : [];
-
+    const chartData =data?.map(item => ({
+      landing_Page_Name : item?.landingPageSlug,
+      visitor_Number: item?.totalCount,
+    }));
   return (
     <div>
       {/* Render buttons to select landing page */}
@@ -63,12 +66,12 @@ const LandingPageChart = ({data}) => {
         <div style={{ width: "100%", height: "300px" }}>
           <ResponsiveContainer>
             <BarChart
-              data={data}
+              data={chartData}
               margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
             >
               <CartesianGrid strokeDasharray="3 4" />
               <XAxis
-                dataKey="landingPageSlug"
+                dataKey="landing_Page_Name"
                 tick={{
                   fontFamily: "Poppins",
                   fontSize: "14px",
@@ -84,7 +87,7 @@ const LandingPageChart = ({data}) => {
               <Tooltip />
               <Legend />
               <Bar
-                dataKey="totalCount"
+                dataKey="visitor_Number"
                 fill="#FB896B"
                 barSize={30} // Adjust the width of the bars
               />

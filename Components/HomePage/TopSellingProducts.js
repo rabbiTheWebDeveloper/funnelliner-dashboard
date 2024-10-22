@@ -33,7 +33,7 @@ const TopSellingProducts = () => {
 
                     {TopSellingProducts?.map((item, index) => {
                         return (
-                            <div className="TopSellingContent">
+                            <div className="TopSellingContent" key={item?.id}>
 
                                 {/* item */}
                                 <div className="item">

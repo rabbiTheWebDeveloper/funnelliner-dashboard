@@ -11,15 +11,13 @@ import {
 } from "recharts";
 
 const WebsiteVisitorChartDesign = ({data}) => {
-  console.log(data.hourlyCounts);
+  // console.log(data.hourlyCounts);
   // Map the hourlyCounts into a chart-friendly format
   const chartData =data?.hourlyCounts?.map(item => ({
     hour: item?.hour,
     visitor: item?.count,
   }));
 
-
-  console.log(chartData);
   const CustomYAxisTick = props => {
     const { x, y, payload } = props;
 
