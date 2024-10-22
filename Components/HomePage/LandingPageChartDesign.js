@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -9,6 +9,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { shopId } from "../../pages/api";
+import axios from "axios";
+import { visitorUrl } from "../../constant/constant";
 
 
 
@@ -23,13 +26,41 @@ const CustomYAxisTick = ({ x, y, payload }) => {
   );
 };
 
-const LandingPageChart = ({data}) => {
+const LandingPageChart = ({data ,setOnlineVisitors,fetching, setFetching }) => {
   const [selectedSlug, setSelectedSlug] = useState(null);
 
-  const handleSlugClick = slug => {
+  const handleSlugClick = (slug ,id) => {
     setSelectedSlug(slug);
+    fetchVisitorData(id);
   };
 
+
+  const fetchVisitorData = async (id) => {
+
+    const payload = {
+      shopId: shopId,
+      landingPageId:id ? id : data[0]?.landingPageId,
+    };
+    try {
+      const response = await axios.post(
+        `${visitorUrl}landing-page/get-active-users`,payload
+      );
+      const { data } = response.data;
+      // console.log("data", data);
+      // Safely handle the online visitor count
+      setOnlineVisitors(data.currentVisitors ?? 0);
+      setFetching(false);
+    } catch (error) {
+      console.error("Error fetching visitor data:", error);
+
+      // Optional: Set visitors to 0 if there's an error
+      setOnlineVisitors(0);
+    }
+  };
+
+  useEffect(() => {
+    fetchVisitorData();
+  }, [data[0]?.landingPageId] ,fetching);
   // Filter data based on selectedSlug for the hourly chart
   const filteredData = selectedSlug
     ? data.find(item => item.landingPageSlug === selectedSlug)?.hourlyCounts ||
@@ -54,7 +85,7 @@ const LandingPageChart = ({data}) => {
               border: "none",
               cursor: "pointer",
             }}
-            onClick={() => handleSlugClick(item.landingPageSlug)}
+            onClick={() => handleSlugClick(item.landingPageSlug ,item?.landingPageId)}
           >
             {item.landingPageSlug}
           </button>

@@ -11,11 +11,16 @@ import LandingPageChartDesign from "./LandingPageChartDesign";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import RefreshIcon from "@mui/icons-material/Refresh"; // Import reload icon
+import { green } from "@mui/material/colors";
+import { visitorUrl } from "../../constant/constant";
 
 const LandingPageVisitorChart = () => {
   const [overview_data, setOverview_data] = useState("today");
   const [reportData, setReportData] = useState([]);
   const [customDate, setCustomDate] = useState(new Date());
+  const [onlineVisitors, setOnlineVisitors] = useState(5);
+  const [fetching, setFetching] = useState(false);
 
   // Dropdown
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -29,15 +34,15 @@ const LandingPageVisitorChart = () => {
   const chart_data = {
     shopId: shopId,
     dateType: overview_data,
-    ...(overview_data === "custom" && { customDate: customDate.toISOString().split("T")[0] })
+    ...(overview_data === "custom" && {
+      customDate: customDate.toISOString().split("T")[0],
+    }),
   };
   useEffect(() => {
     axios
       .post(
         "https://funnelliner-report-api.vercel.app/api/v1/shop/landing-page/get-visitor",
-        chart_data,
-
-      
+        chart_data
       )
       .then(res => {
         // console.log(res.data.data)
@@ -53,8 +58,70 @@ const LandingPageVisitorChart = () => {
       <div className="ChartJs boxShadow">
         {/* header */}
         <div className="Header d_flex d_justify">
-          <div className="left">
-            <h4>Landing Page Visitor Performance </h4>
+          <div
+            className="left"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "15px",
+              marginRight: "10px",
+            }}
+          >
+            <h4 style={{ margin: 0 }}>Landing Page Visitor Performance</h4>
+
+            <div
+              className="online-status"
+              style={{ display: "flex", alignItems: "center", gap: "8px" }}
+            >
+              {onlineVisitors > 0 ? (
+                <span
+                  style={{
+                    color: green[500],
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "5px",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "34px",
+                      lineHeight: 0,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    &bull;
+                  </span>{" "}
+                  {/* Dot symbol */}
+                  {onlineVisitors} online
+                </span>
+              ) : (
+                <span
+                  style={{
+                    color: "black",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "5px",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "34px",
+                      lineHeight: 0,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    &bull;
+                  </span>{" "}
+                  {/* Dot symbol */}
+                  {onlineVisitors} online
+                </span>
+              )}
+
+              <RefreshIcon
+                onClick={() => setFetching(true)}
+                style={{ cursor: "pointer" }}
+              />
+            </div>
           </div>
 
           <div className="right">
@@ -134,7 +201,12 @@ const LandingPageVisitorChart = () => {
 
         {/*  */}
         <div>
-          <LandingPageChartDesign data={reportData} />
+          <LandingPageChartDesign
+            data={reportData}
+            setOnlineVisitors={setOnlineVisitors}
+            fetching={fetching}
+            setFetching={setFetching}
+          />
         </div>
       </div>
     </>
