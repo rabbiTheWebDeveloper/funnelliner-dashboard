@@ -1,6 +1,5 @@
 
 export const themeUrl = 'https://funnelliner.com';
-export const visitorUrl = 'https://funnelliner-report-api.vercel.app/api/v1/';
 export const pixel_demo_text = `Example: <script>
 !function(f,b,e,v,n,t,s)
 {if(f.fbq)return;n=f.fbq=function(){n.callMethod?

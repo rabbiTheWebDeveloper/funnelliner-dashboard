@@ -34,14 +34,10 @@ const validationSchema = Yup.object({
   category_id: Yup.string().required("Category is required"),
   delivery_charge: Yup.string().required("Delivery Charge is required"),
   discount: Yup.string()
-    // .nullable() 
-    .test(
-      "valid-discount",
-      "Invalid discount format",
-      (value) => {
-        return /^(\d+(\.\d{1,2})?%?)$/.test(value);
-      }
-    )
+    // .nullable()
+    .test("valid-discount", "Invalid discount format", value => {
+      return /^(\d+(\.\d{1,2})?%?)$/.test(value);
+    })
     .test(
       "valid-discount-amount",
       "Discount cannot be higher than Regular Price",
@@ -51,30 +47,43 @@ const validationSchema = Yup.object({
         return numericValue <= sellingPrice;
       }
     )
-    .transform((value) => {
+    .transform(value => {
       return value ? value.replace("%", "") : "";
     }),
-  discount_type: Yup.string()
-    .when("discount", {
-      is: (value) => !!value, // Only make it required when discount is present
-      then: Yup.string().required("Discount Type is required"),
-      otherwise: Yup.string().notRequired(),
-    }),
+  discount_type: Yup.string().when("discount", {
+    is: value => !!value, // Only make it required when discount is present
+    then: Yup.string().required("Discount Type is required"),
+    otherwise: Yup.string().notRequired(),
+  }),
   main_image: Yup.mixed()
-    .test("valid-image-size", "Product image is too big!", (value) => {
+    .test("valid-image-size", "Product image is too big!", value => {
       return !value || (value && value.size <= 1024 * 1024);
     })
     .required("Product Image required"),
+  buying_price: Yup.number()
+    .min(0, "Buying Price must be non-negative")
+    .required("Buying Price is required"),
+  transportation_cost: Yup.number()
+    .min(0, "Transportation Cost must be non-negative")
+    .required("Transportation Cost is required"),
+  packaging_cost: Yup.number()
+    .min(0, "Packaging Cost must be non-negative")
+    .required("Packaging Cost is required"),
+  ad_budget: Yup.number()
+    .min(0, "Ad Budget must be non-negative")
+    .required("Ad Budget is required"),
 });
 
 const AddProduct = ({ busInfo }) => {
   const router = useRouter();
   const showToast = useToast();
   const [isLoading, startLoading, stopLoading] = useLoading();
-  const [categories, setCategories] = useState([{
-            value: "add",
-            label: "+ Add New Category",
-          }]);
+  const [categories, setCategories] = useState([
+    {
+      value: "add",
+      label: "+ Add New Category",
+    },
+  ]);
   const [variantAttributes, setVariantAttributes] = useState([]);
   const [openAddCategoryPopup, setOpenAddCategoryPopup] = useState(false);
   const [openAddVariantAttributePopup, setOpenAddVariantAttributePopup] =
@@ -88,13 +97,14 @@ const AddProduct = ({ busInfo }) => {
   const [productShortDescription, setProductShortDescription] = useState("");
   const [productLongDescription, setProductLongDescription] = useState("");
   const [isOpenVariationOption, setIsOpenVariationOption] = useState(false);
-  const [isShowVariantValuesOption, setIsShowVariantValuesOption] = useState(false);
+  const [isShowVariantValuesOption, setIsShowVariantValuesOption] =
+    useState(false);
   const [variantAttribute, setVariantAttribute] = useState([]);
   const [variantValues, setVariantValues] = useState([]);
   const [tempVariantValues, setTempVariantValues] = useState([]);
   const [selectVariantTypes, setSelectVariantTypes] = useState([]);
   const [fetch, setFetch] = useState(false);
-  const [discountType, setDiscountType] = useState('flat');
+  const [discountType, setDiscountType] = useState("flat");
   const [
     isOpenDeleteProductVariantTypeModal,
     setIsOpenDeleteProductVariantTypeModal,
@@ -141,7 +151,7 @@ const AddProduct = ({ busInfo }) => {
 
   const handelFetch = () => {
     setFetch(true);
-  }
+  };
 
   const fetchVariantValuesOnAttribute = useCallback(async attributeId => {
     const variantValuesRes = await axios.get(
@@ -205,7 +215,7 @@ const AddProduct = ({ busInfo }) => {
       });
   }, []);
 
-  const createVariant = async (updatedVariantTypes) => {
+  const createVariant = async updatedVariantTypes => {
     const formData = new FormData();
     updatedVariantTypes?.forEach((variant, key) => {
       formData.append("choice[]", variant?.variantType);
@@ -220,8 +230,6 @@ const AddProduct = ({ busInfo }) => {
         });
       }
     });
-
-
 
     const createVariantRes = await axios.post(
       `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.CREATE_VARIANT}`,
@@ -261,7 +269,7 @@ const AddProduct = ({ busInfo }) => {
     ];
     setSelectVariantTypes(newSelectVariantAfterDelete);
     setIsOpenDeleteProductVariantTypeModal(false);
-    createVariant(newSelectVariantAfterDelete)
+    createVariant(newSelectVariantAfterDelete);
   };
 
   useEffect(() => {
@@ -286,13 +294,10 @@ const AddProduct = ({ busInfo }) => {
     setVariantTable(newVariants);
     setIsShowSingleVariantDeletePopup(false);
   };
-  
-
-
 
   // const handleButtonClick = async () => {
   //   // Call the first function
-  //  const result= await addNewVariant() ;  
+  //  const result= await addNewVariant() ;
   //  console.log(result);
   //   // Check if the first function has completed
   //   if (result) {
@@ -331,18 +336,26 @@ const AddProduct = ({ busInfo }) => {
                 delivery_charge: "",
                 discount: 0,
                 product_code: "",
-                product_quantity: variantTable ? getTotalQuantity(variantTable) : "",
+                product_quantity: variantTable
+                  ? getTotalQuantity(variantTable)
+                  : "",
                 inside_dhaka: "",
                 outside_dhaka: "",
                 subarea_charge: "",
                 main_image: null,
+                buying_price: "",
+                transportation_cost: "",
+                packaging_cost: "",
+                delivery_cost_inside: "",
+                delivery_cost_outside: "",
+                ad_budget: "",
               }}
               validationSchema={validationSchema}
               onSubmit={async data => {
                 try {
                   const varitionPrice = variantTable.map(item => {
-                    return item.price
-                  })
+                    return item.price;
+                  });
                   if (selectProductImage?.size > 1024 * 1024) {
                     showToast("Product image is too big !", "error");
                     return;
@@ -352,10 +365,16 @@ const AddProduct = ({ busInfo }) => {
                   } else if (selectProductImage === null) {
                     showToast("Product Image required", "error");
                     return;
-                  } else if (varitionPrice.some((str) => data?.selling_price < parseInt(str, 10))) {
-                    showToast("Variation Price cannot be higher than Regular Price", "error");
-                    return
-
+                  } else if (
+                    varitionPrice.some(
+                      str => data?.selling_price < parseInt(str, 10)
+                    )
+                  ) {
+                    showToast(
+                      "Variation Price cannot be higher than Regular Price",
+                      "error"
+                    );
+                    return;
                   }
 
                   data.size = "XL";
@@ -368,7 +387,10 @@ const AddProduct = ({ busInfo }) => {
 
                   if (productGalleryImage.length) {
                     for (let i = 0; i < productGalleryImage.length; i++) {
-                      formData.append("gallery_image[]", productGalleryImage[i]);
+                      formData.append(
+                        "gallery_image[]",
+                        productGalleryImage[i]
+                      );
                     }
                   }
                   if (selectedCategory.length) {
@@ -394,7 +416,10 @@ const AddProduct = ({ busInfo }) => {
                     formData.append("delivery_charge", "paid");
                     formData.append("inside_dhaka", data.inside_dhaka);
                     formData.append("outside_dhaka", data.outside_dhaka);
-                    formData.append("sub_area_charge", data.subarea_charge || 0);
+                    formData.append(
+                      "sub_area_charge",
+                      data.subarea_charge || 0
+                    );
                   }
 
                   if (variantTable?.length) {
@@ -402,9 +427,10 @@ const AddProduct = ({ busInfo }) => {
                     const updatedData = variantTable.map(item => {
                       if (item.price === 0) {
                         const calculatedPrice =
-                          data.discount_type === 'flat'
+                          data.discount_type === "flat"
                             ? data.selling_price - data.discount
-                            : data.selling_price - data.selling_price * (data.discount / 100);
+                            : data.selling_price -
+                              data.selling_price * (data.discount / 100);
 
                         return {
                           ...item,
@@ -434,7 +460,24 @@ const AddProduct = ({ busInfo }) => {
                       });
                     }
                   });
-                  startLoading()
+                  formData.append("buying_price", data.buying_price);
+                  formData.append(
+                    "transportation_cost",
+                    data.transportation_cost
+                  );
+                  formData.append("packaging_cost", data.packaging_cost);
+                  formData.append("ad_budget", data.ad_budget);
+                  if (deliverChargeType[0]?.value === "Paid Delivery Charge") {
+                    formData.append(
+                      "delivery_cost_inside",
+                      data.delivery_cost_inside
+                    );
+                    formData.append(
+                      "delivery_cost_outside",
+                      data.delivery_cost_outside
+                    );
+                  }
+                  startLoading();
                   const createProductRes = await axios.post(
                     `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.CREATE_PRODUCTS}`,
                     formData,
@@ -447,27 +490,24 @@ const AddProduct = ({ busInfo }) => {
                   } else {
                     showToast("Product Created Failure", "error");
                   }
-
                 } catch (e) {
                   if (e.response) {
-                    Object.keys(e?.response?.data?.errors).forEach((key) => {
+                    Object.keys(e?.response?.data?.errors).forEach(key => {
                       const errorMessage = e?.response?.data?.errors[key][0];
                       showToast(errorMessage, "error");
-                    })
-                  }
-                  else {
+                    });
+                  } else {
                     showToast(
                       <>
                         <h5>Error: Request Entity Too Large</h5>
                       </>,
-                      "error");
+                      "error"
+                    );
                   }
                   // console.log(e.response.data);
-
                 } finally {
                   stopLoading();
                 }
-
               }}
             >
               {({ values, setFieldValue }) => (
@@ -519,12 +559,21 @@ const AddProduct = ({ busInfo }) => {
                             <div className={style.absulatePrice}>
                               <h6 tyle={{ color: "#4d4d4d" }}>
                                 Price: <i className="flaticon-taka" />
-                                {values.discount > 0 ? values.discount_type === 'flat' ? values.selling_price - values.discount : values.selling_price - (values?.selling_price * (values.discount / 100)) : ''}
-
-                                {
-                                  values.discount > 0 && <del style={{ color: "#999" }}><i className="flaticon-taka" /> {values.selling_price > 0 ? values.selling_price : ''}</del>
-                                }
-
+                                {values.discount > 0
+                                  ? values.discount_type === "flat"
+                                    ? values.selling_price - values.discount
+                                    : values.selling_price -
+                                      values?.selling_price *
+                                        (values.discount / 100)
+                                  : ""}
+                                {values.discount > 0 && (
+                                  <del style={{ color: "#999" }}>
+                                    <i className="flaticon-taka" />{" "}
+                                    {values.selling_price > 0
+                                      ? values.selling_price
+                                      : ""}
+                                  </del>
+                                )}
                               </h6>
                             </div>
                           </div>
@@ -535,7 +584,6 @@ const AddProduct = ({ busInfo }) => {
                           sm={3}
                           className={style.ToggleButtonGroupDiv}
                         >
-
                           <label>
                             Discount Type
                             {/* <span>*</span> */}
@@ -547,19 +595,21 @@ const AddProduct = ({ busInfo }) => {
                             exclusive
                             // onChange={handleChange}
                             onChange={(event, newAlignment) => {
-                              setFieldValue('discount_type', newAlignment);
+                              setFieldValue("discount_type", newAlignment);
 
-                              if (newAlignment === 'flat') {
-                                setFieldValue('discount', '0.00');
+                              if (newAlignment === "flat") {
+                                setFieldValue("discount", "0.00");
                               }
-                              if (newAlignment === 'percent') {
-                                setFieldValue('discount', null);
+                              if (newAlignment === "percent") {
+                                setFieldValue("discount", null);
                               }
                             }}
                             aria-label="Platform"
                             className={style.ToggleButtonGroup}
                           >
-                            <ToggleButton value="percent">Parcentage</ToggleButton>
+                            <ToggleButton value="percent">
+                              Parcentage
+                            </ToggleButton>
                             <ToggleButton value="flat">
                               Fixed Amount
                             </ToggleButton>
@@ -581,7 +631,9 @@ const AddProduct = ({ busInfo }) => {
                               type="text"
                               placeholder="Example: 599"
                             />
-                            <span>{values.discount_type === 'percent' ? '%' : ""}</span>
+                            <span>
+                              {values.discount_type === "percent" ? "%" : ""}
+                            </span>
                           </div>
                           <div>
                             <ErrorMessage
@@ -592,7 +644,6 @@ const AddProduct = ({ busInfo }) => {
                           </div>
                         </Grid>
 
-
                         <Grid item xs={12} sm={4}>
                           <div className="">
                             <label>
@@ -601,10 +652,7 @@ const AddProduct = ({ busInfo }) => {
                             <Field
                               name="product_code"
                               type="text"
-                           
                               placeholder="Example: A103"
-
-
                             />
                             <ErrorMessage
                               name="product_code"
@@ -621,11 +669,18 @@ const AddProduct = ({ busInfo }) => {
                             <Field
                               type="text"
                               disabled={variantTable.length > 0 ? true : false}
-                              value={variantTable.length > 0 ? getTotalQuantity(variantTable) : values?.product_quantity}
+                              value={
+                                variantTable.length > 0
+                                  ? getTotalQuantity(variantTable)
+                                  : values?.product_quantity
+                              }
                               placeholder="Enter available quantity here"
                               name="product_quantity"
                               onChange={e => {
-                                setFieldValue('product_quantity', e.target.value);
+                                setFieldValue(
+                                  "product_quantity",
+                                  e.target.value
+                                );
                               }}
                             />
                             <ErrorMessage
@@ -643,7 +698,10 @@ const AddProduct = ({ busInfo }) => {
                             <Select
                               options={categories}
                               onChange={selectedOption => {
-                                setFieldValue('category_id', selectedOption.value);
+                                setFieldValue(
+                                  "category_id",
+                                  selectedOption.value
+                                );
                                 if (selectedOption.value === "add") {
                                   setOpenAddCategoryPopup(true);
                                 } else {
@@ -656,7 +714,7 @@ const AddProduct = ({ busInfo }) => {
                                 }
                               }}
                               menuPosition="fixed"
-                            // value={ values?.category_id }
+                              // value={ values?.category_id }
                             />
 
                             <ErrorMessage
@@ -674,33 +732,45 @@ const AddProduct = ({ busInfo }) => {
                             <Select
                               options={DELIVERY_CHARGE_DATA}
                               onChange={selectedOption => {
-                                setFieldValue("delivery_charge", selectedOption.value)
+                                setFieldValue(
+                                  "delivery_charge",
+                                  selectedOption.value
+                                );
                                 setDeliveryChargeType([
                                   {
                                     value: selectedOption.value,
                                     label: selectedOption.label,
                                   },
-                                ])
-                              }
-                              }
+                                ]);
+                              }}
                               menuPosition="fixed"
-                            // value={values.delivery_charge}
+                              // value={values.delivery_charge}
                             />
                             {deliverChargeType[0]?.value ===
-                              "Paid Delivery Charge" ? (
+                            "Paid Delivery Charge" ? (
                               <div className={style.duelInput}>
                                 <div className={style.customInput}>
-                                  <label> Delivery charge in {busInfo?.default_delivery_location ? busInfo?.default_delivery_location : "Dhaka"} </label>
+                                  <label>
+                                    {" "}
+                                    Delivery charge in{" "}
+                                    {busInfo?.default_delivery_location
+                                      ? busInfo?.default_delivery_location
+                                      : "Dhaka"}{" "}
+                                  </label>
                                   <Field
                                     type="text"
                                     placeholder="Delivery charge in Dhaka"
                                     name="inside_dhaka"
-                                   
                                   />
                                 </div>
 
                                 <div className={style.customInput}>
-                                  <label>Delivery charge out of {busInfo?.default_delivery_location ? busInfo?.default_delivery_location : "Dhaka"}</label>
+                                  <label>
+                                    Delivery charge out of{" "}
+                                    {busInfo?.default_delivery_location
+                                      ? busInfo?.default_delivery_location
+                                      : "Dhaka"}
+                                  </label>
                                   <Field
                                     type="text"
                                     name="outside_dhaka"
@@ -730,7 +800,8 @@ const AddProduct = ({ busInfo }) => {
                         <Grid item xs={12} sm={4}>
                           <div className="">
                             <label>
-                              Main Image(Recommended Size 600px * 600px) <span>*</span>
+                              Main Image(Recommended Size 600px * 600px){" "}
+                              <span>*</span>
                             </label>
                             <div className={style.imgUploader}>
                               <input
@@ -739,13 +810,12 @@ const AddProduct = ({ busInfo }) => {
                                 id="select-image"
                                 style={{ display: "none" }}
                                 onChange={e => {
-                                  setFieldValue("main_image", e.currentTarget.files[0])
-                                  setSelectProductImage(e.target.files[0])
-
-                                }
-
-
-                                }
+                                  setFieldValue(
+                                    "main_image",
+                                    e.currentTarget.files[0]
+                                  );
+                                  setSelectProductImage(e.target.files[0]);
+                                }}
                               />
 
                               <label htmlFor="select-image">
@@ -779,7 +849,10 @@ const AddProduct = ({ busInfo }) => {
                         <Grid item xs={12} sm={4}>
                           <div className="">
                             <div className="EditTheme  CustomeInput">
-                              <label>Gallery Images (Maximum 5, Recommended Size 600px * 600px)</label>
+                              <label>
+                                Gallery Images (Maximum 5, Recommended Size
+                                600px * 600px)
+                              </label>
                               <ProductImage
                                 productImage={productGalleryImage}
                                 setProductImage={setProductGalleryImage}
@@ -862,7 +935,8 @@ const AddProduct = ({ busInfo }) => {
                                     </Button>
                                   </div>
                                 </div>
-                                {isShowVariantValuesOption || variantAttributes ? (
+                                {isShowVariantValuesOption ||
+                                variantAttributes ? (
                                   <React.Fragment>
                                     <div className="customInput">
                                       <label>Option name</label>
@@ -947,10 +1021,10 @@ const AddProduct = ({ busInfo }) => {
                                       </h5>
                                       {item?.variantValues?.length
                                         ? item?.variantValues?.map(
-                                          singleItem => (
-                                            <span>{singleItem?.label}</span>
+                                            singleItem => (
+                                              <span>{singleItem?.label}</span>
+                                            )
                                           )
-                                        )
                                         : null}
                                     </div>
                                     {/* right */}
@@ -1002,128 +1076,135 @@ const AddProduct = ({ busInfo }) => {
                               <tbody>
                                 {variantTable?.length
                                   ? variantTable?.map((variant, index) => (
-                                    <tr key={variant.id}>
-                                      <td>
-                                        {variant?.media === null ? (
-                                          <div className={style.img}>
+                                      <tr key={variant.id}>
+                                        <td>
+                                          {variant?.media === null ? (
+                                            <div className={style.img}>
+                                              <img
+                                                src="images/blank-img.png"
+                                                alt=""
+                                              />
+                                              <div className={style.overlay}>
+                                                <input
+                                                  type="file"
+                                                  key={variant.id}
+                                                  onChange={e => {
+                                                    const newVariants = [
+                                                      ...variantTable,
+                                                    ];
+                                                    newVariants[index].media =
+                                                      e.target.files[0];
+                                                    setVariantTable(
+                                                      newVariants
+                                                    );
+                                                  }}
+                                                />
+                                              </div>
+                                            </div>
+                                          ) : (
                                             <img
-                                              src="images/blank-img.png"
+                                              src={URL.createObjectURL(
+                                                variant?.media
+                                              )}
                                               alt=""
                                             />
-                                            <div className={style.overlay}>
-                                              <input
-                                                type="file"
-                                                key={variant.id}
-                                                onChange={e => {
-                                                  const newVariants = [
-                                                    ...variantTable,
-                                                  ];
-                                                  newVariants[index].media =
-                                                    e.target.files[0];
-                                                  setVariantTable(
-                                                    newVariants
-                                                  );
-                                                }}
-                                              />
-                                            </div>
-                                          </div>
-                                        ) : (
-                                          <img
-                                            src={URL.createObjectURL(
-                                              variant?.media
-                                            )}
-                                            alt=""
-                                          />
-                                        )}
-                                      </td>
+                                          )}
+                                        </td>
 
-                                      <td className={style.varient}>
-                                        <input
-                                          type="text"
-                                          placeholder="20/Blue"
-                                          value={variant?.variant}
-                                          onChange={e => {
-                                            const newVariants = [
-                                              ...variantTable,
-                                            ];
-                                            newVariants[index].variant =
-                                              e.target.value;
-                                            setVariantTable(newVariants);
-                                           
-                                          }}
-                                        />
-                                      </td>
-                                      <td className={style.price}>
-                                        <i className="flaticon-taka"></i>
-                                        <input
-                                          type="text"
-                                          className={style.tk}
-                                          placeholder="Price"
-                                          value={
-                                            variant?.price === 0
-                                              ? values.discount_type === 'flat' ? (values.selling_price - values.discount) : (values.selling_price) - (values?.selling_price * (values.discount / 100))
-                                              : variant?.price
-                                          }
-                                          onChange={e => {
-                                            const newVariants = [
-                                              ...variantTable,
-                                            ];
-                                            newVariants[index].price =
-                                              e.target.value
-
-                                            setVariantTable(newVariants);
-                                          }}
-                                        />
-                                      </td>
-                                      <td className={style.varient}>
-                                        <input
-                                          type="text"
-                                          placeholder="Product Code"
-                                          value={variant?.product_code}
-                                          onChange={e => {
-                                            const newVariants = [
-                                              ...variantTable,
-                                            ];
-                                            newVariants[index].product_code =
-                                              e.target.value;
-                                            setVariantTable(newVariants);
-                                          
-                                          }}
-                                        />
-                                      </td>
-                                      <td className={style.code}>
-                                        <input
-                                          type="text"
-                                          placeholder="Quantity"
-                                          value={variant?.quantity}
-                                          onChange={e => {
-                                            const newVariants = [
-                                              ...variantTable,
-                                            ];
-                                            newVariants[index].quantity =
-                                              e.target.value;
-                                            setVariantTable(newVariants);
-                                            setFieldValue("product_quantity", getTotalQuantity(variantTable));
-                                          }}
-                                        />
-                                      </td>
-                                      <td className={style.lastChild}>
-                                        <div className={style.DhakaInCharge}>
+                                        <td className={style.varient}>
                                           <input
-                                            className={style.Dhaka}
                                             type="text"
-                                            // placeholder="ঢাকার ভেতর ..."
-                                            value={variant?.description}
+                                            placeholder="20/Blue"
+                                            value={variant?.variant}
                                             onChange={e => {
                                               const newVariants = [
                                                 ...variantTable,
                                               ];
-                                              newVariants[index].description =
+                                              newVariants[index].variant =
                                                 e.target.value;
                                               setVariantTable(newVariants);
                                             }}
                                           />
-                                          {/* <Button
+                                        </td>
+                                        <td className={style.price}>
+                                          <i className="flaticon-taka"></i>
+                                          <input
+                                            type="text"
+                                            className={style.tk}
+                                            placeholder="Price"
+                                            value={
+                                              variant?.price === 0
+                                                ? values.discount_type ===
+                                                  "flat"
+                                                  ? values.selling_price -
+                                                    values.discount
+                                                  : values.selling_price -
+                                                    values?.selling_price *
+                                                      (values.discount / 100)
+                                                : variant?.price
+                                            }
+                                            onChange={e => {
+                                              const newVariants = [
+                                                ...variantTable,
+                                              ];
+                                              newVariants[index].price =
+                                                e.target.value;
+
+                                              setVariantTable(newVariants);
+                                            }}
+                                          />
+                                        </td>
+                                        <td className={style.varient}>
+                                          <input
+                                            type="text"
+                                            placeholder="Product Code"
+                                            value={variant?.product_code}
+                                            onChange={e => {
+                                              const newVariants = [
+                                                ...variantTable,
+                                              ];
+                                              newVariants[index].product_code =
+                                                e.target.value;
+                                              setVariantTable(newVariants);
+                                            }}
+                                          />
+                                        </td>
+                                        <td className={style.code}>
+                                          <input
+                                            type="text"
+                                            placeholder="Quantity"
+                                            value={variant?.quantity}
+                                            onChange={e => {
+                                              const newVariants = [
+                                                ...variantTable,
+                                              ];
+                                              newVariants[index].quantity =
+                                                e.target.value;
+                                              setVariantTable(newVariants);
+                                              setFieldValue(
+                                                "product_quantity",
+                                                getTotalQuantity(variantTable)
+                                              );
+                                            }}
+                                          />
+                                        </td>
+                                        <td className={style.lastChild}>
+                                          <div className={style.DhakaInCharge}>
+                                            <input
+                                              className={style.Dhaka}
+                                              type="text"
+                                              // placeholder="ঢাকার ভেতর ..."
+                                              value={variant?.description}
+                                              onChange={e => {
+                                                const newVariants = [
+                                                  ...variantTable,
+                                                ];
+                                                newVariants[index].description =
+                                                  e.target.value;
+                                                setVariantTable(newVariants);
+                                              }}
+                                            />
+                                            {/* <Button
                                             onClick={() => {
                                               setSelectedDeleteVariant(index);
                                               setIsShowSingleVariantDeletePopup(
@@ -1133,10 +1214,10 @@ const AddProduct = ({ busInfo }) => {
                                           >
                                             <i className="flaticon-delete"></i>
                                           </Button> */}
-                                        </div>
-                                      </td>
-                                    </tr>
-                                  ))
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    ))
                                   : null}
                               </tbody>
                             </table>
@@ -1144,20 +1225,129 @@ const AddProduct = ({ busInfo }) => {
                         </Grid>
                       </Grid>
                     </div>
+
+                    <div className={style.ProductsVariant}>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} sm={12}>
+                          <div className={style.ProductsVariantContent}>
+                            <h4>Product Cost</h4>
+                            <div className={style.FormValidation}>
+                              <Grid container spacing={2}>
+                                <Grid item xs={12} sm={6}>
+                                  <div className="">
+                                    <label>
+                                      Buying Price <span>*</span>
+                                    </label>
+                                    <Field
+                                      type="number"
+                                      placeholder="Enter buying price"
+                                      name="buying_price"
+                                    />
+                                    <ErrorMessage
+                                      name="buying_price"
+                                      component="div"
+                                      className="error"
+                                    />
+                                  </div>
+                                </Grid>
+
+                                <Grid item xs={12} sm={6}>
+                                  <div className="">
+                                    <label>
+                                      Transportation Cost <span>*</span>
+                                    </label>
+                                    <Field
+                                      type="number"
+                                      placeholder="Enter transportation cost"
+                                      name="transportation_cost"
+                                    />
+                                    <ErrorMessage
+                                      name="transportation_cost"
+                                      component="div"
+                                      className="error"
+                                    />
+                                  </div>
+                                </Grid>
+
+                                <Grid item xs={12} sm={6}>
+                                  <div className="">
+                                    <label>
+                                      Packaging Cost <span>*</span>
+                                    </label>
+                                    <Field
+                                      type="number"
+                                      placeholder="Enter packaging cost"
+                                      name="packaging_cost"
+                                    />
+                                    <ErrorMessage
+                                      name="packaging_cost"
+                                      component="div"
+                                      className="error"
+                                    />
+                                  </div>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                  <div className="">
+                                    <label>
+                                      Ad Budget <span>*</span>
+                                    </label>
+                                    <Field
+                                      type="number"
+                                      placeholder="Enter ad budget"
+                                      name="ad_budget"
+                                    />
+                                    <ErrorMessage
+                                      name="ad_budget"
+                                      component="div"
+                                      className="error"
+                                    />
+                                  </div>
+                                </Grid>
+
+                                {deliverChargeType[0]?.value ===
+                                  "Paid Delivery Charge" && (
+                                  <Grid item xs={12}>
+                                    <div className="">
+                                      <div className={style.duelInput}>
+                                        <div className={style.customInput}>
+                                          <label>Delivery Cost Inside Dhaka</label>
+                                          <Field
+                                            type="number"
+                                            placeholder="Delivery cost inside Dhaka"
+                                            name="delivery_cost_inside"
+                                          />
+                                        </div>
+                                        <div className={style.customInput}>
+                                          <label>Delivery Cost Outside Dhaka</label>
+                                          <Field
+                                            type="number"
+                                            placeholder="Delivery cost outside Dhaka"
+                                            name="delivery_cost_outside"
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </Grid>
+                                )}
+                              </Grid>
+                            </div>
+                          </div>
+                        </Grid>
+                      </Grid>
+                    </div>
                   </div>
                   <div className={style.Submit}>
-                    {
-                      isLoading ?
-                        <Button type="submit">
-                          <Spinner />
-                          Adding Product
-                        </Button> :
-                        <Button type="submit">
-                          <i className="flaticon-install"> </i>
-                          Add Product
-                        </Button>
-                    }
-
+                    {isLoading ? (
+                      <Button type="submit">
+                        <Spinner />
+                        Adding Product
+                      </Button>
+                    ) : (
+                      <Button type="submit">
+                        <i className="flaticon-install"> </i>
+                        Add Product
+                      </Button>
+                    )}
                   </div>
                 </Form>
               )}
@@ -1172,7 +1362,7 @@ const AddProduct = ({ busInfo }) => {
           setSelectedCategory={setSelectedCategory}
           fetchCategoriesData={fetchCategoriesData}
         />
-      ) }
+      )}
       {openAddVariantAttributePopup ? (
         <AddProductVariantType
           openModal={openAddVariantAttributePopup}

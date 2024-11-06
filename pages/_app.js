@@ -20,6 +20,7 @@ import "../styles/admin_dashboard_media.css";
 import "../styles/common.css";
 import "../styles/globals.css";
 import "../styles/style.css";
+import "../styles/dashboard.css";
 import "animate.css/animate.min.css";
 
 import { headers } from "./api";

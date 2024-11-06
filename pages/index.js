@@ -2,10 +2,11 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { useCallback, useEffect, useState } from "react";
 import { headers } from "./api";
-import Dashboard from "../Components/HomePage/Dashboard";
+// import Dashboard from "../Components/HomePage/Dashboard";
 import withAuth from "../hook/PrivateRoute";
 import FirstSetup from "../Components/HomePage/FirstSetup/FirstSetup";
 import useOrderLiveData from "../hook/useOrderLiveData";
+import { Dashboard } from "../Components/DashboardV2/dashboard";
 
 const HomePage = ({ busInfo }) => {
   const [isApiResponse, setIsApiResponse] = useState(false);
@@ -16,7 +17,9 @@ const HomePage = ({ busInfo }) => {
 
   const handleFetchBasicInfo = useCallback(async () => {
     try {
-      const { data } = await axios.get(`${apiUrl}/client/shop-steps`, { headers });
+      const { data } = await axios.get(`${apiUrl}/client/shop-steps`, {
+        headers,
+      });
       setInfo(data?.data);
       Cookies.set("total_task", data?.data?.total_task);
       setIsApiResponse(true);
@@ -33,13 +36,16 @@ const HomePage = ({ busInfo }) => {
   };
   return (
     <div className="HomePage">
-      {isApiResponse && (
-        totalTask !== "6" ? (
-          skip1 !== "true" ? <FirstSetup skip={skip} busInfo={busInfo} shopStep={info} /> : <Dashboard busInfo={busInfo} />
+      {isApiResponse &&
+        (totalTask !== "6" ? (
+          skip1 !== "true" ? (
+            <FirstSetup skip={skip} busInfo={busInfo} shopStep={info} />
+          ) : (
+            <Dashboard busInfo={busInfo} />
+          )
         ) : (
           <Dashboard busInfo={busInfo} />
-        )
-      )}
+        ))}
     </div>
   );
 };

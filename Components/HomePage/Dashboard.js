@@ -22,10 +22,8 @@ import TopSellingProducts from "./TopSellingProducts";
 import SalesTarget from "./SalesTarget";
 import { useCallback } from "react";
 import { API_ENDPOINTS } from "../../config/ApiEndpoints";
-import WebsiteVisitorChart from "./WebsiteVisitorChart";
-import LandingPageVisitorChart from "./LandingPageVisitorChart";
 function formatDateToBST(date) {
-  return date?.toLocaleString("en-US", { timeZone: "Asia/Dhaka" });
+  return date?.toLocaleString('en-US', { timeZone: 'Asia/Dhaka' });
 }
 
 const Dashboard = ({ busInfo }) => {
@@ -61,13 +59,13 @@ const Dashboard = ({ busInfo }) => {
       advance_payment: advance_date,
     };
     if (
-      (date !== "custom" && startDate !== null && endDate !== null) ||
-      (confirmed_date === "custom" && startDate !== null && endDate !== null) ||
-      (sales_date === "custom" && startDate !== null && endDate !== null) ||
-      (pending_date === "custom" && startDate !== null && endDate !== null) ||
-      (cancel_date === "custom" && startDate !== null && endDate !== null) ||
-      (discount_date === "custom" && startDate !== null && endDate !== null) ||
-      (advance_date === "custom" && startDate !== null && endDate !== null)
+      date !== "custom" && startDate !== null && endDate !== null ||
+      confirmed_date === "custom" && startDate !== null && endDate !== null ||
+      sales_date === "custom" && startDate !== null && endDate !== null ||
+      pending_date === "custom" && startDate !== null && endDate !== null ||
+      cancel_date === "custom" && startDate !== null && endDate !== null ||
+      discount_date === "custom" && startDate !== null && endDate !== null ||
+      advance_date === "custom" && startDate !== null && endDate !== null
     ) {
       try {
         let dataRes = await axios({
@@ -82,50 +80,34 @@ const Dashboard = ({ busInfo }) => {
       } catch (err) {
         // Handle the error here
       }
-    } else if (
-      date === "today" ||
-      "yesterday" ||
-      "weekly" ||
-      "monthly" ||
-      confirmed_date === "today" ||
-      "yesterday" ||
-      "weekly" ||
-      "monthly" ||
-      sales_date === "today" ||
-      "yesterday" ||
-      "weekly" ||
-      "monthly" ||
-      pending_date === "today" ||
-      "yesterday" ||
-      "weekly" ||
-      "monthly" ||
-      cancel_date === "today" ||
-      "yesterday" ||
-      "weekly" ||
-      "monthly" ||
-      discount_date === "today" ||
-      "yesterday" ||
-      "weekly" ||
-      "monthly" ||
-      advance_date === "today" ||
-      "yesterday" ||
-      "weekly" ||
-      "monthly"
-    ) {
-      try {
-        let dataRes = await axios({
-          method: "get",
-          url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.DASHBOARD.ORDERS_STATIC}`,
-          headers: headers,
-          params,
-        });
-        if (dataRes?.data?.success) {
-          setReportData(dataRes.data.data);
-        }
-      } catch (err) {
-        // Handle the error here
-      }
+
     }
+    else if (
+      date === "today" || "yesterday" || "weekly" || "monthly" ||
+      confirmed_date === "today" || "yesterday" || "weekly" || "monthly" ||
+      sales_date === "today" || "yesterday" || "weekly" || "monthly" ||
+      pending_date === "today" || "yesterday" || "weekly" || "monthly" ||
+      cancel_date === "today" || "yesterday" || "weekly" || "monthly" ||
+      discount_date === "today" || "yesterday" || "weekly" || "monthly" ||
+      advance_date === "today" || "yesterday" || "weekly" || "monthly"
+    ) {
+      try {
+        let dataRes = await axios({
+          method: "get",
+          url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.DASHBOARD.ORDERS_STATIC}`,
+          headers: headers,
+          params,
+        });
+        if (dataRes?.data?.success) {
+          setReportData(dataRes.data.data);
+        }
+      } catch (err) {
+        // Handle the error here
+      }
+
+    }
+
+
   }, [
     date,
     confirmed_date,
@@ -138,6 +120,7 @@ const Dashboard = ({ busInfo }) => {
     endDate,
   ]);
 
+
   const handelFactchRatioStatic = useCallback(async () => {
     const params = {
       total: date,
@@ -146,7 +129,7 @@ const Dashboard = ({ busInfo }) => {
       cancel: cancel_date,
       discount_amount: discount_date,
       advance_amount: advance_date,
-    };
+    }
     if (
       date !== "custom" ||
       confirmed_date !== "custom" ||
@@ -154,8 +137,7 @@ const Dashboard = ({ busInfo }) => {
       pending_date !== "custom" ||
       cancel_date !== "custom" ||
       discount_date !== "custom" ||
-      advance_date !== "custom"
-    ) {
+      advance_date !== "custom") {
       try {
         let dataRes = await axios({
           method: "get",
@@ -164,12 +146,14 @@ const Dashboard = ({ busInfo }) => {
           params,
         });
         if (dataRes?.data?.success) {
-          setRatioData(dataRes?.data?.data);
+          setRatioData(dataRes?.data?.data);;
         }
       } catch (err) {
         // Handle the error here
       }
+
     }
+
   }, [
     date,
     confirmed_date,
@@ -179,29 +163,18 @@ const Dashboard = ({ busInfo }) => {
     advance_date,
   ]);
 
+
   const handleFetchDeliveryReport = useCallback(async () => {
     const params = {
       date: dateReport,
       start_date: startDate,
-      end_date: endDate,
-    };
+      end_date: endDate
+    }
     try {
-      if (dateReport === "custom" && startDate !== null && endDate !== null) {
-        let dataRes = await axios({
-          method: "get",
-          url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.DASHBOARD.ORDER_DELIVERY_REPORT}`,
-          headers: headers,
-          params,
-        });
-        if (dataRes?.data?.success) {
-          setReport(dataRes?.data?.data);
-        }
-      } else if (
-        dateReport === "today" ||
-        dateReport === "yesterday" ||
-        dateReport === "weekly" ||
-        dateReport === "monthly" ||
-        dateReport === "all"
+      if (
+        dateReport === "custom" &&
+        startDate !== null &&
+        endDate !== null
       ) {
         let dataRes = await axios({
           method: "get",
@@ -210,18 +183,39 @@ const Dashboard = ({ busInfo }) => {
           params,
         });
         if (dataRes?.data?.success) {
-          setReport(dataRes?.data?.data);
+          setReport(dataRes?.data?.data)
         }
+      } else if (
+        dateReport === "today" ||
+        dateReport === "yesterday" ||
+        dateReport === "weekly" ||
+        dateReport === "monthly" ||
+        dateReport === "all"
+      ){
+        let dataRes = await axios({
+          method: "get",
+          url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.DASHBOARD.ORDER_DELIVERY_REPORT}`,
+          headers: headers,
+          params,
+        });
+        if (dataRes?.data?.success) {
+          setReport(dataRes?.data?.data)
+        }
+
       }
+
     } catch (err) {
       // Handle the error here
     }
-  }, [dateReport, startDate, endDate]);
+  }, [
+    dateReport ,startDate,endDate
+  ]);
+
 
   const handleFetchSellsTarget = useCallback(async () => {
     const params = {
       date: dateReport,
-    };
+    }
     try {
       let dataRes = await axios({
         method: "get",
@@ -236,7 +230,9 @@ const Dashboard = ({ busInfo }) => {
       // Handle the error here
     }
     setfatch(false);
-  }, [fatch]);
+  }, [
+    fatch
+  ]);
 
   const salesTargetRfatch = () => {
     setfatch(true);
@@ -245,7 +241,7 @@ const Dashboard = ({ busInfo }) => {
   const handleFetchAdvancePaymentStatus = useCallback(async () => {
     const params = {
       date: dateReport,
-    };
+    }
     try {
       let dataRes = await axios({
         method: "get",
@@ -266,8 +262,8 @@ const Dashboard = ({ busInfo }) => {
   }, [orderStatic, handelFactchRatioStatic]);
 
   useEffect(() => {
-    handleFetchDeliveryReport();
-  }, [handleFetchDeliveryReport]);
+    handleFetchDeliveryReport()
+  }, [handleFetchDeliveryReport])
 
   useEffect(() => {
     handleFetchSellsTarget();
@@ -291,12 +287,6 @@ const Dashboard = ({ busInfo }) => {
 
           <Grid item xs={12} sm={12} md={6}>
             <Channel />
-          </Grid>
-          <Grid item xs={12} sm={12} md={6}>
-            <WebsiteVisitorChart />
-          </Grid>
-          <Grid item xs={12} sm={12} md={6}>
-            <LandingPageVisitorChart />
           </Grid>
 
           {/* Total Visitor */}
@@ -333,13 +323,12 @@ const Dashboard = ({ busInfo }) => {
                   ? "flaticon-trending"
                   : "flaticon-down-arrow"
               }
-              increaseTitle={`${
-                ratioData?.total_order_ratio !== null
+              increaseTitle={`${ratioData?.total_order_ratio !== null
                   ? ratioData?.total_order_ratio?.startsWith("-") === false
                     ? "+" + ratioData?.total_order_ratio
                     : ratioData?.total_order_ratio
                   : "0%"
-              }  (${filterOrder(date)})`}
+                }  (${filterOrder(date)})`}
               cartImg={cartImg2}
             />
           </Grid>
@@ -368,13 +357,12 @@ const Dashboard = ({ busInfo }) => {
                   ? "flaticon-trending"
                   : "flaticon-down-arrow"
               }
-              increaseTitle={`${
-                ratioData?.confirmed_order_ratio !== null
+              increaseTitle={`${ratioData?.confirmed_order_ratio !== null
                   ? ratioData?.confirmed_order_ratio?.startsWith("-") === false
                     ? "+" + ratioData?.confirmed_order_ratio
                     : ratioData?.confirmed_order_ratio
                   : "0%"
-              }  (${filterOrder(confirmed_date)})`}
+                }  (${filterOrder(confirmed_date)})`}
             />
           </Grid>
 
@@ -412,13 +400,12 @@ const Dashboard = ({ busInfo }) => {
                   ? "flaticon-trending"
                   : "flaticon-down-arrow"
               }
-              increaseTitle={`${
-                ratioData?.cancel_order_ratio !== null
+              increaseTitle={`${ratioData?.cancel_order_ratio !== null
                   ? ratioData?.cancel_order_ratio?.startsWith("-") === false
                     ? "+" + ratioData?.cancel_order_ratio
                     : ratioData?.cancel_order_ratio
                   : "0%"
-              }  (${filterOrder(cancel_date)})`}
+                }  (${filterOrder(cancel_date)})`}
             />
           </Grid>
 
@@ -446,13 +433,12 @@ const Dashboard = ({ busInfo }) => {
                   ? "flaticon-trending"
                   : "flaticon-down-arrow"
               }
-              increaseTitle={`${
-                ratioData?.sales_amount_ratio !== null
+              increaseTitle={`${ratioData?.sales_amount_ratio !== null
                   ? ratioData?.sales_amount_ratio?.startsWith("-") === false
                     ? "+" + ratioData?.sales_amount_ratio
                     : ratioData?.sales_amount_ratio
                   : "0%"
-              }
+                }
                                           (${filterOrder(sales_date)})`}
             />
           </Grid>
@@ -481,13 +467,12 @@ const Dashboard = ({ busInfo }) => {
                   ? "flaticon-trending"
                   : "flaticon-down-arrow"
               }
-              increaseTitle={`${
-                ratioData?.discount_amount_ratio !== null
+              increaseTitle={`${ratioData?.discount_amount_ratio !== null
                   ? ratioData?.discount_amount_ratio?.startsWith("-") === false
                     ? "+" + ratioData?.discount_amount_ratio
                     : ratioData?.discount_amount_ratio
                   : "0%"
-              }  (${filterOrder(discount_date)})`}
+                }  (${filterOrder(discount_date)})`}
             />
           </Grid>
 
@@ -546,13 +531,12 @@ const Dashboard = ({ busInfo }) => {
                     ? "flaticon-trending"
                     : "flaticon-down-arrow"
                 }
-                increaseTitle={`${
-                  ratioData?.advance_amount_ratio !== null
+                increaseTitle={`${ratioData?.advance_amount_ratio !== null
                     ? ratioData?.advance_amount_ratio?.startsWith("-") === false
                       ? "+" + ratioData?.advance_amount_ratio
                       : ratioData?.advance_amount_ratio
                     : "0%"
-                }  (${filterOrder(advance_date)})`}
+                  }  (${filterOrder(advance_date)})`}
               />
             </Grid>
           )}
@@ -565,6 +549,7 @@ const Dashboard = ({ busInfo }) => {
               salesTargetRfatch={salesTargetRfatch}
               salesTarget={salesTarget}
             ></SalesTarget>
+
           </Grid>
 
           {/* Advance Collection */}

@@ -1,0 +1,11 @@
+.target-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legends-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+} 
