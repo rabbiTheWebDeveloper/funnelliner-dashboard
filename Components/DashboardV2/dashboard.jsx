@@ -29,11 +29,11 @@ export const Dashboard = ({ busInfo: data }) => {
       className={styles.global + " WebsiteLink"}
     >
       <Container maxWidth="sm">
-        {/* <WebsiteSection 
+        <WebsiteSection 
           data={data}
           isCopiedWebLink={isCopiedWebLink}
           copyWebLink={copyWebLink}
-        /> */}
+        />
         <SalesPerformanceSection />
         <SalesAnalyticsSection />
         <BusinessAnalyticsSection />

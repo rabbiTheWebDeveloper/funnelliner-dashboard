@@ -43,6 +43,7 @@ const Dashboard = ({ busInfo }) => {
   const [endDate, setEndDate] = useState(null);
   const [dateReport, setDateReport] = useState("today");
   const [report, setReport] = useState({});
+  const [loading, setLoading] = useState(false);
   // , month, year
   const orderStatic = useCallback(async () => {
     const startDateWithOneDayAdded = formatDateToBST(startDate);
@@ -116,8 +117,7 @@ const Dashboard = ({ busInfo }) => {
     discount_date,
     pending_date,
     cancel_date,
-    startDate,
-    endDate,
+    startDate && endDate
   ]);
 
 
@@ -139,6 +139,7 @@ const Dashboard = ({ busInfo }) => {
       discount_date !== "custom" ||
       advance_date !== "custom") {
       try {
+        setLoading(true);
         let dataRes = await axios({
           method: "get",
           url: `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.DASHBOARD.RATIO_STATISTICS}`,
@@ -150,6 +151,8 @@ const Dashboard = ({ busInfo }) => {
         }
       } catch (err) {
         // Handle the error here
+      }finally {
+        setLoading(false);
       }
 
     }
@@ -305,6 +308,7 @@ const Dashboard = ({ busInfo }) => {
           {/* Total Order */}
           <Grid item xs={12} sm={6} md={4}>
             <HomePageCart
+            loading={loading}
               setEndDate={setEndDate}
               endDate={endDate}
               setStartDate={setStartDate}
@@ -336,6 +340,7 @@ const Dashboard = ({ busInfo }) => {
           {/* Confirmed Order */}
           <Grid item xs={12} sm={6} md={4}>
             <HomePageCart
+               loading={loading}
               setEndDate={setEndDate}
               endDate={endDate}
               setStartDate={setStartDate}
@@ -369,6 +374,7 @@ const Dashboard = ({ busInfo }) => {
           {/* Order Pending */}
           <Grid item xs={12} sm={6} md={4}>
             <HomePageCart
+               loading={loading}
               data={pending_date}
               setFetchData={setPending_date}
               filter={true}
@@ -381,6 +387,7 @@ const Dashboard = ({ busInfo }) => {
           {/* Cancel Order */}
           <Grid item xs={12} sm={6} md={4}>
             <HomePageCart
+               loading={loading}
               setEndDate={setEndDate}
               endDate={endDate}
               setStartDate={setStartDate}
@@ -412,6 +419,7 @@ const Dashboard = ({ busInfo }) => {
           {/* Sales Amount */}
           <Grid item xs={12} sm={6} md={4}>
             <HomePageCart
+               loading={loading}
               setEndDate={setEndDate}
               endDate={endDate}
               setStartDate={setStartDate}
@@ -446,6 +454,7 @@ const Dashboard = ({ busInfo }) => {
           {/* Discount Amount */}
           <Grid item xs={12} sm={6} md={4}>
             <HomePageCart
+               loading={loading}
               setEndDate={setEndDate}
               endDate={endDate}
               setStartDate={setStartDate}

@@ -28,8 +28,23 @@ import {
 import { Tooltip } from "../components/ui/tooltip/tooltip";
 import styles from "../global.module.css";
 import { cls } from "../lib/utils";
+import useOrderStatistics from "../../../hook/dashboard/useOrderStatistics";
+import { useEffect, useState } from "react";
 
 export const BusinessAnalyticsSection = () => {
+  const [dateRange, setDateRange] = useState("today");
+  const { reportData, ratioData, fetchOrderStatistics, fetchRatioStatistics } =
+    useOrderStatistics(dateRange);
+  const handleDateChange = event => {
+    console.log("handleDateChange:", event.target.value);
+    setDateRange(event);
+  };
+
+  useEffect(() => {
+    fetchOrderStatistics();
+    fetchRatioStatistics();
+  }, [dateRange, fetchOrderStatistics, fetchRatioStatistics]);
+  console.log("dateRange:", dateRange);
   return (
     <section>
       <div className={cls(styles.header, styles["flex"])}>
@@ -38,13 +53,25 @@ export const BusinessAnalyticsSection = () => {
           sx={{ gap: 1, width: "100%" }}
         >
           <h1>Business Analytics</h1>
-          <DateSelector placeholder="Today" defaultValue="today" showCalender>
-            <SelectItem value="today">Today</SelectItem>
-            <SelectItem value="yesterday">Yesterday</SelectItem>
-            <SelectItem value="week">This Week</SelectItem>
-            <SelectItem value="month">This Month</SelectItem>
-            <SelectItem value="lifetime">Lifetime</SelectItem>
-            <SelectItem value="custom">Custom</SelectItem>
+          <DateSelector placeholder="Today" defaultValue={dateRange} showCalender>
+            <SelectItem value="today" onClick={() =>handleDateChange ("today")}>
+              Today
+            </SelectItem>
+            <SelectItem value="yesterday" onClick={() =>handleDateChange ("yesterday")}>
+              Yesterday
+            </SelectItem>
+            <SelectItem value="weekly" onClick={() =>handleDateChange ("weekly")}>
+              This Week
+            </SelectItem>
+            <SelectItem value="monthly" onClick={() =>handleDateChange ("monthly")}>
+              This Month
+            </SelectItem>
+            <SelectItem value="all" onClick={() =>handleDateChange ("all")}>
+              Lifetime
+            </SelectItem>
+            <SelectItem value="custom" onClick={() =>handleDateChange ("custom")}>
+              Custom
+            </SelectItem>
           </DateSelector>
         </Box>
       </div>

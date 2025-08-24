@@ -9,8 +9,10 @@ import { useToast } from '../../../hook/useToast';
 import { headers } from '../../../pages/api';
 import { colorCheck, filterOrder } from '../HomeUtlis';
 import CustomDate from './CustomDate';
+import SearchIcon from '../../OrderPage/SearchIcon';
+import searchAnimation from "../../../public/search.gif";
 
-const HomePageCart = ({ data, setFetchData, startDate, setStartDate, endDate, setEndDate, title, salesTargetRfatch, listItem2, filter, salesTarget, number, increase, cartIcon, increaseTitle, decrease, decreaseTitle, cartImg, listItem, deliveryCount, deliveryReturnCount, returnRatioCount, openSale }) => {
+const HomePageCart = ({ data,loading, setFetchData, startDate, setStartDate, endDate, setEndDate, title, salesTargetRfatch, listItem2, filter, salesTarget, number, increase, cartIcon, increaseTitle, decrease, decreaseTitle, cartImg, listItem, deliveryCount, deliveryReturnCount, returnRatioCount, openSale }) => {
     const showToast = useToast();
     const [anchorEl, setAnchorEl] = React.useState(null);
     ;
@@ -130,7 +132,13 @@ const HomePageCart = ({ data, setFetchData, startDate, setStartDate, endDate, se
 
                 {/* Middle */}
                 <div className="Middle">
-                    <h3>{number}</h3>
+                    <h3>{
+                   loading ?   <Image
+                   src={searchAnimation}
+                   alt="Search Animation"
+                   width={40}
+                   height={40}
+                 />: number}</h3>
                     <ul className='ListItem'>
                         {
                             listItem == true &&

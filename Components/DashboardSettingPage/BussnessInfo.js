@@ -105,7 +105,7 @@ const BussnessInfo = ({ redirectFrom, response }) => {
     setTwitter(
       response?.data?.data?.twitter != "null"
         ? response?.data?.data?.twitter
-        : "https://"
+        : "018xxxxxxxx"
     );
     setYoutube(
       response?.data?.data?.youtube != "null"
@@ -154,7 +154,8 @@ const BussnessInfo = ({ redirectFrom, response }) => {
                     Phone Number <span>*</span>
                   </label>
                   <input
-                    type="text"
+                    type="number"
+                    onWheel={e => e.target.blur()}
                     {...register("phone")}
                     value={phone}
                     onChange={newValue => setPhone(newValue.target.value)}
@@ -175,6 +176,7 @@ const BussnessInfo = ({ redirectFrom, response }) => {
                     onChange={newValue => setEmail(newValue.target.value)}
                     value={email}
                     required
+                    InputProps={{ readOnly: true }}
                   />
                   {errors.email && (
                     <p className="error">This field is required</p>
@@ -276,6 +278,7 @@ const BussnessInfo = ({ redirectFrom, response }) => {
                   <label>Shop ID</label>
                   <input
                     type="text"
+                    InputProps={{ readOnly: true }}
                     onChange={newValue => setShopId(newValue.target.value)}
                     value={shopId}
                     {...register("shop_id")}
@@ -331,7 +334,7 @@ const BussnessInfo = ({ redirectFrom, response }) => {
                 </div>
                 <div className="customInput">
                   <label>
-                    <i className="flaticon-twitter"></i> Twitter
+                    <i className="flaticon-whatsapp"></i> Whatsapp
                   </label>
                   <input
                     type="text"

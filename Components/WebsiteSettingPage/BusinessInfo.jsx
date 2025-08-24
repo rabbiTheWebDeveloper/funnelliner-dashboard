@@ -24,8 +24,16 @@ const BusinessInfo = ({ websiteSettingsData }) => {
       const formData = new FormData();
       formData.append("shop_name", websiteSettingsData?.name);
       formData.append("shop_address", data.shopAddress);
-      selectedImage && formData.append("shop_logo", selectedImage ? selectedImage : websiteSettingsData?.shop_logo);
-      favIcon && formData.append("shop_favicon", favIcon ? favIcon : websiteSettingsData?.shop_favicon);
+      selectedImage &&
+        formData.append(
+          "shop_logo",
+          selectedImage ? selectedImage : websiteSettingsData?.shop_logo
+        );
+      favIcon &&
+        formData.append(
+          "shop_favicon",
+          favIcon ? favIcon : websiteSettingsData?.shop_favicon
+        );
       formData.append("shop_id", shopId);
       formData.append("shop_meta_title", data.websiteTitle);
       formData.append("shop_meta_description", data.shop_meta_description);
@@ -102,7 +110,8 @@ const BusinessInfo = ({ websiteSettingsData }) => {
                 <div className="customInput">
                   <label>Phone</label>
                   <input
-                    type="text"
+                    type="number"
+                    onWheel={e => e.target.blur()}
                     {...register("phone")}
                     defaultValue={websiteSettingsData?.phone}
                   />
@@ -194,8 +203,8 @@ const BusinessInfo = ({ websiteSettingsData }) => {
                       type="file"
                       id="favicon"
                       style={{ display: "none" }}
-                      onChange={e =>{
-                        setFavicon(e.target.files[0])
+                      onChange={e => {
+                        setFavicon(e.target.files[0]);
                       }}
                     />
 
@@ -220,9 +229,7 @@ const BusinessInfo = ({ websiteSettingsData }) => {
                       </Box>
                     )}
 
-            
-
-{faviconPreview && favIcon ? (
+                    {faviconPreview && favIcon ? (
                       ""
                     ) : (
                       <Box mt={2} textAlign="center">

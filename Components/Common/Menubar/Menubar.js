@@ -129,6 +129,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
     myPage: false,
     account: false,
     courier: false,
+    wp: false,
   });
   const [isInsideLongSidebar, setIsInsideLongSidebar] = useState(false);
   const componentRef = useRef(null);
@@ -193,6 +194,8 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  console.log(openSubmenu.wp);
   return (
     <>
       <div
@@ -424,7 +427,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
                     addon?.addons_id === 16 &&
                     addon?.status === 1 && (
                       <li
-                      key={addon.id}
+                        key={addon.id}
                         className={
                           router.pathname === "/account-dashboard" ||
                           router.pathname === "/account-report"
@@ -477,7 +480,8 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
               className={
                 router.pathname === "/inventory" ||
                 router.pathname === "/stockin" ||
-                router.pathname === "/product-return"
+                router.pathname === "/product-return" ||
+                router.pathname === "/profit"
                   ? "active"
                   : ""
               }
@@ -513,6 +517,12 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
                       }
                     >
                       Product Return
+                    </Link>
+                    <Link
+                      href="/profit"
+                      className={router.pathname === "/profit" ? "active" : ""}
+                    >
+                      Profit
                     </Link>
                   </li>
                 </ul>
@@ -593,6 +603,42 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
               )}
             </li>
 
+            {/* woocommerce  */}
+            <li
+              className={
+                router.pathname === "/courier" ||
+                router.pathname === "/courier/dashboard"
+                  ? "active"
+                  : ""
+              }
+            >
+              <Tooltip title="Woocommerce" placement="right">
+                <h6 onClick={() => handleClickSubmenu("wp")}>
+                  <i className="flaticon-wordpress"></i>{" "}
+                  <span> Woocommerce </span>{" "}
+                </h6>
+              </Tooltip>
+              {openSubmenu.wp && (
+                <ul className="Submenu">
+                  <li>
+                    <Link
+                      href="/wp"
+                      className={router.pathname === "/wp" ? "active" : ""}
+                    >
+                      Woocommerce
+                    </Link>
+                    {/* <Link
+                      href="/courier/dashboard"
+                      className={
+                        router.pathname === "/product-return" ? "active" : ""
+                      }
+                    >
+                      Payment Dashboard
+                    </Link> */}
+                  </li>
+                </ul>
+              )}
+            </li>
             {/* Website Setting */}
             <li
               className={router.pathname === "/website-setting" ? "active" : ""}
@@ -630,7 +676,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
             </li> */}
 
             {/* Bkash Merchant */}
-            {Array.isArray(myAddonsList)
+            {/* {Array.isArray(myAddonsList)
               ? myAddonsList?.map((addon, index) => {
                   return (
                     addon?.addons_details?.id === 17 &&
@@ -652,7 +698,7 @@ const Menubar = ({ busInfo, myAddonsList, pendingOrderCount }) => {
                     )
                   );
                 })
-              : null}
+              : null} */}
 
             {/* Subscription */}
             {/* <li className={router.pathname === "/subscription" ? "active" : ""}>

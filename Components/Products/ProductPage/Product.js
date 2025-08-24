@@ -19,6 +19,7 @@ import SmallLoader from "../../SmallLoader/SmallLoader";
 import { useRouter } from "next/router";
 import { API_ENDPOINTS } from "../../../config/ApiEndpoints";
 import useDebounce from "../../../hook/useDebounce";
+import DownloadOptionProduct from "./DownloadOptionProduct";
 
 const Product = ({ busInfo }) => {
   const router = useRouter()
@@ -212,7 +213,12 @@ const Product = ({ busInfo }) => {
           <div className="DashboardSettingTabs WebsiteSettingPage">
             <div className="Pending">
               <div className="MoveToComplete d_flex d_justify">
-                <div className="DropDown"></div>
+                <div className="DropDown">
+                <DownloadOptionProduct orders={products} />
+
+                </div>
+
+              
 
                 <Link href="/add-product" className="CreateNewBtn">
                   <i className="flaticon-plus"></i> Add Product

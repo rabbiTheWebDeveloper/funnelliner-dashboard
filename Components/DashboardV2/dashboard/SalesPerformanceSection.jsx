@@ -31,50 +31,41 @@ import { Tooltip } from "../components/ui/tooltip/tooltip";
 import { Button } from "../components/ui/button/button";
 import { RefreshCcw } from "lucide-react";
 import { useState, useEffect } from "react";
+import { headers } from "../../../pages/api";
+import SuperFetch from "../../../hook/Axios";
+import OrderSource from "./salesPerformance/OrderSource";
+import RealtimeVisitor from "./salesPerformance/RealtimeVisitor";
+import LandingPageVisitor from "./salesPerformance/LandingPageVisitor";
+import WebsiteTraffic from "./salesPerformance/WebsiteTraffic";
 
 const MAX_DATA_POINTS = 50;
 
 export const SalesPerformanceSection = () => {
-  const [realtimeData, setRealtimeData] = useState(() => {
-    // Initialize with MAX_DATA_POINTS of data
-    const initialData = [];
-    for (let i = 0; i < MAX_DATA_POINTS; i++) {
-      initialData.push({
-        time: `${i}:00`,
-        visitors: Math.floor(Math.random() * (250 - 100) + 100),
-      });
-    }
-    return initialData;
-  });
+  const [overview_data, setOverview_data] = useState("week");
+  const [reportData, setReportData] = useState([]);
 
-  const [growth, setGrowth] = useState(0);
-
+  const chart_data = {
+    "chart-status": overview_data,
+  };
   useEffect(() => {
-    const interval = setInterval(() => {
-      setRealtimeData(prevData => {
-        const newVisitors = Math.floor(Math.random() * (250 - 100) + 100);
-        const lastVisitors = prevData[prevData.length - 1].visitors;
+    SuperFetch.post("/client/chart/statistics", chart_data, {
+      headers: headers,
+    })
+      .then(res => {
+        setReportData(res.data.data);
+      })
+      .catch(error => {});
+  }, [overview_data]);
 
-        const growthPercent =
-          ((newVisitors - lastVisitors) / lastVisitors) * 100;
-        setGrowth(Math.round(growthPercent));
+  // const [selectedValue, setSelectedValue] = useState("today");
+  // const [customDateRange, setCustomDateRange] = useState({ startDate: null, endDate: null });
 
-        // Create new array by removing first element and adding new one
-        const nextHour = parseInt(prevData[prevData.length - 1].time) + 1;
-        const newData = [
-          ...prevData.slice(1),
-          {
-            time: `${nextHour}:00`,
-            visitors: newVisitors,
-          },
-        ];
+  const handleDateSelectorChange = (value, startDate, endDate) => {
+    setOverview_data(value);
+    // setCustomDateRange({ startDate, endDate });
+  };
 
-        return newData;
-      });
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
+  // console.log("sdsd" , overview_data);
 
   return (
     <section>
@@ -83,12 +74,16 @@ export const SalesPerformanceSection = () => {
           <Card className={styles.dashboard_card}>
             <CardHeader className={cls(styles.performance_card_header)}>
               <CardTitle>Sales Performance</CardTitle>
-              <DateSelector placeholder="Today" defaultValue="today">
+              <DateSelector
+                placeholder="Today"
+                defaultValue={overview_data}
+                onValueChange={handleDateSelectorChange}
+              >
                 <SelectItem value="today">Today</SelectItem>
                 <SelectItem value="yesterday">Yesterday</SelectItem>
-                <SelectItem value="last_7_days">Last 7 days</SelectItem>
-                <SelectItem value="last_30_days">Last 30 days</SelectItem>
-                <SelectItem value="this_year">This year</SelectItem>
+                <SelectItem value="week">Last 7 days</SelectItem>
+                <SelectItem value="month">Last 30 days</SelectItem>
+                <SelectItem value="year">This year</SelectItem>
               </DateSelector>
             </CardHeader>
             <CardContent
@@ -110,18 +105,11 @@ export const SalesPerformanceSection = () => {
                 }}
               >
                 <AreaChart
-                  data={[
-                    { month: "January", amount: 186 },
-                    { month: "February", amount: 305 },
-                    { month: "March", amount: 237 },
-                    { month: "April", amount: 73 },
-                    { month: "May", amount: 209 },
-                    { month: "June", amount: 214 },
-                  ]}
+                  data={reportData}
                   margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
                 >
                   <XAxis
-                    dataKey="month"
+                    dataKey="name"
                     tick={{
                       fontSize: 12,
                       fontFamily: "var(--font-inter)",
@@ -140,7 +128,7 @@ export const SalesPerformanceSection = () => {
                   />
                   <Area
                     strokeWidth={2}
-                    dataKey="amount"
+                    dataKey="Amount"
                     stroke="hsl(var(--primary))"
                     fillOpacity={0.6}
                     fill="hsl(var(--primary))"
@@ -151,7 +139,7 @@ export const SalesPerformanceSection = () => {
                   />
                 </AreaChart>
               </ChartContainer>
-              <Box
+              {/* <Box
                 className={styles["flex-center"]}
                 sx={{ gap: "0.25rem", mt: 1, height: "100%" }}
               >
@@ -174,12 +162,14 @@ export const SalesPerformanceSection = () => {
                 >
                   <ArrowUp /> 45%
                 </div>
-              </Box>
+              </Box> */}
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} lg={6}>
+        <OrderSource />
+
+        {/* <Grid item xs={12} sm={6} lg={6}>
           <Card className={styles.dashboard_card}>
             <CardHeader className={cls(styles.performance_card_header)}>
               <CardTitle>Order Source</CardTitle>
@@ -334,410 +324,14 @@ export const SalesPerformanceSection = () => {
               </div>
             </CardContent>
           </Card>
-        </Grid>
+        </Grid> */}
 
-        <Grid item xs={12} sm={6} lg={4}>
-          <Card className={styles.dashboard_card}>
-            <CardHeader className={cls(styles.performance_card_header)}>
-              <CardTitle>Realtime Visitors</CardTitle>
-              <Button
-                variant="outline"
-                size="icon"
-                className={cls(styles.small_button, "box-shadow-none")}
-              >
-                <RefreshCcw size={14} />
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <div className={styles["flex-between"]}>
-                <h1 className={styles.card_value}>
-                  {realtimeData[realtimeData.length - 1].visitors}
-                </h1>
-                <div
-                  className={cls(
-                    styles["card-analytics"],
-                    growth >= 0 ? styles.growth : styles.down
-                  )}
-                >
-                  {growth >= 0 ? <ArrowUp /> : <ArrowDown />} {Math.abs(growth)}
-                  %
-                </div>
-              </div>
+        <RealtimeVisitor />
 
-              <ChartContainer
-                config={{
-                  visitors: {
-                    label: "Active Visitors",
-                    color: "hsl(var(--primary))",
-                  },
-                }}
-              >
-                <AreaChart
-                  data={realtimeData}
-                  margin={{ top: 20, right: 0, left: 0, bottom: 0 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    hide
-                    dataKey="time"
-                    tick={{
-                      fontSize: 12,
-                      fontFamily: "var(--font-inter)",
-                    }}
-                  />
-                  <YAxis
-                    tick={{
-                      fontSize: 12,
-                      fontFamily: "var(--font-inter)",
-                    }}
-                    domain={["auto", "auto"]} // This will help maintain consistent scale
-                  />
-                  <Area
-                    dataKey="visitors"
-                    stroke="hsl(var(--primary))"
-                    fill="hsl(var(--primary))"
-                    fillOpacity={0.6}
-                    isAnimationActive={false} // Disable default animation
-                  />
-                  <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent />}
-                  />
-                </AreaChart>
-              </ChartContainer>
-            </CardContent>
-          </Card>
-        </Grid>
+        <LandingPageVisitor />
+        <WebsiteTraffic />
 
-        <Grid item xs={12} sm={6} lg={4}>
-          <Card className={styles.dashboard_card}>
-            <CardHeader className={cls(styles.performance_card_header)}>
-              <CardTitle>Landing Page Visitors</CardTitle>
-              <DateSelector
-                placeholder="Today"
-                defaultValue="today"
-                showCalender
-              >
-                <SelectItem value="today">Today</SelectItem>
-                <SelectItem value="yesterday">Yesterday</SelectItem>
-                <SelectItem value="custom">Custom</SelectItem>
-              </DateSelector>
-            </CardHeader>
-            <CardContent
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                height: "100%",
-              }}
-            >
-              <ChartContainer
-                config={{
-                  visitors: {
-                    label: "Visitors",
-                    color: "hsl(var(--primary))",
-                  },
-                }}
-              >
-                <BarChart
-                  data={[
-                    { name: "Kurti Combo Pack", visitors: 486 },
-                    { name: "Eid Collection", visitors: 280 },
-                    { name: "Summer Sale", visitors: 350 },
-                    { name: "Winter Collection", visitors: 420 },
-                  ]}
-                  margin={{ top: 20, right: 0, left: 0, bottom: 0 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="name"
-                    tick={{
-                      fontSize: 12,
-                      fontFamily: "var(--font-inter)",
-                    }}
-                    angle={-45}
-                    textAnchor="end"
-                    height={60}
-                  />
-                  <YAxis
-                    tick={{
-                      fontSize: 12,
-                      fontFamily: "var(--font-inter)",
-                    }}
-                  />
-                  <Bar
-                    dataKey="visitors"
-                    fill="hsl(var(--primary))"
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent />}
-                  />
-                </BarChart>
-              </ChartContainer>
-              <Grid container spacing={2} sx={{ mt: 1, mb: 2 }}>
-                {[
-                  { name: "Kurti Combo Pack", value: 486, growth: 45 },
-                  { name: "Eid Collection", value: 280, growth: 30 },
-                  { name: "Summer Sale", value: 350, growth: 25 },
-                  { name: "Winter Collection", value: 420, growth: 35 },
-                ].map((item, index) => (
-                  <Grid item xs={6} key={item.name}>
-                    <Box
-                      className={styles["flex-center"]}
-                      sx={{ gap: "0.25rem", height: "100%" }}
-                    >
-                      <Box
-                        sx={{
-                          height: "12px",
-                          width: "12px",
-                          minWidth: "12px",
-                          borderRadius: "4px",
-                          backgroundColor: "hsl(var(--primary))",
-                        }}
-                      ></Box>
-                      <Tooltip title={item.name} placement="top">
-                        <h1 className={cls(styles.card_title, styles.truncate)}>
-                          {item.name}
-                        </h1>
-                      </Tooltip>
-                      <div
-                        className={cls(
-                          styles["card-analytics"],
-                          styles["flex-end"],
-                          styles.growth,
-                          styles.small
-                        )}
-                      >
-                        <ArrowUp /> {item.growth}%
-                      </div>
-                    </Box>
-                  </Grid>
-                ))}
-              </Grid>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 1,
-                  mt: "auto",
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.25rem",
-                    color: "hsl(var(--primary))",
-                    padding: "0.5rem",
-                    borderRadius: "var(--radius)",
-                    backgroundColor: "#e3ede4",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      backgroundColor: "#138118",
-                      borderRadius: "50%",
-                      width: "12px",
-                      height: "12px",
-                    }}
-                  ></Box>
-                  <h1
-                    className={styles.card_title}
-                    style={{ color: "#138118" }}
-                  >
-                    240 online
-                  </h1>
-                </Box>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className={cls(styles.small_button, "box-shadow-none")}
-                >
-                  <RefreshCcw size={14} />
-                </Button>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} lg={4}>
-          <Card className={styles.dashboard_card}>
-            <CardHeader className={cls(styles.performance_card_header)}>
-              <CardTitle>Website Traffic</CardTitle>
-              <DateSelector
-                placeholder="Today"
-                defaultValue="today"
-                showCalender
-              >
-                <SelectItem value="today">Today</SelectItem>
-                <SelectItem value="yesterday">Yesterday</SelectItem>
-                <SelectItem value="custom">Custom</SelectItem>
-              </DateSelector>
-            </CardHeader>
-            <CardContent
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                height: "100%",
-              }}
-            >
-              <ChartContainer
-                config={{
-                  visitors: {
-                    label: "Visitors",
-                    color: "hsl(var(--primary))",
-                  },
-                }}
-              >
-                <AreaChart
-                  data={[
-                    { hour: "12 AM", visitors: 120 },
-                    { hour: "3 AM", visitors: 45 },
-                    { hour: "6 AM", visitors: 85 },
-                    { hour: "9 AM", visitors: 255 },
-                    { hour: "12 PM", visitors: 380 },
-                    { hour: "3 PM", visitors: 420 },
-                    { hour: "6 PM", visitors: 520 },
-                    { hour: "9 PM", visitors: 340 },
-                    { hour: "11 PM", visitors: 180 },
-                  ]}
-                  margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="hour"
-                    tick={{
-                      fontSize: 12,
-                      fontFamily: "var(--font-inter)",
-                    }}
-                  />
-                  <YAxis
-                    tick={{
-                      fontSize: 12,
-                      fontFamily: "var(--font-inter)",
-                    }}
-                  />
-                  <Area
-                    dataKey="visitors"
-                    stroke="hsl(var(--primary))"
-                    fill="hsl(var(--primary))"
-                    fillOpacity={0.6}
-                  />
-                  <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent />}
-                  />
-                </AreaChart>
-              </ChartContainer>
-              <Grid container spacing={2} sx={{ mt: 1, mb: 2 }}>
-                <Grid item xs={6}>
-                  <Box
-                    className={styles["flex-center"]}
-                    sx={{ gap: "0.25rem", height: "100%" }}
-                  >
-                    <Box
-                      sx={{
-                        height: "12px",
-                        width: "12px",
-                        borderRadius: "4px",
-                        backgroundColor: "hsl(var(--primary))",
-                      }}
-                    ></Box>
-                    <Tooltip title="Total Visitors" placement="top">
-                      <h1 className={cls(styles.card_title, styles.truncate)}>
-                        Total Visitors
-                      </h1>
-                    </Tooltip>
-                    <div
-                      className={cls(
-                        styles["card-analytics"],
-                        styles["flex-end"],
-                        styles.growth,
-                        styles.small
-                      )}
-                    >
-                      <ArrowUp /> 45%
-                    </div>
-                  </Box>
-                </Grid>
-
-                <Grid item xs={6}>
-                  <Box
-                    className={styles["flex-center"]}
-                    sx={{ gap: "0.25rem", height: "100%" }}
-                  >
-                    <Tooltip title="Peak Hour" placement="top">
-                      <h1 className={cls(styles.card_title, styles.truncate)}>
-                        Peak Hour: 6 PM
-                      </h1>
-                    </Tooltip>
-                    <div
-                      className={cls(
-                        styles["card-analytics"],
-                        styles["flex-end"],
-                        styles.growth,
-                        styles.small
-                      )}
-                    >
-                      520 visitors
-                    </div>
-                  </Box>
-                </Grid>
-              </Grid>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 1,
-                  mt: "auto",
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 0.5,
-                    color: "hsl(var(--primary))",
-                    padding: "0.5rem",
-                    borderRadius: "var(--radius)",
-                    backgroundColor: "#e3ede4",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      backgroundColor: "#138118",
-                      borderRadius: "50%",
-                      width: "12px",
-                      height: "12px",
-                    }}
-                  ></Box>
-                  <h1
-                    className={styles.card_title}
-                    style={{ color: "#138118" }}
-                  >
-                    380 online
-                  </h1>
-                </Box>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className={cls(styles.small_button, "box-shadow-none")}
-                >
-                  <RefreshCcw size={14} />
-                </Button>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+    
       </Grid>
     </section>
   );

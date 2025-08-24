@@ -417,7 +417,7 @@ const OrderDetails = () => {
                           <tr key={item?.id}>
                             <td>{index + 1}</td>
                             <td>
-                              <img src={item?.media} alt={item?.product} />
+                             <img src={item?.variations?.media ? item?.variations?.media : item?.media} alt={item?.product} />
                               <div>
                                 <p>{item?.product}</p>
                                 <p>

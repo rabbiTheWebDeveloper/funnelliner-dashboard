@@ -16,9 +16,23 @@ import {
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Button } from "../components/ui/button/button";
 import Link from "next/link";
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from "@mui/material/CircularProgress";
+import useSalesTarget from "../../../hook/dashboard/useSalesTarget";
+import { useEffect } from "react";
+import moment from "moment";
+
+const calculatePercentage = (achievement) => {
+  // Check if achievement is a string; if not, convert it to a string
+  const numberValue = parseFloat(
+    typeof achievement === "string" ? achievement.replace(/,/g, "") : achievement
+  );
+
+  let percent = Math.min(numberValue, 100);
+  return percent;
+};
 
 export const SalesTargetSection = () => {
+  const { salesTarget, fetchSalesTarget } = useSalesTarget();
   const getColorByPercentage = (percentage, isTarget = false) => {
     const alpha = isTarget ? "/ 0.15" : "";
     if (percentage < 30) return `hsl(var(--destructive) ${alpha})`; // red
@@ -32,6 +46,10 @@ export const SalesTargetSection = () => {
   const monthlyPercentage = (9000 / 980) * 100;
   const customPercentage = (186 / 380) * 100;
 
+  useEffect(() => {
+    fetchSalesTarget();
+  }, [fetchSalesTarget]);
+  // console.log(salesTarget);
   return (
     <section>
       <div className={cls(styles.header, styles["flex"])}>
@@ -54,51 +72,64 @@ export const SalesTargetSection = () => {
                 </span>
               </Button>
             </Link>
-            <SalesTargetForm />
+            <SalesTargetForm salesTarget={salesTarget} fetchSalesTarget={fetchSalesTarget} />
           </Box>
         </Box>
       </div>
 
       <Grid container spacing={2} sx={{ mt: 0 }}>
-        <Grid item xs={12} sm={4} lg={3}>
+        <Grid item xs={12} sm={4} lg={4}>
           <Card className={styles.dashboard_card}>
             <CardHeader>
               <CardTitle>Today</CardTitle>
             </CardHeader>
             <CardContent>
               <div className={styles["flex-between"]}>
-                <h1 className={styles.card_value}>18%</h1>
+                <h1 className={styles.card_value}>
+                  {salesTarget.daily_completed}%
+                </h1>
               </div>
-              <Box sx={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', my: 2 }}>
+              <Box
+                sx={{
+                  position: "relative",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  my: 2,
+                }}
+              >
                 <CircularProgress
                   variant="determinate"
                   value={100}
                   size={120}
                   thickness={4}
                   sx={{
-                    color: getColorByPercentage(dailyPercentage, true),
-                    position: 'absolute',
+                    color: getColorByPercentage(
+                      salesTarget?.daily_completed ? salesTarget?.daily_completed : "00.00",
+                      true
+                    ),
+                    position: "absolute",
                   }}
                 />
                 <CircularProgress
                   variant="determinate"
-                  value={dailyPercentage}
+                  value={salesTarget?.daily_completed ? salesTarget?.daily_completed : "00.00"}
                   size={120}
                   thickness={4}
                   sx={{
-                    color: getColorByPercentage(dailyPercentage),
+                    color: getColorByPercentage(salesTarget?.daily_completed ? salesTarget?.daily_completed : "00.00"),
                   }}
                 />
                 <Box
                   sx={{
-                    position: 'absolute',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    position: "absolute",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
                   <Typography variant="h6" component="div" color="text.primary">
-                    {`${Math.round(dailyPercentage)}%`}
+                    {`${Math.round(salesTarget?.daily_completed ? salesTarget?.daily_completed : "00.00")}%`}
                   </Typography>
                 </Box>
               </Box>
@@ -114,7 +145,7 @@ export const SalesTargetSection = () => {
                         width: "12px",
                         minWidth: "12px",
                         borderRadius: "4px",
-                        backgroundColor: getColorByPercentage(dailyPercentage),
+                        backgroundColor: getColorByPercentage(salesTarget?.daily_completed ? salesTarget?.daily_completed : "00.00"),
                       }}
                     />
                     <h1 className={styles.card_title}>Achievement</h1>
@@ -125,7 +156,7 @@ export const SalesTargetSection = () => {
                         styles.small
                       )}
                     >
-                      186৳
+                      {salesTarget?.amounts?.daily_total ? salesTarget?.amounts?.daily_total?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "00"}৳
                     </div>
                   </Box>
                 </Grid>
@@ -154,7 +185,7 @@ export const SalesTargetSection = () => {
                         styles.small
                       )}
                     >
-                      980৳
+                     {Object.keys(salesTarget).length > 0 ? salesTarget.daily?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "00"}৳
                     </div>
                   </Box>
                 </Grid>
@@ -163,14 +194,14 @@ export const SalesTargetSection = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={4} lg={3}>
+        {/* <Grid item xs={12} sm={4} lg={3}>
           <Card className={styles.dashboard_card}>
             <CardHeader>
-              <CardTitle>Yesterday</CardTitle>
+              <CardTitle>Weekly</CardTitle>
             </CardHeader>
             <CardContent>
               <div className={styles["flex-between"]}>
-                <h1 className={styles.card_value}>62%</h1>
+                <h1 className={styles.card_value}>{salesTarget.weekly_completed}%</h1>
               </div>
               <Box sx={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', my: 2 }}>
                 <CircularProgress
@@ -261,47 +292,82 @@ export const SalesTargetSection = () => {
               </Grid>
             </CardContent>
           </Card>
-        </Grid>
+        </Grid> */}
 
-        <Grid item xs={12} sm={4} lg={3}>
+        <Grid item xs={12} sm={4} lg={4}>
           <Card className={styles.dashboard_card}>
             <CardHeader>
               <CardTitle>Monthly</CardTitle>
             </CardHeader>
             <CardContent>
               <div className={styles["flex-between"]}>
-                <h1 className={styles.card_value}>100%</h1>
+                <h1 className={styles.card_value}>
+                  {calculatePercentage(salesTarget?.monthly_completed ? salesTarget?.monthly_completed : "00.00")}%
+                </h1>
               </div>
-              <Box sx={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', my: 2 }}>
+              <Box
+                sx={{
+                  position: "relative",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  my: 2,
+                }}
+              >
                 <CircularProgress
                   variant="determinate"
                   value={100}
                   size={120}
                   thickness={4}
                   sx={{
-                    color: getColorByPercentage(monthlyPercentage, true),
-                    position: 'absolute',
+                    color: getColorByPercentage(
+                      calculatePercentage(
+                        calculatePercentage(salesTarget?.monthly_completed ? salesTarget?.monthly_completed : "00.00")
+                          ? salesTarget?.monthly_completed
+                          : "00.00"
+                      ),
+                      true
+                    ),
+                    position: "absolute",
                   }}
                 />
                 <CircularProgress
                   variant="determinate"
-                  value={monthlyPercentage > 100 ? 100 : monthlyPercentage}
+                  value={
+                    calculatePercentage(
+                      calculatePercentage(salesTarget?.monthly_completed ? salesTarget?.monthly_completed : "00.00")
+                        ? calculatePercentage(salesTarget?.monthly_completed ? salesTarget?.monthly_completed : "00.00")
+                        : "00.00"
+                    ) > 100
+                      ? 100
+                      : calculatePercentage(
+                        calculatePercentage(salesTarget?.monthly_completed ? salesTarget?.monthly_completed : "00.00")
+                            ? calculatePercentage(salesTarget?.monthly_completed ? salesTarget?.monthly_completed : "00.00")
+                            : "00.00"
+                        )
+                  }
                   size={120}
                   thickness={4}
                   sx={{
-                    color: getColorByPercentage(monthlyPercentage),
+                    color: getColorByPercentage(
+                      calculatePercentage(
+                        calculatePercentage(salesTarget?.monthly_completed ? salesTarget?.monthly_completed : "00.00")
+                          ? calculatePercentage(salesTarget?.monthly_completed ? salesTarget?.monthly_completed : "00.00")
+                          : "00.00"
+                      )
+                    ),
                   }}
                 />
                 <Box
                   sx={{
-                    position: 'absolute',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    position: "absolute",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
                   <Typography variant="h6" component="div" color="text.primary">
-                    {`${Math.round(monthlyPercentage)}%`}
+                    {`${Math.round(calculatePercentage(salesTarget?.monthly_completed ? salesTarget?.monthly_completed : "00.00"))}%`}
                   </Typography>
                 </Box>
               </Box>
@@ -317,8 +383,9 @@ export const SalesTargetSection = () => {
                         width: "12px",
                         minWidth: "12px",
                         borderRadius: "4px",
-                        backgroundColor:
-                          getColorByPercentage(monthlyPercentage),
+                        backgroundColor: getColorByPercentage(
+                          calculatePercentage(salesTarget?.monthly_completed ? salesTarget?.monthly_completed : "00.00")
+                        ),
                       }}
                     />
                     <h1 className={styles.card_title}>Achievement</h1>
@@ -329,7 +396,7 @@ export const SalesTargetSection = () => {
                         styles.small
                       )}
                     >
-                      9000৳
+                      {salesTarget?.amounts?.monthly_total ? salesTarget?.amounts?.monthly_total?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",") :"00" } ৳
                     </div>
                   </Box>
                 </Grid>
@@ -345,7 +412,7 @@ export const SalesTargetSection = () => {
                         minWidth: "12px",
                         borderRadius: "4px",
                         backgroundColor: getColorByPercentage(
-                          monthlyPercentage,
+                          calculatePercentage(salesTarget?.monthly_completed ? salesTarget?.monthly_completed : "00.00"),
                           true
                         ),
                       }}
@@ -358,7 +425,7 @@ export const SalesTargetSection = () => {
                         styles.small
                       )}
                     >
-                      980৳
+                     {Object.keys(salesTarget).length > 0 ? salesTarget.monthly?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "00"} ৳
                     </div>
                   </Box>
                 </Grid>
@@ -367,28 +434,65 @@ export const SalesTargetSection = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={4} lg={3}>
+        <Grid item xs={12} sm={4} lg={4}>
           <Card className={styles.dashboard_card}>
             <CardHeader
               className={styles["flex-between"]}
               style={{ flexDirection: "row" }}
             >
               <CardTitle>Custom Date</CardTitle>
-              <h1 className={styles.card_title}>27-10-2024 - 31-10-2024</h1>
+              <h1 className={styles.card_title}>
+                {" "}
+                {salesTarget?.from_date && (
+                  <span>
+                    (
+                    {salesTarget?.from_date
+                      ? moment(salesTarget?.from_date).format("DD-MM-YYYY")
+                      : ""}{" "}
+                    -{" "}
+                    {salesTarget?.to_date
+                      ? moment(salesTarget?.to_date).format("DD-MM-YYYY")
+                      : ""}
+                    ){" "}
+                  </span>
+                )}
+              </h1>
             </CardHeader>
             <CardContent>
               <div className={styles["flex-between"]}>
-                <h1 className={styles.card_value}>49%</h1>
+                <h1 className={styles.card_value}>
+                  {calculatePercentage(
+                    salesTarget?.custom_completed
+                      ? salesTarget?.custom_completed
+                      : "00.00"
+                  )}{" "}
+                  %
+                </h1>
               </div>
-              <Box sx={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', my: 2 }}>
+              <Box
+                sx={{
+                  position: "relative",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  my: 2,
+                }}
+              >
                 <CircularProgress
                   variant="determinate"
                   value={100}
                   size={120}
                   thickness={4}
                   sx={{
-                    color: getColorByPercentage(customPercentage, true),
-                    position: 'absolute',
+                    color: getColorByPercentage(
+                      calculatePercentage(
+                        salesTarget?.custom_completed
+                          ? salesTarget?.custom_completed
+                          : "00.00"
+                      ),
+                      true
+                    ),
+                    position: "absolute",
                   }}
                 />
                 <CircularProgress
@@ -397,19 +501,30 @@ export const SalesTargetSection = () => {
                   size={120}
                   thickness={4}
                   sx={{
-                    color: getColorByPercentage(customPercentage),
+                    color: getColorByPercentage(
+                      calculatePercentage(
+                        salesTarget?.custom_completed
+                          ? salesTarget?.custom_completed
+                          : "00.00"
+                      )
+                    ),
                   }}
                 />
                 <Box
                   sx={{
-                    position: 'absolute',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    position: "absolute",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
                   <Typography variant="h6" component="div" color="text.primary">
-                    49%
+                    {calculatePercentage(
+                      salesTarget?.custom_completed
+                        ? salesTarget?.custom_completed
+                        : "00.00"
+                    )}
+                    %
                   </Typography>
                 </Box>
               </Box>
@@ -425,7 +540,13 @@ export const SalesTargetSection = () => {
                         width: "12px",
                         minWidth: "12px",
                         borderRadius: "4px",
-                        backgroundColor: getColorByPercentage(customPercentage),
+                        backgroundColor: getColorByPercentage(
+                          calculatePercentage(
+                            salesTarget?.custom_completed
+                              ? salesTarget?.custom_completed
+                              : "00.00"
+                          )
+                        ),
                       }}
                     />
                     <h1 className={styles.card_title}>Achievement</h1>
@@ -436,7 +557,12 @@ export const SalesTargetSection = () => {
                         styles.small
                       )}
                     >
-                      186৳
+                      {salesTarget?.amounts?.custom_total
+                        ? salesTarget?.amounts?.custom_total
+                            ?.toFixed(0)
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                        : "00"}{" "}
+                      ৳
                     </div>
                   </Box>
                 </Grid>
@@ -452,7 +578,11 @@ export const SalesTargetSection = () => {
                         minWidth: "12px",
                         borderRadius: "4px",
                         backgroundColor: getColorByPercentage(
-                          customPercentage,
+                          calculatePercentage(
+                            salesTarget?.custom_completed
+                              ? salesTarget?.custom_completed
+                              : "00.00"
+                          ),
                           true
                         ),
                       }}
@@ -465,7 +595,12 @@ export const SalesTargetSection = () => {
                         styles.small
                       )}
                     >
-                      380৳
+                      {Object.keys(salesTarget).length > 0
+                        ? salesTarget.custom
+                            ?.toFixed(0)
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                        : "00"}{" "}
+                      ৳
                     </div>
                   </Box>
                 </Grid>

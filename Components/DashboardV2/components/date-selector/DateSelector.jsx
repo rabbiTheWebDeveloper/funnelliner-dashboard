@@ -43,7 +43,7 @@ export const DateSelector = ({
 
   const handleValueChange = newValue => {
     setInternalValue(newValue);
-    onValueChange?.(newValue);
+    onValueChange?.(newValue, startDate, endDate);
 
     if (newValue !== calenderTrigger) {
       setStartDate(null);
@@ -75,7 +75,7 @@ export const DateSelector = ({
     }
   }, [value, startDate, endDate]);
 
-  console.log(triggerText);
+  // console.log(triggerText);
 
   return (
     <div className={cls(globalStyles["flex-center"])}>

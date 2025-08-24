@@ -25,28 +25,28 @@ const withAuth = (Component = null, options = {}) => {
       const userCookie = Cookies.get("user");
       const user = userCookie ? JSON.parse(userCookie) : null;
       // Route is protected but not authenticated. Redirect to login page
-      if (options.isProtectedRoute && !token) {
-        router.replace(redirectIfNotAuthenticated);
-        return;
-      }
-      // Route is not protected but authenticated. Redirect to Dashboard or provided URL
-      if (!options.isProtectedRoute && token) {
-        router.replace(redirectIfAuthenticated);
-        return;
-      }
-      if (
-        !options.show &&
-        user?.status === "expired" &&
-        user?.payment_status === "unpaid" &&
-        token
-      ) {
-        router.replace("/billing");
-        return;
-      }
-      if (!options.show && !(extendedDueDate > today1) && token) {
-        router.replace("/billing");
-        return;
-      }
+      // if (options.isProtectedRoute && !token) {
+      //   router.replace(redirectIfNotAuthenticated);
+      //   return;
+      // }
+      // // Route is not protected but authenticated. Redirect to Dashboard or provided URL
+      // if (!options.isProtectedRoute && token) {
+      //   router.replace(redirectIfAuthenticated);
+      //   return;
+      // }
+      // if (
+      //   !options.show &&
+      //   user?.status === "expired" &&
+      //   user?.payment_status === "unpaid" &&
+      //   token
+      // ) {
+      //   router.replace("/billing");
+      //   return;
+      // }
+      // if (!options.show && !(extendedDueDate > today1) && token) {
+      //   router.replace("/billing");
+      //   return;
+      // }
 
       setPageLoading(false);
     }, []);

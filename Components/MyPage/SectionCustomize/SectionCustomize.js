@@ -57,7 +57,7 @@ const SectionCustomize = () => {
         headers: headers,
       });
       setFooterList(data?.data?.data);
-    } catch (err) { }
+    } catch (err) {}
   };
 
   useEffect(() => {
@@ -72,7 +72,7 @@ const SectionCustomize = () => {
         headers: headers,
       });
       setCheckoutList(data?.data?.data);
-    } catch (err) { }
+    } catch (err) {}
   };
 
   useEffect(() => {
@@ -87,7 +87,7 @@ const SectionCustomize = () => {
         headers: headers,
       });
       setProductsList(data?.data?.data);
-    } catch (err) { }
+    } catch (err) {}
   };
 
   useEffect(() => {
@@ -98,16 +98,16 @@ const SectionCustomize = () => {
     productsList?.length === 0
       ? []
       : productsList?.map(function (item) {
-        return { value: item?.id, label: item?.product_name };
-      });
+          return { value: item?.id, label: item?.product_name };
+        });
 
   const [selectedProductId, setSelectedProductId] = useState();
-  const handleSelectChange = (selectedOption) => {
+  const handleSelectChange = selectedOption => {
     setSelectedProductId(selectedOption.value);
   };
-  const [isDataFetchLoading, setIsDataFetchLoading] = useState(false)
+  const [isDataFetchLoading, setIsDataFetchLoading] = useState(false);
   const handelPageInfo = async () => {
-    setIsDataFetchLoading(true)
+    setIsDataFetchLoading(true);
     try {
       let data = await axios({
         method: "get",
@@ -135,17 +135,17 @@ const SectionCustomize = () => {
       setValue("instagram", page_data?.instagram);
       setValue("youtube", page_data?.youtube);
       setValue("order_title", page_data?.order_title);
-      setValue("checkout_button_text", page_data?.checkout_button_text)
-      setIsDataFetchLoading(false)
+      setValue("checkout_button_text", page_data?.checkout_button_text);
+      setIsDataFetchLoading(false);
     } catch (err) {
-      setIsDataFetchLoading(false)
+      setIsDataFetchLoading(false);
     }
   };
 
   useEffect(() => {
     handelPageInfo();
   }, [id]);
-  const onSubmit = (data) => {
+  const onSubmit = data => {
     const formData = new FormData();
     formData.append("title", data.title);
     formData.append("product_id", selectedProductId);
@@ -222,9 +222,13 @@ const SectionCustomize = () => {
     }
     startLoading();
     axios
-      .post(process.env.NEXT_PUBLIC_API_URL + `/client/page/update/${id}`, formData, {
-        headers: headers,
-      })
+      .post(
+        process.env.NEXT_PUBLIC_API_URL + `/client/page/update/${id}`,
+        formData,
+        {
+          headers: headers,
+        }
+      )
       .then(function (response) {
         if (response?.data?.success) {
           showToast(response?.data?.message, "success");
@@ -257,18 +261,34 @@ const SectionCustomize = () => {
         headers: headers,
       });
       if (data.status === 200) {
-        showToast(data?.data?.message)
+        showToast(data?.data?.message);
         handelPageInfo();
       }
     } catch (err) {
-      showToast(err?.msg, "error")
+      showToast(err?.msg, "error");
     }
-  }
+  };
+
+
+ 
+
+  function updateThumbnailURLs(data) {
+  const oldBaseURL = "https://funnelliner.s3.ap-southeast-1.amazonaws.com";
+  const newBaseURL = "https://funnelliner-bucket.s3.ap-southeast-1.amazonaws.com";
+
+  return data?.map(item => ({
+    ...item,
+    thumnail: item.thumnail.replace(oldBaseURL, newBaseURL)
+  }));
+}
+const updateheckoutList = updateThumbnailURLs(checkoutList);
+const updatefooterList = updateThumbnailURLs(footerList);
+
+ console.log("updateheckoutList", updateheckoutList);
+ console.log("updatefooterList", updatefooterList);
   return (
     <>
-      {
-        isDataFetchLoading && <SmallLoader />
-      }
+      {isDataFetchLoading && <SmallLoader />}
 
       <div className="SectionCustomize">
         <Container maxWidth="sm">
@@ -313,7 +333,7 @@ const SectionCustomize = () => {
                           options={options}
                           onChange={handleSelectChange}
                           defaultValue={options.find(
-                            (item) => item.value === pageInfo?.product_id
+                            item => item.value === pageInfo?.product_id
                           )}
                         />
                       )}
@@ -322,15 +342,12 @@ const SectionCustomize = () => {
                 </div>
                 {/* Checkout Form Design Selection */}
                 <div className="SectionCustomizeBox boxShadow">
-
                   <div className="Header">
                     <h4>Checkout Form Design Selection</h4>
                   </div>
 
                   <div className="customInput">
-                    <label>
-                      Checkout Form Title
-                    </label>
+                    <label>Checkout Form Title</label>
                     <input
                       type="text"
                       {...register("order_title", { required: true })}
@@ -342,19 +359,14 @@ const SectionCustomize = () => {
                     )}
                   </div>
                   <div className="customInput">
-                    <label>
-                      Checkout Form Submit Button Text
-                    </label>
-                    <input
-                      type="text"
-                      {...register("checkout_button_text")}             
-                    />
+                    <label>Checkout Form Submit Button Text</label>
+                    <input type="text" {...register("checkout_button_text")} />
                   </div>
                   <br />
 
                   <div className="SelectSectionBox my-3">
-                    {checkoutList.length > 0 &&
-                      checkoutList.map((item, index) => {
+                    {updateheckoutList.length > 0 &&
+                      updateheckoutList.map((item, index) => {
                         return (
                           <label className="SelectSectionItem" key={item.id}>
                             <input
@@ -564,7 +576,7 @@ const SectionCustomize = () => {
                   <div className="SelectSectionBox">
                     {pageInfo?.active_footer &&
                       footerList.length > 0 &&
-                      footerList.map((item, index) => {
+                      updatefooterList.map((item, index) => {
                         return (
                           <label className="SelectSectionItem" key={item.id}>
                             <input
@@ -604,7 +616,7 @@ const SectionCustomize = () => {
                         type="file"
                         id="select-image"
                         style={{ display: "none" }}
-                        onChange={(e) => setSelectedImage(e.target.files[0])}
+                        onChange={e => setSelectedImage(e.target.files[0])}
                       />
 
                       <label htmlFor="select-image">
@@ -736,23 +748,26 @@ const SectionCustomize = () => {
                     </div>
                   </div>
                   <div className="SectionButton">
-
-                    <p className="text-center">If you click "reset colour," the "footer form colour" and "checkout form colour" will be removed.</p>
-                    <Button onClick={handleResetFooterAndCheckoutColor} className="bg">Reset Color</Button>
-
+                    <p className="text-center">
+                      If you click "reset colour," the "footer form colour" and
+                      "checkout form colour" will be removed.
+                    </p>
+                    <Button
+                      onClick={handleResetFooterAndCheckoutColor}
+                      className="bg"
+                    >
+                      Reset Color
+                    </Button>
                   </div>
-
                 </div>
               </Grid>
               {/* Save */}
               <Grid item xs={12}>
-
                 <div className="UpdateButtonCustomize">
                   <Button disabled={isLoading} type="submit" className="bg">
                     Update
                   </Button>
                 </div>
-
               </Grid>
             </Grid>
           </form>

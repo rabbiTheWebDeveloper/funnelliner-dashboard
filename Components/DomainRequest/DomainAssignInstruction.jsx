@@ -111,7 +111,7 @@ export const DomainAssignInstruction = () => {
           </Item>
           <Item>
             <h1>Value</h1>
-            <pre>47.128.198.63</pre>
+            <pre>163.61.156.64</pre>
             <pre>secure.funnelliner.com</pre>
           </Item>
         </Instrunctions>

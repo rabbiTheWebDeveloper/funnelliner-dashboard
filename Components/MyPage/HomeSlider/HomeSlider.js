@@ -194,7 +194,7 @@ const HomeSlider = ({ response, IsHeaderDescription }) => {
                                   >
                                     {" "}
                                   </i>
-                                  <Link href={item?.link ? item?.link : "#"}>
+                                  <Link href={item?.link || "#"}>
                                     <img
                                       className={style.homeSlider}
                                       style={{

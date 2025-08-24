@@ -23,7 +23,14 @@ const MultiWebsite = () => {
     useEffect(() => {
         const params = { page: currentPage, perPage: perPage }
         allThemeList("multiple", params).then((result) => {
-            setMultiPageTemplate(result?.data?.data);
+            // const theme = result?.data?.data.filter((item) => {
+            //     if (item.name === "205") {
+            //         return item
+            //     }
+            // })
+            const theme = result?.data?.data
+            console.log(theme)
+            setMultiPageTemplate(theme);
             setTotalPage(result.data?.last_page);
         });
     }, [currentPage, perPage]);

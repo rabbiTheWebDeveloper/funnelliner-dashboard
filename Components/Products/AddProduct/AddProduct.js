@@ -23,6 +23,7 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import useLoading from "../../../hook/useLoading";
 import Spinner from "../../commonSection/Spinner/Spinner";
 import { getTotalQuantity } from "../../../utlit/product";
+import ProductVideo from "../../edit-theme/ProductVideo";
 
 const validationSchema = Yup.object({
   product_name: Yup.string().required("Product Name is required"),
@@ -69,7 +70,7 @@ const validationSchema = Yup.object({
   packaging_cost: Yup.number()
     .min(0, "Packaging Cost must be non-negative")
     .required("Packaging Cost is required"),
-  ad_budget: Yup.number()
+  ad_budget_cost: Yup.number()
     .min(0, "Ad Budget must be non-negative")
     .required("Ad Budget is required"),
 });
@@ -103,6 +104,7 @@ const AddProduct = ({ busInfo }) => {
   const [variantValues, setVariantValues] = useState([]);
   const [tempVariantValues, setTempVariantValues] = useState([]);
   const [selectVariantTypes, setSelectVariantTypes] = useState([]);
+  const [productGalleryVideos, setProductGalleryVideos] = useState([]);
   const [fetch, setFetch] = useState(false);
   const [discountType, setDiscountType] = useState("flat");
   const [
@@ -336,10 +338,15 @@ const AddProduct = ({ busInfo }) => {
                 delivery_charge: "",
                 discount: 0,
                 product_code: "",
+                packaging_cost: "",
+                transportation_cost: "",
+                ad_budget_cost: "",
+                buying_price: "",
                 product_quantity: variantTable
                   ? getTotalQuantity(variantTable)
                   : "",
                 inside_dhaka: "",
+                video_url: [],
                 outside_dhaka: "",
                 subarea_charge: "",
                 main_image: null,
@@ -393,10 +400,19 @@ const AddProduct = ({ busInfo }) => {
                       );
                     }
                   }
+                  if (productGalleryVideos.length) {
+                    for (let i = 0; i < productGalleryVideos.length; i++) {
+                      formData.append("video_url[]", productGalleryVideos[i]);
+                    }
+                  }
                   if (selectedCategory.length) {
                     formData.append("category_id", selectedCategory[0]?.value);
                   }
                   formData.append("product_name", data.product_name);
+                  formData.append("packaging_cost", data.packaging_cost);
+                  formData.append("transportation_cost", data.transportation_cost);
+                  formData.append("ad_budget_cost", data.ad_budget_cost);
+                  formData.append("buying_price", data.buying_price);
                   formData.append("price", data.selling_price);
                   formData.append("discount", data?.discount);
                   formData.append("discount_type", data?.discount_type);
@@ -460,23 +476,6 @@ const AddProduct = ({ busInfo }) => {
                       });
                     }
                   });
-                  formData.append("buying_price", data.buying_price);
-                  formData.append(
-                    "transportation_cost",
-                    data.transportation_cost
-                  );
-                  formData.append("packaging_cost", data.packaging_cost);
-                  formData.append("ad_budget", data.ad_budget);
-                  if (deliverChargeType[0]?.value === "Paid Delivery Charge") {
-                    formData.append(
-                      "delivery_cost_inside",
-                      data.delivery_cost_inside
-                    );
-                    formData.append(
-                      "delivery_cost_outside",
-                      data.delivery_cost_outside
-                    );
-                  }
                   startLoading();
                   const createProductRes = await axios.post(
                     `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.CREATE_PRODUCTS}`,
@@ -542,7 +541,8 @@ const AddProduct = ({ busInfo }) => {
                               Regular Price <span>*</span>
                             </label>
                             <Field
-                              type="text"
+                              type="number"
+                              min="0"
                               placeholder="Example: 599"
                               name="selling_price"
                               style={{
@@ -550,6 +550,7 @@ const AddProduct = ({ busInfo }) => {
                                 margin: 0,
                                 MozAppearance: "textfield",
                               }}
+                              onWheel={e => e.target.blur()}
                             />
                             <ErrorMessage
                               name="selling_price"
@@ -628,8 +629,10 @@ const AddProduct = ({ busInfo }) => {
                             <label>Discount</label>
                             <Field
                               name="discount"
-                              type="text"
+                              type="number"
+                              min="0"
                               placeholder="Example: 599"
+                              onWheel={e => e.target.blur()}
                             />
                             <span>
                               {values.discount_type === "percent" ? "%" : ""}
@@ -667,7 +670,8 @@ const AddProduct = ({ busInfo }) => {
                               Available Quantity <span>*</span>
                             </label>
                             <Field
-                              type="text"
+                              type="number"
+                              min="0"
                               disabled={variantTable.length > 0 ? true : false}
                               value={
                                 variantTable.length > 0
@@ -682,6 +686,7 @@ const AddProduct = ({ busInfo }) => {
                                   e.target.value
                                 );
                               }}
+                              onWheel={e => e.target.blur()}
                             />
                             <ErrorMessage
                               name="product_quantity"
@@ -758,7 +763,9 @@ const AddProduct = ({ busInfo }) => {
                                       : "Dhaka"}{" "}
                                   </label>
                                   <Field
-                                    type="text"
+                                    type="number"
+                                    min="0"
+                                    onWheel={e => e.target.blur()}
                                     placeholder="Delivery charge in Dhaka"
                                     name="inside_dhaka"
                                   />
@@ -772,7 +779,9 @@ const AddProduct = ({ busInfo }) => {
                                       : "Dhaka"}
                                   </label>
                                   <Field
-                                    type="text"
+                                    type="number"
+                                    min="0"
+                                    onWheel={e => e.target.blur()}
                                     name="outside_dhaka"
                                     placeholder="Delivery charge out of Dhaka"
                                   />
@@ -783,7 +792,9 @@ const AddProduct = ({ busInfo }) => {
                                 >
                                   <label>Sub Area Charge (Optional)</label>
                                   <Field
-                                    type="text"
+                                    type="number"
+                                    min="0"
+                                    onWheel={e => e.target.blur()}
                                     name="subarea_charge"
                                     placeholder="Sub area (Optional)"
                                   />
@@ -857,6 +868,20 @@ const AddProduct = ({ busInfo }) => {
                                 productImage={productGalleryImage}
                                 setProductImage={setProductGalleryImage}
                                 other_images={[]}
+                              />
+                            </div>
+                          </div>
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                          <div className="">
+                            <div className="EditTheme  CustomeInput">
+                              <label>
+                                Gallery Video Link (Maximum 5, Youtube Video
+                                Link)
+                              </label>
+                              <ProductVideo
+                                productVideoLinks={productGalleryVideos}
+                                setProductVideoLinks={setProductGalleryVideos}
                               />
                             </div>
                           </div>
@@ -1294,10 +1319,10 @@ const AddProduct = ({ busInfo }) => {
                                     <Field
                                       type="number"
                                       placeholder="Enter ad budget"
-                                      name="ad_budget"
+                                      name="ad_budget_cost"
                                     />
                                     <ErrorMessage
-                                      name="ad_budget"
+                                      name="ad_budget_cost"
                                       component="div"
                                       className="error"
                                     />
@@ -1310,7 +1335,9 @@ const AddProduct = ({ busInfo }) => {
                                     <div className="">
                                       <div className={style.duelInput}>
                                         <div className={style.customInput}>
-                                          <label>Delivery Cost Inside Dhaka</label>
+                                          <label>
+                                            Delivery Cost Inside Dhaka
+                                          </label>
                                           <Field
                                             type="number"
                                             placeholder="Delivery cost inside Dhaka"
@@ -1318,7 +1345,9 @@ const AddProduct = ({ busInfo }) => {
                                           />
                                         </div>
                                         <div className={style.customInput}>
-                                          <label>Delivery Cost Outside Dhaka</label>
+                                          <label>
+                                            Delivery Cost Outside Dhaka
+                                          </label>
                                           <Field
                                             type="number"
                                             placeholder="Delivery cost outside Dhaka"

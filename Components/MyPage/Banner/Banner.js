@@ -157,7 +157,7 @@ const Banner = ({ response }) => {
                                                         {
                                                             bannerList?.map((item, index) => <div key={item?.id} className={style.homeSliderDiv}>
                                                                 <i onClick={() => handleDeleteBanner(item?.id)} className="flaticon-close-1" ></i>
-                                                                <Link href={item?.link}>
+                                                                <Link href={item?.link || "#"}>
                                                                     <img className={style.homeSlider} style={{ margin: "0 5px", borderRadius: "2%" }} src={item?.image} />
                                                                 </Link>
                                                             </div>)

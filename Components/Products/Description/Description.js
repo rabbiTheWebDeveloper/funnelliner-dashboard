@@ -1,12 +1,21 @@
 import dynamic from "next/dynamic";
 import 'react-quill/dist/quill.snow.css';
+import DOMPurify from "dompurify";
+import { useEffect, useState } from "react";
 
-const QuillNoSSRWrapper = dynamic(import('react-quill'), {
+const QuillNoSSRWrapper = dynamic(() => import('react-quill'), {
   ssr: false,
   loading: () => <p>Loading ...</p>,
 });
 
-const QuillEditor = ({ value,data,  onChange, placeholder }) => {
+const QuillEditor = ({ value, data, onChange, placeholder }) => {
+  const [editorValue, setEditorValue] = useState("");
+
+  useEffect(() => {
+    const initial = value || data || "";
+    setEditorValue(DOMPurify.sanitize(initial));
+  }, [value, data]);
+
   const modules = {
     toolbar: [
       [{ header: '1' }, { header: '2' }, { font: [] }],
@@ -18,13 +27,13 @@ const QuillEditor = ({ value,data,  onChange, placeholder }) => {
         { indent: '-1' },
         { indent: '+1' },
       ],
-      ['link',],
+      ['link'],
       ['clean'],
     ],
     clipboard: {
       matchVisual: false,
     },
-  }
+  };
 
   const formats = [
     'header',
@@ -43,17 +52,19 @@ const QuillEditor = ({ value,data,  onChange, placeholder }) => {
     'video',
   ];
 
-
+  const handleChange = (content) => {
+    setEditorValue(content);
+    onChange(content);
+  };
 
   return (
     <QuillNoSSRWrapper
-      value={ value ? value : data}
+      value={editorValue}
       modules={modules}
       formats={formats}
-      onChange={onChange}
+      onChange={handleChange}
       placeholder={placeholder}
     />
-
   );
 };
 

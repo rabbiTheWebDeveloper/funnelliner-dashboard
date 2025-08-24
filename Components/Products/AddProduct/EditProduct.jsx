@@ -30,6 +30,7 @@ import useLoading from "../../../hook/useLoading";
 import Spinner from "../../commonSection/Spinner/Spinner";
 import Cookies from "js-cookie";
 import { getTotalQuantity } from "../../../utlit/product";
+import ProductVideo from "../../edit-theme/ProductVideo";
 
 const validationSchema = Yup.object({
   product_name: Yup.string().required("Product Name is required"),
@@ -62,6 +63,7 @@ const validationSchema = Yup.object({
 const EditProduct = ({ busInfo }) => {
   const router = useRouter();
   const showToast = useToast();
+  const productId = router.query.id?.toString().trim();
   const [isLoading, startLoading, stopLoading] = useLoading();
   const [productDetails, setProductDetails] = useState();
   const [categories, setCategories] = useState([]);
@@ -81,6 +83,9 @@ const EditProduct = ({ busInfo }) => {
     productDetails?.long_description || ""
   );
   const [isOpenVariationOption, setIsOpenVariationOption] = useState(false);
+  const [productGalleryVideos, setProductGalleryVideos] = useState([
+  productDetails?.video_url,
+  ]);
   const [isShowVariantValuesOption, setIsShowVariantValuesOption] =
     useState(false);
   const [variantAttribute, setVariantAttribute] = useState([]);
@@ -138,9 +143,9 @@ const EditProduct = ({ busInfo }) => {
   }, []);
 
   const fetchProductDetails = useCallback(async () => {
-    if (router?.query?.id) {
+    if (productId && Number(productId) > 0) {
       const productDetailsRes = await axios.get(
-        `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.GET_PRODUCT_DETAILS}${router?.query?.id}`,
+        `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.GET_PRODUCT_DETAILS}${productId}`,
         {
           headers: headers,
         }
@@ -178,7 +183,7 @@ const EditProduct = ({ busInfo }) => {
         setSelectVariantTypes(makeVariantAttributesArr);
       }
     }
-  }, [router?.query?.id]);
+  }, [productId]);
 
   useEffect(() => {
     fetchProductDetails();
@@ -239,35 +244,42 @@ const EditProduct = ({ busInfo }) => {
   }, []);
 
   const createVariant = async updatedVariantTypes => {
-    const formData = new FormData();
+    try {
+      const formData = new FormData();
 
-    updatedVariantTypes?.forEach(variant => {
-      formData.append("choice[]", variant?.variantType);
-      formData.append("choice_no[]", variant?.variantTypeId);
-      if (variant?.variantValues?.length) {
-        variant?.variantValues?.forEach(variantValue => {
-          formData.append(
-            `choice_options_${variantValue?.attribute_id}[]`,
-            variantValue?.value
-          );
-        });
+      updatedVariantTypes?.forEach(variant => {
+        formData.append("choice[]", variant?.variantType);
+        formData.append("choice_no[]", variant?.variantTypeId);
+
+        if (variant?.variantValues?.length) {
+          variant?.variantValues?.forEach(variantValue => {
+            formData.append(
+              `choice_options_${variantValue?.attribute_id}[]`,
+              variantValue?.value
+            );
+          });
+        }
+      });
+
+      const createVariantRes = await axios.post(
+        `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.CREATE_VARIANT}`,
+        formData,
+        { headers }
+      );
+
+      if (createVariantRes?.data?.success) {
+        showToast("Variation Created Successfully", "success");
+        setVariantTable(createVariantRes?.data?.data);
+        console.log(createVariantRes);
+      } else {
+        showToast("Variation Created Failure", "error");
       }
-    });
-
-    const createVariantRes = await axios.post(
-      `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.CREATE_VARIANT}`,
-      formData,
-      {
-        headers: headers,
+    } catch (error) {
+      console.error("Error creating variant:", error.response.status);
+      if (error.response.status === 422) {
+        setVariantTable([]);
       }
-    );
-
-    if (createVariantRes?.data?.success) {
-      showToast("Variation Created Successfully", "success");
-
-      setVariantTable(createVariantRes?.data?.data);
-    } else {
-      showToast("Variation Created Failure", "error");
+      // showToast("Something went wrong while creating variant", "error");
     }
   };
 
@@ -339,7 +351,7 @@ const EditProduct = ({ busInfo }) => {
   }, [productDetails]);
 
   console.log("variantTable ", variantTable);
-  if (router?.query?.id) {
+  if (productId && Number(productId) > 0) {
     return (
       <section className="DashboardSetting">
         <HeaderDescription
@@ -361,6 +373,10 @@ const EditProduct = ({ busInfo }) => {
                   selling_price: productDetails?.price
                     ? productDetails?.price
                     : 0,
+                  packaging_cost: productDetails?.packaging_cost,
+                  transportation_cost: productDetails?.transportation_cost,
+                  ad_budget_cost: productDetails?.ad_budget_cost,
+                  buying_price: productDetails?.buying_price,
                   discount: productDetails?.discount
                     ? productDetails?.discount
                     : 0,
@@ -420,7 +436,13 @@ const EditProduct = ({ busInfo }) => {
                     data.meta_tag = "buy";
                     data.meta_description = "IT was good and I like it";
                     data.status = "1";
-
+                    formData.append("packaging_cost", data.packaging_cost);
+                    formData.append(
+                      "transportation_cost",
+                      data.transportation_cost
+                    );
+                    formData.append("ad_budget_cost", data.ad_budget_cost);
+                    formData.append("buying_price", data.buying_price);
                     const formData = new FormData();
                     formData.append("_method", "patch");
                     // if (selectProductImage === undefined) {
@@ -436,7 +458,11 @@ const EditProduct = ({ busInfo }) => {
                           : productDetails?.main_image
                       );
                     }
-
+                    if (productGalleryVideos.length) {
+                      for (let i = 0; i < productGalleryVideos.length; i++) {
+                        formData.append("video_url[]", productGalleryVideos[i]);
+                      }
+                    }
                     if (productGalleryImage.length) {
                       for (let i = 0; i < productGalleryImage.length; i++) {
                         formData.append(
@@ -490,18 +516,18 @@ const EditProduct = ({ busInfo }) => {
                         data.subarea_charge || 0
                       );
                     }
+                    // console.log(variantTable)
+                    if (variantTable?.length > 0) {
+                      formData.append("variants", JSON.stringify(variantTable));
 
-                    if (variantTable?.length) {
-                      const variantTableJson = JSON.stringify(variantTable);
-                      formData.append("variants", variantTableJson);
-                      variantTable?.forEach((variantValue, index) => {
+                      variantTable.forEach((variantValue, index) => {
                         formData.append(
                           `media_${index}`,
-                          variantValue?.media === undefined
-                            ? null
-                            : variantValue?.media
+                          variantValue?.media || null
                         );
                       });
+                    } else {
+                      formData.append("variants", JSON.stringify([]));
                     }
 
                     selectVariantTypes?.forEach(variant => {
@@ -517,11 +543,15 @@ const EditProduct = ({ busInfo }) => {
                       }
                     });
                     startLoading();
-                    const createProductRes = await axios.post(
-                      `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.GET_PRODUCT_DETAILS}${router?.query?.id}`,
-                      formData,
-                      { headers: headers }
-                    );
+
+                    let createProductRes;
+                    if (productId && Number(productId) > 0) {
+                      createProductRes = await axios.post(
+                        `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.PRODUCTS.GET_PRODUCT_DETAILS}${productId}`,
+                        formData,
+                        { headers: headers }
+                      );
+                    }
 
                     if (createProductRes?.data?.success) {
                       showToast("Product Updated Successfully", "success");
@@ -583,6 +613,8 @@ const EditProduct = ({ busInfo }) => {
                               </label>
                               <Field
                                 type="number"
+                                min="0"
+                                onWheel={e => e.target.blur()}
                                 placeholder="Example: 599"
                                 name="selling_price"
                               />
@@ -658,7 +690,9 @@ const EditProduct = ({ busInfo }) => {
                               <label>Discount</label>
                               <Field
                                 name="discount"
-                                type="text"
+                                type="number"
+                                min="0"
+                                onWheel={e => e.target.blur()}
                                 placeholder="Example: 599"
                               />
                             </div>
@@ -691,7 +725,9 @@ const EditProduct = ({ busInfo }) => {
                                 Available Quantity <span>*</span>
                               </label>
                               <Field
-                                type="text"
+                                type="number"
+                                min="0"
+                                onWheel={e => e.target.blur()}
                                 placeholder="Enter available quantity here"
                                 name="product_quantity"
                                 disabled={
@@ -814,7 +850,9 @@ const EditProduct = ({ busInfo }) => {
                                         : "Dhaka"}{" "}
                                     </label>
                                     <Field
-                                      type="text"
+                                      type="number"
+                                      min="0"
+                                      onWheel={e => e.target.blur()}
                                       placeholder="Delivery charge in Dhaka"
                                       name="inside_dhaka"
                                     />
@@ -828,7 +866,9 @@ const EditProduct = ({ busInfo }) => {
                                         : "Dhaka"}{" "}
                                     </label>
                                     <Field
-                                      type="text"
+                                      type="number"
+                                      min="0"
+                                      onWheel={e => e.target.blur()}
                                       name="outside_dhaka"
                                       placeholder="Delivery charge out of Dhaka"
                                     />
@@ -839,7 +879,9 @@ const EditProduct = ({ busInfo }) => {
                                   >
                                     <label>Sub Area Charge (Optional)</label>
                                     <Field
-                                      type="text"
+                                      type="number"
+                                      min="0"
+                                      onWheel={e => e.target.blur()}
                                       name="subarea_charge"
                                       placeholder="Sub area (Optional)"
                                     />
@@ -931,6 +973,21 @@ const EditProduct = ({ busInfo }) => {
                                   setProductImage={setProductGalleryImage}
                                   // other_images={[]}
                                   other_images={productDetails?.other_images}
+                                />
+                              </div>
+                            </div>
+                          </Grid>
+
+                          <Grid item xs={12} sm={4}>
+                            <div className="">
+                              <div className="EditTheme  CustomeInput">
+                                <label>
+                                  Gallery Video Link (Maximum 5, Youtube Video
+                                  Link)
+                                </label>
+                                <ProductVideo
+                                  productVideoLinks={productGalleryVideos}
+                                  setProductVideoLinks={setProductGalleryVideos}
                                 />
                               </div>
                             </div>
@@ -1205,9 +1262,8 @@ const EditProduct = ({ busInfo }) => {
                                                 src={
                                                   variant?.media === null
                                                     ? "images/blank-img.png"
-                                                    :
-                                                  typeof variant?.media ===
-                                                  "string"
+                                                    : typeof variant?.media ===
+                                                      "string"
                                                     ? variant?.media
                                                     : variant?.media &&
                                                       URL.createObjectURL(
@@ -1361,6 +1417,119 @@ const EditProduct = ({ busInfo }) => {
                           </Grid>
                         </Grid>
                       </div>
+                    </div>
+                         <div className={style.ProductsVariant}>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} sm={12}>
+                          <div className={style.ProductsVariantContent}>
+                            <h4>Product Cost</h4>
+                            <div className={style.FormValidation}>
+                              <Grid container spacing={2}>
+                                <Grid item xs={12} sm={6}>
+                                  <div className="">
+                                    <label>
+                                      Buying Price <span>*</span>
+                                    </label>
+                                    <Field
+                                      type="number"
+                                      placeholder="Enter buying price"
+                                      name="buying_price"
+                                    />
+                                    <ErrorMessage
+                                      name="buying_price"
+                                      component="div"
+                                      className="error"
+                                    />
+                                  </div>
+                                </Grid>
+
+                                <Grid item xs={12} sm={6}>
+                                  <div className="">
+                                    <label>
+                                      Transportation Cost <span>*</span>
+                                    </label>
+                                    <Field
+                                      type="number"
+                                      placeholder="Enter transportation cost"
+                                      name="transportation_cost"
+                                    />
+                                    <ErrorMessage
+                                      name="transportation_cost"
+                                      component="div"
+                                      className="error"
+                                    />
+                                  </div>
+                                </Grid>
+
+                                <Grid item xs={12} sm={6}>
+                                  <div className="">
+                                    <label>
+                                      Packaging Cost <span>*</span>
+                                    </label>
+                                    <Field
+                                      type="number"
+                                      placeholder="Enter packaging cost"
+                                      name="packaging_cost"
+                                    />
+                                    <ErrorMessage
+                                      name="packaging_cost"
+                                      component="div"
+                                      className="error"
+                                    />
+                                  </div>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                  <div className="">
+                                    <label>
+                                      Ad Budget <span>*</span>
+                                    </label>
+                                    <Field
+                                      type="number"
+                                      placeholder="Enter ad budget"
+                                      name="ad_budget_cost"
+                                    />
+                                    <ErrorMessage
+                                      name="ad_budget_cost"
+                                      component="div"
+                                      className="error"
+                                    />
+                                  </div>
+                                </Grid>
+
+                                {deliverChargeType[0]?.value ===
+                                  "Paid Delivery Charge" && (
+                                  <Grid item xs={12}>
+                                    <div className="">
+                                      <div className={style.duelInput}>
+                                        <div className={style.customInput}>
+                                          <label>
+                                            Delivery Cost Inside Dhaka
+                                          </label>
+                                          <Field
+                                            type="number"
+                                            placeholder="Delivery cost inside Dhaka"
+                                            name="delivery_cost_inside"
+                                          />
+                                        </div>
+                                        <div className={style.customInput}>
+                                          <label>
+                                            Delivery Cost Outside Dhaka
+                                          </label>
+                                          <Field
+                                            type="number"
+                                            placeholder="Delivery cost outside Dhaka"
+                                            name="delivery_cost_outside"
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </Grid>
+                                )}
+                              </Grid>
+                            </div>
+                          </div>
+                        </Grid>
+                      </Grid>
                     </div>
                     <div className={style.Submit}>
                       {isLoading ? (

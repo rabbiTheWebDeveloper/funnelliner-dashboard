@@ -44,9 +44,13 @@ const DashboardSetting = ({ response }) => {
 
   const ownInfoSubmit = data => {
     axios
-      .post(process.env.NEXT_PUBLIC_API_URL + "/client/settings/owner-info/update", data, {
-        headers: headers,
-      })
+      .post(
+        process.env.NEXT_PUBLIC_API_URL + "/client/settings/owner-info/update",
+        data,
+        {
+          headers: headers,
+        }
+      )
       .then(function (response) {
         showToast("Owner information has been successfully updated");
       })
@@ -73,7 +77,8 @@ const DashboardSetting = ({ response }) => {
     if (data.new_password === data.password_confirmation) {
       axios
         .post(
-          process.env.NEXT_PUBLIC_API_URL + "/client/settings/password-security/update",
+          process.env.NEXT_PUBLIC_API_URL +
+            "/client/settings/password-security/update",
           data,
           { headers: headers }
         )
@@ -172,9 +177,12 @@ const DashboardSetting = ({ response }) => {
                                 </label>
                                 <input
                                   type="number"
+                                   InputProps={{ readOnly: true }}
                                   defaultValue={ownInfo?.owner_number}
                                   {...register("owner_number")}
                                   required
+                                  disabled
+                                 
                                 />
                               </div>
 

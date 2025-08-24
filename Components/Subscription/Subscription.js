@@ -15,7 +15,7 @@ import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
 import SuperFetch from "../../hook/Axios";
 import { useToast } from "../../hook/useToast";
-import { created, headers, nextDueDate, paymentStatus } from "../../pages/api";
+import { created, headers, nextDueDate, paymentStatus, userId } from "../../pages/api";
 import style from "./style.module.css";
 import moment from "moment";
 import HeaderDescription from "../Common/HeaderDescription/HeaderDescription";
@@ -23,6 +23,27 @@ import axios from "axios";
 import { API_ENDPOINTS } from "../../config/ApiEndpoints";
 
 const today = new Date().toISOString().slice(0, 10);
+
+
+const newBill = [{
+  "id": 308312053,
+  "user_id": 2165,
+  "trxid": " ",
+  "invoice_num": "9407072912",
+  "addons_id": null,
+  "type": "package",
+  "amount": 3000,
+  "response": "{\"merchantId\":\"688100452557375\",\"orderId\":\"Inv20250129159689\",\"paymentRefId\":\"MDEyOTE1NTcxNzU5Ny42ODgxMDA0NTI1NTczNzUuSW52MjAyNTAxMjkxNTk2ODkuMDNkNDY1NDQwYmU1ODNjMjUxOWM=\",\"amount\":\"3000\",\"clientMobileNo\":\"018****6020\",\"merchantMobileNo\":\"01810045255\",\"orderDateTime\":\"2025-01-29 15:57:17.0\",\"issuerPaymentDateTime\":\"2025-01-29 15:58:13.0\",\"issuerPaymentRefNo\":\"73LW7H2F\",\"additionalMerchantInfo\":\"{\\\"amount\\\":\\\"3000\\\",\\\"addons_id\\\":null,\\\"order_type\\\":\\\"package\\\",\\\"user_id\\\":\\\"2165\\\",\\\"invoice_num\\\":\\\"94070729\\\",\\\"tnx_id\\\":\\\"13042\\\"}\",\"status\":\"Success\",\"statusCode\":\"000\",\"cancelIssuerDateTime\":null,\"cancelIssuerRefNo\":null,\"serviceType\":\"REGULAR_ECOM\"}",
+  "status": "unpaid",
+  "gateway": "",
+  "sub_gateway": " ",
+  "created_at": "2024-12-21T18:09:35.000000Z",
+  "updated_at": "2025-12-21T09:58:13.000000Z",
+  "package_id": 3,
+  "due_date": "2024-12-22",
+  "order_count": 1544,
+  "addons": null
+}]
 
 const Subscription = ({
   merchant,
@@ -85,7 +106,15 @@ const Subscription = ({
           item => item.status === "unpaid"
         );
         setUnpaidBill(unpaidList);
-        setBillingList(data?.data?.data);
+        if(userId===2165){
+          const updatedBillingList = [...newBill,...data.data?.data];
+          setBillingList(updatedBillingList);
+        }else{
+          const updatedBillingList = data.data?.data;
+          setBillingList(updatedBillingList);
+        }
+      
+       
         setTotalPage(data.data?.last_page);
         setOrderCount(data?.data?.orders);
       }
@@ -112,6 +141,8 @@ const Subscription = ({
 
   useEffect(() => {
     handleFetchBillingList();
+
+    
   }, [handleFetchBillingList]);
 
   const handlePerPageChange = event => {
@@ -133,6 +164,12 @@ const Subscription = ({
     }
   }, [router.query, unpaidBill]);
 
+  // useEffect(() => {
+  //   setBillingList(prevBillingList => [...prevBillingList, ...newBill]);
+  // }, []);
+
+ 
+
   return (
     <>
       <section className="TopSellingProducts DashboardSetting Courier Subscription">
@@ -146,135 +183,7 @@ const Subscription = ({
 
         <Container maxWidth="sm">
           <Grid container spacing={3}>
-            {paymentStatus == null && (
-              <Grid item xs={12} sm={6} md={4}>
-                <div className="commonCart boxShadow cart-2">
-                  <div className={style.packagePrice}>
-                    <h3>Entrepreneur Plan</h3>
-
-                    <h4>
-                      {" "}
-                      <i className="flaticon-taka"></i> 3000{" "}
-                    </h4>
-
-                    <ul>
-                      <li>
-                        {" "}
-                        <img
-                          src="/images/first-setup/check-mark.png"
-                          alt=""
-                        />{" "}
-                        1 Online Store
-                      </li>
-                      <li>
-                        {" "}
-                        <img
-                          src="/images/first-setup/check-mark.png"
-                          alt=""
-                        />{" "}
-                        Drag & Drop, No Code Editor
-                      </li>
-                      <li>
-                        {" "}
-                        <img
-                          src="/images/first-setup/check-mark.png"
-                          alt=""
-                        />{" "}
-                        Unlimited Products
-                      </li>
-                      <li>
-                        {" "}
-                        <img
-                          src="/images/first-setup/check-mark.png"
-                          alt=""
-                        />{" "}
-                        Unlimited Order Management
-                      </li>
-                      <li>
-                        {" "}
-                        <img
-                          src="/images/first-setup/check-mark.png"
-                          alt=""
-                        />{" "}
-                        Multi Page Themes
-                      </li>
-                      <li>
-                        {" "}
-                        <img
-                          src="/images/first-setup/check-mark.png"
-                          alt=""
-                        />{" "}
-                        Landing Page Templates
-                      </li>
-                      <li>
-                        {" "}
-                        <img
-                          src="/images/first-setup/check-mark.png"
-                          alt=""
-                        />{" "}
-                        Business Reports
-                      </li>
-                      <li>
-                        {" "}
-                        <img
-                          src="/images/first-setup/check-mark.png"
-                          alt=""
-                        />{" "}
-                        Custom Domain
-                      </li>
-                      <li>
-                        {" "}
-                        <img
-                          src="/images/first-setup/check-mark.png"
-                          alt=""
-                        />{" "}
-                        Auto Invoice Making
-                      </li>
-                      <li>
-                        {" "}
-                        <img
-                          src="/images/first-setup/check-mark.png"
-                          alt=""
-                        />{" "}
-                        Auto Courier Entry
-                      </li>
-                      <li>
-                        {" "}
-                        <img
-                          src="/images/first-setup/check-mark.png"
-                          alt=""
-                        />{" "}
-                        Inventory Management{" "}
-                      </li>
-                      <li>
-                        {" "}
-                        <img
-                          src="/images/first-setup/check-mark.png"
-                          alt=""
-                        />{" "}
-                        Bulk SMS Marketing Features
-                      </li>
-                      <li>
-                        {" "}
-                        <img
-                          src="/images/first-setup/check-mark.png"
-                          alt=""
-                        />{" "}
-                        Marketing Tools
-                      </li>
-                    </ul>
-                    <Button onClick={handleUpdateModal}>Subscribe Now</Button>
-                  </div>
-                </div>
-              </Grid>
-            )}
-            {/* } */}
-
-            {/* Total Order */}
-
-            {/* {
-                            paymentStatus === "paid" || "unpaid"
-                            && */}
+        
             <Grid item xs={12} sm={6} md={4}>
               <div className="commonCart boxShadow cart-2">
                 <div className={style.SubsHeight}>
@@ -338,19 +247,8 @@ const Subscription = ({
           </Grid>
         </Container>
       </section>
-      {/* 
-            <Billing billingList={billingList}></Billing> */}
-
       <div>
         <section className="DashboardSetting Order">
-          {/* header */}
-          {/* <HeaderDescription
-          headerIcon={"flaticon-wallet"}
-          title={"Billing"}
-          subTitle={"Billing List"}
-          search={false}
-        /> */}
-
           <Container maxWidth="sm">
             <div className="Table">
               <table>

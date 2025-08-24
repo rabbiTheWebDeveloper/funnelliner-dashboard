@@ -14,6 +14,7 @@ import ShowCategory from "./ShowCategory";
 import UpdateCategory from "./UpdateCategory";
 import SmallLoader from "../../SmallLoader/SmallLoader";
 import { API_ENDPOINTS } from "../../../config/ApiEndpoints";
+import DownloadOptionCategory from "./DownloadOptionCategory";
 
 const SubProduct = () => {
   const showToast = useToast();
@@ -127,7 +128,9 @@ const SubProduct = () => {
           <div className="DashboardSettingTabs WebsiteSettingPage">
             <div className="Pending">
               <div className="MoveToComplete d_flex d_justify">
-                <div className="DropDown"></div>
+                <div className="DropDown">
+                <DownloadOptionCategory categories={products} />
+                </div>
 
                 <Link href="/add-category" className="CreateNewBtn">
                   <i className="flaticon-plus"></i> Add Category

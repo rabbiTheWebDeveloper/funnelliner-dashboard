@@ -137,8 +137,8 @@ const OrderModal = ({ modalOpen, handleCloseModal, products, handleFetch ,imageP
       }
     } catch (error) {
       if (error.response) {
-        Object.keys(error?.response?.data?.msg).forEach(key => {
-          const errorMessage = error?.response?.data?.msg[key][0];
+        Object.keys(error?.response?.data?.errors).forEach(key => {
+          const errorMessage = error?.response?.data?.errors[key][0];
           showToast(errorMessage, "error");
         });
       }

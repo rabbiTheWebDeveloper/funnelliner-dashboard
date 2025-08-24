@@ -5,7 +5,42 @@ import { Phone, User } from "lucide-react";
 import { Tooltip } from "recharts";
 import { Badge } from "../components/ui/badge/badge";
 import styles from "../global.module.css";
+import { headers, topSellingProducts } from "../../../pages/api";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import moment from "moment";
+import Link from "next/link";
 export const OrderAnalyticsSection = () => {
+  const [TopSellingProducts, setTopSellingProduct] = useState([]);
+  const [recentOrder, setRecentOrder] = useState([]);
+  useEffect(() => {
+      topSellingProducts().then((result) => {
+          setTopSellingProduct(result?.data?.data);
+      });
+  }, []);
+
+
+ 
+
+
+
+  const handleFetchRecentOrder = async () => {
+      try {
+          let data = await axios({
+              method: "get",
+              url: `${process.env.NEXT_PUBLIC_API_URL}/client/recent-order/count`,
+              headers: headers,
+          });
+          setRecentOrder(data?.data?.data);
+      } catch (err) {
+
+      }
+  }
+
+  useEffect(() => {
+      handleFetchRecentOrder();
+  }, [])
+
   return (
     <section>
       <div className={cls(styles.header, styles["flex"])}>
@@ -79,7 +114,7 @@ export const OrderAnalyticsSection = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {Array.from({ length: 10 }).map((_, index) => (
+                    {Array.from(recentOrder).map((order, index) => (
                       <tr className={styles.card_table_item}>
                         <td className={styles.card_table_cell}>
                           <Box
@@ -95,9 +130,9 @@ export const OrderAnalyticsSection = () => {
                                 color: "hsl(var(--muted-foreground))",
                               }}
                             >
-                              #7284930010
+                              #{order.order_no}
                             </h1>
-                            <h1 className={styles.card_title}>27-10-2024</h1>
+                            <h1 className={styles.card_title}>{moment(order?.created_at).format('MMMM DD, YYYY')}</h1>
                           </Box>
                         </td>
                         <td className={styles.card_table_cell}>
@@ -116,20 +151,20 @@ export const OrderAnalyticsSection = () => {
                                 )}
                               >
                                 <User />
-                                M.H. Neshad
+                                {order?.customer_name}
                               </div>
                             </h1>
                             <h1 className={styles.card_title}>
-                              <a
-                                href="tel:+8801771704439"
+                              <Link
+                               href={`tel:${order?.phone}`}
                                 className={cls(
                                   styles["flex"],
                                   styles["order-customer-info"]
                                 )}
                               >
                                 <Phone />
-                                01771704439
-                              </a>
+                                {order?.phone}
+                              </Link>
                             </h1>
                           </Box>
                         </td>
@@ -138,36 +173,36 @@ export const OrderAnalyticsSection = () => {
                           <Box
                             sx={{
                               display: "flex",
-                              gap: 0.5,
+                              alignItems: "center",
+                              gap: 1,
                             }}
                           >
+                            <figure className={styles.top_product_image}>
+                              <img
+                                src={order?.order_details[0]?.product?.main_image ?? '/images/placeholder.png'}
+                                alt={order?.order_details[0]?.product?.product_name}
+                              />
+                            </figure>
                             <h1
                               className={cls(
                                 styles.card_title,
-                                styles.card_title_truncate
+                                styles["whitespace-nowrap"]
                               )}
+                              style={{ paddingRight: "2rem" }}
                             >
-                              <Tooltip
-                                content="3 Set Kurti Combo Package"
-                                placement="top"
-                              >
-                                <span className={styles.card_title_truncate}>
-                                  3 Set Kurti Combo Package
-                                </span>
-                              </Tooltip>
+                              {order?.order_details[0]?.product?.product_name}
                             </h1>
-                            <Badge>27</Badge>
                           </Box>
                         </td>
                         <td
                           className={cls(styles.card_table_cell, styles.small)}
                         >
-                          <h1 className={styles.card_title}>৳ 42500</h1>
+                          <h1 className={styles.card_title}>৳ {order?.pricing?.grand_total?.toFixed(0)?.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</h1>
                         </td>
                         <td
                           className={cls(styles.card_table_cell, styles.right)}
                         >
-                          <Badge variant="outline">Pending</Badge>
+                          <Badge variant="outline">{order?.order_status}</Badge>
                         </td>
                       </tr>
                     ))}
@@ -225,7 +260,7 @@ export const OrderAnalyticsSection = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {Array.from({ length: 10 }).map((_, index) => (
+                    {Array.from(TopSellingProducts).map((item, index) => (
                       <tr className={styles.card_table_item}>
                         <td className={styles.card_table_cell}>
                           <Box
@@ -237,8 +272,8 @@ export const OrderAnalyticsSection = () => {
                           >
                             <figure className={styles.top_product_image}>
                               <img
-                                src="https://cdn-s3.funnelliner.com/media/main-image/1637/O7Eh4Z1cmdkBSwuWNAK4ApLlvxwc1Ov38hlrL1gv.jpg"
-                                alt=""
+                                src={item?.product_main_image ?? '/images/placeholder.png'}
+                                alt={item?.product_name}
                               />
                             </figure>
                             <h1
@@ -248,17 +283,17 @@ export const OrderAnalyticsSection = () => {
                               )}
                               style={{ paddingRight: "2rem" }}
                             >
-                              3 Set Kurti Combo Package
+                              {item?.product_name}
                             </h1>
                           </Box>
                         </td>
                         <td className={styles.card_table_cell}>
-                          <Badge>35098</Badge>
+                          <Badge>{item?.total}</Badge>
                         </td>
                         <td
                           className={cls(styles.card_table_cell)}
                         >
-                          <h1 className={styles.card_title}>52526</h1>
+                          <h1 className={styles.card_title}>{item?.product_qty < 0 ? <span style={{ color: 'red' }}>stock out</span>: item?.product_qty}</h1>
                         </td>
                       </tr>
                     ))}
