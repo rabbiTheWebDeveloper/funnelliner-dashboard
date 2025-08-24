@@ -68,7 +68,7 @@
     "react-nice-dates": "^3.1.0",
     "react-paginate": "^8.3.0",
     "react-public-ip": "^1.0.0",
-    "react-quill": "^0.0.2",
+    "react-quill": "^2.0.0",
     "react-redux": "^9.2.0",
     "react-select": "^5.10.2",
     "react-toastify": "^11.0.5",
